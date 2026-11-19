@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 9e12319. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
 
 686 routes in 76 route files, served at 77 mount points. 363 change data.
 
@@ -19,7 +19,7 @@ Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 9e12319. Do not
 | Changing routes that returned a success in a test | 203 of 363 |
 | Changing handlers with two or more database writes and no transaction | 4 |
 | Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 231 (many use a shared wrapper) |
+| Handlers with no try/catch of their own | 232 (many use a shared wrapper) |
 | Routes that use raw SQL | 8 |
 | Calls the screens make that have no server route | 67 |
 
@@ -517,7 +517,7 @@ Mounted at /api/sales-dashboard. Tables: RFQ, Quote, User.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/sales-dashboard` | yes |  |  |  |  |  |
 
-### dashboard.js (2 routes, 144 lines)
+### dashboard.js (2 routes, 104 lines)
 
 Mounted at /api/dashboard. Tables: Inventory, Order, QCHold, Coil, Shipment.
 
@@ -526,7 +526,7 @@ Mounted at /api/dashboard. Tables: Inventory, Order, QCHold, Coil, Shipment.
 | `GET /api/dashboard` | yes |  |  |  |  |  |
 | `GET /api/dashboard/kpis` | yes |  |  |  |  |  |
 
-### customers.js (8 routes, 442 lines)
+### customers.js (8 routes, 444 lines)
 
 Mounted at /api/customers. Tables: Organization, AuditLog, CustomerPreference, CustomerPricingTier.
 
@@ -747,7 +747,7 @@ Mounted at /api/ai/tts. Tables: through a service or none.
 | `GET /api/ai/tts/test` | yes |  |  |  |  |  |
 | `POST /api/ai/tts/speak` | yes |  |  |  |  |  |
 
-### aiAssistant.js (2 routes, 437 lines)
+### aiAssistant.js (2 routes, 453 lines)
 
 Mounted at /api/ai/assistant. Tables: through a service or none.
 
@@ -972,7 +972,7 @@ Mounted at /api/sales. Tables: RFQ, Quote, User.
 | `GET /api/sales/dashboard/stats` | yes |  |  |  |  |  |
 | `GET /api/sales/dashboard/leaderboard` | yes |  |  | yes |  |  |
 
-### executive.js (21 routes, 527 lines)
+### executive.js (21 routes, 456 lines)
 
 Mounted at /api/executive. Tables: through a service or none.
 

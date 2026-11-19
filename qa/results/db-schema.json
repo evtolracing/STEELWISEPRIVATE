@@ -1,5 +1,5 @@
 {
- "at": "2026-11-19T00:57:25.062Z",
+ "at": "2026-11-19T01:35:19.484Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -101,8 +101,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 2908160,
-   "rows": 4640
+   "bytes": 3014656,
+   "rows": 4644
   },
   {
    "name": "BomOperation",
@@ -119,8 +119,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 720896,
-   "rows": 938
+   "bytes": 827392,
+   "rows": 939
   },
   {
    "name": "CommodityPrice",
@@ -287,8 +287,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 491520,
-   "rows": 938
+   "bytes": 475136,
+   "rows": 939
   },
   {
    "name": "InventoryAdjustment",
@@ -323,19 +323,19 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 450560,
-   "rows": 408
+   "bytes": 417792,
+   "rows": 409
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 409600,
-   "rows": 420
+   "bytes": 368640,
+   "rows": 421
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 475136,
+   "bytes": 524288,
    "rows": 468
   },
   {
@@ -455,8 +455,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 1056768,
-   "rows": 1208
+   "bytes": 1064960,
+   "rows": 1215
   },
   {
    "name": "MeterReading",
@@ -485,19 +485,19 @@
   {
    "name": "Order",
    "rls": false,
-   "bytes": 770048,
-   "rows": 1037
+   "bytes": 696320,
+   "rows": 1038
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 761856,
-   "rows": 1061
+   "bytes": 696320,
+   "rows": 1062
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
-   "bytes": 212992,
+   "bytes": 196608,
    "rows": 111
   },
   {
@@ -545,7 +545,7 @@
   {
    "name": "PartnerApiLog",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 196608,
    "rows": 153
   },
   {
@@ -557,7 +557,7 @@
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 245760,
    "rows": 216
   },
   {
@@ -629,13 +629,13 @@
   {
    "name": "QCHold",
    "rls": false,
-   "bytes": 172032,
-   "rows": 59
+   "bytes": 163840,
+   "rows": 60
   },
   {
    "name": "Quote",
    "rls": false,
-   "bytes": 163840,
+   "bytes": 155648,
    "rows": 57
   },
   {
@@ -647,19 +647,19 @@
   {
    "name": "QuoteLine",
    "rls": false,
-   "bytes": 122880,
+   "bytes": 114688,
    "rows": 41
   },
   {
    "name": "RFQ",
    "rls": false,
-   "bytes": 122880,
+   "bytes": 114688,
    "rows": 61
   },
   {
    "name": "RFQLine",
    "rls": false,
-   "bytes": 98304,
+   "bytes": 106496,
    "rows": 46
   },
   {
@@ -672,7 +672,7 @@
    "name": "RateWindow",
    "rls": false,
    "bytes": 81920,
-   "rows": 96
+   "rows": 90
   },
   {
    "name": "RecipeRoutingTemplate",
@@ -689,7 +689,7 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 163840,
+   "bytes": 172032,
    "rows": 24
   },
   {
@@ -941,13 +941,13 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 352256,
+   "bytes": 425984,
    "rows": 454
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 417792,
+   "bytes": 352256,
    "rows": 423
   },
   {
@@ -983,7 +983,7 @@
   {
    "name": "StockTransferLine",
    "rls": false,
-   "bytes": 114688,
+   "bytes": 106496,
    "rows": 67
   },
   {
@@ -1031,7 +1031,7 @@
   {
    "name": "TraceEvent",
    "rls": false,
-   "bytes": 237568,
+   "bytes": 245760,
    "rows": 83
   },
   {
@@ -1061,13 +1061,13 @@
   {
    "name": "WebhookDelivery",
    "rls": false,
-   "bytes": 1859584,
-   "rows": 1190
+   "bytes": 1916928,
+   "rows": 1198
   },
   {
    "name": "WorkCenter",
    "rls": false,
-   "bytes": 212992,
+   "bytes": 196608,
    "rows": 339
   },
   {
@@ -1079,14 +1079,14 @@
   {
    "name": "WorkOrder",
    "rls": false,
-   "bytes": 147456,
+   "bytes": 155648,
    "rows": 70
   },
   {
    "name": "WorkOrderOutput",
    "rls": false,
-   "bytes": 106496,
-   "rows": 56
+   "bytes": 114688,
+   "rows": 57
   },
   {
    "name": "_prisma_migrations",
@@ -32635,7 +32635,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)",
-   "bytes": 319488,
+   "bytes": 368640,
    "cols": [
     "id"
    ],
@@ -32647,7 +32647,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_resourceType_resourceId_idx\" ON public.\"AuditLog\" USING btree (\"resourceType\", \"resourceId\")",
-   "bytes": 262144,
+   "bytes": 270336,
    "cols": [
     "resourceType",
     "resourceId"
@@ -32673,7 +32673,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 507904,
+   "bytes": 532480,
    "cols": [
     "userId",
     "timestamp"
@@ -34164,7 +34164,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Invoice_orderId_idx\" ON public.\"Invoice\" USING btree (\"orderId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderId"
    ],
@@ -34212,7 +34212,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"InvoiceLine_orderLineId_idx\" ON public.\"InvoiceLine\" USING btree (\"orderLineId\")",
-   "bytes": 57344,
+   "bytes": 49152,
    "cols": [
     "orderLineId"
    ],
@@ -34284,7 +34284,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Job_orderLineId_idx\" ON public.\"Job\" USING btree (\"orderLineId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderLineId"
    ],
@@ -34296,7 +34296,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Job_pkey\" ON public.\"Job\" USING btree (id)",
-   "bytes": 57344,
+   "bytes": 49152,
    "cols": [
     "id"
    ],
@@ -35298,7 +35298,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"MaterialMovement_shipmentId_idx\" ON public.\"MaterialMovement\" USING btree (\"shipmentId\")",
-   "bytes": 57344,
+   "bytes": 49152,
    "cols": [
     "shipmentId"
    ],
@@ -35565,7 +35565,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 90112,
+   "bytes": 98304,
    "cols": [
     "id"
    ],
@@ -35613,7 +35613,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"OrderLine_orderId_idx\" ON public.\"OrderLine\" USING btree (\"orderId\")",
-   "bytes": 90112,
+   "bytes": 98304,
    "cols": [
     "orderId"
    ],
@@ -35661,7 +35661,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"OrderLineAllocation_coilId_idx\" ON public.\"OrderLineAllocation\" USING btree (\"coilId\")",
-   "bytes": 32768,
+   "bytes": 40960,
    "cols": [
     "coilId"
    ],
@@ -35673,7 +35673,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"OrderLineAllocation_orderLineId_idx\" ON public.\"OrderLineAllocation\" USING btree (\"orderLineId\")",
-   "bytes": 32768,
+   "bytes": 16384,
    "cols": [
     "orderLineId"
    ],
@@ -39826,7 +39826,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_eventId_idx\" ON public.\"WebhookDelivery\" USING btree (\"eventId\")",
-   "bytes": 81920,
+   "bytes": 65536,
    "cols": [
     "eventId"
    ],
@@ -39850,7 +39850,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_pkey\" ON public.\"WebhookDelivery\" USING btree (id)",
-   "bytes": 139264,
+   "bytes": 131072,
    "cols": [
     "id"
    ],
@@ -39874,7 +39874,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
-   "bytes": 98304,
+   "bytes": 106496,
    "cols": [
     "status",
     "nextRetryAt"
@@ -39887,7 +39887,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_webhookId_eventId_key\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\", \"eventId\")",
-   "bytes": 286720,
+   "bytes": 270336,
    "cols": [
     "webhookId",
     "eventId"
@@ -39936,7 +39936,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WorkCenter_pkey\" ON public.\"WorkCenter\" USING btree (id)",
-   "bytes": 49152,
+   "bytes": 40960,
    "cols": [
     "id"
    ],
@@ -40108,7 +40108,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 4640,
+   "rows": 4644,
    "set": 2,
    "orphans": null
   },
@@ -40117,7 +40117,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 4640,
+   "rows": 4644,
    "set": 0,
    "orphans": null
   },
@@ -40126,8 +40126,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 4640,
-   "set": 4640,
+   "rows": 4644,
+   "set": 4644,
    "orphans": null
   },
   {
@@ -40135,7 +40135,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 4640,
+   "rows": 4644,
    "set": 0,
    "orphans": null
   },
@@ -40144,7 +40144,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 4640,
+   "rows": 4644,
    "set": 0,
    "orphans": null
   },
@@ -40981,7 +40981,7 @@
    "column": "ncrId",
    "nullable": true,
    "target": null,
-   "rows": 59,
+   "rows": 60,
    "set": 0,
    "orphans": null
   },
@@ -42241,8 +42241,8 @@
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 1190,
-   "set": 1190,
+   "rows": 1198,
+   "set": 1198,
    "orphans": null
   }
  ],

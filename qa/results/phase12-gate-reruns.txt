@@ -1,0 +1,2 @@
+Reruns after the full gate (qa/results/phase12-gate.txt), same build, same database, after AA-012 hardened two timing-sensitive checks in the tests. No product file changed.
+== phase 9 UI scenarios (whole suite)

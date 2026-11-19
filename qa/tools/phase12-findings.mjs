@@ -69,7 +69,7 @@ const AA = [
     'The scenario waits for the list, not for a fixed time.',
     'A false failure in the gate. The product was not at fault: the scenario passes when run alone on the same build.',
     'Fixed: the scenario waits for the list to be drawn. The first run is kept as it was (qa/results/phase12-gate-run-1.txt).',
-    'qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).'],
+    'qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build, and passed in both later gate runs (qa/results/phase12-gate-run-2-stopped.txt, qa/results/phase12-gate.txt).'],
   ['AA-010', 'P3', RBD, 'Access control', 'Separation of duties', 'src/backend/src/lib/roleAccess.js',
     'By the department rules sales staff may dispatch a shipment and may start or complete a work order (shipments: warehouse and sales; jobs and work orders: production, sales, warehouse and quality). The rules are applied as written; the question is whether they are the ones the owner wants.',
     'The owner confirms the permissions matrix line by line before go-live, in particular these two.',
@@ -82,6 +82,12 @@ const AA = [
     'A junk customer record from a faulty caller or a script. No effect on stock or money; the login must already be allowed to add customers.',
     'Fixed at the route: the code and the name must be text. Found after the gate on RC-2 had started; that gate was stopped (its log is kept as qa/results/phase12-gate-run-2-stopped.txt) and the whole gate was run again on the candidate with this correction.',
     `${SIM} "Security 7" (refused with 400 and nothing saved); qa/tools/phase12-mutations.mjs AA-011.`],
+  ['AA-012', 'P3', FIXED, 'Tests', 'Test reliability', 'qa/sim/phase9/stock.cjs, qa/sim/phase11/s7-fail.mjs',
+    'In the final gate one scenario failed in each of two older suites, each for timing in the test on a busy machine. Phase 9 browser scenario 113 read the heading of a stock item half a second after the page opened, before it was drawn. The Phase 11 scenario that cuts every database connection asked for a reconciliation while one server copy was still reconnecting and was answered 503 "try again", which is the designed answer.',
+    'A check waits for what it reads, and tries again when told to try again, within a stated limit.',
+    'Two false failures in the gate. The product was not at fault. A different scenario failed for the same kind of reason in the first gate (AA-009), so the suites are sensitive to load on a small machine.',
+    'Fixed in the tests: the heading is waited for (5 s at most); the reconciliation is asked again for at most ten seconds, and a copy that stays down still fails. The gate log is kept with its two failures (qa/results/phase12-gate.txt). A timing fault cannot be made to fail on demand, so there is no proof by removal for this one.',
+    'The stock scenario passed three times alone; both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt).'],
 ];
 
 const today = '2026-11-19';

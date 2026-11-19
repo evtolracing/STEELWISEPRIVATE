@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 9e12319. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
@@ -11,20 +11,19 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Severity | All | Still open |
 |---|---:|---:|
 | P0 | 20 | 2 |
-| P1 | 128 | 17 |
-| P2 | 183 | 54 |
-| P3 | 120 | 40 |
-| Total | 452 | 114 |
+| P1 | 130 | 17 |
+| P2 | 188 | 53 |
+| P3 | 124 | 41 |
+| Total | 463 | 114 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 336 |
-| DEFERRED TO SPECIFIC PHASE | 63 |
-| REQUIRES BUSINESS DECISION | 33 |
+| VERIFIED FIXED | 347 |
+| REQUIRES BUSINESS DECISION | 92 |
+| FIXED — NOT VERIFIED | 7 |
 | IN PROGRESS | 6 |
-| FIXED — NOT VERIFIED | 5 |
+| BLOCKED | 5 |
 | ACCEPTED RISK WITH APPROVAL | 4 |
-| BLOCKED | 3 |
 | NOT APPLICABLE | 2 |
 
 ## Open findings, most severe first
@@ -32,119 +31,119 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | ID | Sev | Status | Module | What is wrong | Assigned to |
 |---|---|---|---|---|---|
 | N-024 | P4 | FIXED — NOT VERIFIED | Tests | Failed in the first hour of each week. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
-| X-001 | P0 | DEFERRED TO SPECIFIC PHASE | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
-| X-002 | P0 | DEFERRED TO SPECIFIC PHASE | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
+| X-001 | P0 | REQUIRES BUSINESS DECISION | Safety (13 screens, on the menu) | Incidents, inspections, permits, training, observations, corrective actions and stop work all showed invented records. The calls to the server are commented out in the code. Nothing entered was saved | Enterprise experience |
+| X-002 | P0 | REQUIRES BUSINESS DECISION | Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup | 23 more screens, most on the menu, showed invented data with no notice. Provenance lookup returned the same invented chain of custody for any heat or item typed in | Enterprise experience |
 | B-009 | P1 | IN PROGRESS | Second stock list, order hub, stop work | Two stock lists and two order pipelines. The second of each has no database rule on any value, and two requests at once can overwrite each other. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| B-016 | P1 | DEFERRED TO SPECIFIC PHASE | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
+| B-016 | P1 | REQUIRES BUSINESS DECISION | Testing | Order to cash is covered in depth. Outside it, most changing routes have no success-path test. | Testing phase; each phase for its own area |
 | B-019 | P1 | BLOCKED | Platform | Everything happens only when someone opens a screen or presses a button. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| D-011b | P1 | FIXED — NOT VERIFIED |  | On the hosted site uploaded files had nowhere to be stored. | Done before the program |
 | E-011 | P1 | REQUIRES BUSINESS DECISION | Platform | Known vulnerabilities in installed packages: backend 8 (1 critical, 4 high), frontend 11 (4 high) | Phase 2: architecture and code quality |
 | E-015 | P1 | FIXED — NOT VERIFIED | Platform | No evidence that a backup has ever been restored | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| E-023 | P1 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | `GET /api/ops-cockpit` loaded every job, order with lines, stock item, shipment and dispatch operation on each call. It also tested for job and shipment statuses that do not exist, so completed jobs were treated as open  | Phase 2: architecture and code quality |
-| I-011 | P1 | DEFERRED TO SPECIFIC PHASE | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
-| I-012 (D-024) | P1 | DEFERRED TO SPECIFIC PHASE | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
+| I-011 | P1 | REQUIRES BUSINESS DECISION | Supplier quality (six screens) | Inbound receiving, IQC inspections, nonconformances, SCARs, scorecards and suppliers show invented suppliers, inspections and scores. No server side exists | Inventory and purchasing |
+| I-012 (D-024) | P1 | REQUIRES BUSINESS DECISION | Inventory | Two stock lists: the one orders, receiving, shipping and invoices update, and a second in RFID unit tables that none of them update. The Inventory menu opened the second | Inventory and purchasing |
 | K-007 | P1 | IN PROGRESS | Inventory valuation | No cost unless typed by hand. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-026 | P1 | IN PROGRESS | Production costing | No production cost exists. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| M-011 | P1 | DEFERRED TO SPECIFIC PHASE | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
+| M-011 | P1 | REQUIRES BUSINESS DECISION | Production quality (5 screens), Bills of material | Sample data presented as real; the BOM screen was hard-wired to samples | Manufacturing and processing |
 | S-010 | P1 | ACCEPTED RISK WITH APPROVAL | Delivery promise | Delivery promise, cutoff times, branch comparison and split shipments run on invented data in the browser, including the promise date at web checkout | Sales and customer operations |
 | W-001 | P1 | REQUIRES BUSINESS DECISION | Financial ledger | The ledger is built and verified on test data and is switched off. The chart of accounts, the account mappings, the posting rules and sixteen accounting policies are proposals. No accountant has approved them. | Phase 9.5: financial ledger and accounting foundation |
 | W-014 | P1 | FIXED — NOT VERIFIED | Financial ledger; database | Posted entries are protected by database triggers. A database superuser, or the owner of the tables, can switch triggers off for a session (session_replication_role) or drop them. The QA reset does exactly that, on a loc | Phase 9.5: financial ledger and accounting foundation |
 | X-007 | P1 | REQUIRES BUSINESS DECISION | Order entry, web checkout, online settings | Order cut-off times, delivery promise dates, the "ship from another branch" comparison (with invented branch stock), the fulfilment override and split shipments run from sample rules built into the browser. No server rou | Enterprise experience |
-| X-009 | P1 | DEFERRED TO SPECIFIC PHASE | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
+| X-009 | P1 | REQUIRES BUSINESS DECISION | Scale of sample screens | 58 of 143 screens are samples. All now say so | Enterprise experience |
 | Y-008 | P1 | FIXED — NOT VERIFIED | Database | The application connects as the database owner (a superuser on QA, the table owner on the host). That role can switch off the journal guards for a session, drop them, rewrite history and rewrite the record of applied upd | Phase 10: security, financial integrity, reliability and recovery |
-| B-012 | P2 | DEFERRED TO SPECIFIC PHASE | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
-| B-014 | P2 | DEFERRED TO SPECIFIC PHASE | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
-| B-017 | P2 | DEFERRED TO SPECIFIC PHASE | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
-| C-009 | P2 | DEFERRED TO SPECIFIC PHASE | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| C-013 | P2 | DEFERRED TO SPECIFIC PHASE | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
-| D-020 | P2 | DEFERRED TO SPECIFIC PHASE |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
-| D-024 | P2 | DEFERRED TO SPECIFIC PHASE |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
+| AA-007 | P2 | REQUIRES BUSINESS DECISION | Branches | A branch record holds no time zone. The books keep one business day for the whole company (the zone given when the ledger is switched on). A sale made at 10 pm Pacific is dated the next day if the company zone is Eastern | Phase 12: production certification |
+| AA-008 | P2 | REQUIRES BUSINESS DECISION | Branches | No screen or API adds or edits a branch. A branch is added by a database script. | Phase 12: production certification |
+| B-012 | P2 | REQUIRES BUSINESS DECISION | Lists across the server | Some are small set-up lists where no limit is harmless; others grow with products, operators and partners. | Performance phase |
+| B-014 | P2 | REQUIRES BUSINESS DECISION | Code base | Business rules sit inside route handlers and large screens, where a unit test cannot reach them. | Phase 2: architecture and code quality |
+| B-017 | P2 | REQUIRES BUSINESS DECISION | Database | A third of the schema is design that was never built (see X-009). | Data integrity phase (after X-009) |
+| C-009 | P2 | REQUIRES BUSINESS DECISION | Access control | The core order-to-cash and shop records are held; the rest are not. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| C-013 | P2 | REQUIRES BUSINESS DECISION | Operations cockpit | Any text shaped like a recommendation moves jobs. | Manufacturing and processing |
+| D-020 | P2 | REQUIRES BUSINESS DECISION |  | 155 of 352 distinct API calls written in the screens have no server route (`qa/api-contract.md`). Largest groups: work centers, jobs, QA/QC, pricing, BOMs, provenance. | By subject (see the finding) |
+| D-024 | P2 | REQUIRES BUSINESS DECISION |  | Stock is held in two unconnected sets of tables: the coil and inventory records used by orders and shipping, and a separate unit-tracking set under `/api/v1/inventory`. Five screen services still return made-up data (`br | By subject (see the finding) |
 | D-033 | P2 | REQUIRES BUSINESS DECISION |  | The app does not charge cards. A card sale is recorded with the approval code from a separate card terminal. | By subject (see the finding) |
-| D-034 | P2 | DEFERRED TO SPECIFIC PHASE |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
-| D-036 | P2 | DEFERRED TO SPECIFIC PHASE |  | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | By subject (see the finding) |
+| D-034 | P2 | REQUIRES BUSINESS DECISION |  | Receipts, quotes and invoices are not emailed or texted. The buttons say so. | By subject (see the finding) |
+| D-036 | P2 | REQUIRES BUSINESS DECISION |  | Sales Dashboard fixed in Phase 2 Workstream 2 (S-012): it now counts from the database. The Order Hub RFQ pages remain a separate console, not in the menu. | By subject (see the finding) |
 | E-017 | P2 | REQUIRES BUSINESS DECISION | Platform | No error tracking or alerting service; logs only | Phase 2: architecture and code quality |
-| E-019 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Some tables carry a tenant id; whether every query honours it has not been audited | Phase 2: architecture and code quality |
-| E-021 | P2 | DEFERRED TO SPECIFIC PHASE | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
+| E-019 | P2 | REQUIRES BUSINESS DECISION | Database | Some tables carry a tenant id; whether every query honours it has not been audited | Phase 2: architecture and code quality |
+| E-021 | P2 | REQUIRES BUSINESS DECISION | API | List routes answer in two shapes: a bare list, or `{ data, meta }` | Phase 2: architecture and code quality |
 | F-008 | P2 | REQUIRES BUSINESS DECISION | Web store checkout | The store shows the buyer an estimate of tax by the ship-to state. On acceptance the order is taxed by the selling branch (rule 27). The two can differ | Shipping and financial operations |
-| G-003 | P2 | DEFERRED TO SPECIFIC PHASE | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-011 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-003 | P2 | REQUIRES BUSINESS DECISION | Database | Most of the 217 are in the 93 tables that hold no rows and belong to modules that are designed but not built (X-009, B-017). | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-011 | P2 | FIXED — NOT VERIFIED | Platform | History can be rewritten by any code with database access. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
 | G-015 | P2 | BLOCKED | Platform | Unknown. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| H-012 | P2 | DEFERRED TO SPECIFIC PHASE | Platform | With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
-| H-014 | P2 | DEFERRED TO SPECIFIC PHASE | Partner API | They answered 500. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| H-012 | P2 | REQUIRES BUSINESS DECISION | Platform | With N instances a limit is up to N times its number, and the report shows the calls of the instance that answered. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
+| H-014 | P2 | REQUIRES BUSINESS DECISION | Partner API | They answered 500. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
 | H-015 | P2 | REQUIRES BUSINESS DECISION | Platform | Not connected. Since Phase 4 the integration report lists each one with its state and what happens without it. | Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication |
-| I-017 | P2 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
+| I-017 | P2 | REQUIRES BUSINESS DECISION | Receiving | A heat must be on file before stock is received against it, and heats are added one at a time | Inventory and purchasing |
 | J-008 | P2 | REQUIRES BUSINESS DECISION | Customers | Six settings look active and do nothing. | Phase 5: customer lifecycle, sales operations, CRM, quoting, order intake, POS, ecommerce and customer portal |
 | K-006 | P2 | REQUIRES BUSINESS DECISION | Steel Outlet remnants | A separate list. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-008 | P2 | REQUIRES BUSINESS DECISION | Cycle counts | Single-item correction only. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-010 | P2 | REQUIRES BUSINESS DECISION | Replenishment | Nothing. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-011 | P2 | REQUIRES BUSINESS DECISION | Purchasing | Exact, held. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| K-012 | P2 | DEFERRED TO SPECIFIC PHASE | Purchasing | Not recorded. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| L-023 | P2 | DEFERRED TO SPECIFIC PHASE | Quality control | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-025 | P2 | DEFERRED TO SPECIFIC PHASE | Scheduling | A queue order with times where estimates exist, clearly labelled. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| K-012 | P2 | REQUIRES BUSINESS DECISION | Purchasing | Not recorded. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
+| L-023 | P2 | REQUIRES BUSINESS DECISION | Quality control | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-025 | P2 | REQUIRES BUSINESS DECISION | Scheduling | A queue order with times where estimates exist, clearly labelled. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | L-028 | P2 | IN PROGRESS | Quality control | A fixed list of unknown origin. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-017 | P2 | REQUIRES BUSINESS DECISION | Jobs | The job rules allow some backward moves (for example in process back to ordered); `/start` and `/complete` keep their own checks; the print hook runs on some status routes and not others | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
 | M-018 | P2 | IN PROGRESS | Help manual | The pages for time tracking and the order board described features that do not exist (clock in and out, timesheet approval, an order panel) | Manufacturing and processing |
 | N-025 | P2 | REQUIRES BUSINESS DECISION | Accounting | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
-| N-026 | P2 | DEFERRED TO SPECIFIC PHASE | Freight and carriers | None is. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
+| N-026 | P2 | REQUIRES BUSINESS DECISION | Freight and carriers | None is. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
 | S-009 | P2 | REQUIRES BUSINESS DECISION | Remnants | Remnant discount is fixed in code at 15% and 25% on two screens | Sales and customer operations |
 | S-020 | P2 | REQUIRES BUSINESS DECISION | Customers | "Default Discount %" on the customer screen is applied nowhere | Sales and customer operations |
 | S-024 | P2 | IN PROGRESS | Help manual | Pricing, Sales Dashboard, Sales Rep Mobile and customer pages described tabs, contracts, signatures, visit logs and offline use that do not exist | Sales and customer operations |
 | S-027 | P2 | REQUIRES BUSINESS DECISION | Quotes | Quote lines are priced by hand; the screen offers no customer price because RFQ lines are free text, not products | Sales and customer operations |
-| V-027 | P2 | DEFERRED TO SPECIFIC PHASE | Order board, production board, schedule | Grows with the data. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-028 | P2 | DEFERRED TO SPECIFIC PHASE | Dispatch API | Readable across branches by asking. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-037 | P2 | DEFERRED TO SPECIFIC PHASE | Dashboards | Verified for the home dashboard's recent orders, the quality station counts, what customers owe by age and the time report. Not for the five dashboards named. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-027 | P2 | REQUIRES BUSINESS DECISION | Order board, production board, schedule | Grows with the data. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | W-002 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; stock transfers | Whether the branches are one legal entity or several is not on record. A transfer between branches of different owning organisations is held at both ends and not posted. | Phase 9.5: financial ledger and accounting foundation |
-| W-005 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger; cutover | The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business  | Phase 9.5: financial ledger and accounting foundation |
+| W-005 | P2 | BLOCKED | Financial ledger; cutover | The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business  | Phase 9.5: financial ledger and accounting foundation |
 | W-006 | P2 | REQUIRES BUSINESS DECISION | Receiving; financial ledger | Stock can be received with no purchase order (the plain receive address and the upload). Such a receipt has no cost and no supplier, so no approved rule says what it is owed to. It is held, not posted. | Phase 9.5: financial ledger and accounting foundation |
 | W-007 | P2 | REQUIRES BUSINESS DECISION | Counter stock; receiving | Stock sold by the piece at the counter has no receiving screen. Its receipt reaches the books only through the completeness check ("record what is missing"), posted by the CFO naming the other account. | Phase 9.5: financial ledger and accounting foundation |
 | W-009 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; purchasing | A receipt credits Accounts Payable Clearing (goods received, not invoiced). Supplier invoices are not in the product, so nothing ever debits that account. | Phase 9.5: financial ledger and accounting foundation |
 | W-010 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; sales orders | An order line carries one price. Nothing marks processing (cutting) apart from material, so all line revenue posts to Product Sales Revenue and nothing posts to Processing Revenue. | Phase 9.5: financial ledger and accounting foundation |
 | W-011 | P2 | REQUIRES BUSINESS DECISION | Financial ledger; export | The export produces one file layout whichever accounting product is chosen. No layout specific to QuickBooks or Xero was built, and no import into either was tested: no test company or current import specification was av | Phase 9.5: financial ledger and accounting foundation |
 | W-012 | P2 | REQUIRES BUSINESS DECISION | Counter quick sale; financial ledger | A counter sale of an item that has no stock record posts its revenue and no cost of goods, because there is no stock movement to cost. | Phase 9.5: financial ledger and accounting foundation |
-| W-023 | P2 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
-| X-008 | P2 | DEFERRED TO SPECIFIC PHASE | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
-| X-010 | P2 | DEFERRED TO SPECIFIC PHASE | Help manual | Only the pages rewritten in Workstreams 2 to 5 were checked against their screens. The pages for sample modules (safety, maintenance, training and others) still describe them as working | Enterprise experience |
+| W-023 | P2 | BLOCKED | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
+| X-008 | P2 | REQUIRES BUSINESS DECISION | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | Y-009 | P2 | FIXED — NOT VERIFIED | Database | The application's connection could create and drop tables and functions in the public schema. | Phase 10: security, financial integrity, reliability and recovery |
 | Z-006 | P2 | REQUIRES BUSINESS DECISION | Shipping and invoicing | Invoices are written one at a time for the whole company, because invoice numbers must never be skipped or repeated (owner decision of 2026-11-13). Measured on a 4-processor machine that also ran the database and the loa | Phase 11: 80-location enterprise stress simulation |
-| B-013 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
-| B-022 | P3 | DEFERRED TO SPECIFIC PHASE | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
-| B-024 | P3 | DEFERRED TO SPECIFIC PHASE | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
-| D-023 | P3 | DEFERRED TO SPECIFIC PHASE |  | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | By subject (see the finding) |
-| D-027 | P3 | DEFERRED TO SPECIFIC PHASE |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
+| AA-010 | P3 | REQUIRES BUSINESS DECISION | Access control | By the department rules sales staff may dispatch a shipment and may start or complete a work order (shipments: warehouse and sales; jobs and work orders: production, sales, warehouse and quality). The rules are applied a | Phase 12: production certification |
+| B-013 | P3 | REQUIRES BUSINESS DECISION | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
+| B-022 | P3 | REQUIRES BUSINESS DECISION | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
+| B-024 | P3 | REQUIRES BUSINESS DECISION | Code base | The 39 effect warnings are the ones that can be defects: an effect that reads a value it does not list can show stale data. They have not been read one by one. | Phase 2: architecture and code quality |
+| D-023 | P3 | REQUIRES BUSINESS DECISION |  | The demo seed data contains 49 inconsistent orders (shipped quantities with no shipment, fully shipped orders still marked confirmed). | By subject (see the finding) |
+| D-027 | P3 | REQUIRES BUSINESS DECISION |  | The request rate limit counts per server instance, so on the hosted site the real limit is higher than configured. | By subject (see the finding) |
 | D-035 | P3 | REQUIRES BUSINESS DECISION |  | Sales tax is charged only for states that have a rate set. A sale at a branch in a state with no rate charges no tax and says so on the screen. A login with no home branch also charges no tax. A new screen, Admin > Sales | By subject (see the finding) |
-| E-018 | P3 | DEFERRED TO SPECIFIC PHASE | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
-| G-013 | P3 | DEFERRED TO SPECIFIC PHASE | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-018 | P3 | DEFERRED TO SPECIFIC PHASE | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
-| G-020 | P3 | DEFERRED TO SPECIFIC PHASE | Orders | Status is protected; other fields are last write wins. | Phase 9: user experience, visual design and accessibility |
+| E-018 | P3 | REQUIRES BUSINESS DECISION | Code | Five server route files of 870 to 1,390 lines; five screen files over 1,000 lines | Phase 2: architecture and code quality |
+| G-013 | P3 | REQUIRES BUSINESS DECISION | Stock items, stock search, heat trace | Both grow in step with the whole company's data. Both are far inside the half-second target today. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-018 | P3 | REQUIRES BUSINESS DECISION | Database | The column is optional, so that existing rows and all-branch logins keep working. | Phase 3: database integrity, transactional correctness, performance and 80-location scalability |
+| G-020 | P3 | REQUIRES BUSINESS DECISION | Orders | Status is protected; other fields are last write wins. | Phase 9: user experience, visual design and accessibility |
 | J-012 | P3 | REQUIRES BUSINESS DECISION | Retail POS | Free text, linked to no stock item (code read), so the sale has no stock record to reduce. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-009 | P3 | REQUIRES BUSINESS DECISION | Warehouse locations | Free text. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
 | K-013 | P3 | BLOCKED | Scanning | Lookup by typed or pasted number verified; hardware not tested. | Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer |
-| L-027 | P3 | DEFERRED TO SPECIFIC PHASE | Manufacturing | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-029 | P3 | DEFERRED TO SPECIFIC PHASE | Jobs | 0 by convention. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| L-030 | P3 | DEFERRED TO SPECIFIC PHASE | Equipment | None is made. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
-| N-028 | P3 | DEFERRED TO SPECIFIC PHASE | Customer communication | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
-| U-004 | P3 | DEFERRED TO SPECIFIC PHASE | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
+| L-027 | P3 | REQUIRES BUSINESS DECISION | Manufacturing | Not built. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-029 | P3 | REQUIRES BUSINESS DECISION | Jobs | 0 by convention. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| L-030 | P3 | REQUIRES BUSINESS DECISION | Equipment | None is made. | Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence |
+| N-028 | P3 | REQUIRES BUSINESS DECISION | Customer communication | Not built. | Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout |
+| U-004 | P3 | REQUIRES BUSINESS DECISION | Several secondary screens | Call server routes that do not exist (D-020) | Phase 9: user experience |
 | U-008 | P3 | ACCEPTED RISK WITH APPROVAL | Sales Rep Mobile, delivery preview | A date nobody computed | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | U-012 | P3 | REQUIRES BUSINESS DECISION | Customers > Preferences | "Default Discount %" is offered and applied nowhere | Phase 9: user experience |
-| U-019 | P3 | DEFERRED TO SPECIFIC PHASE | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
-| U-022 | P3 | DEFERRED TO SPECIFIC PHASE | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
-| U-029 | P3 | DEFERRED TO SPECIFIC PHASE | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
-| U-035 | P3 | DEFERRED TO SPECIFIC PHASE | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
-| U-037 | P3 | DEFERRED TO SPECIFIC PHASE | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
-| U-040 | P3 | DEFERRED TO SPECIFIC PHASE | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
+| U-019 | P3 | REQUIRES BUSINESS DECISION | Supplier quality, six screens | Invented data presented as real | Phase 9: user experience |
+| U-022 | P3 | REQUIRES BUSINESS DECISION | Receiving | A heat must be added before its stock, one at a time | Phase 9: user experience |
+| U-029 | P3 | REQUIRES BUSINESS DECISION | Production quality, BOMs | Invented data presented as real | Phase 9: user experience |
+| U-035 | P3 | REQUIRES BUSINESS DECISION | Freight and logistics | Invented routes, rates and tracking presented as real | Phase 9: user experience |
+| U-037 | P3 | REQUIRES BUSINESS DECISION | Safety, maintenance, training, contractors, customer quality, executive, provenance | Invented data presented as real | Phase 9: user experience |
+| U-040 | P3 | REQUIRES BUSINESS DECISION | Menu | Lists 58 sample screens beside the real ones | Phase 9: user experience |
 | U-041 | P3 | ACCEPTED RISK WITH APPROVAL | Checkout, order entry | Promise dates and branch suggestions from invented rules | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-011 | P3 | DEFERRED TO SPECIFIC PHASE | Sample screens mostly | 17. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-018 | P3 | DEFERRED TO SPECIFIC PHASE | Other long forms | Order entry only. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-029 | P3 | DEFERRED TO SPECIFIC PHASE | Dialogs | Focus on the dialog. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-011 | P3 | REQUIRES BUSINESS DECISION | Sample screens mostly | 17. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-018 | P3 | REQUIRES BUSINESS DECISION | Other long forms | Order entry only. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-029 | P3 | REQUIRES BUSINESS DECISION | Dialogs | Focus on the dialog. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-030 | P3 | REQUIRES BUSINESS DECISION | Orders | Dead buttons on real screens. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | V-031 | P3 | ACCEPTED RISK WITH APPROVAL | Application shell | A fixed list. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-035 | P3 | DEFERRED TO SPECIFIC PHASE | Design system | A third of the files carry their own. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
-| V-036 | P3 | DEFERRED TO SPECIFIC PHASE | Tables and dialogs | Tables are built by hand per screen, so sorting, paging, an empty state and keyboard row opening exist on some and not on others. Phase 9 made the behaviours that matter for access the same everywhere (names, headings, k | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-035 | P3 | REQUIRES BUSINESS DECISION | Design system | A third of the files carry their own. | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
+| V-036 | P3 | REQUIRES BUSINESS DECISION | Tables and dialogs | Tables are built by hand per screen, so sorting, paging, an empty state and keyboard row opening exist on some and not on others. Phase 9 made the behaviours that matter for access the same everywhere (names, headings, k | Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification |
 | W-003 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | The books keep days. Which day an event falls on depends on the time zone chosen at activation. It is recorded then and there is no way to change it afterwards. | Phase 9.5: financial ledger and accounting foundation |
 | W-004 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | Journal entry numbers come from a database sequence. They are unique and increasing, and a number is skipped wherever a save was rolled back. | Phase 9.5: financial ledger and accounting foundation |
-| W-015 | P3 | DEFERRED TO SPECIFIC PHASE | Financial ledger | The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever. | Phase 9.5: financial ledger and accounting foundation |
+| W-015 | P3 | REQUIRES BUSINESS DECISION | Financial ledger | The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever. | Phase 9.5: financial ledger and accounting foundation |
 | Z-010 | P3 | REQUIRES BUSINESS DECISION | Platform | The general ceiling on requests per address still counts per server copy. Counting it in the database would add a write to every request of every user. | Phase 11: 80-location enterprise stress simulation |
-| Z-012 | P3 | DEFERRED TO SPECIFIC PHASE | Shipping and invoicing | When the answer to a dispatch is lost because its server copy died after saving the dispatch and before billing, sending the dispatch again answers "already IN_TRANSIT" (409). The truck left once and nothing is wrong in  | Phase 11: 80-location enterprise stress simulation |
-| Z-014 | P3 | DEFERRED TO SPECIFIC PHASE | Platform | A request key claimed by a server copy that then died blocks the repeat of that request for 60 seconds ("still being processed"), after which the repeat takes the claim over and runs. | Phase 11: 80-location enterprise stress simulation |
+| Z-012 | P3 | REQUIRES BUSINESS DECISION | Shipping and invoicing | When the answer to a dispatch is lost because its server copy died after saving the dispatch and before billing, sending the dispatch again answers "already IN_TRANSIT" (409). The truck left once and nothing is wrong in  | Phase 11: 80-location enterprise stress simulation |
+| Z-014 | P3 | REQUIRES BUSINESS DECISION | Platform | A request key claimed by a server copy that then died blocks the repeat of that request for 60 seconds ("still being processed"), after which the repeat takes the claim over and runs. | Phase 11: 80-location enterprise stress simulation |
 
 ## Every finding in full
 
@@ -282,8 +281,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Read these four through lib/fieldRules.js.
 - **Required tests:** Sweep: an unlisted field in the body is not saved.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Phase 2: work centers (create and change), equipment (change) and maintenance orders (change) read a field list (lib/fieldRules.js). Creating a work center used to fail every time because it named two columns that do not exist; it works now (C-004). The executive decision route was not mass assignment (its service picks the fields); only who made the decision was wrong, and that now comes from the signed-in user.
-- **Verification evidence:** qa/sim/phase2-integrity.mjs: 9 checks on work centers, equipment and maintenance orders. The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line.
+- **Status note:** Phase 2: work centers (create and change), equipment (change) and maintenance orders (change) read a field list (lib/fieldRules.js). Creating a work center used to fail every time because it named two columns that do not exist; it works now (C-004). The executive decision route was not mass assignment (its service picks the fields); only who made the decision was wrong, and that now comes from the signed-in user. Phase 12: the executive decision line is now tested: a decision is recorded under the signed-in person and role whatever the request claims, and a sales representative is refused.
+- **Verification evidence:** qa/sim/phase2-integrity.mjs: 9 checks on work centers, equipment and maintenance orders. The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line. qa/sim/phase12-certification.mjs "Gap B-007".
 - **First recorded in:** Phase 1 discovery
 
 ### B-008 · P2 · VERIFIED FIXED
@@ -366,7 +365,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "steps run in their planned order", "a step that was never started cannot be finished", "finishing the last step sends the job to inspection once; finishing it again changes nothing"; qa/sim/phase2-integrity.mjs; src/backend/test/phase7Rules.test.js.
 - **First recorded in:** Phase 1 discovery
 
-### B-012 · P2 · DEFERRED TO SPECIFIC PHASE
+### B-012 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Lists across the server
@@ -387,10 +386,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The existing "bounded lists" sweep check extended to these routes.
 - **Required tests:** The existing "bounded lists" sweep check extended to these routes.
 - **Assigned phase:** Performance phase
-- **Status note:** Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase. Phase 4: orders and stock now honour limit and offset and report their total (H-010). The other unbounded lists are unchanged.
+- **Status note:** Phase 3 measured the branch list screens on the 85-branch copy: every one answered in under 160 ms at the 95th percentile for a branch login and under 270 ms for an all-branch login (qa/results/phase3-branch-bench-before.json). The unlimited lists were not changed in this phase. Phase 4: orders and stock now honour limit and offset and report their total (H-010). The other unbounded lists are unchanged. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
-### B-013 · P3 · DEFERRED TO SPECIFIC PHASE
+### B-013 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -411,10 +410,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/discover.mjs; build, lint and the 125-screen check after each removal.
 - **Required tests:** Build, lint and the 125-screen check after removal.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Reviewed in Phase 2. Not deleted.
+- **Status note:** Reviewed in Phase 2. Not deleted. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
-### B-014 · P2 · DEFERRED TO SPECIFIC PHASE
+### B-014 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -435,7 +434,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Unit tests per rule; the simulation and sweep unchanged.
 - **Required tests:** Unit tests for each rule moved; the browser suites before and after.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it.
+- **Status note:** Phase 2 moved three rules into testable units: the branch boundary (lib/branchScope.js), who may change a login (lib/userAdminRules.js) and the department table (lib/roleAccess.js). phase-02-business-rule-ownership.md lists every critical rule, its owner file and whether a unit test reaches it. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
 ### B-015 · P2 · VERIFIED FIXED
@@ -458,7 +457,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/ui-audit.cjs final run: 0 and 0; qa/tools/ui-audit-gate.cjs holds them; qa/tools/frontend-checks.mjs fails on a new unnamed icon button or a browser box (each proved by adding one); qa/sim/phase9-ui.cjs: "deactivating a user asks in the application's own box, and Cancel changes nothing".
 - **First recorded in:** Phase 1 discovery
 
-### B-016 · P1 · DEFERRED TO SPECIFIC PHASE
+### B-016 · P1 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Testing
@@ -479,10 +478,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The measured number rises each phase; it is recorded in progress.json.
 - **Required tests:** The measured number rises each phase; it is recorded in progress.json.
 - **Assigned phase:** Testing phase; each phase for its own area
-- **Status note:** Phase 4: success-path tests now exist for the partner API (customer, carrier, supplier, webhooks, sign-in, administration), the integration report and replay, the scheduled address, and request keys on shipments, payments, receipts, transfers, credits, work order completion, purchase orders, quotes and counter sales. The count of changing routes with a success-path test is in progress.json.
+- **Status note:** Phase 4: success-path tests now exist for the partner API (customer, carrier, supplier, webhooks, sign-in, administration), the integration report and replay, the scheduled address, and request keys on shipments, payments, receipts, transfers, credits, work order completion, purchase orders, quotes and counter sales. The count of changing routes with a success-path test is in progress.json. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
-### B-017 · P2 · DEFERRED TO SPECIFIC PHASE
+### B-017 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -502,7 +501,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The inventory shows no table without code.
 - **Required tests:** The inventory shows no table without code.
 - **Assigned phase:** Data integrity phase (after X-009)
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 1 discovery
 
 ### B-018 · P2 · VERIFIED FIXED
@@ -584,11 +583,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Required tests:** Sweep: /uploads/… answers 401 or 404 with no token.
 - **Assigned phase:** Security and multi-location phase
-- **Status note:** NOT VERIFIED by a probe Phase 10 (Y-005): the static /uploads route is removed; files are read through the signed-in download only.
-- **Verification evidence:** qa/sim/phase10-security.mjs "An uploaded file cannot be fetched by its address, only through the signed-in download".
+- **Status note:** NOT VERIFIED by a probe Phase 10 (Y-005): the static /uploads route is removed; files are read through the signed-in download only. Phase 12: tested again: an uploaded file is not served by its address; it is read only through the signed-in download; a customer login of another account is refused.
+- **Verification evidence:** qa/sim/phase10-security.mjs "An uploaded file cannot be fetched by its address, only through the signed-in download". qa/sim/phase12-certification.mjs "Security 9".
 - **First recorded in:** Phase 1 discovery
 
-### B-022 · P3 · DEFERRED TO SPECIFIC PHASE
+### B-022 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Demo and QA data
@@ -609,6 +608,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** db-facts checks return 0 with no demo exclusion.
 - **Required tests:** db-facts checks return 0 with no demo exclusion.
 - **Assigned phase:** Data integrity phase
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
 ### B-023 · P3 · VERIFIED FIXED
@@ -629,7 +629,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** npm run lint at the root: 201 errors before, 0 after (1,524 warnings remain, B-024).
 - **First recorded in:** Phase 1 discovery
 
-### B-024 · P3 · DEFERRED TO SPECIFIC PHASE
+### B-024 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Code base
@@ -650,7 +650,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The ratchet.
 - **Required tests:** Root lint with a ceiling that can only go down.
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant. Phase 9: 38 remain, held by the ceiling in qa/tools/frontend-checks.mjs. None was added by the Phase 9 changes. They were read one by one in Phase 2 and the one defect among them was fixed then.
+- **Status note:** Phase 2 read all 39. One was a defect and is fixed: on the order entry screen the override confirmation could submit through an older copy of the submit handler (C-008). 28 are the same harmless shape (load once when the screen opens). 10 are in the session counter flow, the map and the voice assistant. Phase 9: 38 remain, held by the ceiling in qa/tools/frontend-checks.mjs. None was added by the Phase 9 changes. They were read one by one in Phase 2 and the one defect among them was fixed then. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 1 discovery
 
 ### B-025 · P2 · VERIFIED FIXED
@@ -782,8 +782,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** An Idempotency-Key header on order creation, stored with a unique rule per user, answering a repeat with the first reply.
 - **Required tests:** The same key twice, in sequence and at once: one order, the same answer.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered. Phase 4: the request-key middleware is now exercised on shipments (create, dispatch, deliver), payments, receipts, transfers, credits, work order completion, purchase orders, quote acceptance and counter sales, and by partners; two defects in it were found and fixed (H-003, H-004). A browser test asserts that the screens send the key and reuse it on a retry.
-- **Verification evidence:** qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes).
+- **Status note:** Phase 3: a RequestKey table with a unique rule on (user and route, key); middleware on every changing route that honours an Idempotency-Key header; the screens send a key for every request that creates a document (src/frontend/src/api/requestKey.js). A repeat gets the first answer back; the same key with a different body is refused (422); a refused request is not remembered. Phase 4: the request-key middleware is now exercised on shipments (create, dispatch, deliver), payments, receipts, transfers, credits, work order completion, purchase orders, quote acceptance and counter sales, and by partners; two defects in it were found and fixed (H-003, H-004). A browser test asserts that the screens send the key and reuse it on a retry. Phase 12: the web checkout was run with a request key (the same order sent twice saves one order). Order intake uses the same middleware and was not run separately: NOT VERIFIED for that one route.
+- **Verification evidence:** qa/sim/phase3-db.mjs: the same order sent three times at once with one key saves one order and the retry is marked as a replay; different body 422; another user's same key is separate; a stale claim is taken over after a minute. test/requestKeys.test.js (3 tests). Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes). qa/sim/phase12-certification.mjs "Flow 6".
 - **First recorded in:** Phase 2 architecture review
 
 ### C-007 · P2 · VERIFIED FIXED
@@ -822,7 +822,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/tools/frontend-checks.mjs: 38, down from 39; the ceiling in the gates is 38. The order entry browser checks pass.
 - **First recorded in:** Phase 2 architecture review
 
-### C-009 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-009 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Access control
@@ -844,7 +844,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/sim/branch-boundary.mjs extended to each record type.
 - **Required tests:** One read and one change refused per added model.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018). Phase 10: documents now follow the branch of the record they belong to (Y-016).
+- **Status note:** Phase 3: quotes, requests for quotation and their lines now carry a branch and are held to it (G-012, verified). Drop tags are held through their order and packages through their order or the branch they stand at (unit-tested in test/branchScope.test.js; not exercised through the API: FIXED, NOT VERIFIED end to end). Documents are shared by design: a mill certificate follows the material from branch to branch. What remains: the second stock list and order hub (B-009), a home branch on every live staff login, and making Order.locationId required (G-018). Phase 10: documents now follow the branch of the record they belong to (Y-016). Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 2 architecture review
 
 ### C-010 · P2 · VERIFIED FIXED
@@ -906,7 +906,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase5-sales.mjs: "order entry sells from the person's own branch: taxed, filed and sold by that branch" (seller equals the branch owner).
 - **First recorded in:** Phase 2 architecture review
 
-### C-013 · P2 · DEFERRED TO SPECIFIC PHASE
+### C-013 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Operations cockpit
@@ -928,6 +928,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Checks in qa/sim/phase2-integrity.mjs.
 - **Required tests:** Accept twice; accept an id that does not exist; a forced failure.
 - **Assigned phase:** Manufacturing and processing
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 2 architecture review
 
 ### D-001 · P0 · VERIFIED FIXED
@@ -1086,7 +1087,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep: "Documents: upload, list, download, delete" (11 checks, including no download without signing in or as a customer).
 - **First recorded in:** qa/defect-register.md
 
-### D-011b · P1 · VERIFIED FIXED
+### D-011b · P1 · FIXED — NOT VERIFIED
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1095,8 +1096,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Root cause or suspected cause:** The host's disk is read-only.
 - **Recommended correction:** Where there is no disk, the file is stored in the database (limit 4 MB there, 25 MB on a server with a disk). Nothing to set up. `routes/documents.js`
 - **Assigned phase:** Done before the program
-- **Status note:** Fixed in the first audit
-- **Verification evidence:** Upload, download (byte-for-byte) and delete run by hand against a server started in hosted mode on the QA database. The 4 MB limit itself was not exercised. Not yet run on the hosted site.
+- **Status note:** Fixed in the first audit Phase 12: on a self-hosted server a file over the limit is refused with 413 and a stored file downloads byte for byte (tested). On the hosted site, with its 4 MB limit and its own file store, neither was exercised: NOT VERIFIED there. On the deployment checklist as a first-day check.
+- **Verification evidence:** Upload, download (byte-for-byte) and delete run by hand against a server started in hosted mode on the QA database. The 4 MB limit itself was not exercised. Not yet run on the hosted site. qa/sim/phase12-certification.mjs "Gap: a document over the upload size limit".
 - **First recorded in:** qa/defect-register.md
 
 ### D-012 · P2 · VERIFIED FIXED
@@ -1203,7 +1204,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Unit `quoteRules.test.js`. Sim quote-to-order job in every cycle, including a quote accepted twice at once making one order.
 - **First recorded in:** qa/defect-register.md
 
-### D-020 · P2 · DEFERRED TO SPECIFIC PHASE
+### D-020 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1215,7 +1216,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: engineering work
+- **Status note:** Open: engineering work Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/defect-register.md
 
 ### D-021 · P3 · VERIFIED FIXED
@@ -1244,7 +1245,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Unit: paging test. Sweep: bad-paging variant on every read route.
 - **First recorded in:** qa/defect-register.md
 
-### D-023 · P3 · DEFERRED TO SPECIFIC PHASE
+### D-023 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1256,10 +1257,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: engineering work
+- **Status note:** Open: engineering work Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/defect-register.md
 
-### D-024 · P2 · DEFERRED TO SPECIFIC PHASE
+### D-024 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1271,7 +1272,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: engineering work
+- **Status note:** Open: engineering work Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/defect-register.md
 
 ### D-025 · P2 · VERIFIED FIXED
@@ -1299,7 +1300,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Sweep.
 - **First recorded in:** qa/defect-register.md
 
-### D-027 · P3 · DEFERRED TO SPECIFIC PHASE
+### D-027 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1311,7 +1312,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: engineering work
+- **Status note:** Open: engineering work Phase 12: the sign-in and partner limits are one limit for all server copies (E-014, Z-007, after database update 18). The general ceiling per address still counts per copy by design; whether that is acceptable is Z-010, the owner's decision.
 - **First recorded in:** qa/defect-register.md
 
 ### D-028 · P2 · VERIFIED FIXED
@@ -1390,7 +1391,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs something from the business
 - **First recorded in:** qa/defect-register.md
 
-### D-034 · P2 · DEFERRED TO SPECIFIC PHASE
+### D-034 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Missing function
@@ -1403,7 +1404,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase.
+- **Status note:** Owner's decision 5, 2026-11-13: Email and text are deferred by the owner. The scheduled trigger (a timer on the host that lets the system act without a person, for example to retry a failed partner message) was not decided and will be asked again, in plain terms, in the integration phase. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/defect-register.md
 
 ### D-035 · P3 · REQUIRES BUSINESS DECISION
@@ -1417,7 +1418,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs something from the business
 - **First recorded in:** qa/defect-register.md
 
-### D-036 · P2 · DEFERRED TO SPECIFIC PHASE
+### D-036 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-12
 - **Category:** Defect
@@ -1429,7 +1430,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The behaviour under "Expected".
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** By subject (see the finding)
-- **Status note:** Open: engineering work
+- **Status note:** Open: engineering work Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/defect-register.md
 
 ### E-001 · P1 · VERIFIED FIXED
@@ -1569,7 +1570,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Fixed, awaiting verification
 - **Required tests:** Server started against an empty non-local test database loads no demo data. Verified by reading the code only; no automated test
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed
+- **Status note:** Fixed Phase 12: confirmed by reading the code: demo companies are loaded only with SEED_ON_START=true. The deployment checklist says to confirm the setting is absent on the host. No automated test starts a server against an empty non-local database, by rule.
 - **Verification evidence:** Now only with `SEED_ON_START=true`. Does not affect the current hosted site, which does not use this file
 - **First recorded in:** qa/engineering-quality-findings.md
 
@@ -1587,8 +1588,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Fixed, awaiting verification
 - **Required tests:** A forced error makes the process exit with code 1 and close its pool. Not exercised
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed
-- **Verification evidence:** Code change; not exercised by a test
+- **Status note:** Fixed Phase 12: now exercised by a test: a server asked to stop finishes the requests it has begun, exits by itself with code 0 in under five seconds, closes its database connections and takes no new request.
+- **Verification evidence:** Code change; not exercised by a test qa/tools/phase12-process.mjs (E-010, nine checks).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-011 · P1 · REQUIRES BUSINESS DECISION
@@ -1701,7 +1702,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open: needs a provider choice Phase 4: an Integrations screen and report now show failed and waiting events, outside-service failures, orders shipped but not invoiced, requests never answered and when the scheduled work last ran; failures are written as structured log lines with the request id. Nothing is sent to anyone: there is still no alert and no error tracker. That remains the owner's choice of service. Phase 10: alerts now exist (Y-010) and are sent to ALERT_WEBHOOK_URL when set. Which service receives them (email, chat, paging) is the owner's choice; none is set on the host.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-018 · P3 · DEFERRED TO SPECIFIC PHASE
+### E-018 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Code
@@ -1721,10 +1722,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Simulation, sweep and unit tests unchanged after each split.
 - **Required tests:** Owner agrees large files are split only when they are next changed for another reason
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open. Not refactored for style alone
+- **Status note:** Open. Not refactored for style alone Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-019 · P2 · DEFERRED TO SPECIFIC PHASE
+### E-019 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -1744,7 +1745,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A sweep section with two tenants.
 - **Required tests:** Sweep section proving a login from one tenant cannot read another's rows on every route that carries a tenant id
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited. Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11. Phase 11: 41 isolation scenarios under load pass (branches of four sizes, customer accounts, partners, the assistant, with other branches working at the same moment). A table-by-table audit of every tenant id column is still not made: Phase 12.
+- **Status note:** Open: audit in Workstream 6 Phase 2 added the branch boundary, which is the isolation the business uses (one company, many branches). The tenant id columns were not audited. Phase 10: 31 isolation scenarios (customer accounts, divisions, branches, partners, the assistant) pass. A table-by-table audit of every tenant id column was not made: Phase 11. Phase 11: 41 isolation scenarios under load pass (branches of four sizes, customer accounts, partners, the assistant, with other branches working at the same moment). A table-by-table audit of every tenant id column is still not made: Phase 12. Phase 12: isolation was tested again by behaviour (customer accounts, branches of four kinds, a new branch, partners, documents, the assistant) and holds. The table-by-table audit of every tenant id column is still not made. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Security 4 and 5", "Security 6", "Security 9", "Locations 2", "Locations 6".
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### E-020 · P2 · VERIFIED FIXED
@@ -1765,7 +1767,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Migration `20261113150000_stock_balance_identity`; sweep: the check exists and a balance that does not add up is refused (both fail before the migration). Every write path reviewed: receive, reserve, release, ship, return, hold, release hold
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-021 · P2 · DEFERRED TO SPECIFIC PHASE
+### E-021 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** API
@@ -1785,10 +1787,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Contract tests.
 - **Required tests:** Every list route in the module answers `{ data, meta }` and its screens are updated; contract scan shows no mismatch
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each. Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned. Phase 9: the new search and the Phase 9 scenarios read both list shapes through one reader. The routes still answer in two shapes, pinned by the Phase 4 contract tests.
+- **Status note:** Open: changing a reply shape affects screens, so it is done per workstream. Job list now sends the total in a header phase-02-api-contracts.md records both shapes and which routes use each. Phase 4: the present reply shapes are now pinned by contract tests, so they cannot drift further unnoticed, and paging was added to the bare-array lists through headers without changing a body (H-010). Making every list one shape is still a change to every screen and stays where it was assigned. Phase 9: the new search and the Phase 9 scenarios read both list shapes through one reader. The routes still answer in two shapes, pinned by the Phase 4 contract tests. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### E-023 · P1 · DEFERRED TO SPECIFIC PHASE
+### E-023 · P1 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Operations cockpit
@@ -1808,7 +1810,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The benchmark with a stated environment.
 - **Required tests:** Cockpit answers under 500 ms on the scaled database
 - **Assigned phase:** Phase 2: architecture and code quality
-- **Status note:** Fixed in part
+- **Status note:** Fixed in part Phase 12: measured at the volume of the 80-branch QA data after the enterprise day: the cockpit answers in 61 ms at the median and 70 ms at the slowest of the reads, 76 KB. The earlier target (under 500 ms on the scaled database) is met. How many hot jobs the screen lists is a screen choice, not a defect.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Gap E-023".
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### F-001 · P0 · VERIFIED FIXED
@@ -2043,7 +2046,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs "the database refuses money that does not add up": an invoice pointed at a missing shipment, an invoice line at a missing order line, and the delete of an invoiced shipment are each refused. SQL Editor file run twice on the 85-branch copy (72,240 orders): all 15 keys validated, second run changed nothing. Catalogue count 171 foreign keys before, 188 after (with the two branch keys of G-012).
 - **First recorded in:** Phase 3 database audit
 
-### G-003 · P2 · DEFERRED TO SPECIFIC PHASE
+### G-003 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -2064,6 +2067,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/db-schema.mjs in the gates; the count is recorded in each phase report.
 - **Required tests:** db-schema.mjs count of unconstrained references with a known target falls to 0.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 3 database audit
 
 ### G-004 · P1 · VERIFIED FIXED
@@ -2198,7 +2202,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs: the reservation scenario reads who reserved what; the cancellation scenario reads the confirmation and the cancellation; two status changes at once leave exactly one line.
 - **First recorded in:** Phase 3 database audit
 
-### G-011 · P2 · DEFERRED TO SPECIFIC PHASE
+### G-011 · P2 · FIXED — NOT VERIFIED
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -2220,6 +2224,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A database scenario that tries both.
 - **Required tests:** An update and a delete of an audit row are refused by the database.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
+- **Status note:** Phase 12: on the QA database the application connects as a role that cannot change or delete history, switch off the guards, or change the schema (tested again). On the live database this holds only after the owner applies database update 17 and points the server at that role (Y-008): NOT VERIFIED there.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Security 8", "Ledger 4".
 - **First recorded in:** Phase 3 database audit
 
 ### G-012 · P2 · VERIFIED FIXED
@@ -2241,7 +2247,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs: a quote written at one branch answers 404 to a sales login at another and is absent from its list; the order made from it carries the same branch. test/branchScope.test.js: 2 new tests. SQL Editor file run twice on the scale copy.
 - **First recorded in:** Phase 3 database audit
 
-### G-013 · P3 · DEFERRED TO SPECIFIC PHASE
+### G-013 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Stock items, stock search, heat trace
@@ -2262,7 +2268,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/perf/phase3-plans.sh and qa/perf/branch-bench.mjs on a larger copy.
 - **Required tests:** The same two measurements at one million rows.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 6 measurement on the 85-branch copy (100,233 stock items) after SQL Editor file 12: stock search by part of a number 116 ms median, first page of stock items 48 ms, supply position 271 ms for an all-branch login. No index was added: the instruction forbids one without evidence of need, and all are inside the half-second target.
+- **Status note:** Phase 6 measurement on the 85-branch copy (100,233 stock items) after SQL Editor file 12: stock search by part of a number 116 ms median, first page of stock items 48 ms, supply position 271 ms for an all-branch login. No index was added: the instruction forbids one without evidence of need, and all are inside the half-second target. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 3 database audit
 
 ### G-014 · P3 · VERIFIED FIXED
@@ -2341,7 +2347,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs group 7: twelve invoices raised at once take twelve consecutive numbers; a credit that fails after taking its number, a refused credit and an order with nothing to bill take none; a counter sale sent three times at once is one sale with the next number. db-facts: counter equals the highest number on file, no number repeated. SQL Editor file 20261113220000_document_counters run twice on the 85-branch copy.
 - **First recorded in:** Phase 3 database audit
 
-### G-018 · P3 · DEFERRED TO SPECIFIC PHASE
+### G-018 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Database
@@ -2363,7 +2369,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** db-facts in the gates; the migration run twice on a copy.
 - **Required tests:** db-facts "orders with no branch" is 0; a database scenario for the refusal.
 - **Assigned phase:** Phase 3: database integrity, transactional correctness, performance and 80-location scalability
-- **Status note:** Phase 5: quotes, accepted quotes, web orders, order intake and counter sales now set the order's branch (J-001, J-005, S-008). The column stays optional for all-branch logins with no home branch; orders with no branch after the final gate run: 59 after the simulation and 62 after all scenarios (63 at the end of Phase 4); the rest are seed orders and orders entered by all-branch logins with no home branch.
+- **Status note:** Phase 5: quotes, accepted quotes, web orders, order intake and counter sales now set the order's branch (J-001, J-005, S-008). The column stays optional for all-branch logins with no home branch; orders with no branch after the final gate run: 59 after the simulation and 62 after all scenarios (63 at the end of Phase 4); the rest are seed orders and orders entered by all-branch logins with no home branch. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 3 database audit
 
 ### G-019 · P1 · VERIFIED FIXED
@@ -2386,7 +2392,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs "a shipment with nothing reserved, or less reserved than it carries, is refused and changes nothing": nothing reserved is refused; half a pound short is refused; fully reserved goes, with movements naming the item. db-facts check for dispatched shipment items not covered by stock movements is 0 after the gate run. On the old code the first check fails (dispatch was accepted).
 - **First recorded in:** Phase 3 database audit
 
-### G-020 · P3 · DEFERRED TO SPECIFIC PHASE
+### G-020 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Orders
@@ -2407,7 +2413,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A two-user scenario per record type.
 - **Required tests:** Two edits at once: one 200, one 409.
 - **Assigned phase:** Phase 9: user experience, visual design and accessibility
-- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged. Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5. Phase 9: the screens' order save helper now sends the version it read, and the server refuses a save made from an older one (409). No screen edits an order's header fields today, so no user can meet the fault through the product. The other edit routes (customers, stock items, work orders) are unchanged.
+- **Status note:** Phase 4: PUT /api/orders/:id accepts expectedUpdatedAt and refuses an edit made from an older copy with 409 and the code STALE_EDIT. It is opt-in, so no existing caller breaks. No screen edits an order header today, so no screen sends it; the other edit routes are unchanged. Phase 5: reviewed. No screen edits an order through PUT /api/orders/:id (the call in api/index.js has no user). Orders are edited on the order entry screen through PATCH /api/orders/intake/:id, which does not check the version. The API check from Phase 4 is tested again in Phase 5. Phase 9: the screens' order save helper now sends the version it read, and the server refuses a save made from an older one (409). No screen edits an order's header fields today, so no user can meet the fault through the product. The other edit routes (customers, stock items, work orders) are unchanged. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **Verification evidence:** qa/sim/phase9-ui.cjs: "the order save helper sends the version it read, and the server refuses a save made from an older one".
 - **First recorded in:** Phase 3 database audit
 
@@ -2501,7 +2507,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** One guard for every outside call (lib/outbound.js): time limit, at most five tries and only where the caller marks the call as safe to repeat, a breaker per service, and counters for the integration report. A provider failure is answered 502, 503 or 504 with a sentence written here. The key is no longer logged or returned. The library's own retries are turned off.
 - **Required tests:** Hang, error, wrong key, repeated failure and recovery, each against a stand-in.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** The breaker and its counters are per server instance (H-012). No real provider was called in any test; the real providers' behaviour is NOT VERIFIED.
+- **Status note:** The breaker and its counters are per server instance (H-012). No real provider was called in any test; the real providers' behaviour is NOT VERIFIED. Phase 12: unchanged and stated plainly: the fix is verified against stand-ins for the outside services. No real provider was called in any test; the first real call is a first-day check on the deployment checklist.
 - **Verification evidence:** test/outbound.test.js (8 tests). qa/sim/phase4-integration.mjs, group "Webhooks and external service failures": 11 scenarios, including "the speech provider hangs: the user gets a plain answer at the time limit and stays signed in" and "the server log holds request ids and reasons, and no key, token or signing secret".
 - **First recorded in:** Phase 4 integration audit
 
@@ -2520,7 +2526,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The dispatch answer carries a warning in words; the shipment screen shows it; an audit entry INVOICE_NOT_RAISED and a structured log line are written; the integration report lists every order shipped but not invoiced, newest first, with the count under "Needs action".
 - **Required tests:** Forced billing failure: stock and order move, warning shown, listed, then closed by raising the invoice.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** On the QA database the list also shows 51 seeded demo orders that the seed never billed. How many live orders are in this state is NOT VERIFIED (no access); the report will show it once deployed.
+- **Status note:** On the QA database the list also shows 51 seeded demo orders that the seed never billed. How many live orders are in this state is NOT VERIFIED (no access); the report will show it once deployed. Phase 12: the fix is verified on QA. How many live orders are in this state is unknown until the report is read on the live system: a first-day check on the deployment checklist.
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "shipping succeeds and billing fails: the gap is said, recorded, reported and closed". qa/sim/ui-integration.cjs: "part of a step failed" (3 checks).
 - **First recorded in:** Phase 4 integration audit
 
@@ -2613,7 +2619,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase5-sales.mjs: "an order with no lines may be kept as a draft but cannot go further".
 - **First recorded in:** Phase 4 integration audit
 
-### H-012 · P2 · DEFERRED TO SPECIFIC PHASE
+### H-012 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Platform
@@ -2634,6 +2640,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A test that starts two servers on one database and sends 2N requests.
 - **Required tests:** Two instances behind one address hold one limit.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
+- **Status note:** Phase 12: same as D-027: the limits that protect sign-in and partners are shared; the general ceiling is per copy (Z-010, owner's decision).
 - **First recorded in:** Phase 4 integration audit
 
 ### H-013 · P2 · VERIFIED FIXED
@@ -2654,7 +2661,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase5-sales.mjs: "web checkout takes no payment and says so: every web order is on account, whatever the browser sends" (fails with the old line restored); qa/sim/ui-phase8.cjs (web checkout: 2 checks).
 - **First recorded in:** Phase 4 integration audit
 
-### H-014 · P2 · DEFERRED TO SPECIFIC PHASE
+### H-014 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Partner API
@@ -2674,7 +2681,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenarios in the style of the Phase 4 supplier scenario.
 - **Required tests:** Each answers 501, never 500, and changes nothing.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Phase 6: unchanged. Purchase orders and receipts now exist, so a supplier's shipping notice has something to refer to; the notice itself and the supplier quality records are not built (I-011).
+- **Status note:** Phase 6: unchanged. Purchase orders and receipts now exist, so a supplier's shipping notice has something to refer to; the notice itself and the supplier quality records are not built (I-011). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "services that are not connected say so instead of pretending".
 - **First recorded in:** Phase 4 integration audit
 
@@ -2745,7 +2752,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The reply gains two lists, shipments (shipment, order, customer, item, quantity) and customers. Everything it returned before is unchanged.
 - **Required tests:** A plate cut on a work order, the pieces shipped: the trace names the shipment, the pounds and the customer.
 - **Assigned phase:** Phase 4: API contracts, external integrations, event reliability, error recovery and cross-module communication
-- **Status note:** Shipments dispatched on the live system before reservations became mandatory (owner decision of 2026-11-13) wrote no movement and will not appear. Their number is NOT VERIFIED.
+- **Status note:** Shipments dispatched on the live system before reservations became mandatory (owner decision of 2026-11-13) wrote no movement and will not appear. Their number is NOT VERIFIED. Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist.
 - **Verification evidence:** qa/sim/phase4-integration.mjs: "a work order feeds an order line, and the pieces ship under the same order" (3 trace checks; they fail on the code before).
 - **First recorded in:** Phase 4 integration audit
 
@@ -2919,7 +2926,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** `routes/products.js` audits `LIST_PRICE_CHANGED`; Sweep 17
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-011 · P1 · DEFERRED TO SPECIFIC PHASE
+### I-011 · P1 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality (six screens)
@@ -2938,10 +2945,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The six screens read real data and the notice is removed
 - **Required tests:** The six screens read real data and the notice is removed
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 6: not built. The Phase 6 instruction covers purchasing, receiving and stock; inspection at receipt, nonconformance, corrective actions and supplier scorecards are quality records and stay for the quality phase. What Phase 6 added that they will stand on: suppliers on file (mills and distributors), purchase orders, receipts linked to their lines, and material held at receipt with the reason.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 6: not built. The Phase 6 instruction covers purchasing, receiving and stock; inspection at receipt, nonconformance, corrective actions and supplier scorecards are quality records and stay for the quality phase. What Phase 6 added that they will stand on: suppliers on file (mills and distributors), purchase orders, receipts linked to their lines, and material held at receipt with the reason. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-012 (D-024) · P1 · DEFERRED TO SPECIFIC PHASE
+### I-012 (D-024) · P1 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Inventory
@@ -2958,7 +2965,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** One stock list
 - **Deferred: verification:** A success-path test and a refusal test for the corrected behaviour.
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 6: see B-009. The second list's writes are retired; the RFID unit tables hold no rows and nothing writes them. Removing them is a destructive schema change and was not made (Phase 6 forbids destructive migrations); it stays with X-009 and B-017.
+- **Status note:** Owner's decision 1, 2026-11-13: The stock items list that orders, receiving, shipping and invoices update is the real stock, and sales orders are the real orders. The second stock list and the order hub are to be connected to them or retired, never built on separately. This is the engineer's recommendation, adopted under the owner's instruction to use the best logical choice. Phase 6: see B-009. The second list's writes are retired; the RFID unit tables hold no rows and nothing writes them. Removing them is a destructive schema change and was not made (Phase 6 forbids destructive migrations); it stays with X-009 and B-017. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-013 (E-020) · P2 · VERIFIED FIXED
@@ -3024,7 +3031,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase3-db.mjs group 7: count down, found stock, a count that agrees, refusals for reserved stock, below zero and ten malformed requests, role and branch limits, and a correction racing a reservation and a shipment. test/stockChanges.test.js. db-facts: corrections with no note or person: 0.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### I-017 · P2 · DEFERRED TO SPECIFIC PHASE
+### I-017 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Receiving
@@ -3043,7 +3050,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A heats upload template; sweep check
 - **Required tests:** A heats upload template; sweep check
 - **Assigned phase:** Inventory and purchasing
-- **Status note:** Open Phase 6: unchanged, and confirmed as the rule: a receipt for a heat not on file is refused with "add it under Heats first" (qa/sim/phase6-inventory.mjs, "metal is received only against a heat on file"). Adding several heats at once is a speed improvement for first load and stays deferred.
+- **Status note:** Open Phase 6: unchanged, and confirmed as the rule: a receipt for a heat not on file is refused with "add it under Heats first" (qa/sim/phase6-inventory.mjs, "metal is received only against a heat on file"). Adding several heats at once is a speed improvement for first load and stays deferred. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### I-018 · P1 · VERIFIED FIXED
@@ -3473,7 +3480,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Questions for the owner: what over-receipt is accepted without a hold (for example 5% or 10%), and does a purchase order above some value need approval before it is placed?
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
-### K-012 · P2 · DEFERRED TO SPECIFIC PHASE
+### K-012 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Purchasing
@@ -3491,7 +3498,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** An invoice for more than was received is flagged.
 - **Deferred: verification:** A scenario that receives short and invoices in full.
 - **Assigned phase:** Phase 6: inventory, purchasing, receiving, reservations, replenishment, material traceability, remnants, scrap and interbranch transfer
-- **Status note:** Phase 9.5: a receipt now credits a clearing account for goods received and not invoiced. Supplier invoices are still not in the product, so nothing relieves it (W-009).
+- **Status note:** Phase 9.5: a receipt now credits a clearing account for goods received and not invoiced. Supplier invoices are still not in the product, so nothing relieves it (W-009). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 6 inventory and purchasing audit
 
 ### K-013 · P3 · BLOCKED
@@ -3923,7 +3930,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "one operator on two steps at once is refused, unless the kind of work center is marked for it"; "where a kind of work center is marked \"certification required\", an operator with none on file cannot be clocked on"; "a clock left running is listed for the supervisor after the hours on file; nothing is stopped". Mutation: 3 rules removed in turn, group 4 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-023 · P2 · DEFERRED TO SPECIFIC PHASE
+### L-023 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Quality control
@@ -3943,6 +3950,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenarios for each step.
 - **Required tests:** Per the build.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-024 · P2 · VERIFIED FIXED
@@ -3963,7 +3971,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job names the coil work orders raised for it, and shows what they used, made and scrapped". Mutation: with the checks removed, 1 scenario of group 6 fails.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-025 · P2 · DEFERRED TO SPECIFIC PHASE
+### L-025 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Scheduling
@@ -3983,6 +3991,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenarios with a calendar fixture.
 - **Required tests:** Per the build.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-026 · P1 · IN PROGRESS
@@ -4004,7 +4013,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "a job's cost is the material its work orders used at actual cost plus the time on its steps at the rate the owner entered; there is no overhead"; src/backend/test/phase7Rules.test.js (unit cost from price, hours, adding up). Mutation: 3 rules removed in turn, group 6 fails each time.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-027 · P3 · DEFERRED TO SPECIFIC PHASE
+### L-027 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Manufacturing
@@ -4024,6 +4033,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Per the build.
 - **Required tests:** None.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-028 · P2 · IN PROGRESS
@@ -4044,7 +4054,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase7-manufacturing.mjs: "an inspection starts with the checklist the owner entered for that kind of work; with none entered, the standard list". Mutation: with the rule removed, 1 scenario of group 5 fails.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-029 · P3 · DEFERRED TO SPECIFIC PHASE
+### L-029 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Jobs
@@ -4064,9 +4074,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/db-facts.mjs check.
 - **Required tests:** A plan with no thickness reads back empty.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 7 manufacturing audit
 
-### L-030 · P3 · DEFERRED TO SPECIFIC PHASE
+### L-030 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-15
 - **Module:** Equipment
@@ -4086,6 +4097,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Physical test.
 - **Required tests:** None possible here.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 7 manufacturing audit
 
 ### L-031 · P3 · VERIFIED FIXED
@@ -4102,7 +4114,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** The server saves an empty list when a step has no parameters and refuses parameters that are not a list (400). The screen shows a step with no list as having none.
 - **Required tests:** Open a routing saved with no parameters; refuse an object.
 - **Assigned phase:** Phase 7: manufacturing execution, work orders, routing, capacity planning, scheduling, shop-floor operations, quality control, material consumption, remnants, rework and operational intelligence
-- **Status note:** Routings already saved in the live database with another shape are opened by the corrected screen; they are not rewritten. Whether any exist is NOT VERIFIED.
+- **Status note:** Routings already saved in the live database with another shape are opened by the corrected screen; they are not rewritten. Whether any exist is NOT VERIFIED. Phase 12: verified on QA; whether any exist on live data is a first-day check on the deployment checklist.
 - **Verification evidence:** qa/sim/ui-phase7.cjs: "routing: no script errors" and the three routing checks before it, on a routing saved through the address with no parameters; qa/sim/phase7-manufacturing.mjs "a routing marked "no inspection" lets its jobs go straight to packaging": "a step whose parameters are not a list is refused; a step with none is saved with an empty list". With the fix removed the browser checks failed (that is how it was found).
 - **First recorded in:** Phase 7 manufacturing audit
 
@@ -4240,8 +4252,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Fixed; error path not exercised
 - **Required tests:** A browser check that blocks the request and sees the error
 - **Assigned phase:** Manufacturing and processing
-- **Status note:** Fixed
-- **Verification evidence:** Browser opens the report; the generator is removed. The error path itself was not triggered in a test: NOT VERIFIED
+- **Status note:** Fixed Phase 12: the error path is now triggered in a browser: with the time records failing to load, the screen says so and shows no hours and no "demo data".
+- **Verification evidence:** Browser opens the report; the generator is removed. The error path itself was not triggered in a test: NOT VERIFIED qa/sim/phase12-ui.cjs "When time records cannot be loaded the screen says so and shows no hours".
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-010 · P0 · VERIFIED FIXED
@@ -4259,7 +4271,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** The address now opens the real shop floor (`/shopfloor`); the sample screen is deleted. Browser
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### M-011 · P1 · DEFERRED TO SPECIFIC PHASE
+### M-011 · P1 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality (5 screens), Bills of material
@@ -4278,7 +4290,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The screens read real data and the notice is removed
 - **Required tests:** The screens read real data and the notice is removed
 - **Assigned phase:** Manufacturing and processing
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-012 · P3 · VERIFIED FIXED
@@ -4310,8 +4322,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Accepted: low risk, cannot occur with a database configured
 - **Required tests:** Not planned
 - **Assigned phase:** Manufacturing and processing
-- **Status note:** Fixed
-- **Verification evidence:** Now 503. No automated check (it needs a server with no database): NOT VERIFIED
+- **Status note:** Fixed Phase 12: now checked on a server started with no database: the jobs list answers 503 and no sample job.
+- **Verification evidence:** Now 503. No automated check (it needs a server with no database): NOT VERIFIED qa/tools/phase12-process.mjs (M-013).
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### M-014 · P2 · VERIFIED FIXED
@@ -4463,7 +4475,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** A delivery needs the receiver's name or a proof image address, or a written reason for having neither. A carrier's own system reporting delivery is recorded as that reason. Nothing is filled in.
 - **Required tests:** Refuse empty; accept a name; accept a reason; carrier report marked as such.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** Deliveries recorded before this rule keep what they have and are not rewritten. The order closeout notes them and does not hold the order open for them. How many exist in the live database is NOT VERIFIED.
+- **Status note:** Deliveries recorded before this rule keep what they have and are not rewritten. The order closeout notes them and does not hold the order open for them. How many exist in the live database is NOT VERIFIED. Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist.
 - **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a delivery with no name and no reason is refused (N-004)", "a delivery is recorded with the name of the person who received it", "a carrier's system reports delivery with no name: it is accepted and marked as such"; qa/sim/ui-phase8.cjs delivery checks. Rule removed: scenario fails.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
@@ -4636,7 +4648,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** One reader (lib/shippingDocuments.js) builds the pick list, packing list and bill of lading from the shipment, the order, the branch and the stock movements. Anything missing is left blank on the paper and named on the screen before printing. Job labels read the real branch, order and customer PO.
 - **Required tests:** Papers agree with the records; blanks for missing facts; nothing invented.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** No printer, label stock or scanner was used. What a paper looks like on a real printer is NOT VERIFIED.
+- **Status note:** No printer, label stock or scanner was used. What a paper looks like on a real printer is NOT VERIFIED. Phase 12: the documents are verified as files. What a paper looks like on a branch's own printer is not, and no claim is made (K-013): a pilot-branch check in the rollout plan.
 - **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "the papers show a blank, never an invented value, for what is not on file", "the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)", "a job label prints the real branch, order and customer PO, and blanks for what is not on file", "the pick list names the reserved stock items with their heat and bin, oldest reservation first"; qa/sim/ui-phase8.cjs paper checks. An invented address put back: scenario fails.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
@@ -4832,7 +4844,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-ledger.mjs, 158 scenarios in seven groups; qa/enterprise-excellence/phase-09-5-report.md.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
-### N-026 · P2 · DEFERRED TO SPECIFIC PHASE
+### N-026 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Freight and carriers
@@ -4852,7 +4864,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** None yet.
 - **Required tests:** None until a carrier is chosen.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
-- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists. Phase 9.5: freight billed posts to freight revenue. No carrier cost exists to post, so freight expense is never posted to (tested).
+- **Status note:** Owner's decision 10, 2026-11-15: Built as recommended: (1) a manager ends a shipment that has a problem as lost, destroyed or refused for good, with what happened, and what is not yet credited on its invoice is credited in the same save; nothing is automatic. (2) Invoices and payments are read by sales, managers, leadership and the view-only roles; other staff see only that an invoice exists, its number and status. (3) The web shop takes no payment method and says every web order is on account. Not built, by the same decision: (4) carriers stay as tracking numbers typed by dispatch until a carrier contract exists; (5) the delivery promise screens stay as they are, for demonstration. Still open: (6) accounting. The owner asked for advice on an internal ledger; three answers are needed before it is built (when cost of goods counts, the chart of accounts, the start date). Owner decision 10: tracking numbers typed by dispatch for now; a carrier is connected when a contract exists. Phase 9.5: freight billed posts to freight revenue. No carrier cost exists to post, so freight expense is never posted to (tested). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### N-027 · P2 · VERIFIED FIXED
@@ -4873,7 +4885,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase8-fulfillment.mjs: "a load that never arrives is ended as lost by a manager, with what happened, and its invoice is credited in full", "only a shipment with a problem on record can be ended as lost; when the invoice was already paid the credit is owed back", "a lost load credits only what earlier credits left", "two managers ending the same shipment as lost at the same moment leave one credit"; src/backend/test/decision10.test.js; qa/sim/ui-phase8.cjs (lost load). Removed one at a time, each of these failed a scenario: the manager rule (both guards), the reason, the credit, the credit for what is left. The problem-state rule is held by two checks; removing either alone fails nothing, removing both fails a scenario. Ending once under a race is held by the state check and by the invoice having nothing left to credit; removing the state check alone fails nothing.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
-### N-028 · P3 · DEFERRED TO SPECIFIC PHASE
+### N-028 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Customer communication
@@ -4893,6 +4905,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenario with a captured outbox; nothing sent from simulations.
 - **Required tests:** None.
 - **Assigned phase:** Phase 8: shipping, packaging, dispatch, logistics, delivery, invoicing, financial reconciliation, order costing and customer order closeout
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 8 fulfilment and order-to-cash audit
 
 ### N-029 · P2 · VERIFIED FIXED
@@ -5388,7 +5401,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (E-006)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-004 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-004 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Several secondary screens
@@ -5402,7 +5415,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** qa/api-contract.md reports 0 calls with no route.
 - **Deferred: verification:** qa/tools/api-contract.mjs in the gate run.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open; 18 are sales calls (S-026) Phase 9: on opening, no screen of the 130 in the smoke run calls a route that does not exist (the only 404 answers are for the made-up record ids the run uses). The static scan (qa/api-contract.md) still finds 66 calls written in screen code with no server route, down from 155; they sit behind controls on sample screens, which now answer "not built" (V-007) and do not make the call.
+- **Status note:** Open; 18 are sales calls (S-026) Phase 9: on opening, no screen of the 130 in the smoke run calls a route that does not exist (the only 404 answers are for the made-up record ids the run uses). The static scan (qa/api-contract.md) still finds 66 calls written in screen code with no server route, down from 155; they sit behind controls on sample screens, which now answer "not built" (V-007) and do not make the call. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-005 · P3 · VERIFIED FIXED
@@ -5571,7 +5584,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (I-008, I-014): Release hold and Move
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-019 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-019 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Supplier quality, six screens
@@ -5585,7 +5598,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
 - **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The six screens stay marked as samples. Every control on them now has a name, every button answers (with the not-built notice where nothing is behind it, V-007) and none announces a save that did not happen (V-008).
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The six screens stay marked as samples. Every control on them now has a name, every button answers (with the not-built notice where nothing is behind it, V-007) and none announces a save that did not happen (V-008). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-020 · P3 · VERIFIED FIXED
@@ -5612,7 +5625,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (rule 32): warning on entry, a Credit Holds list, Release for managers
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-022 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-022 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Receiving
@@ -5626,7 +5639,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** A receipt for a new heat is completed on one screen.
 - **Deferred: verification:** A receiving scenario.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (I-017) Phase 9: examined. Receiving against a heat not on file is refused with what to do (Phase 6). Adding several heats in one step is a speed improvement for a first load and was not built.
+- **Status note:** Open (I-017) Phase 9: examined. Receiving against a heat not on file is refused with what to do (Phase 6). Adding several heats in one step is a speed improvement for a first load and was not built. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-023 · P3 · VERIFIED FIXED
@@ -5701,7 +5714,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase9-ui.cjs: "the addresses of two retired screens lead to the real ones (U-020, U-028)".
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-029 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-029 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Production quality, BOMs
@@ -5715,7 +5728,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
 - **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Two buttons that announced "NCR created successfully!" and "Inspection submitted successfully!" with nothing saved now say nothing was saved (V-008).
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Two buttons that announced "NCR created successfully!" and "Inspection submitted successfully!" with nothing saved now say nothing was saved (V-008). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-030 · P3 · VERIFIED FIXED
@@ -5778,7 +5791,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (F-007)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-035 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-035 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Freight and logistics
@@ -5792,7 +5805,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The screens read real rates and tracking and the sample notice is gone.
 - **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The freight screens stay marked as samples. "Book shipment" announced a booking with a carrier that was never made; it now says nothing was booked (V-008). No carrier is connected (N-026).
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The freight screens stay marked as samples. "Book shipment" announced a booking with a carrier that was never made; it now says nothing was booked (V-008). No carrier is connected (N-026). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-036 · P3 · VERIFIED FIXED
@@ -5807,7 +5820,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/ui-phase8.cjs: "packing list: opens as it will print, with the shipment, the order and the stock item", "bill of lading: drawn from the shipment".
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-037 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-037 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety, maintenance, training, contractors, customer quality, executive, provenance
@@ -5821,7 +5834,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** The screens read and write real records and the sample notice is gone.
 - **Deferred: verification:** qa/tools/screen-audit.mjs classes them REAL.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Three maintenance buttons that announced a purchase order, a parts receipt and a schedule with nothing saved now say nothing was saved (V-008).
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 9: examined. The screens stay marked as samples. Three maintenance buttons that announced a purchase order, a parts receipt and a schedule with nothing saved now say nothing was saved (V-008). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-038 · P3 · VERIFIED FIXED
@@ -5848,7 +5861,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** Fixed (X-004)
 - **First recorded in:** qa/ux-improvement-register.md
 
-### U-040 · P3 · DEFERRED TO SPECIFIC PHASE
+### U-040 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Menu
@@ -5862,7 +5875,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: acceptance criteria:** No sample screen sits unmarked beside a real one.
 - **Deferred: verification:** qa/tools/screen-audit.mjs.
 - **Assigned phase:** Phase 9: user experience
-- **Status note:** Open (X-009) Phase 9: the 58 sample screens are still in the menu beside the real ones, each with its standing notice. They were not hidden (the Phase 9 instruction forbids hiding in place of fixing) and not removed (owner decision 4). The search and each role's menu offer only the pages the role may open. The menu itself does not mark which entries are samples; that is a small change the owner may want and is not made here because it changes the look of the menu for every user.
+- **Status note:** Open (X-009) Phase 9: the 58 sample screens are still in the menu beside the real ones, each with its standing notice. They were not hidden (the Phase 9 instruction forbids hiding in place of fixing) and not removed (owner decision 4). The search and each role's menu offer only the pages the role may open. The menu itself does not mark which entries are samples; that is a small change the owner may want and is not made here because it changes the look of the menu for every user. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/ux-improvement-register.md
 
 ### U-041 · P3 · ACCEPTED RISK WITH APPROVAL
@@ -6049,7 +6062,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 17 texts on 4 screens. qa/tools/ui-audit-gate.cjs holds the ceiling.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-011 · P3 · DEFERRED TO SPECIFIC PHASE
+### V-011 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Sample screens mostly
@@ -6069,6 +6082,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/ui-audit-gate.cjs, ceiling lowered to 0.
 - **Required tests:** Audit reads 0.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-012 · P1 · VERIFIED FIXED
@@ -6175,7 +6189,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase9-ui.cjs: the three "order entry:" scenarios (leaving asks and Stay keeps every entry; Leave leaves and an untouched form never asks; closing or reloading the tab warns). qa/tools/phase9-mutations.cjs 7 and 8.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-018 · P3 · DEFERRED TO SPECIFIC PHASE
+### V-018 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Other long forms
@@ -6195,6 +6209,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Scenarios as for V-017.
 - **Required tests:** As V-017 for each form.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-019 · P2 · VERIFIED FIXED
@@ -6335,7 +6350,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase9-ui.cjs: "a full column on the order board draws its first cards and offers the rest". qa/tools/phase9-mutations.cjs 22. Measured after: 488 to 512 ms.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-027 · P2 · DEFERRED TO SPECIFIC PHASE
+### V-027 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Order board, production board, schedule
@@ -6355,10 +6370,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/tools/frontend-performance.cjs against scale data.
 - **Required tests:** Measured load at 85-branch scale.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
-- **Status note:** Phase 11: the lists were read at the volume of the enterprise day while it ran and stayed within the proposed limit; GET /api/jobs is still unbounded and grows with the data. Unchanged: Phase 12.
+- **Status note:** Phase 11: the lists were read at the volume of the enterprise day while it ran and stayed within the proposed limit; GET /api/jobs is still unbounded and grows with the data. Unchanged: Phase 12. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-028 · P2 · DEFERRED TO SPECIFIC PHASE
+### V-028 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Dispatch API
@@ -6378,10 +6393,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** qa/sim/branch-boundary.mjs gains the two routes.
 - **Required tests:** An operator asks for another branch: refused or empty.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
-- **Status note:** Phase 10: unchanged. The dispatch board lists are not in the Phase 10 isolation scenarios.
+- **Status note:** Phase 10: unchanged. The dispatch board lists are not in the Phase 10 isolation scenarios. Phase 12: the dispatch board lists were tested across branches: a person of another branch is given none of the first branch's dispatch jobs or operations by asking for them, with or without a branch in the address.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Security 6".
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-029 · P3 · DEFERRED TO SPECIFIC PHASE
+### V-029 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Dialogs
@@ -6401,6 +6417,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The dialog scenarios gain the check.
 - **Required tests:** Open a form dialog: the first field has focus.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-030 · P3 · REQUIRES BUSINESS DECISION
@@ -6488,7 +6505,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/ui-audit.cjs (154 screens at three sizes; before: qa/results/ui-audit-baseline.json), final run: 3 remain (a search box and a slider on two sample screens and one on the counter sale screen, each a text box measured by its inner part). Held by the ceiling.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-035 · P3 · DEFERRED TO SPECIFIC PHASE
+### V-035 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Design system
@@ -6508,9 +6525,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A static count in qa/tools/frontend-checks.mjs, as a ceiling that only falls.
 - **Required tests:** Static count.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-036 · P3 · DEFERRED TO SPECIFIC PHASE
+### V-036 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Tables and dialogs
@@ -6530,9 +6548,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A static count that only falls.
 - **Required tests:** None.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
+- **Status note:** Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### V-037 · P2 · DEFERRED TO SPECIFIC PHASE
+### V-037 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-16
 - **Module:** Dashboards
@@ -6552,7 +6571,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** A browser scenario per dashboard.
 - **Required tests:** A run with known totals, compared tile by tile.
 - **Assigned phase:** Phase 9: user interface, user experience, design system, role workspaces, navigation, responsive design, accessibility and interaction verification
-- **Status note:** Phase 11: revenue by branch against revenue by customer, the stock value report against the books, and the receivables report read by twelve people at once were compared under load (group 8). The five dashboards named are still not compared figure by figure: Phase 12.
+- **Status note:** Phase 11: revenue by branch against revenue by customer, the stock value report against the books, and the receivables report read by twelve people at once were compared under load (group 8). The five dashboards named are still not compared figure by figure: Phase 12. Phase 12: the home dashboard, the branch dashboard, the operations cockpit summary, the sales dashboard, the material tracking counts and the finance reports were each compared figure by figure with the database (and revenue with the journal by SQL).
+- **Verification evidence:** qa/sim/phase12-certification.mjs group "Dashboards and reports agree with the records" (7 scenarios).
 - **First recorded in:** Phase 9 screen and interaction audit
 
 ### V-038 · P2 · VERIFIED FIXED
@@ -6573,7 +6593,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase9-ui.cjs: "a scheduler signs in at the form, starts at /schedule, and the menu and the server refuse what the role may not open" (failed in the full run before the entry was added, passes after).
 - **First recorded in:** Phase 9 screen and interaction audit
 
-### X-001 · P0 · DEFERRED TO SPECIFIC PHASE
+### X-001 · P0 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Safety (13 screens, on the menu)
@@ -6592,10 +6612,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-002 · P0 · DEFERRED TO SPECIFIC PHASE
+### X-002 · P0 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup
@@ -6614,7 +6634,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### X-003 · P1 · VERIFIED FIXED
@@ -6694,7 +6714,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Status note:** Open
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-008 · P2 · DEFERRED TO SPECIFIC PHASE
+### X-008 · P2 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Counter (`/pos`), will-call screens
@@ -6713,10 +6733,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Built on real orders, or removed
 - **Required tests:** Built on real orders, or removed
 - **Assigned phase:** Enterprise experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work.
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-009 · P1 · DEFERRED TO SPECIFIC PHASE
+### X-009 · P1 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-13
 - **Module:** Scale of sample screens
@@ -6735,10 +6755,10 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** The audit shows the screen as REAL, or the route is gone
 - **Required tests:** The audit shows the screen as REAL, or the route is gone
 - **Assigned phase:** Enterprise experience
-- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 4: the screen-to-route contract check stays in the gates. Supplier shipping notices, corrective actions and scorecards in the partner API now answer 501 instead of failing (H-014).
+- **Status note:** Owner's decision 4, 2026-11-13: Every sample module is to be built on real records: safety, maintenance, training, contractors and visitors, customer quality, executive tools, production quality, supplier quality, freight planning, bills of material, provenance, will call. None is removed. The unused tables stay for that work. Phase 4: the screen-to-route contract check stays in the gates. Supplier shipping notices, corrective actions and scorecards in the partner API now answer 501 instead of failing (H-014). Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built.
 - **First recorded in:** qa/engineering-quality-findings.md
 
-### X-010 · P2 · DEFERRED TO SPECIFIC PHASE
+### X-010 · P2 · VERIFIED FIXED
 
 - **Discovered:** 2026-11-13
 - **Module:** Help manual
@@ -6757,7 +6777,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Deferred: verification:** Every manual page read against its screen
 - **Required tests:** Every manual page read against its screen
 - **Assigned phase:** Enterprise experience
-- **Status note:** Open
+- **Status note:** Open Phase 12: every chapter about sample screens is flagged and the page says so; chapters that mix real and sample screens name the sample ones; every real screen on the menu has a chapter (AA-006).
+- **Verification evidence:** qa/tools/phase12-manual.mjs; qa/sim/phase12-ui.cjs.
 - **First recorded in:** qa/engineering-quality-findings.md
 
 ### W-001 · P1 · REQUIRES BUSINESS DECISION
@@ -6824,7 +6845,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "entry numbers are never used twice" in qa/sim/phase95-load.mjs; no test claims the sequence is unbroken.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-005 · P2 · DEFERRED TO SPECIFIC PHASE
+### W-005 · P2 · BLOCKED
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger; cutover
@@ -6836,7 +6857,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The cutover dry run and the activation were run on the QA database only. They have not been run on a copy of the live database, so the size of the opening balances, the number of items with no cost and how long business saves wait during activation are not known.
 - **Operational impact:** Activation holds business saves while it runs. On a large database that wait is unknown.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Step 6 of phase-09-5-cutover-plan.md. Phase 12 (acceptance), with the owner, who makes the copy.
+- **Status note:** Step 6 of phase-09-5-cutover-plan.md. Phase 12 (acceptance), with the owner, who makes the copy. Phase 12: still not run on a copy of the live database: no copy was provided, and this session has no access to live data by rule. Blocked on the owner making the copy. It is step 2 of phase-12-cutover-plan.md and a condition of financial acceptance.
 - **Verification evidence:** NOT VERIFIED on live-sized data. On QA: the set-up scenarios of the ledger run.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -6984,7 +7005,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "A posted entry cannot be changed by direct SQL either: update, delete, added or moved lines and TRUNCATE are refused by the database" proves the triggers; nothing proves who can disable them on live.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-015 · P3 · DEFERRED TO SPECIFIC PHASE
+### W-015 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger
@@ -6996,7 +7017,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The person who closed a month cannot reopen it while another finance user exists. Where a company has only one finance user, that rule yields so the books cannot be locked forever.
 - **Operational impact:** With one finance user, close and reopen are one person's decision.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10. Manual entries do not yield: a second finance user is always needed to post. Phase 10: reviewed, unchanged. Reopening a month still yields when only one finance user exists; manual entries never yield. Whether a second person is always required is the accountant's decision with W-001.
+- **Status note:** Phase 10. Manual entries do not yield: a second finance user is always needed to post. Phase 10: reviewed, unchanged. Reopening a month still yields when only one finance user exists; manual entries never yield. Whether a second person is always required is the accountant's decision with W-001. Phase 12: unchanged. Whether a second finance person is always required to reopen a month is the accountant's decision, with W-001.
 - **Verification evidence:** qa/sim/phase95-ledger.mjs: "Reopening a closed month needs a reason and a different person"; mutation E9.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -7076,8 +7097,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** Backup and restore of the ledger tables has not been exercised: that a restored journal still balances, keeps its triggers and its numbering, and agrees with the restored business records.
 - **Operational impact:** An untested restore of financial records.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 10. Phase 10: an actual backup and restore into a separate PostgreSQL server: the journal balances, keeps its four guards and its numbering, and the restored application signs in and reconciles with no difference. Live backups (the host's) are not exercised: E-015.
-- **Verification evidence:** NOT VERIFIED. qa/sim/phase10-security.mjs group 8 (25 scenarios); qa/results/phase10-restore.json.
+- **Status note:** Phase 10. Phase 10: an actual backup and restore into a separate PostgreSQL server: the journal balances, keeps its four guards and its numbering, and the restored application signs in and reconciles with no difference. Live backups (the host's) are not exercised: E-015. Phase 12: the words "NOT VERIFIED" at the start of this finding's verification were left from before Phase 10 and are removed: the restore was run in Phase 10 (qa/results/phase10-restore.json). Live backups remain E-015.
+- **Verification evidence:** qa/sim/phase10-security.mjs group 8 (25 scenarios); qa/results/phase10-restore.json.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
 ### W-021 · P1 · VERIFIED FIXED
@@ -7108,11 +7129,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The fix for W-021 works inside one server process. The live host can run several server processes at once; between processes the only guard is the database retry (25 attempts), which is what failed before.
 - **Operational impact:** W-021 could recur on the live host under a burst of dispatches.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before. Phase 11: invoices now take turns in the database, across server copies (Z-002). Five enterprise days on three copies and one on four: every dispatch raised its invoice or was closed by billing after an injected crash; invoice numbers unbroken and never repeated.
+- **Status note:** Phase 11 (scale). A dispatch whose invoice is not raised is still recorded and listed, as before. Phase 11: invoices now take turns in the database, across server copies (Z-002). Five enterprise days on three copies and one on four: every dispatch raised its invoice or was closed by billing after an injected crash; invoice numbers unbroken and never repeated. Phase 12: the words "NOT VERIFIED with more than one server process" are out of date: Phase 11 ran it on three and four server copies (Z-002).
 - **Verification evidence:** NOT VERIFIED with more than one server process. qa/sim/phase11-enterprise.mjs cycles 1 to 5; qa/sim/phase11-scenarios.mjs groups 1, 3 and 7.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
-### W-023 · P2 · DEFERRED TO SPECIFIC PHASE
+### W-023 · P2 · BLOCKED
 
 - **Discovered:** 2026-11-16
 - **Module:** Financial ledger
@@ -7124,7 +7145,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Actual:** The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries) are not measured, and the host was not the live host.
 - **Operational impact:** The reconciliation reads every item and every line; its time will grow with volume.
 - **Assigned phase:** Phase 9.5: financial ledger and accounting foundation
-- **Status note:** Phase 11. Phase 11: measured at the volume of the enterprise day (about 2,700 journal entries, 5,500 lines, 80 branches): reconciliation run p95 under 0.4 s, trial balance and branch reports within the proposed limit of 800 ms while the day's work ran. A year's volume (hundreds of thousands of entries) and the live host are still not measured: Phase 12.
+- **Status note:** Phase 11. Phase 11: measured at the volume of the enterprise day (about 2,700 journal entries, 5,500 lines, 80 branches): reconciliation run p95 under 0.4 s, trial balance and branch reports within the proposed limit of 800 ms while the day's work ran. A year's volume (hundreds of thousands of entries) and the live host are still not measured: Phase 12. Phase 12: the ledger was certified again at the volume of the QA enterprise day. A year's volume and the live host are not measured: that needs the live host or a copy of it (owner). No capacity claim is made beyond what was measured.
 - **Verification evidence:** qa/results/phase95-load.json holds what was measured. Anything larger: NOT VERIFIED.
 - **First recorded in:** Phase 9.5 ledger build and scenarios
 
@@ -7804,7 +7825,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-011"; qa/sim/phase11-enterprise.mjs cycle 4 (qa/results/phase11-cycle-4-first-run.json shows the 500, phase11-cycle-4.json none); qa/tools/phase11-mutations.mjs Z-011 holds.
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 
-### Z-012 · P3 · DEFERRED TO SPECIFIC PHASE
+### Z-012 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-18
 - **Module:** Shipping and invoicing
@@ -7818,7 +7839,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not changed in Phase 11. Phase 12: decide with the owner whether a repeated dispatch should bill.
 - **Required tests:** qa/sim/phase11-enterprise.mjs cycle 4 (recoveredByBillingAgain); qa/sim/phase11-scenarios.mjs group 7 "A server copy is killed in the middle of twenty dispatches".
 - **Assigned phase:** Phase 11: 80-location enterprise stress simulation
-- **Status note:** Not changed in Phase 11. Phase 12: decide with the owner whether a repeated dispatch should bill.
+- **Status note:** Not changed in Phase 11. Phase 12: decide with the owner whether a repeated dispatch should bill. Phase 12: unchanged. Whether a repeated dispatch should bill a shipment left without an invoice by a crash is the owner's choice; until then the Integrations screen lists such shipments and billing them closes each one (tested in Phase 11).
 - **Verification evidence:** qa/sim/phase11-enterprise.mjs cycle 4 (recoveredByBillingAgain); qa/sim/phase11-scenarios.mjs group 7 "A server copy is killed in the middle of twenty dispatches".
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 
@@ -7840,7 +7861,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-013"; qa/sim/phase11-scenarios.mjs group 7 "The network drops after eight payments were sent, and the same payments are sent again"; qa/tools/phase11-mutations.mjs Z-013 holds.
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 
-### Z-014 · P3 · DEFERRED TO SPECIFIC PHASE
+### Z-014 · P3 · REQUIRES BUSINESS DECISION
 
 - **Discovered:** 2026-11-18
 - **Module:** Platform
@@ -7854,7 +7875,205 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not changed: a shorter wait risks running a slow first attempt twice. Phase 12: review the figure with production timings.
 - **Required tests:** qa/sim/phase11-scenarios.mjs group 6 and group 7 (a keyed request whose copy was killed is answered once after the claim runs out).
 - **Assigned phase:** Phase 11: 80-location enterprise stress simulation
-- **Status note:** Not changed: a shorter wait risks running a slow first attempt twice. Phase 12: review the figure with production timings.
+- **Status note:** Not changed: a shorter wait risks running a slow first attempt twice. Phase 12: review the figure with production timings. Phase 12: unchanged (60 seconds). Production timings are needed to choose a shorter wait safely; the figure is the owner's to confirm after the pilot.
 - **Verification evidence:** qa/sim/phase11-scenarios.mjs group 6 and group 7 (a keyed request whose copy was killed is answered once after the claim runs out).
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
+
+### AA-001 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Home dashboard; sign-in check
+- **Workflow:** Home dashboard; sign-in check
+- **Category:** Honesty; error handling
+- **Source file or endpoint:** src/backend/src/routes/dashboard.js; src/backend/src/middleware/auth.js
+- **Evidence:** qa/tools/phase12-process.mjs (a server started with no database: /api/jobs, /api/dashboard and /api/dashboard/kpis answer 503 and carry no invented record; readiness says not ready); qa/tools/phase12-mutations.mjs AA-001 holds.
+- **Expected:** With no database nothing is shown: the answer is 503, "the database is not available", on every signed-in route.
+- **Actual:** With no database configured GET /api/dashboard answered 200 with invented figures (125,000 lb on hand, orders SO-1001 and SO-1002 for "ABC Manufacturing" and "XYZ Industries"). Every other signed-in request answered "server error" (500), because the sign-in check itself read a database that was not there.
+- **Operational impact:** A screen could have shown a company that does not exist as if it were the user's own figures. Small on the hosted site, which always has a database; real on any mis-set server.
+- **Recommended correction:** Fixed: the invented answer is deleted; the dashboard and its KPI route answer 503; the sign-in check answers 503 before it reads anything. The jobs list (M-013) is covered by the same check.
+- **Required tests:** qa/tools/phase12-process.mjs (a server started with no database: /api/jobs, /api/dashboard and /api/dashboard/kpis answer 503 and carry no invented record; readiness says not ready); qa/tools/phase12-mutations.mjs AA-001 holds.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: the invented answer is deleted; the dashboard and its KPI route answer 503; the sign-in check answers 503 before it reads anything. The jobs list (M-013) is covered by the same check.
+- **Verification evidence:** qa/tools/phase12-process.mjs (a server started with no database: /api/jobs, /api/dashboard and /api/dashboard/kpis answer 503 and carry no invented record; readiness says not ready); qa/tools/phase12-mutations.mjs AA-001 holds.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-002 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Executive cockpit
+- **Workflow:** Executive cockpit
+- **Category:** Honesty; AI
+- **Source file or endpoint:** src/backend/src/routes/executive.js; src/frontend/src/pages/Executive/ExecutiveCockpit.jsx
+- **Evidence:** qa/sim/phase12-certification.mjs "Dashboard 7" and "AI 5"; qa/sim/phase12-ui.cjs "The executive cockpit question box gives no invented answer"; qa/tools/phase12-mutations.mjs AA-002a and AA-002b hold.
+- **Expected:** A box that has no analysis behind it says so and gives no figure. Every answer made from example values is marked as a sample in the answer itself.
+- **Actual:** POST /api/executive/ai/query answered every question with a written analysis that nothing had worked out ("Detroit is at 97% utilization", a margin forecast of 22.8%, "confidence 85"). The cockpit's own question box did not even call the server: it waited two seconds and showed a fixed answer with "Confidence: 92%". The cockpit, simulation and forecast routes answered with example figures and nothing in the answer said so (only the screen carried the sample notice).
+- **Operational impact:** An executive could have acted on an invented capacity, margin or risk figure. This is the kind of result the phase forbids outright.
+- **Recommended correction:** Fixed: the route answers 501 "not built" with no figures and points to the assistant in the top bar; the generator is deleted; the cockpit dialog says the same in plain words; every cockpit, simulation and forecast answer now carries sample: true, a notice and the header X-Sample-Data. The decision log, which is real records, is not marked.
+- **Required tests:** qa/sim/phase12-certification.mjs "Dashboard 7" and "AI 5"; qa/sim/phase12-ui.cjs "The executive cockpit question box gives no invented answer"; qa/tools/phase12-mutations.mjs AA-002a and AA-002b hold.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: the route answers 501 "not built" with no figures and points to the assistant in the top bar; the generator is deleted; the cockpit dialog says the same in plain words; every cockpit, simulation and forecast answer now carries sample: true, a notice and the header X-Sample-Data. The decision log, which is real records, is not marked.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Dashboard 7" and "AI 5"; qa/sim/phase12-ui.cjs "The executive cockpit question box gives no invented answer"; qa/tools/phase12-mutations.mjs AA-002a and AA-002b hold.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-003 · P1 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Assistant in the top bar
+- **Workflow:** Assistant in the top bar
+- **Category:** Security: prompt injection and input limits
+- **Source file or endpoint:** src/backend/src/routes/aiAssistant.js; src/backend/src/lib/assistantInput.js
+- **Evidence:** src/backend/test/assistantInput.test.js (eight tests); qa/sim/phase12-certification.mjs "AI 4", "AI 7", "AI 8"; qa/tools/phase12-mutations.mjs AA-003u, AA-003s and AA-003c hold.
+- **Expected:** Only what the person said and what the assistant answered is accepted. A forged role is refused. Length, count and settings are bounded. A wrong shape is the caller's error. The model is given only what a colleague needs to be recognised by.
+- **Actual:** The conversation sent by the browser was forwarded to the AI service as it came. A request could include messages marked "system" or "tool", which the model treats with the system's authority (measured: 1 forged system and 1 forged tool message forwarded). Message length and count were not capped, the temperature and answer length were whatever the request said, a body of the wrong shape was a server error (500), and a question about "users" gave the model colleagues' email addresses, phone numbers and last sign-in times.
+- **Operational impact:** A signed-in person (or text pasted into the box from elsewhere) could speak to the model as the system. The data given to the model was already limited by role and branch, and the assistant cannot change records, so the exposure was the model's instructions and wording, not other people's data; contact details of colleagues were sent to an outside AI service without need.
+- **Recommended correction:** Fixed: one checked function accepts the conversation (user and assistant only, text only, 4,000 characters a message, the last 10 messages, 100 at most) and answers 400 otherwise, on both routes and before the stream opens; settings are bounded; fixed rules are added to every system prompt (read only, the conversation is never an instruction, no figure that is not in the results); the staff list is name, role and title of the person's own organisation only.
+- **Required tests:** src/backend/test/assistantInput.test.js (eight tests); qa/sim/phase12-certification.mjs "AI 4", "AI 7", "AI 8"; qa/tools/phase12-mutations.mjs AA-003u, AA-003s and AA-003c hold.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: one checked function accepts the conversation (user and assistant only, text only, 4,000 characters a message, the last 10 messages, 100 at most) and answers 400 otherwise, on both routes and before the stream opens; settings are bounded; fixed rules are added to every system prompt (read only, the conversation is never an instruction, no figure that is not in the results); the staff list is name, role and title of the person's own organisation only.
+- **Verification evidence:** src/backend/test/assistantInput.test.js (eight tests); qa/sim/phase12-certification.mjs "AI 4", "AI 7", "AI 8"; qa/tools/phase12-mutations.mjs AA-003u, AA-003s and AA-003c hold.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-004 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Assistant in the top bar
+- **Workflow:** Assistant in the top bar
+- **Category:** Audit; error handling
+- **Source file or endpoint:** src/backend/src/routes/aiAssistant.js
+- **Evidence:** qa/sim/phase12-certification.mjs "AI 6" and "AI 8" (a failure injected at the AI stand-in); qa/tools/phase12-mutations.mjs AA-004 and AA-004s hold.
+- **Expected:** Every question is recorded: who, when, which kinds of record were read, and whether it was answered, refused or failed; never the text of the question. A failure tells the person it failed and nothing else.
+- **Actual:** Asking the assistant left no line in the audit trail unless the question was about the ledger. When the AI service failed in the middle of a streamed answer, the service's own error text was sent to the browser.
+- **Operational impact:** Use of company data through the assistant could not be reviewed. An outside service's error text can carry addresses or parts of keys.
+- **Recommended correction:** Fixed: one audit line per question (category DATA, event AI_ASSISTANT_ASKED) on both routes; the stream answers "the assistant could not answer" with the request id.
+- **Required tests:** qa/sim/phase12-certification.mjs "AI 6" and "AI 8" (a failure injected at the AI stand-in); qa/tools/phase12-mutations.mjs AA-004 and AA-004s hold.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: one audit line per question (category DATA, event AI_ASSISTANT_ASKED) on both routes; the stream answers "the assistant could not answer" with the request id.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "AI 6" and "AI 8" (a failure injected at the AI stand-in); qa/tools/phase12-mutations.mjs AA-004 and AA-004s hold.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-005 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Platform
+- **Workflow:** Platform
+- **Category:** Error handling
+- **Source file or endpoint:** src/backend/src/app.js
+- **Evidence:** qa/sim/phase12-certification.mjs "Security 7"; qa/tools/phase12-mutations.mjs AA-005 holds.
+- **Expected:** It is the caller's mistake: 400, on every route.
+- **Actual:** A zero byte in an address (GET /api/coils/%00) was passed to the database, which refuses it, and the person got "server error" (500).
+- **Operational impact:** Noise in the error log and a wrong signal to monitoring; no data was at risk.
+- **Recommended correction:** Fixed in one place, before any route.
+- **Required tests:** qa/sim/phase12-certification.mjs "Security 7"; qa/tools/phase12-mutations.mjs AA-005 holds.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed in one place, before any route.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Security 7"; qa/tools/phase12-mutations.mjs AA-005 holds.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-006 · P2 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Help manual
+- **Workflow:** Help manual
+- **Category:** Documentation honesty and completeness
+- **Source file or endpoint:** src/frontend/src/help/manualContent.js; src/frontend/src/help/manualOperations.js; src/frontend/src/components/help/HelpAccordion.jsx
+- **Evidence:** qa/tools/phase12-manual.mjs (48 chapters, 156 checks); qa/sim/phase12-ui.cjs three manual scenarios; qa/tools/phase12-mutations.mjs AA-006a, AA-006b and AA-006c hold.
+- **Expected:** The manual says before anything else when a chapter is about sample screens and names them; every real screen on the menu has a chapter; there is a chapter on what to do when something goes wrong.
+- **Actual:** Eight chapters described design-sample modules (safety, supplier quality, customer quality, contractors, training, production quality, freight, quality and compliance) as working features, and three more mixed real and sample screens without saying which. Fourteen real screens on the menu had no chapter at all: Finance, purchase orders, transfers, work orders, the quality station, the material tracking screens, staff, tax rates and the integrations checks.
+- **Operational impact:** A new employee would have been trained on features that save nothing, and had no instructions for the finance, purchasing and transfer work.
+- **Recommended correction:** Fixed: sample chapters are flagged and the manual page shows a notice above them; nine chapters were written from the screens as they are (finance, purchasing, transfers, work orders, invoices and returns, administration checks, material tracking, the quality station, when something goes wrong). A check keeps this true as screens change. The wording of the older chapters was not re-read line by line against every screen (M-018, S-024 stay in progress for that).
+- **Required tests:** qa/tools/phase12-manual.mjs (48 chapters, 156 checks); qa/sim/phase12-ui.cjs three manual scenarios; qa/tools/phase12-mutations.mjs AA-006a, AA-006b and AA-006c hold.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: sample chapters are flagged and the manual page shows a notice above them; nine chapters were written from the screens as they are (finance, purchasing, transfers, work orders, invoices and returns, administration checks, material tracking, the quality station, when something goes wrong). A check keeps this true as screens change. The wording of the older chapters was not re-read line by line against every screen (M-018, S-024 stay in progress for that).
+- **Verification evidence:** qa/tools/phase12-manual.mjs (48 chapters, 156 checks); qa/sim/phase12-ui.cjs three manual scenarios; qa/tools/phase12-mutations.mjs AA-006a, AA-006b and AA-006c hold.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-007 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-19
+- **Module:** Branches
+- **Workflow:** Branches
+- **Category:** Multi-location
+- **Source file or endpoint:** src/backend/prisma/schema.prisma (Location); src/backend/src/services/ledger.js
+- **Evidence:** qa/sim/phase12-certification.mjs "Locations 1" records the fact; phase-12-rollout-plan.md.
+- **Expected:** The owner and the accountant decide whether one company day is right for the first branches, or whether each branch needs its own zone before a branch outside the company zone goes live.
+- **Actual:** A branch record holds no time zone. The books keep one business day for the whole company (the zone given when the ledger is switched on). A sale made at 10 pm Pacific is dated the next day if the company zone is Eastern.
+- **Operational impact:** Daily totals and month-end cut-off for branches in other time zones can fall on the neighbouring day. No amount is lost or doubled.
+- **Recommended correction:** Not changed: it is an accounting cut-off decision (with W-001) and a database change. Stage 1 and 2 of the rollout are planned inside one time zone for this reason.
+- **Required tests:** qa/sim/phase12-certification.mjs "Locations 1" records the fact; phase-12-rollout-plan.md.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Not changed: it is an accounting cut-off decision (with W-001) and a database change. Stage 1 and 2 of the rollout are planned inside one time zone for this reason.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Locations 1" records the fact; phase-12-rollout-plan.md.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-008 · P2 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-19
+- **Module:** Branches
+- **Workflow:** Branches
+- **Category:** Multi-location onboarding
+- **Source file or endpoint:** src/backend/src/routes (no location route that creates)
+- **Evidence:** qa/sim/phase12-certification.mjs "Locations 6" (no route adds a branch; a branch added by script is isolated at once).
+- **Expected:** The owner decides whether adding a branch by script (run by whoever applies database updates) is acceptable for the rollout, or a branch set-up screen must be built first.
+- **Actual:** No screen or API adds or edits a branch. A branch is added by a database script.
+- **Operational impact:** Every new location in the staged rollout needs a database step by the owner. Once added the branch is separate from the rest at once (tested).
+- **Recommended correction:** Not built in this phase: it is a new feature, not a correction. The cutover plan lists the script step for each branch.
+- **Required tests:** qa/sim/phase12-certification.mjs "Locations 6" (no route adds a branch; a branch added by script is isolated at once).
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Not built in this phase: it is a new feature, not a correction. The cutover plan lists the script step for each branch.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Locations 6" (no route adds a branch; a branch added by script is isolated at once).
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-009 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Tests
+- **Workflow:** Tests
+- **Category:** Test reliability
+- **Source file or endpoint:** qa/sim/phase9/make.cjs
+- **Evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **Expected:** The scenario waits for the list, not for a fixed time.
+- **Actual:** In the gate run on the release candidate one of 232 Phase 9 browser scenarios failed ("the schedule: the Queue View tab lists jobs waiting, by keyboard"): it read the page a fixed 0.8 s after changing tab, while the machine was busy.
+- **Operational impact:** A false failure in the gate. The product was not at fault: the scenario passes when run alone on the same build.
+- **Recommended correction:** Fixed: the scenario waits for the list to be drawn. The first run is kept as it was (qa/results/phase12-gate-run-1.txt).
+- **Required tests:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed: the scenario waits for the list to be drawn. The first run is kept as it was (qa/results/phase12-gate-run-1.txt).
+- **Verification evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-010 · P3 · REQUIRES BUSINESS DECISION
+
+- **Discovered:** 2026-11-19
+- **Module:** Access control
+- **Workflow:** Access control
+- **Category:** Separation of duties
+- **Source file or endpoint:** src/backend/src/lib/roleAccess.js
+- **Evidence:** qa/sim/phase12-certification.mjs "Flow 5" and "Security 3" record what the rules allow; qa/enterprise-excellence/permissions-matrix.md.
+- **Expected:** The owner confirms the permissions matrix line by line before go-live, in particular these two.
+- **Actual:** By the department rules sales staff may dispatch a shipment and may start or complete a work order (shipments: warehouse and sales; jobs and work orders: production, sales, warehouse and quality). The rules are applied as written; the question is whether they are the ones the owner wants.
+- **Operational impact:** A sales representative can send goods out of the building. Every such act is in the audit trail under the person's name.
+- **Recommended correction:** Not changed: owner decision 3 ("use best logic") adopted these rules and says the owner can change any line. Listed for confirmation in phase-12-operational-acceptance.md.
+- **Required tests:** qa/sim/phase12-certification.mjs "Flow 5" and "Security 3" record what the rules allow; qa/enterprise-excellence/permissions-matrix.md.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Not changed: owner decision 3 ("use best logic") adopted these rules and says the owner can change any line. Listed for confirmation in phase-12-operational-acceptance.md.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Flow 5" and "Security 3" record what the rules allow; qa/enterprise-excellence/permissions-matrix.md.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-011 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Customers
+- **Workflow:** Customers
+- **Category:** Input validation
+- **Source file or endpoint:** src/backend/src/routes/customers.js
+- **Evidence:** qa/sim/phase12-certification.mjs "Security 7" (refused with 400 and nothing saved); qa/tools/phase12-mutations.mjs AA-011.
+- **Expected:** A code or a name that is not text is refused with 400.
+- **Actual:** A new customer whose code was sent as an object or a list, not text, was saved with the code "[object Object]". Found by the certification's own bad-input probe when its second run was answered "Customer code [object Object] is already in use".
+- **Operational impact:** A junk customer record from a faulty caller or a script. No effect on stock or money; the login must already be allowed to add customers.
+- **Recommended correction:** Fixed at the route: the code and the name must be text. Found after the gate on RC-2 had started; that gate was stopped (its log is kept as qa/results/phase12-gate-run-2-stopped.txt) and the whole gate was run again on the candidate with this correction.
+- **Required tests:** qa/sim/phase12-certification.mjs "Security 7" (refused with 400 and nothing saved); qa/tools/phase12-mutations.mjs AA-011.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed at the route: the code and the name must be text. Found after the gate on RC-2 had started; that gate was stopped (its log is kept as qa/results/phase12-gate-run-2-stopped.txt) and the whole gate was run again on the candidate with this correction.
+- **Verification evidence:** qa/sim/phase12-certification.mjs "Security 7" (refused with 400 and nothing saved); qa/tools/phase12-mutations.mjs AA-011.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
 

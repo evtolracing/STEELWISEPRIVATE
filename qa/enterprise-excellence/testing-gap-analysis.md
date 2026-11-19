@@ -1,12 +1,12 @@
 # Testing gap analysis
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 9e12319. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
 | Kind | Where | Size | Runs on GitHub |
 |---|---|---|:-:|
-| Unit tests | src/backend/test (29 files) | 268 tests | yes |
+| Unit tests | src/backend/test (30 files) | 276 tests | yes |
 | Order-to-cash simulation with database checks and reconciliation | qa/sim/run.mjs | 50 jobs per cycle, 3 cycles per gate run | no |
 | Security and safeguards sweep | qa/sim/security.mjs | 20 sections | no |
 | Baseline probe (Phase 1) | qa/sim/baseline-probe.mjs | 4 sections over every write route | no |
@@ -79,7 +79,7 @@ Measured from the server's request log during the full gate run of this session 
 - **Data isolation between runs.** The simulation, sweep and probes share one QA database and leave their records behind; the gate script rebuilds the database first. A test run on a database that was not rebuilt can pass or fail for reasons left by an earlier run.
 - **Refusal-heavy.** The sweep proves that 557 routes refuse a missing token and 534 refuse a customer, which is right, but most of those routes are never made to succeed.
 - **Browser checks read text.** They assert that a row or a message appears. They do not check layout, keyboard use or what a screen reader would say.
-- **Unit tests cover rules that were moved into `lib/`.** 29 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
+- **Unit tests cover rules that were moved into `lib/`.** 30 files, none of which needs a database. Rules still inside route handlers (dispatch, operations, staff, quality, drop tags, order hub) cannot be unit tested where they are (B-014).
 - **No concurrency test outside order to cash.** Reservation, dispatch, payment and return races are tested. Nothing tests two requests at once on the second stock list, operations, counter sessions or user edits.
 - **No cross-branch test**, because there is no cross-branch rule to test (B-003).
 - **One flake seen in earlier sessions and not since**: none recorded in this session; all gates passed on two consecutive full runs before any change.

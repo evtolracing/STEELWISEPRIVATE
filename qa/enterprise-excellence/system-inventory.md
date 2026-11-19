@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 9e12319. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -16,8 +16,8 @@ Every figure here is counted from the code or measured in a test run. The module
 | Enumerations | 96 |
 | Migrations | 36 |
 | Screens (routes in the browser) | 146 |
-| Frontend source files | 409 (121,101 lines) |
-| Server route code | 25,632 lines |
+| Frontend source files | 410 (121,492 lines) |
+| Server route code | 25,539 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -732,7 +732,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** nothing
 - **Feeds:** nothing
-- **Findings:** M-018, X-010
+- **Findings:** M-018
 
 ### Background work, notifications, schedules
 
@@ -913,7 +913,7 @@ Finding B-014.
 
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
-| src/frontend/src/help/manualContent.js | 3542 | 0 |
+| src/frontend/src/help/manualContent.js | 3570 | 0 |
 | src/frontend/src/router/AppRouter.jsx | 1581 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1337 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
@@ -956,7 +956,7 @@ Finding B-014.
 | Icon-only buttons | 301 |
 | aria-label attributes | 265 |
 | Browser alert or confirm calls | 0 in 0 files |
-| Timers started (setInterval, setTimeout) | 70 |
+| Timers started (setInterval, setTimeout) | 69 |
 | Timers cleared | 41 |
 | console.log calls | 17 |
 | Dialogs | 141 |

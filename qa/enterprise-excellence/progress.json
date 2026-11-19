@@ -3,10 +3,10 @@
   "program": "Enterprise Excellence Program",
   "currentPhase": 11,
   "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
-  "updated": "2026-11-19T00:25:59.517Z",
+  "updated": "2026-11-19T02:26:51.615Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "9e12319fe52f953b72248b77defe4664a26f0570",
+    "commit": "d9742e87ce24b4eac095f833f141e95a19700329",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 35,
     "merged": false,
@@ -35,7 +35,7 @@
     "enumerations": 96,
     "migrations": 36,
     "screens": 146,
-    "frontendFiles": 409,
+    "frontendFiles": 410,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -46,30 +46,29 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 128,
-    "P2": 183,
-    "P3": 120,
+    "P1": 130,
+    "P2": 188,
+    "P3": 124,
     "P0": 20,
     "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 336,
+    "VERIFIED FIXED": 347,
     "IN PROGRESS": 6,
-    "DEFERRED TO SPECIFIC PHASE": 63,
-    "BLOCKED": 3,
+    "REQUIRES BUSINESS DECISION": 92,
+    "BLOCKED": 5,
     "NOT APPLICABLE": 2,
-    "REQUIRES BUSINESS DECISION": 33,
-    "FIXED — NOT VERIFIED": 5,
+    "FIXED — NOT VERIFIED": 7,
     "ACCEPTED RISK WITH APPROVAL": 4
   },
   "openFindingsBySeverity": {
     "P1": 17,
-    "P2": 54,
-    "P3": 40,
+    "P2": 53,
+    "P3": 41,
     "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 452,
+  "findingsTotal": 463,
   "findingsAddedThisPhase": 14,
   "testsExecuted": [
     {

@@ -29,7 +29,9 @@ module.exports = async (s) => {
     await until(() => pathOf(page) === `/units/${id}`);
     t.check('Enter on the row opens the item', pathOf(page) === `/units/${id}`, pathOf(page));
     await has(page, coil.coilNumber); await settle(page, 500); const body = await text(page, 'main');
-    t.check('the heading is the item number', (await text(page, 'main h1')).trim() === coil.coilNumber);
+    // Waits for the heading itself: the number can be on the page (in the trail) before the heading is drawn (AA-012).
+    await until(async () => (await text(page, 'main h1')).trim() === coil.coilNumber, 5000);
+    t.check('the heading is the item number', (await text(page, 'main h1')).trim() === coil.coilNumber, await text(page, 'main h1'));
     t.check('on hand', body.includes(lb(3456)), body.slice(0, 300));
     t.check('heat, grade and location', body.includes(coil.heat.heatNumber) && body.includes(coil.grade.code) && body.includes(coil.location.name));
     t.check('the title names the item', await until(async () => (await page.title()).startsWith(coil.coilNumber), 5000), await page.title());

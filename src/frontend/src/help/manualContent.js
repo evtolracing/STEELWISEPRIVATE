@@ -6,6 +6,8 @@
  *   audience ('customer' for chapters written for customer logins; staff
  *   chapters leave it out — see help/helpAccess.js getModulesForUser),
  *   sections: [{ id, title, blocks }]
+ *   sample: true when every screen of the chapter is a design sample with example data;
+ *   sampleRoutes: [...] when only some are. The manual page then says so above the chapter.
  *
  * Block types:
  *   { type: 'text', value: '...' }
@@ -19,6 +21,8 @@
  *   { type: 'troubleshoot', items: [{ problem, solution }, ...] }
  *   { type: 'fields', items: [{ name, required, description }, ...] }
  */
+
+import manualOperations from './manualOperations.js'
 
 const manualModules = [
   // ─── 1. ORDER INTAKE / CSR ───────────────────────────────────────────
@@ -1574,6 +1578,8 @@ const manualModules = [
   // ─── 14. EXECUTIVE SUITE ─────────────────────────────────────────────
   {
     moduleId: 'executive',
+    // These screens of the chapter are design samples with example data.
+    sampleRoutes: ['/executive/cockpit', '/executive/simulation', '/executive/forecast', '/executive/decisions', '/executive/digital-twin'],
     title: 'Executive Suite',
     shortDescription: 'Strategic analytics for leadership — simulations, forecasts, decision logs, digital twin, and speed metrics.',
     icon: 'Insights',
@@ -1912,6 +1918,8 @@ const manualModules = [
   // ─── 19. LOGISTICS ───────────────────────────────────────────────────
   {
     moduleId: 'logistics',
+    // These screens of the chapter are design samples with example data.
+    sampleRoutes: ['/logistics/tracking', '/logistics/dispatch', '/logistics/route-optimization'],
     title: 'Logistics',
     shortDescription: 'Manage outbound shipments, live tracking, dispatch planning, and AI-powered route optimization.',
     icon: 'LocalShipping',
@@ -2237,6 +2245,8 @@ const manualModules = [
   // ─── 24. QUALITY & COMPLIANCE ─────────────────────────────────────────
   {
     moduleId: 'quality-compliance',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Quality & Compliance',
     shortDescription: 'QA/QC inspection management and material provenance tracking for regulatory compliance.',
     icon: 'VerifiedUser',
@@ -2289,6 +2299,8 @@ const manualModules = [
   // ─── 25. SUPPLIER QUALITY MANAGEMENT ──────────────────────────────────
   {
     moduleId: 'supplier-quality',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Supplier Quality Management',
     shortDescription: 'Full SQM suite — inbound receiving inspection, IQC, nonconformances, SCAR management, and supplier scorecards.',
     icon: 'Assessment',
@@ -2399,6 +2411,8 @@ const manualModules = [
   // ─── 26. CUSTOMER QUALITY ─────────────────────────────────────────────
   {
     moduleId: 'customer-quality',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Customer Quality',
     shortDescription: 'Handle customer claims, RMAs, corrective actions, and credit/refund approvals.',
     icon: 'SupportAgent',
@@ -2482,6 +2496,8 @@ const manualModules = [
   // ─── 27. CONTRACTOR PORTAL ────────────────────────────────────────────
   {
     moduleId: 'contractor-portal',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Contractor Portal',
     shortDescription: 'Visitor and contractor management — kiosk check-in, pre-registration, active visitor tracking, and contractor registry.',
     icon: 'Badge',
@@ -2562,6 +2578,8 @@ const manualModules = [
   // ─── 28. TRAINING ENGINE ──────────────────────────────────────────────
   {
     moduleId: 'training-engine',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Training Engine',
     shortDescription: 'Manage training programs, course catalog, employee certifications, and competency tracking.',
     icon: 'School',
@@ -2640,6 +2658,8 @@ const manualModules = [
   // ─── 29. PRODUCTION QUALITY ───────────────────────────────────────────
   {
     moduleId: 'production-quality',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Production Quality',
     shortDescription: 'In-process quality inspections, SPC charting, NCR management, and full production traceability.',
     icon: 'FactCheck',
@@ -2740,6 +2760,8 @@ const manualModules = [
   // ─── 30. MAINTENANCE ──────────────────────────────────────────────────
   {
     moduleId: 'maintenance',
+    // These screens of the chapter are design samples with example data.
+    sampleRoutes: ['/maintenance/dashboard', '/maintenance/pm-schedules', '/maintenance/parts'],
     title: 'Maintenance',
     shortDescription: 'Equipment maintenance management — work orders, PM schedules, asset registry, and spare parts inventory.',
     icon: 'Build',
@@ -3057,6 +3079,8 @@ const manualModules = [
   // ─── 33. FREIGHT & DELIVERY ───────────────────────────────────────────
   {
     moduleId: 'freight-delivery',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Freight & Delivery',
     shortDescription: 'Plan shipments, compare freight rates, track deliveries in real time, and manage delivery exceptions.',
     icon: 'LocalShipping',
@@ -3138,6 +3162,8 @@ const manualModules = [
   // ─── 34. SAFETY & EHS ────────────────────────────────────────────────
   {
     moduleId: 'safety-ehs',
+    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
+    sample: true,
     title: 'Safety & EHS',
     shortDescription: 'Safety management system covering incidents, inspections, permits, and training compliance.',
     icon: 'HealthAndSafety',
@@ -3536,6 +3562,8 @@ const manualModules = [
       },
     ],
   },
+  // Chapters for the finance, purchasing, transfer, work order, invoice and administration screens (Phase 12).
+  ...manualOperations,
 ]
 
 export default manualModules

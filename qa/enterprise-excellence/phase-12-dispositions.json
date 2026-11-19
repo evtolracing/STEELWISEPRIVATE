@@ -1,0 +1,321 @@
+{
+ "note": "Phase 12 dispositions of findings raised in earlier phases. Applied to findings.json by qa/tools/phase12-findings.mjs. A status is changed only where one is given. No finding is removed.",
+ "dispositions": {
+  "X-001": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "X-002": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "X-008": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "X-009": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "I-011": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "M-011": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-019": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-029": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-035": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-037": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-040": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "U-004": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "V-011": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "B-017": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "G-003": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "D-020": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "D-036": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "L-023": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "L-027": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "L-030": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "N-026": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "N-028": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "H-014": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "K-012": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not built. Owner decision 4 (2026-11-13) says build it; no approval to defer it past go-live is on file. The screens are labelled as samples, save nothing, and the manual now says so (AA-006). For go-live the owner chooses: go live with them labelled, hide them from the menu, or wait until they are built."
+  },
+  "B-012": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "B-013": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "B-014": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "B-016": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "B-022": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "B-024": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "C-009": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "C-013": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "D-023": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "D-024": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "I-012 (D-024)": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "E-018": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "E-021": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "G-013": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "G-018": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "G-020": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "I-017": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "U-022": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "L-025": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "L-029": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "V-018": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "V-027": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "V-029": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "V-035": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "V-036": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "D-034": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers."
+  },
+  "E-019": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: isolation was tested again by behaviour (customer accounts, branches of four kinds, a new branch, partners, documents, the assistant) and holds. The table-by-table audit of every tenant id column is still not made. Phase 12: not done, and no approval to defer it past go-live is on file. The owner either approves the deferral in writing (it then becomes DEFERRED WITH APPROVAL) or schedules the work. It does not stop the work the pilot covers.",
+   "verification": "qa/sim/phase12-certification.mjs \"Security 4 and 5\", \"Security 6\", \"Security 9\", \"Locations 2\", \"Locations 6\"."
+  },
+  "E-023": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 12: measured at the volume of the 80-branch QA data after the enterprise day: the cockpit answers in 61 ms at the median and 70 ms at the slowest of the reads, 76 KB. The earlier target (under 500 ms on the scaled database) is met. How many hot jobs the screen lists is a screen choice, not a defect.",
+   "verification": "qa/sim/phase12-certification.mjs \"Gap E-023\"."
+  },
+  "V-028": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 12: the dispatch board lists were tested across branches: a person of another branch is given none of the first branch's dispatch jobs or operations by asking for them, with or without a branch in the address.",
+   "verification": "qa/sim/phase12-certification.mjs \"Security 6\"."
+  },
+  "V-037": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 12: the home dashboard, the branch dashboard, the operations cockpit summary, the sales dashboard, the material tracking counts and the finance reports were each compared figure by figure with the database (and revenue with the journal by SQL).",
+   "verification": "qa/sim/phase12-certification.mjs group \"Dashboards and reports agree with the records\" (7 scenarios)."
+  },
+  "X-010": {
+   "status": "VERIFIED FIXED",
+   "statusNote": "Phase 12: every chapter about sample screens is flagged and the page says so; chapters that mix real and sample screens name the sample ones; every real screen on the menu has a chapter (AA-006).",
+   "verification": "qa/tools/phase12-manual.mjs; qa/sim/phase12-ui.cjs."
+  },
+  "G-011": {
+   "status": "FIXED — NOT VERIFIED",
+   "statusNote": "Phase 12: on the QA database the application connects as a role that cannot change or delete history, switch off the guards, or change the schema (tested again). On the live database this holds only after the owner applies database update 17 and points the server at that role (Y-008): NOT VERIFIED there.",
+   "verification": "qa/sim/phase12-certification.mjs \"Security 8\", \"Ledger 4\"."
+  },
+  "D-027": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: the sign-in and partner limits are one limit for all server copies (E-014, Z-007, after database update 18). The general ceiling per address still counts per copy by design; whether that is acceptable is Z-010, the owner's decision."
+  },
+  "H-012": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: same as D-027: the limits that protect sign-in and partners are shared; the general ceiling is per copy (Z-010, owner's decision)."
+  },
+  "W-005": {
+   "status": "BLOCKED",
+   "statusNote": "Phase 12: still not run on a copy of the live database: no copy was provided, and this session has no access to live data by rule. Blocked on the owner making the copy. It is step 2 of phase-12-cutover-plan.md and a condition of financial acceptance."
+  },
+  "W-015": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: unchanged. Whether a second finance person is always required to reopen a month is the accountant's decision, with W-001."
+  },
+  "W-023": {
+   "status": "BLOCKED",
+   "statusNote": "Phase 12: the ledger was certified again at the volume of the QA enterprise day. A year's volume and the live host are not measured: that needs the live host or a copy of it (owner). No capacity claim is made beyond what was measured."
+  },
+  "Z-012": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: unchanged. Whether a repeated dispatch should bill a shipment left without an invoice by a crash is the owner's choice; until then the Integrations screen lists such shipments and billing them closes each one (tested in Phase 11)."
+  },
+  "Z-014": {
+   "status": "REQUIRES BUSINESS DECISION",
+   "statusNote": "Phase 12: unchanged (60 seconds). Production timings are needed to choose a shorter wait safely; the figure is the owner's to confirm after the pilot."
+  },
+  "B-007": {
+   "statusNote": "Phase 12: the executive decision line is now tested: a decision is recorded under the signed-in person and role whatever the request claims, and a sales representative is refused.",
+   "verification": "qa/sim/phase12-certification.mjs \"Gap B-007\"."
+  },
+  "B-021": {
+   "statusNote": "Phase 12: tested again: an uploaded file is not served by its address; it is read only through the signed-in download; a customer login of another account is refused.",
+   "verification": "qa/sim/phase12-certification.mjs \"Security 9\"."
+  },
+  "C-006": {
+   "statusNote": "Phase 12: the web checkout was run with a request key (the same order sent twice saves one order). Order intake uses the same middleware and was not run separately: NOT VERIFIED for that one route.",
+   "verification": "qa/sim/phase12-certification.mjs \"Flow 6\"."
+  },
+  "D-011b": {
+   "status": "FIXED — NOT VERIFIED",
+   "statusNote": "Phase 12: on a self-hosted server a file over the limit is refused with 413 and a stored file downloads byte for byte (tested). On the hosted site, with its 4 MB limit and its own file store, neither was exercised: NOT VERIFIED there. On the deployment checklist as a first-day check.",
+   "verification": "qa/sim/phase12-certification.mjs \"Gap: a document over the upload size limit\"."
+  },
+  "E-009": {
+   "statusNote": "Phase 12: confirmed by reading the code: demo companies are loaded only with SEED_ON_START=true. The deployment checklist says to confirm the setting is absent on the host. No automated test starts a server against an empty non-local database, by rule."
+  },
+  "E-010": {
+   "statusNote": "Phase 12: now exercised by a test: a server asked to stop finishes the requests it has begun, exits by itself with code 0 in under five seconds, closes its database connections and takes no new request.",
+   "verification": "qa/tools/phase12-process.mjs (E-010, nine checks)."
+  },
+  "M-009": {
+   "statusNote": "Phase 12: the error path is now triggered in a browser: with the time records failing to load, the screen says so and shows no hours and no \"demo data\".",
+   "verification": "qa/sim/phase12-ui.cjs \"When time records cannot be loaded the screen says so and shows no hours\"."
+  },
+  "M-013": {
+   "statusNote": "Phase 12: now checked on a server started with no database: the jobs list answers 503 and no sample job.",
+   "verification": "qa/tools/phase12-process.mjs (M-013)."
+  },
+  "H-005": {
+   "statusNote": "Phase 12: unchanged and stated plainly: the fix is verified against stand-ins for the outside services. No real provider was called in any test; the first real call is a first-day check on the deployment checklist."
+  },
+  "H-006": {
+   "statusNote": "Phase 12: the fix is verified on QA. How many live orders are in this state is unknown until the report is read on the live system: a first-day check on the deployment checklist."
+  },
+  "H-018": {
+   "statusNote": "Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist."
+  },
+  "L-031": {
+   "statusNote": "Phase 12: verified on QA; whether any exist on live data is a first-day check on the deployment checklist."
+  },
+  "N-004": {
+   "statusNote": "Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist."
+  },
+  "N-014": {
+   "statusNote": "Phase 12: the documents are verified as files. What a paper looks like on a branch's own printer is not, and no claim is made (K-013): a pilot-branch check in the rollout plan."
+  },
+  "W-020": {
+   "statusNote": "Phase 12: the words \"NOT VERIFIED\" at the start of this finding's verification were left from before Phase 10 and are removed: the restore was run in Phase 10 (qa/results/phase10-restore.json). Live backups remain E-015.",
+   "verification": "qa/sim/phase10-security.mjs group 8 (25 scenarios); qa/results/phase10-restore.json.",
+   "replaceVerification": true
+  },
+  "W-022": {
+   "statusNote": "Phase 12: the words \"NOT VERIFIED with more than one server process\" are out of date: Phase 11 ran it on three and four server copies (Z-002)."
+  }
+ }
+}

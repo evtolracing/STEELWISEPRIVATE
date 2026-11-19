@@ -12,6 +12,20 @@ import * as simulationService from '../services/simulationService.js';
 import * as forecastService from '../services/forecastService.js';
 import * as decisionService from '../services/decisionService.js';
 
+/**
+ * The cockpit, the simulations and the forecasts are a design sample: their figures are worked out from
+ * fixed example values, not from this company's records. Every answer says so, in the body and in a
+ * header, so no screen or script can take them for real figures (Phase 12, AA-002). The decision log
+ * below is real records and is not marked.
+ */
+export const SAMPLE_NOTICE = 'Sample data. These figures are examples from the design of this screen, not your company\'s records.';
+router.use(['/cockpit', '/simulation', '/forecast'], (req, res, next) => {
+  res.set('X-Sample-Data', 'true');
+  const send = res.json.bind(res);
+  res.json = (body) => send(body && typeof body === 'object' && !Array.isArray(body) && !body.error ? { sample: true, sampleNotice: SAMPLE_NOTICE, ...body } : body);
+  next();
+});
+
 // =====================
 // COCKPIT ENDPOINTS
 // =====================
@@ -429,98 +443,13 @@ router.post('/decisions/compare', async (req, res) => {
  * POST /api/executive/ai/query
  * Process natural language query for executive AI assistant
  */
-router.post('/ai/query', async (req, res) => {
-  try {
-    const { query } = req.body;
-    
-    if (!query) {
-      return res.status(400).json({ error: 'query is required' });
-    }
-    
-    // In production, integrate with LLM service
-    // For now, return mock response
-    const response = {
-      answer: generateMockAIResponse(query),
-      confidence: 85,
-      sources: ['Production Schedule', 'Inventory System', 'Financial Reports'],
-      relatedActions: [
-        { action: 'View Details', link: '/executive/cockpit' },
-        { action: 'Run Simulation', link: '/executive/simulation' },
-      ],
-    };
-    
-    res.json(response);
-  } catch (error) {
-    console.error('Error processing AI query:', error);
-    res.status(500).json({ error: 'Failed to process query', message: error.message });
-  }
+router.post('/ai/query', (req, res) => {
+  // No analysis engine is built behind this box. It answers that plainly and gives no figures (Phase 12, AA-002).
+  res.status(501).json({
+    error: 'The executive question box is not built. It gives no analysis and no figures.',
+    sample: true,
+    useInstead: 'Ask the assistant in the top bar: it answers from your company\'s records and says when it has none.',
+  });
 });
-
-/**
- * Mock AI response generator
- */
-function generateMockAIResponse(query) {
-  const lowerQuery = query.toLowerCase();
-  
-  if (lowerQuery.includes('detroit') || lowerQuery.includes('capacity')) {
-    return `Detroit is at 97% utilization, above the 90% threshold.
-
-**Root cause:** 3 large orders added yesterday totaling 18,000 lbs
-
-**Contributing factors:**
-- SAW-01 running 12% slower than rated (maintenance flag)
-- 2 rush orders expedited from Chicago
-
-**Impact:** 2 orders at risk of missing ship date ($45K value)
-
-**Suggested action:** Transfer ORD-2026-4521 to Cleveland (saves 6 hours, Cleveland at 58% utilization)`;
-  }
-  
-  if (lowerQuery.includes('risk') || lowerQuery.includes('summary')) {
-    return `**Today's Risk Summary (Score: 62 - MEDIUM)**
-
-Top 3 Risks:
-1. **Capacity** - Detroit at 97% utilization (HIGH)
-2. **Inventory** - 4140 stock below reorder point (MEDIUM)
-3. **Quality** - NCR blocking 3 shipments (MEDIUM)
-
-Compared to yesterday: Risk score +7 points
-
-**Recommended Actions:**
-1. Transfer 2 jobs to Cleveland
-2. Expedite PO-2026-1234 for 4140
-3. Review NCR-2026-089 by 2pm`;
-  }
-  
-  if (lowerQuery.includes('margin') || lowerQuery.includes('forecast')) {
-    return `**Margin Forecast for February:**
-
-Current MTD: 22.1% (vs 21.8% target)
-
-Forecast for full month:
-- P50 (Expected): 22.8%
-- P10 (Pessimistic): 20.5%
-- P90 (Optimistic): 24.8%
-
-**Key Drivers:**
-- Price increases: +1.2%
-- Raw material costs: -0.5%
-- Efficiency gains: +0.4%
-
-No significant risks to target at this time.`;
-  }
-  
-  return `I analyzed your query: "${query}"
-
-Based on current operational data:
-- Overall risk score is 62 (MEDIUM)
-- 47 orders shipping today with 96% on-track
-- Detroit is the primary capacity constraint
-
-Would you like me to:
-1. Drill into a specific area?
-2. Run a simulation for a proposed change?
-3. Generate a forecast for a specific metric?`;
-}
 
 export default router;

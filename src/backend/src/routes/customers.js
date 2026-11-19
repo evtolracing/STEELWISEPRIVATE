@@ -197,7 +197,9 @@ const accountFields = (body = {}) => {
 router.post('/', async (req, res) => {
   try {
     const { code, name, type = 'OEM' } = req.body || {};
-    if (!code || !String(code).trim() || !name || !String(name).trim()) {
+    // The code and the name are text. Anything else (a list, an object) was once turned into text and saved as
+    // "[object Object]" (AA-011).
+    if (typeof code !== 'string' || typeof name !== 'string' || !code.trim() || !name.trim()) {
       return res.status(400).json({ error: 'A customer needs a code and a name' });
     }
     if (await prisma.organization.findUnique({ where: { code: String(code).trim() } })) {

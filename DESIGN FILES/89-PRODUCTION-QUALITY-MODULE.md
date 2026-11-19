@@ -1,5 +1,7 @@
 # 89 - Production Quality Module
 
+> **Status notice (2026-11-19, Phase 12 certification).** This document was written before or outside the engineering quality program. It is a design, sales or set-up document, not evidence that anything it describes is built, tested or approved for production. What is built and verified is in `qa/enterprise-excellence/phase-12-system-certification.md`; the production recommendation is in `qa/enterprise-excellence/phase-12-final-report.md`.
+
 > **Document Version**: 1.0  
 > **Date**: February 4, 2026  
 > **Author**: Principal Manufacturing Quality Systems Architect  

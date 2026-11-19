@@ -113,6 +113,14 @@ app.use(requestLog);
 // can load uploaded files when it runs on a different origin.
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
+// A zero byte in an address is never a real id or search word, and the database refuses to store or
+// compare one. It is the caller's mistake, answered as one here instead of as a server error further in
+// (Phase 12, AA-005).
+app.use((req, res, next) => {
+  if (/%00|\0/i.test(req.originalUrl || req.url || '')) return res.status(400).json({ error: 'That address is not valid.' });
+  next();
+});
+
 // CORS: an explicit allowlist from CORS_ORIGIN. Without one, production only
 // accepts same-origin requests (the frontend and API share a domain on
 // Vercel) and development accepts any origin.

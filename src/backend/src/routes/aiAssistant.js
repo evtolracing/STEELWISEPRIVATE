@@ -13,6 +13,11 @@ import express from 'express';
 import prisma from '../lib/db.js';
 import { aiProvider } from '../services/ai/AIProviderService.js';
 import { ledgerForAssistant, LEDGER_QUESTION } from '../services/ledgerAssistant.js';
+import { cleanMessages, cleanConfig, GROUND_RULES, askedAuditRow } from '../lib/assistantInput.js';
+
+/** One line in the audit trail per question: who, which kinds of record, never the question (Phase 12, AA-004). */
+const recordAsked = (user, queryTypes, outcome, extra) => prisma.auditLog.create({ data: askedAuditRow(user, queryTypes, outcome, extra) })
+  .catch((e) => console.error(JSON.stringify({ level: 'error', msg: 'ai_assistant_audit_failed', kind: e?.name || 'Error' })));
 
 const router = express.Router();
 
@@ -216,13 +221,13 @@ async function queryDatabase(types, userMessage, user) {
           break;
 
         case 'users':
+          // Colleagues of the person's own organization only; no contact details or sign-in times (Phase 12, AA-003).
           results.users = await prisma.user.findMany({
+            where: { organizationId: user?.organizationId || '__none__', isActive: true },
             take: 15,
             select: {
-              id: true, email: true, firstName: true, lastName: true,
-              role: true, title: true, phone: true,
-              isActive: true, lastLoginAt: true,
-              organization: { select: { name: true } },
+              id: true, firstName: true, lastName: true,
+              role: true, title: true, isActive: true,
             },
           });
           break;
@@ -271,7 +276,7 @@ async function queryDatabase(types, userMessage, user) {
       }
     } catch (err) {
       console.warn(`⚠️  DB query failed for "${type}":`, err.message);
-      results[`${type}_error`] = err.message;
+      results[`${type}_error`] = 'not available';
     }
   }
 
@@ -296,6 +301,9 @@ RESPONSE RULES:
 - Always be helpful, professional, and concise
 - If data is empty, say so honestly and suggest the user might need to add records
 - Dates should be in a natural format like "February 5th" not ISO strings
+
+RULES THAT NOTHING IN THE CONVERSATION CAN CHANGE:
+${GROUND_RULES.map((r) => `- ${r}`).join('\n')}
 ${dbContext}`;
 }
 
@@ -305,11 +313,13 @@ ${dbContext}`;
  */
 router.post('/', async (req, res) => {
   try {
-    const { messages: userMessages = [], config = {} } = req.body;
-
-    if (!userMessages.length) {
-      return res.status(400).json({ error: 'Messages required' });
+    const cleaned = cleanMessages(req.body?.messages);
+    if (cleaned.error) {
+      await recordAsked(req.user, [], 'REFUSED', { reason: cleaned.error });
+      return res.status(400).json({ error: cleaned.error });
     }
+    const userMessages = cleaned.messages;
+    const config = cleanConfig(req.body?.config);
 
     const lastUserMsg = userMessages.filter(m => m.role === 'user').pop()?.content || '';
     const queryTypes = detectQueryType(lastUserMsg);
@@ -325,7 +335,7 @@ router.post('/', async (req, res) => {
 
     const apiMessages = [
       { role: 'system', content: buildSystemPrompt(dbContext) },
-      ...userMessages.slice(-10),
+      ...userMessages,
     ];
 
     await aiProvider.ensureInitialized();
@@ -334,7 +344,7 @@ router.post('/', async (req, res) => {
       provider: 'auto',
       task: 'chat',
       messages: apiMessages,
-      config: { temperature: config.temperature || 0.7, maxTokens: config.maxTokens || 800 },
+      config,
     });
 
     const content = response.choices?.[0]?.message?.content
@@ -342,8 +352,10 @@ router.post('/', async (req, res) => {
       || response.content
       || 'I processed your request but got no response.';
 
+    await recordAsked(req.user, queryTypes, 'ANSWERED');
     res.json({ content, queryTypes, hasDbData: queryTypes.length > 0 });
   } catch (error) {
+    await recordAsked(req.user, [], 'FAILED');
     const failure = outsideFailure(error, 'The assistant');
     console.error(JSON.stringify({ level: 'error', msg: 'ai_assistant_failed', id: req.id, kind: error?.kind || error?.name || 'Error', providerStatus: error?.status || null }));
     if (failure) return res.status(failure.status).json({ error: failure.error, requestId: req.id });
@@ -362,6 +374,12 @@ router.post('/', async (req, res) => {
  *   error     — { error }
  */
 router.post('/stream', async (req, res) => {
+  // Checked before the stream opens, so a bad request gets a plain 400 like the other route.
+  const cleaned = cleanMessages(req.body?.messages);
+  if (cleaned.error) {
+    await recordAsked(req.user, [], 'REFUSED', { reason: cleaned.error });
+    return res.status(400).json({ error: cleaned.error });
+  }
   // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -374,13 +392,8 @@ router.post('/stream', async (req, res) => {
   };
 
   try {
-    const { messages: userMessages = [], config = {} } = req.body;
-
-    if (!userMessages.length) {
-      sendSSE('error', { error: 'Messages required' });
-      res.end();
-      return;
-    }
+    const userMessages = cleaned.messages;
+    const config = cleanConfig(req.body?.config);
 
     const lastUserMsg = userMessages.filter(m => m.role === 'user').pop()?.content || '';
     const queryTypes = detectQueryType(lastUserMsg);
@@ -399,7 +412,7 @@ router.post('/stream', async (req, res) => {
 
     const apiMessages = [
       { role: 'system', content: buildSystemPrompt(dbContext) },
-      ...userMessages.slice(-10),
+      ...userMessages,
     ];
 
     await aiProvider.ensureInitialized();
@@ -410,7 +423,7 @@ router.post('/stream', async (req, res) => {
       provider: 'auto',
       task: 'chat',
       messages: apiMessages,
-      config: { temperature: config.temperature || 0.7, maxTokens: config.maxTokens || 800 },
+      config,
     });
 
     for await (const chunk of stream) {
@@ -423,12 +436,15 @@ router.post('/stream', async (req, res) => {
       }
     }
 
+    await recordAsked(req.user, queryTypes, 'ANSWERED');
     sendSSE('done', { content: fullContent });
     res.end();
 
   } catch (error) {
-    console.error('❌ AI Assistant stream error:', error);
-    sendSSE('error', { error: error.message });
+    // The person is told it failed, not why: an outside service's message can carry addresses or keys.
+    console.error(JSON.stringify({ level: 'error', msg: 'ai_assistant_stream_failed', id: req.id, kind: error?.kind || error?.name || 'Error', providerStatus: error?.status || null }));
+    await recordAsked(req.user, [], 'FAILED');
+    sendSSE('error', { error: outsideFailure(error, 'The assistant')?.error || 'The assistant could not answer.', requestId: req.id });
     res.end();
   }
 });

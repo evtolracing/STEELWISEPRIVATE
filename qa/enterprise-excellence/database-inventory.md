@@ -1,8 +1,8 @@
 # Database inventory
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 8460e84. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
 
-Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-18 20:04 UTC); they describe test data, not the live database, which was not touched.
+Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-19 02:17 UTC); they describe test data, not the live database, which was not touched.
 
 ## Totals
 
@@ -10,8 +10,8 @@ Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are re
 |---|---:|
 | Tables | 172 |
 | Tables no server code reads or writes | 54 |
-| Tables empty after a full test run | 100 of 173 |
-| Rows in the QA database | 30,557 |
+| Tables empty after a full test run | 76 of 173 |
+| Rows in the QA database | 74,026 |
 | Indexes | 634 |
 | Foreign keys | 201 |
 | Foreign keys with no index | 0 |
@@ -115,7 +115,7 @@ Run by `qa/tools/db-facts.mjs`. Each number is how many rows break the rule. The
 | completed work orders whose output and scrap are not matched by movements on the source item | 0 |
 | completed work orders whose pieces do not weigh what the work order says came out | 0 |
 | pieces whose heat, grade or owner differs from the item they were cut from | 0 |
-| invoice series whose counter is not the highest number on file | 12 |
+| invoice series whose counter is not the highest number on file | 13 |
 | package, tag or listing series whose counter is not the highest number on file | 0 |
 | invoice numbers repeated | 0 |
 | stock corrections with no note or no person | 0 |
@@ -157,26 +157,26 @@ Run by `qa/tools/db-facts.mjs`. Each number is how many rows break the rule. The
 | credit memos larger than the invoice they credit | 0 |
 | two live invoices for the same shipment | 0 |
 | quotes or requests whose branch does not exist | 0 |
-| orders with no branch | 59 |
+| orders with no branch | 64 |
 | order lines shipped more than ordered | 0 |
 | order line shipped quantity differs from its dispatched shipment items | 47 |
 | order line shipped quantity differs from its dispatched shipment items, outside the demo seed orders | 0 |
-| counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025) | 0 |
+| counter quick sale lines with no stock movement, because the product has no shelf stock on file at the branch (B-025) | 6 |
 | invoice paid amount differs from its payments, outside the demo seed invoices | 0 |
 | invoices paid more than their total | 0 |
 | invoice total differs from subtotal + tax + freight | 0 |
 | invoice paid amount differs from its payments | 1 |
 | orders with no lines (not draft or cancelled), outside seed and fixture orders | 0 |
-| jobs with no order and no order line | 1 |
-| stock items (coils) with no heat | 0 |
+| jobs with no order and no order line | 66 |
+| stock items (coils) with no heat | 10 |
 | stock items with no location | 0 |
-| shipments delivered with no proof of delivery name | 47 |
-| users with no home branch | 12 |
+| shipments delivered with no proof of delivery name | 52 |
+| users with no home branch | 14 |
 | invoices and credit memos with no record of who raised them, outside the demo seed | 0 |
-| shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8) | 47 |
+| shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8) | 48 |
 | dispatched shipments whose stock movements add up to more than the shipment carries | 0 |
 | shipments still on the dock for a cancelled order | 0 |
-| shipments on the road or delivered with no invoice (each is listed for billing in the integration report) | 4 |
+| shipments on the road or delivered with no invoice (each is listed for billing in the integration report) | 15 |
 | packages with more than one live tag | 0 |
 | returns whose missing credit was settled more than once | 0 |
 | stock movements for a shipment with a cost that is negative | 0 |
@@ -236,9 +236,9 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 
 | Table | Columns | Foreign keys | Unique | Indexes | Status | Branch | Org | Rows (QA) | Read by | Written by |
 |---|---:|---:|---:|---:|---|:-:|:-:|---:|---|---|
-| Organization | 17 | 1 | 1 | 1 |  |  |  | 327 | creditControl, customerPricing, orderTax, receiving, … | customers, quickSale, index, supabaseSeed, … |
-| CustomerPreference | 49 | 1 | 1 | 0 |  |  |  | 0 | customers, specInheritance | customers |
-| User | 20 | 3 | 1 | 3 |  | yes | yes | 848 | jobHistory, opsChecks, orderTax, receiving, … | auth, users, index, supabaseSeed |
+| Organization | 17 | 1 | 1 | 1 |  |  |  | 401 | creditControl, customerPricing, orderTax, receiving, … | customers, quickSale, index, supabaseSeed, … |
+| CustomerPreference | 49 | 1 | 1 | 0 |  |  |  | 2 | customers, specInheritance | customers |
+| User | 20 | 3 | 1 | 3 |  | yes | yes | 985 | jobHistory, opsChecks, orderTax, receiving, … | auth, users, index, supabaseSeed |
 | Role | 9 | 0 | 1 | 0 |  |  |  | 10 | users | users |
 | UserRoleAssignment | 6 | 2 | 1 | 2 |  |  |  | 0 | nothing | users |
 | UserLocation | 5 | 2 | 1 | 2 |  | yes |  | 246 | nothing | users |
@@ -246,52 +246,52 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | Division | 7 | 0 | 1 | 0 |  |  | yes | 0 | users | nothing |
 | ApprovalRequest | 12 | 1 | 0 | 2 | ApprovalStatus |  | yes | 0 | nothing | nothing |
 | ApprovalDecision | 6 | 2 | 0 | 2 |  |  |  | 0 | nothing | nothing |
-| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 5643 | alerts, creditControl, integrationReport, jobGates, … | alerts, creditControl, jobHistory, stockChanges, … |
-| Grade | 17 | 0 | 1 | 0 |  |  |  | 8 | lineSpecs, receiving, aiAssistant, coils, … | lineSpecs, grades, index, supabaseSeed |
-| Product | 20 | 1 | 1 | 1 |  |  |  | 12 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
-| Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 15 | receiving, aiAssistant, coils, heats, … | documents, heats, index, supabaseSeed |
-| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 870 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
-| Location | 19 | 2 | 1 | 2 |  |  | yes | 85 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
-| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 870 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
-| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 1337 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
+| AuditLog | 21 | 1 | 0 | 4 |  |  | yes | 18253 | alerts, creditControl, integrationReport, jobGates, … | alerts, creditControl, jobHistory, stockChanges, … |
+| Grade | 17 | 0 | 1 | 0 |  |  |  | 9 | lineSpecs, receiving, aiAssistant, coils, … | lineSpecs, grades, index, supabaseSeed |
+| Product | 20 | 1 | 1 | 1 |  |  |  | 17 | receiving, aiAssistant, coils, intakeOrders, … | intakePricing, products, index, ecomService |
+| Heat | 15 | 4 | 1 | 4 | HeatStatus |  |  | 19 | receiving, aiAssistant, coils, heats, … | documents, heats, index, supabaseSeed |
+| Coil | 32 | 8 | 1 | 8 | CoilStatus | yes | yes | 2014 | holds, receiving, stockChanges, transfers, … | holds, receiving, stockChanges, transfers, … |
+| Location | 19 | 2 | 1 | 2 |  |  | yes | 166 | orderTax, receiving, coils, compressionMetrics, … | dispatchRoutes, index, supabaseSeed |
+| Inventory | 17 | 2 | 1 | 1 |  | yes |  | 2014 | receiving, transfers, dashboard, inventory, … | holds, receiving, stockChanges, transfers, … |
+| MaterialMovement | 16 | 8 | 0 | 8 |  | yes |  | 3709 | orderCloseout, receiving, shippingDocuments, coils, … | receiving, stockChanges, transfers, inventory, … |
 | TestResult | 16 | 4 | 0 | 4 |  |  |  | 0 | (with its parent) | (with its parent) |
-| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 0 | coils, dashboard, opsCockpit | holds, transfers, returns |
-| RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 134 | aiAssistant, analyticsV1, documents, customerRoutes, … | documents, quotes, rfqs, index |
-| RFQLine | 12 | 1 | 0 | 1 |  |  |  | 115 | (with its parent) | (with its parent) |
-| Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 134 | aiAssistant, analyticsV1, documents, intakeOrders, … | documents, quotes, rfqs, index |
-| QuoteLine | 28 | 3 | 0 | 3 |  |  |  | 115 | (with its parent) | (with its parent) |
-| Operator | 21 | 3 | 2 | 3 | OperatorStatus | yes |  | 72 | dispatchRoutes, operationsRoutes, qcRoutes, staff | staff |
-| OperatorSkill | 10 | 1 | 1 | 1 |  |  |  | 72 | staff | staff |
+| QCHold | 14 | 3 | 0 | 3 | HoldStatus |  |  | 62 | coils, dashboard, opsCockpit | holds, transfers, returns |
+| RFQ | 14 | 2 | 1 | 2 | RFQStatus | yes |  | 178 | aiAssistant, analyticsV1, documents, customerRoutes, … | documents, quotes, rfqs, index |
+| RFQLine | 12 | 1 | 0 | 1 |  |  |  | 163 | (with its parent) | (with its parent) |
+| Quote | 23 | 4 | 2 | 3 | QuoteStatus | yes |  | 173 | aiAssistant, analyticsV1, documents, intakeOrders, … | documents, quotes, rfqs, index |
+| QuoteLine | 28 | 3 | 0 | 3 |  |  |  | 157 | (with its parent) | (with its parent) |
+| Operator | 21 | 3 | 2 | 3 | OperatorStatus | yes |  | 128 | dispatchRoutes, operationsRoutes, qcRoutes, staff | staff |
+| OperatorSkill | 10 | 1 | 1 | 1 |  |  |  | 131 | staff | staff |
 | Shift | 13 | 1 | 0 | 2 | ShiftStatus | yes |  | 0 | staff | staff |
-| DispatchJob | 16 | 3 | 1 | 3 |  | yes |  | 115 | jobGates, dispatchRoutes, jobs, qcRoutes | jobs |
-| DispatchOperation | 20 | 3 | 1 | 4 |  |  |  | 230 | workCenterGuard, dispatchRoutes, jobs, operationsRoutes, … | dispatchRoutes, operationsRoutes, qcRoutes |
-| DispatchTimeLog | 11 | 1 | 0 | 3 |  |  |  | 230 | costing, operationsRoutes, staff | jobGates, operationsRoutes |
-| JobInspection | 18 | 2 | 1 | 3 |  |  |  | 115 | jobGates, materialTrackingRoutes, qcRoutes | qcRoutes |
-| WorkCenterType | 13 | 0 | 0 | 0 |  |  |  | 1 | costing, workCenterGuard, bomV1, dispatchRoutes, … | dispatchRoutes |
-| WorkCenter | 10 | 1 | 1 | 1 |  | yes |  | 348 | aiAssistant, analyticsV1, assets, dispatchRoutes, … | dispatchRoutes, workCenters, index |
-| Job | 44 | 7 | 1 | 7 | JobStatus |  |  | 173 | jobGates, jobHistory, orderCloseout, aiAssistant, … | jobGates, jobHistory, documents, intakeOrders, … |
-| Order | 28 | 5 | 1 | 5 | OrderStatus | yes |  | 1081 | creditControl, orderCloseout, shippingDocuments, aiAssistant, … | creditControl, documents, intakeOrders, onlineOrders, … |
-| OrderLine | 36 | 4 | 0 | 4 |  |  |  | 1081 | orderCloseout, receiving, jobs, orders, … | receiving, intakeOrders, orders, purchaseOrders, … |
-| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 0 | holds, orderCloseout, shippingDocuments, stockChanges, … | stockChanges, orders, shipments |
-| WorkOrder | 20 | 4 | 1 | 4 | WOStatus |  |  | 40 | costing, documents, workOrders, ledger, … | documents, workOrders |
-| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 80 | ledger | stockChanges |
-| Shipment | 22 | 3 | 1 | 3 | ShipmentStatus | yes |  | 532 | orderCloseout, shippingDocuments, aiAssistant, dashboard, … | documents, orders, shipments, index |
-| ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 488 | orderCloseout, shipments | shipments, index |
+| DispatchJob | 16 | 3 | 1 | 3 |  | yes |  | 300 | jobGates, dispatchRoutes, jobs, qcRoutes | jobs |
+| DispatchOperation | 20 | 3 | 1 | 4 |  |  |  | 455 | workCenterGuard, dispatchRoutes, jobs, operationsRoutes, … | dispatchRoutes, operationsRoutes, qcRoutes |
+| DispatchTimeLog | 11 | 1 | 0 | 3 |  |  |  | 383 | costing, operationsRoutes, staff | jobGates, operationsRoutes |
+| JobInspection | 18 | 2 | 1 | 3 |  |  |  | 331 | jobGates, materialTrackingRoutes, qcRoutes | qcRoutes |
+| WorkCenterType | 13 | 0 | 0 | 0 |  |  |  | 47 | costing, workCenterGuard, bomV1, dispatchRoutes, … | dispatchRoutes |
+| WorkCenter | 10 | 1 | 1 | 1 |  | yes |  | 404 | aiAssistant, analyticsV1, assets, dispatchRoutes, … | dispatchRoutes, workCenters, index |
+| Job | 44 | 7 | 1 | 7 | JobStatus |  |  | 590 | jobGates, jobHistory, orderCloseout, aiAssistant, … | jobGates, jobHistory, documents, intakeOrders, … |
+| Order | 28 | 5 | 1 | 5 | OrderStatus | yes |  | 2894 | creditControl, orderCloseout, shippingDocuments, aiAssistant, … | creditControl, documents, intakeOrders, onlineOrders, … |
+| OrderLine | 36 | 4 | 0 | 4 |  |  |  | 2920 | orderCloseout, receiving, jobs, orders, … | receiving, intakeOrders, orders, purchaseOrders, … |
+| OrderLineAllocation | 5 | 2 | 0 | 2 |  |  |  | 142 | holds, orderCloseout, shippingDocuments, stockChanges, … | stockChanges, orders, shipments |
+| WorkOrder | 20 | 4 | 1 | 4 | WOStatus |  |  | 134 | costing, documents, workOrders, ledger, … | documents, workOrders |
+| WorkOrderOutput | 9 | 2 | 0 | 2 |  |  |  | 166 | ledger | stockChanges |
+| Shipment | 22 | 3 | 1 | 3 | ShipmentStatus | yes |  | 1332 | orderCloseout, shippingDocuments, aiAssistant, dashboard, … | documents, orders, shipments, index |
+| ShipmentItem | 6 | 2 | 0 | 2 |  |  |  | 1303 | orderCloseout, shipments | shipments, index |
 | ShipmentStop | 12 | 1 | 0 | 1 |  |  |  | 0 | (with its parent) | (with its parent) |
-| Invoice | 17 | 3 | 1 | 3 | InvoiceStatus |  |  | 612 | creditControl, orderCloseout, documents, customerRoutes, … | documents, quickSale, index, billing |
-| InvoiceLine | 11 | 2 | 0 | 2 |  |  |  | 610 | orderCloseout, quickSale, returns, billing | nothing |
-| DocumentBlob | 3 | 1 | 0 | 0 |  |  |  | 0 | documents, customerRoutes | nothing |
-| Payment | 8 | 1 | 0 | 1 |  |  |  | 610 | quickSale, ledger | quickSale, billing |
-| Document | 18 | 1 | 0 | 1 |  |  | yes | 0 | aiAssistant, documents, customerRoutes, portalService | documents |
-| DocumentLink | 6 | 1 | 0 | 2 |  |  |  | 0 | documents | documents |
+| Invoice | 17 | 3 | 1 | 3 | InvoiceStatus |  |  | 1411 | creditControl, orderCloseout, documents, customerRoutes, … | documents, quickSale, index, billing |
+| InvoiceLine | 11 | 2 | 0 | 2 |  |  |  | 1425 | orderCloseout, quickSale, returns, billing | nothing |
+| DocumentBlob | 3 | 1 | 0 | 0 |  |  |  | 1 | documents, customerRoutes | nothing |
+| Payment | 8 | 1 | 0 | 1 |  |  |  | 1189 | quickSale, ledger | quickSale, billing |
+| Document | 18 | 1 | 0 | 1 |  |  | yes | 6 | aiAssistant, documents, customerRoutes, portalService | documents |
+| DocumentLink | 6 | 1 | 0 | 2 |  |  |  | 1 | documents | documents |
 | CommodityPrice | 8 | 0 | 0 | 1 |  |  |  | 0 | nothing | nothing |
-| BomRecipe | 15 | 0 | 0 | 4 | BomRecipeStatus |  |  | 0 | jobGates, operations, bomV1, jobs | bomV1 |
-| BomOperation | 11 | 1 | 0 | 1 |  |  |  | 0 | bomV1, optimizationV1 | nothing |
-| Asset | 35 | 4 | 1 | 6 | AssetStatus |  |  | 0 | workCenterGuard, assets, maintenanceOrders | assets |
-| AssetType | 12 | 0 | 1 | 1 |  |  |  | 0 | assets | assets |
+| BomRecipe | 15 | 0 | 0 | 4 | BomRecipeStatus |  |  | 15 | jobGates, operations, bomV1, jobs | bomV1 |
+| BomOperation | 11 | 1 | 0 | 1 |  |  |  | 23 | bomV1, optimizationV1 | nothing |
+| Asset | 35 | 4 | 1 | 6 | AssetStatus |  |  | 289 | workCenterGuard, assets, maintenanceOrders | assets |
+| AssetType | 12 | 0 | 1 | 1 |  |  |  | 2 | assets | assets |
 | AssetComponent | 14 | 1 | 0 | 1 | ComponentStatus |  |  | 0 | (with its parent) | (with its parent) |
 | MeterReading | 9 | 1 | 0 | 2 |  |  |  | 0 | nothing | nothing |
-| MaintenanceOrder | 47 | 4 | 1 | 8 | MaintenanceOrderStatus |  |  | 0 | aiAssistant, maintenanceOrders | maintenanceOrders |
+| MaintenanceOrder | 47 | 4 | 1 | 8 | MaintenanceOrderStatus |  |  | 2 | aiAssistant, maintenanceOrders | maintenanceOrders |
 | MaintenanceTask | 12 | 1 | 0 | 1 | TaskStatus |  |  | 0 | (with its parent) | (with its parent) |
 | MaintenanceOrderPart | 12 | 2 | 0 | 2 |  |  |  | 0 | nothing | nothing |
 | MaintenanceOrderLabor | 11 | 1 | 0 | 1 |  |  |  | 0 | nothing | nothing |
@@ -302,25 +302,25 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | SparePart | 22 | 1 | 1 | 2 |  |  |  | 0 | nothing | nothing |
 | SparePartTransaction | 10 | 1 | 0 | 2 |  |  |  | 0 | nothing | nothing |
 | MaintenanceAuditLog | 13 | 0 | 0 | 3 |  |  |  | 0 | nothing | nothing |
-| CustomerPricingTier | 16 | 1 | 1 | 0 |  |  |  | 59 | customerPricing, customers, intakePricing, portalService, … | customers, index |
+| CustomerPricingTier | 16 | 1 | 1 | 0 |  |  |  | 70 | customerPricing, customers, intakePricing, portalService, … | customers, index |
 | PricingRecommendation | 31 | 0 | 0 | 0 |  | yes |  | 0 | nothing | pricingIntelligenceService |
 | PricingOverride | 17 | 0 | 0 | 0 |  |  |  | 0 | nothing | pricingIntelligenceService |
 | QuoteAcceptance | 11 | 0 | 1 | 0 |  |  |  | 0 | nothing | nothing |
 | RFQSource | 11 | 0 | 1 | 0 |  |  |  | 0 | nothing | nothing |
 | PricingAnalytics | 17 | 0 | 1 | 0 |  | yes |  | 0 | pricingIntelligenceService | nothing |
-| DropTag | 54 | 7 | 1 | 9 | DropTagStatus |  | yes | 0 | materialTrackingRoutes, dropTagListingService, dropTagService, scanService, … | dropTagListingService, dropTagService, scanService |
-| DropTagListing | 27 | 2 | 1 | 3 | DropTagListingStatus |  | yes | 0 | dropTagListingService | dropTagListingService |
-| Package | 30 | 4 | 1 | 5 | PackageStatus |  | yes | 0 | shippingDocuments, materialTrackingRoutes, dropTagService, scanService | dropTagService, scanService |
-| PackageItem | 15 | 1 | 0 | 3 |  |  |  | 0 | dropTagService | dropTagService |
+| DropTag | 54 | 7 | 1 | 9 | DropTagStatus |  | yes | 11 | materialTrackingRoutes, dropTagListingService, dropTagService, scanService, … | dropTagListingService, dropTagService, scanService |
+| DropTagListing | 27 | 2 | 1 | 3 | DropTagListingStatus |  | yes | 1 | dropTagListingService | dropTagListingService |
+| Package | 30 | 4 | 1 | 5 | PackageStatus |  | yes | 17 | shippingDocuments, materialTrackingRoutes, dropTagService, scanService | dropTagService, scanService |
+| PackageItem | 15 | 1 | 0 | 3 |  |  |  | 13 | dropTagService | dropTagService |
 | TagIdentifier | 6 | 1 | 1 | 1 |  |  |  | 0 | scanService | scanService |
 | LabelTemplate | 17 | 0 | 1 | 2 |  |  | yes | 0 | templateService | templateService |
-| TraceEvent | 23 | 1 | 1 | 8 |  | yes |  | 0 | materialTrackingRoutes | materialTrackingRoutes, dropTagService |
+| TraceEvent | 23 | 1 | 1 | 8 |  | yes |  | 89 | materialTrackingRoutes | materialTrackingRoutes, dropTagService |
 | CustomerTagRequirement | 19 | 1 | 1 | 0 |  |  |  | 0 | nothing | nothing |
-| Partner | 19 | 1 | 1 | 3 | PartnerStatus |  | yes | 0 | partnerAuth, partnerRateLimit, adminRoutes, webhookService | partnerAuth, adminRoutes |
-| PartnerApiKey | 14 | 1 | 0 | 3 | ApiKeyStatus |  |  | 0 | partnerAuth, adminRoutes | partnerAuth, adminRoutes |
-| PartnerWebhook | 13 | 1 | 0 | 2 | WebhookStatus |  |  | 0 | webhookRoutes, webhookService | webhookRoutes, webhookService |
-| WebhookDelivery | 15 | 1 | 1 | 5 | WebhookDeliveryStatus |  |  | 0 | integrationReport, opsChecks, integrations, webhookRoutes, … | webhookService |
-| PartnerApiLog | 15 | 1 | 0 | 5 |  |  |  | 0 | adminRoutes | partnerAuth |
+| Partner | 19 | 1 | 1 | 3 | PartnerStatus |  | yes | 9 | partnerAuth, partnerRateLimit, adminRoutes, webhookService | partnerAuth, adminRoutes |
+| PartnerApiKey | 14 | 1 | 0 | 3 | ApiKeyStatus |  |  | 22 | partnerAuth, adminRoutes | partnerAuth, adminRoutes |
+| PartnerWebhook | 13 | 1 | 0 | 2 | WebhookStatus |  |  | 17 | webhookRoutes, webhookService | webhookRoutes, webhookService |
+| WebhookDelivery | 15 | 1 | 1 | 5 | WebhookDeliveryStatus |  |  | 4007 | integrationReport, opsChecks, integrations, webhookRoutes, … | webhookService |
+| PartnerApiLog | 15 | 1 | 0 | 5 |  |  |  | 179 | adminRoutes | partnerAuth |
 | SafetyPolicyDocument | 24 | 1 | 1 | 3 | PolicyStatus |  | yes | 0 | nothing | nothing |
 | SafetyPolicyAcknowledgement | 7 | 1 | 1 | 1 |  |  |  | 0 | nothing | nothing |
 | SafetyTrainingCourse | 20 | 0 | 1 | 2 |  |  | yes | 0 | nothing | nothing |
@@ -367,12 +367,12 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | IntakeQuote | 10 | 2 | 0 | 3 |  |  |  | 1 | orderHubStore, index | orderHubStore, index |
 | IntakeOrder | 12 | 2 | 0 | 3 |  | yes |  | 2 | orderHubStore, index | orderHubStore, index |
 | IntakeJob | 9 | 1 | 0 | 2 |  | yes |  | 1 | orderHubStore, index | orderHubRoutes, orderHubStore, index |
-| PosSession | 9 | 0 | 0 | 1 |  |  |  | 0 | sessionStore | sessionStore |
+| PosSession | 9 | 0 | 0 | 1 |  |  |  | 10 | sessionStore | sessionStore |
 | StopWorkEvent | 10 | 0 | 1 | 2 |  |  |  | 0 | stopWorkStore | nothing |
 | StopWorkAudit | 5 | 0 | 0 | 1 |  |  |  | 0 | stopWorkStore | stopWorkStore |
 | StopWorkStep | 7 | 0 | 0 | 1 |  |  |  | 0 | stopWorkStore | stopWorkStore |
 | StopWorkEvidence | 4 | 0 | 0 | 1 |  |  |  | 0 | stopWorkStore | stopWorkStore |
-| DispatchDivision | 6 | 0 | 0 | 0 |  |  |  | 0 | dispatchRoutes | dispatchRoutes |
+| DispatchDivision | 6 | 0 | 0 | 0 |  |  |  | 2 | dispatchRoutes | dispatchRoutes |
 | PipelineRun | 6 | 0 | 0 | 2 |  |  |  | 0 | orchestrator | orchestrator |
 | ExceptionEvent | 11 | 0 | 0 | 2 |  | yes |  | 8 | eventsV1 | eventsV1, index |
 | InventoryCatalogItem | 3 | 0 | 0 | 0 |  |  |  | 8 | inventoryV1Store | inventoryV1Store |
@@ -381,31 +381,31 @@ InventoryCatalogItem, InventorySite, InventoryUnit, InventoryTransfer, RfidScanE
 | InventoryTransfer | 5 | 0 | 0 | 1 |  |  |  | 3 | inventoryV1Store | inventoryV1Store |
 | RfidScanEvent | 5 | 0 | 0 | 2 |  |  |  | 5 | inventoryV1Store | inventoryV1Store |
 | InventoryAdjustment | 4 | 0 | 0 | 1 |  |  |  | 0 | nothing | inventoryV1Store |
-| PrintQueueJob | 12 | 0 | 0 | 3 |  | yes |  | 0 | printAutomationService | printAutomationService |
+| PrintQueueJob | 12 | 0 | 0 | 3 |  | yes |  | 20 | printAutomationService | printAutomationService |
 | PriceLevel | 5 | 0 | 0 | 0 |  |  |  | 4 | customerPricing, intakePricing, ecomService | index |
 | SalesTaxRate | 3 | 0 | 0 | 0 |  |  |  | 4 | orderTax, quickSale, taxRates, ecomService | taxRates, index |
 | ProcessingOperation | 12 | 0 | 1 | 1 |  |  |  | 10 | intakeProcessing, ecomService | index |
 | ProcessingTemplate | 6 | 0 | 0 | 1 |  |  |  | 6 | intakeProcessing | index |
-| OnlineOrder | 17 | 0 | 1 | 1 |  |  |  | 81 | compressionMetrics, onlineOrders, ecomService, portalService | onlineOrders, index, ecomService |
+| OnlineOrder | 17 | 0 | 1 | 1 |  |  |  | 104 | compressionMetrics, onlineOrders, ecomService, portalService | onlineOrders, index, ecomService |
 | Remnant | 30 | 0 | 1 | 3 |  |  |  | 10 | remnantService | index, remnantService |
 | StoreListing | 14 | 1 | 0 | 0 |  |  |  | 10 | nothing | index, ecomService |
 | ProcessingRecipe | 23 | 0 | 1 | 1 |  |  |  | 12 | processingRecipes | processingRecipes, index |
 | RecipeRoutingTemplate | 5 | 0 | 0 | 0 |  |  |  | 6 | processingRecipes | index |
 | AppSetting | 3 | 0 | 0 | 0 |  |  |  | 2 | retention, settings, ledger, ledgerCutover | settings, ledger, ledgerCutover |
-| DemandSuggestionEvent | 10 | 0 | 0 | 2 |  |  |  | 1242 | demandShaping | demandShaping, index |
-| DocumentCounter | 3 | 0 | 0 | 0 |  |  |  | 14 | nothing | nothing |
-| RequestKey | 8 | 0 | 1 | 1 |  |  |  | 55 | integrationReport, requestKeys | integrationReport, requestKeys |
-| RateWindow | 3 | 0 | 0 | 1 |  |  |  | 842 | nothing | nothing |
-| StockTransfer | 18 | 3 | 1 | 3 |  | yes |  | 50 | transfers, documents, inventory | transfers, documents |
-| StockTransferLine | 9 | 2 | 1 | 1 |  |  |  | 50 | transfers, ledger | transfers |
+| DemandSuggestionEvent | 10 | 0 | 0 | 2 |  |  |  | 1287 | demandShaping | demandShaping, index |
+| DocumentCounter | 3 | 0 | 0 | 0 |  |  |  | 18 | nothing | nothing |
+| RequestKey | 8 | 0 | 1 | 1 |  |  |  | 113 | integrationReport, requestKeys | integrationReport, requestKeys |
+| RateWindow | 3 | 0 | 0 | 1 |  |  |  | 1085 | nothing | nothing |
+| StockTransfer | 18 | 3 | 1 | 3 |  | yes |  | 215 | transfers, documents, inventory | transfers, documents |
+| StockTransferLine | 9 | 2 | 1 | 1 |  |  |  | 221 | transfers, ledger | transfers |
 | LedgerAccount | 12 | 0 | 1 | 0 |  |  |  | 22 | ledger, ledgerReports | ledger |
 | LedgerMapping | 6 | 0 | 0 | 0 |  |  |  | 17 | ledger | ledger |
 | LedgerPeriod | 13 | 0 | 1 | 0 |  |  |  | 1 | ledger, ledgerReports | ledger |
-| LedgerEvent | 12 | 0 | 1 | 3 |  | yes |  | 2487 | ledger, ledgerReports | ledger |
-| JournalEntry | 21 | 2 | 2 | 5 |  | yes |  | 2689 | ledger, ledgerReports | ledger |
-| JournalLine | 14 | 2 | 1 | 5 |  | yes |  | 5504 | ledger | nothing |
+| LedgerEvent | 12 | 0 | 1 | 3 |  | yes |  | 3610 | ledger, ledgerReports | ledger |
+| JournalEntry | 21 | 2 | 2 | 5 |  | yes |  | 5894 | ledger, ledgerReports | ledger |
+| JournalLine | 14 | 2 | 1 | 5 |  | yes |  | 12182 | ledger | nothing |
 | LedgerExternalAccount | 8 | 0 | 1 | 0 |  |  |  | 0 | ledgerReports | ledgerReports |
 | LedgerExportBatch | 16 | 0 | 1 | 1 |  |  |  | 0 | ledgerReports | ledgerReports |
 | LedgerExportItem | 4 | 1 | 1 | 1 |  |  |  | 0 | ledgerReports | ledgerReports |
-| LedgerReconciliation | 7 | 0 | 0 | 1 |  |  |  | 14 | opsChecks, ledgerReports | ledgerReports |
+| LedgerReconciliation | 7 | 0 | 0 | 1 |  |  |  | 17 | opsChecks, ledgerReports | ledgerReports |
 

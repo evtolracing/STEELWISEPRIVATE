@@ -32,7 +32,9 @@ export default async function run(c) {
   };
   const whenSaved = async (fn, ms = 3000) => { const end = Date.now() + ms; while (Date.now() < end) { if (await fn().catch(() => 0)) return true; await sleep(15); } return false; };
   const KEYS = ['BOOKS_BALANCE', 'INVENTORY', 'RECEIVABLES', 'IN_TRANSIT'];
-  const agrees = async (ok, label) => { const r = await reconcile(cfo); for (const k of KEYS) { const x = r.of(k); ok(`${label}: ${k} agrees`, x && x.status === 'MATCH', x ? `${x.status} ${x.difference} ${JSON.stringify(x.detail || '').slice(0, 140)}` : `no such check (${r.status})`); } return r; };
+  // After an injected database interruption a server copy may still be reconnecting and answer 503 "try again": the
+  // person would try again, so the check does, for at most ten seconds (AA-012). A copy that stays down still fails.
+  const agrees = async (ok, label) => { let r = await reconcile(cfo); for (let i = 0; i < 20 && r.status === 503; i++) { await sleep(500); r = await reconcile(cfo); } for (const k of KEYS) { const x = r.of(k); ok(`${label}: ${k} agrees`, x && x.status === 'MATCH', x ? `${x.status} ${x.difference} ${JSON.stringify(x.detail || '').slice(0, 140)}` : `no such check (${r.status})`); } return r; };
   const liveInvoices = (shipmentId) => prisma.invoice.findMany({ where: { shipmentId, kind: 'INVOICE', status: { not: 'CANCELLED' } } });
   const dispatch = (d) => send(d.shipper, 'PUT', `/api/shipments/${d.shipment.id}/dispatch`, {});
   /** Brings every shipment of the list to "left, with one invoice", the way the dock and the office would after a failure. */

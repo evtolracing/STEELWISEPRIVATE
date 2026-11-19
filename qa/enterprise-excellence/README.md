@@ -103,6 +103,10 @@ IDs are permanent. B is the Phase 1 baseline. E, S, I, M, F and X are the six ea
 
 Phase 1 is discovery and baseline. Phase 2 is architecture and code quality hardening. Phase 3 is the database: integrity, transactions, concurrency and scale. Phase 9 is user experience. The other phase numbers are known only as the owner issues each prompt, so a finding that belongs to a later phase is assigned by subject (security and multi-location, data integrity, manufacturing, integration, performance, testing) and gets its phase number when that prompt arrives.
 
+<!-- phase-12 -->
+Phase 12 is the last phase: production certification. Its documents are `phase-12-*.md` (24 files, written by `node qa/tools/phase12-docs.mjs` from the result files); the one to read first is `phase-12-final-report.md`, then `phase-12-release-blockers.md`. Its findings use the prefix AA. The recommendation is NO-GO, and no approval has been granted.
+<!-- phase-12 -->
+
 ## The gates
 
 Run on a rebuilt QA database. Sizes as of Phase 3. `qa/tools/run-gates.sh` runs them all in order:

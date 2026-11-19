@@ -174,6 +174,19 @@ What Phase 6 adds to, or changes in, the list:
 6. R-03 is reduced again: the second stock list is read-only.
 
 
+### Phase 12 update (2026-11-19)
+
+Phase 12 certified the release candidate on the local QA database and recommended **NO-GO** (`phase-12-final-report.md`). No risk was closed by approval, because no approval was given. What changed in this register:
+
+- **New, closed on QA: the product could present invented information as fact.** With no database the dashboard answered sample figures (AA-001); the executive question box answered made-up analysis with a confidence figure (AA-002); the simulation and forecast answers carried no sample mark at the server (AA-004). All corrected and proven by removal. The remaining sample screens are labelled and save nothing; whether they ship is the owner's decision.
+- **New, closed on QA: the assistants trusted the caller's message list.** A caller could send a message in the system's voice, any model name and any length (AA-003), and errors could carry provider text (AA-006). Corrected. What a real model answers is still NOT VERIFIED.
+- **New, open: a branch has no time zone (AA-007) and no screen adds a branch (AA-008).** Both matter for an 80-branch company in several time zones. Owner's decisions.
+- **New, open: sales staff may dispatch a shipment and move a work order (AA-010).** By the present role table. To be confirmed with the permissions matrix at operational acceptance.
+- **Restated as the largest risk: nothing has been confirmed on the live system.** The backups (E-015), the database role (Y-008), the alert receiver (E-017), the scheduled run (B-019), and which database updates are applied are all unknown or not done. Every control proved in Phases 9.5 to 12 that depends on database updates 16 to 18 is not in force until they are applied.
+- **Restated: going live with the ledger on is blocked** until an accountant approves the policies (W-001), and the cutover has never been rehearsed on a copy of live (W-005).
+- Findings formerly "deferred to a later phase" have no later phase. Each is now REQUIRES BUSINESS DECISION, BLOCKED or IN PROGRESS, with what closes it (`phase-12-release-blockers.md`). None is DEFERRED WITH APPROVAL: no approval to defer is on file.
+- Conditions for a one-branch pilot with the ledger off: the six steps at the end of `phase-12-final-report.md`.
+
 ### Phase 11 update (2026-11-18)
 
 Phase 11 ran the 80-branch model as a working day on three server copies, five times, and injected failures (`phase-11-report.md`). Local QA database, synthetic data, stand-ins for every outside service. What changed in this register:

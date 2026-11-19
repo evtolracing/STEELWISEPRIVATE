@@ -78,6 +78,8 @@ module.exports = async (s) => {
   await sc('MAKE', 'the schedule: the Queue View tab lists jobs waiting, by keyboard', async (t) => {
     const c = await ctx(P.planner); const page = await open(c, '/schedule'); await settle(page, 600);
     const tab = page.getByRole('tab', { name: 'Queue View' }); await tab.focus(); await page.keyboard.press('Enter'); await settle(page, 800);
+    // The list is drawn after the tab changes; wait for it, not for a fixed time (it failed once under load in the Phase 12 gate).
+    await page.locator('main').getByText(/JOB-\d+|No jobs|empty|nothing/i).first().waitFor({ timeout: 10000 }).catch(() => {});
     t.check('the tab is selected', (await tab.getAttribute('aria-selected')) === 'true');
     const body = await text(page, 'main'); t.check('it lists jobs or says the queue is empty', /JOB-\d+/.test(body) || /No jobs|empty|nothing/i.test(body), body.slice(-300));
     const numbers = [...new Set([...body.matchAll(/JOB-\d{4,}/g)].map((m) => m[0]))].slice(0, 30); const known = await prisma.job.count({ where: { jobNumber: { in: numbers } } });

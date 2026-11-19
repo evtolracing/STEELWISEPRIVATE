@@ -170,27 +170,12 @@ const ExecutiveCockpit = () => {
     return <TrendingFlat fontSize="small" color="action" />;
   };
 
-  const handleAiQuery = async () => {
-    setIsAiLoading(true);
-    // Simulate AI response
-    setTimeout(() => {
-      setAiResponse({
-        answer: `Detroit is at 97% utilization, above the 90% threshold.
-        
-**Root cause:** 3 large orders added yesterday totaling 18,000 lbs
-
-**Contributing factors:**
-- SAW-01 running 12% slower than rated (maintenance flag)
-- 2 rush orders expedited from Chicago
-
-**Impact:** 2 orders at risk of missing ship date ($45K value)
-
-**Suggested action:** Transfer ORD-2026-4521 to Cleveland (saves 6 hours, Cleveland at 58% utilization)`,
-        confidence: 92,
-        sources: ['Production Schedule', 'Work Center Status', 'Order Pipeline'],
-      });
-      setIsAiLoading(false);
-    }, 2000);
+  // No analysis engine is built behind this box. It says so and gives no figures (Phase 12, AA-002).
+  const handleAiQuery = () => {
+    setIsAiLoading(false);
+    setAiResponse({
+      answer: 'This question box is part of the design sample and is not built. It gives no analysis and no figures.\n\nFor answers from your company\'s records, use the assistant in the top bar.',
+    });
   };
 
   // Tile Component
@@ -690,25 +675,11 @@ const ExecutiveCockpit = () => {
             placeholder="Ask about operations, risks, or run a simulation..."
             sx={{ mb: 2 }}
           />
-          {isAiLoading && (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <LinearProgress sx={{ mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                Analyzing operational data...
-              </Typography>
-            </Box>
-          )}
-          {aiResponse && !isAiLoading && (
-            <Paper sx={{ p: 2, bgcolor: 'grey.50' }}>
+          {aiResponse && (
+            <Paper sx={{ p: 2, bgcolor: 'grey.50' }} role="status">
               <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
                 {aiResponse.answer}
               </Typography>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="caption" color="text.secondary">
-                  Confidence: {aiResponse.confidence}% • Sources: {aiResponse.sources.join(', ')}
-                </Typography>
-              </Box>
             </Paper>
           )}
         </DialogContent>

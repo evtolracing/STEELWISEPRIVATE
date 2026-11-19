@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-18 by `qa/tools/excellence-docs.mjs` at commit 8460e84. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -84,7 +84,7 @@ The groups hide large differences. Classification and test reach per module:
 | Sales tax | IMPLEMENTED AND VERIFIED | n/a | F-008, D-035 |
 | Request safeguards | IMPLEMENTED AND VERIFIED | n/a | E-017 |
 | AI assistant and voice | IMPLEMENTED BUT NOT VERIFIED | 2 of 10 | H-012 |
-| Help manual | IMPLEMENTED BUT NOT VERIFIED | n/a | M-018, X-010 |
+| Help manual | IMPLEMENTED BUT NOT VERIFIED | n/a | M-018 |
 | Background work, notifications, schedules | PARTIALLY IMPLEMENTED | n/a | B-019, D-034, H-015 |
 | Operations cockpit and dashboards | IMPLEMENTED BUT NOT VERIFIED | 2 of 9 | B-012 |
 | Executive tools | PLACEHOLDER OR MOCK | 0 of 10 | X-009 |
@@ -112,7 +112,7 @@ Modules: Request safeguards; AI assistant and voice; Help manual; Background wor
 | Accessibility | 3% | 72 | Phase 9, measured by tool on every screen: controls with no name 613 to 0, fields with no label 280 to 0, one main heading, a visible focus ring, a skip link, announcements, reduced motion; 87 rows and cards open from the keyboard. Held at 72: not a WCAG certificate; no screen reader, switch or voice user; focus return after a dialog verified on the main dialogs only (V-029). Was null (No evidence gathered) |
 | **Weighted over the 90% that has evidence** | | **82** | Target 95 |
 
-Changing routes with a success-path test: 2 of 10. Open findings against these modules: 7, of which P0 or P1: 1 (B-019).
+Changing routes with a success-path test: 2 of 10. Open findings against these modules: 6, of which P0 or P1: 1 (B-019).
 
 ### Sales and customer operations
 

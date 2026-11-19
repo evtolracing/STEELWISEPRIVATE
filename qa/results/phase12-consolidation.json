@@ -1,0 +1,799 @@
+{
+ "ranAt": "2026-11-19T02:57:08.792Z",
+ "commit": "d5062a3",
+ "phases": [
+  {
+   "phase": "1",
+   "name": "Discovery and baseline",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 1
+  },
+  {
+   "phase": "2",
+   "name": "Architecture and code quality",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 9
+  },
+  {
+   "phase": "3",
+   "name": "Database and data integrity",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 14
+  },
+  {
+   "phase": "4",
+   "name": "API, events and integrations",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 12
+  },
+  {
+   "phase": "5",
+   "name": "Sales, CRM, POS and e-commerce",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 12
+  },
+  {
+   "phase": "6",
+   "name": "Inventory, purchasing and warehouse",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 14
+  },
+  {
+   "phase": "7",
+   "name": "Manufacturing and quality",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 16
+  },
+  {
+   "phase": "8",
+   "name": "Shipping, logistics and invoicing",
+   "reportOnFile": true,
+   "reportedStatus": "PARTIALLY COMPLETE",
+   "documents": 19
+  },
+  {
+   "phase": "9",
+   "name": "User experience and productivity",
+   "reportOnFile": true,
+   "reportedStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+   "documents": 31
+  },
+  {
+   "phase": "9.5",
+   "name": "Financial ledger",
+   "reportOnFile": true,
+   "reportedStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+   "documents": 16
+  },
+  {
+   "phase": "10",
+   "name": "Security, reliability and recovery",
+   "reportOnFile": true,
+   "reportedStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+   "documents": 24
+  },
+  {
+   "phase": "11",
+   "name": "80-location enterprise simulation",
+   "reportOnFile": true,
+   "reportedStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
+   "documents": 23
+  }
+ ],
+ "phasesVerifiedComplete": 0,
+ "findings": {
+  "total": 464,
+  "open": 114,
+  "byStatus": {
+   "VERIFIED FIXED": 348,
+   "IN PROGRESS": 6,
+   "REQUIRES BUSINESS DECISION": 92,
+   "BLOCKED": 5,
+   "NOT APPLICABLE": 2,
+   "FIXED — NOT VERIFIED": 7,
+   "ACCEPTED RISK WITH APPROVAL": 4
+  },
+  "bySeverity": {
+   "P1": 130,
+   "P2": 188,
+   "P3": 125,
+   "P0": 20,
+   "P4": 1
+  },
+  "openBySeverity": {
+   "P1": 17,
+   "P2": 53,
+   "P3": 41,
+   "P4": 1,
+   "P0": 2
+  },
+  "bySeries": {
+   "B": {
+    "total": 25,
+    "open": 9,
+    "openP0P1": 3
+   },
+   "C": {
+    "total": 13,
+    "open": 2,
+    "openP0P1": 0
+   },
+   "D": {
+    "total": 38,
+    "open": 9,
+    "openP0P1": 1
+   },
+   "E": {
+    "total": 21,
+    "open": 6,
+    "openP0P1": 2
+   },
+   "F": {
+    "total": 12,
+    "open": 1,
+    "openP0P1": 0
+   },
+   "G": {
+    "total": 20,
+    "open": 6,
+    "openP0P1": 0
+   },
+   "H": {
+    "total": 19,
+    "open": 3,
+    "openP0P1": 0
+   },
+   "I": {
+    "total": 18,
+    "open": 3,
+    "openP0P1": 2
+   },
+   "J": {
+    "total": 13,
+    "open": 2,
+    "openP0P1": 0
+   },
+   "K": {
+    "total": 15,
+    "open": 8,
+    "openP0P1": 1
+   },
+   "L": {
+    "total": 31,
+    "open": 7,
+    "openP0P1": 1
+   },
+   "M": {
+    "total": 18,
+    "open": 3,
+    "openP0P1": 1
+   },
+   "N": {
+    "total": 29,
+    "open": 4,
+    "openP0P1": 0
+   },
+   "S": {
+    "total": 27,
+    "open": 5,
+    "openP0P1": 1
+   },
+   "U": {
+    "total": 41,
+    "open": 10,
+    "openP0P1": 0
+   },
+   "V": {
+    "total": 38,
+    "open": 8,
+    "openP0P1": 0
+   },
+   "X": {
+    "total": 10,
+    "open": 5,
+    "openP0P1": 4
+   },
+   "W": {
+    "total": 27,
+    "open": 14,
+    "openP0P1": 2
+   },
+   "Y": {
+    "total": 23,
+    "open": 2,
+    "openP0P1": 1
+   },
+   "Z": {
+    "total": 14,
+    "open": 4,
+    "openP0P1": 0
+   },
+   "AA": {
+    "total": 12,
+    "open": 3,
+    "openP0P1": 0
+   }
+  }
+ },
+ "openP0P1": [
+  {
+   "id": "B-009",
+   "severity": "P1",
+   "status": "IN PROGRESS",
+   "module": "Second stock list, order hub, stop work"
+  },
+  {
+   "id": "B-016",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Testing"
+  },
+  {
+   "id": "B-019",
+   "severity": "P1",
+   "status": "BLOCKED",
+   "module": "Platform"
+  },
+  {
+   "id": "D-011b",
+   "severity": "P1",
+   "status": "FIXED — NOT VERIFIED",
+   "module": ""
+  },
+  {
+   "id": "E-011",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Platform"
+  },
+  {
+   "id": "E-015",
+   "severity": "P1",
+   "status": "FIXED — NOT VERIFIED",
+   "module": "Platform"
+  },
+  {
+   "id": "I-011",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Supplier quality (six screens)"
+  },
+  {
+   "id": "I-012 (D-024)",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Inventory"
+  },
+  {
+   "id": "K-007",
+   "severity": "P1",
+   "status": "IN PROGRESS",
+   "module": "Inventory valuation"
+  },
+  {
+   "id": "L-026",
+   "severity": "P1",
+   "status": "IN PROGRESS",
+   "module": "Production costing"
+  },
+  {
+   "id": "M-011",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Production quality (5 screens), Bills of material"
+  },
+  {
+   "id": "S-010",
+   "severity": "P1",
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "module": "Delivery promise"
+  },
+  {
+   "id": "X-001",
+   "severity": "P0",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Safety (13 screens, on the menu)"
+  },
+  {
+   "id": "X-002",
+   "severity": "P0",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Maintenance (3), training (4), contractors and visitors (4), customer quality (4), executive (5), quality dashboard, test entry, provenance lookup"
+  },
+  {
+   "id": "X-007",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Order entry, web checkout, online settings"
+  },
+  {
+   "id": "X-009",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Scale of sample screens"
+  },
+  {
+   "id": "W-001",
+   "severity": "P1",
+   "status": "REQUIRES BUSINESS DECISION",
+   "module": "Financial ledger"
+  },
+  {
+   "id": "W-014",
+   "severity": "P1",
+   "status": "FIXED — NOT VERIFIED",
+   "module": "Financial ledger; database"
+  },
+  {
+   "id": "Y-008",
+   "severity": "P1",
+   "status": "FIXED — NOT VERIFIED",
+   "module": "Database"
+  }
+ ],
+ "statusesNotAllowedInPhase12": [],
+ "evidence": {
+  "verifiedFixed": 348,
+  "testFilesRead": 169,
+  "named": 176,
+  "suite": 65,
+  "words": 107,
+  "none": 0,
+  "suiteOnly": [
+   "B-003",
+   "B-006",
+   "B-007",
+   "B-008",
+   "B-010",
+   "B-025",
+   "C-001",
+   "C-004",
+   "C-005",
+   "C-006",
+   "C-007",
+   "C-008",
+   "C-010",
+   "E-004",
+   "E-010",
+   "E-014",
+   "E-023",
+   "G-010",
+   "G-012",
+   "G-017",
+   "H-009",
+   "I-016",
+   "J-013",
+   "M-013",
+   "M-016",
+   "S-026",
+   "U-002",
+   "U-011",
+   "V-001",
+   "V-006",
+   "V-010",
+   "V-028",
+   "V-033",
+   "V-034",
+   "X-010",
+   "W-013",
+   "W-017",
+   "W-018",
+   "W-020",
+   "W-022",
+   "W-025",
+   "Y-001",
+   "Y-004",
+   "Y-006",
+   "Y-007",
+   "Y-010",
+   "Y-012",
+   "Y-016",
+   "Y-020",
+   "Y-022",
+   "Y-023",
+   "Z-001",
+   "Z-003",
+   "Z-004",
+   "Z-005",
+   "Z-007",
+   "Z-011",
+   "Z-013",
+   "AA-001",
+   "AA-002",
+   "AA-003",
+   "AA-004",
+   "AA-005",
+   "AA-006",
+   "AA-011"
+  ],
+  "wordsOnly": [
+   "B-023",
+   "D-002",
+   "D-004",
+   "D-005",
+   "D-006",
+   "D-006b",
+   "D-007",
+   "D-009",
+   "D-013",
+   "D-014",
+   "D-015",
+   "D-016",
+   "D-019",
+   "D-021",
+   "D-022",
+   "D-025",
+   "D-026",
+   "D-029",
+   "D-030",
+   "D-031",
+   "D-032",
+   "E-001",
+   "E-002",
+   "E-003",
+   "E-005",
+   "E-007",
+   "E-008",
+   "E-009",
+   "E-016",
+   "E-020",
+   "F-001",
+   "F-002",
+   "F-003",
+   "F-004",
+   "F-005",
+   "F-006",
+   "F-007",
+   "F-010",
+   "I-001",
+   "I-002",
+   "I-003",
+   "I-004",
+   "I-005",
+   "I-006",
+   "I-008",
+   "I-009 (S-023)",
+   "I-010",
+   "I-013 (E-020)",
+   "I-014",
+   "I-015",
+   "M-001",
+   "M-002",
+   "M-003",
+   "M-004",
+   "M-005",
+   "M-006",
+   "M-007",
+   "M-008",
+   "M-010",
+   "M-012",
+   "M-014",
+   "M-015",
+   "S-002",
+   "S-003",
+   "S-004",
+   "S-005",
+   "S-007",
+   "S-011",
+   "S-012 (D-036)",
+   "S-013",
+   "S-015",
+   "S-016",
+   "S-017",
+   "S-018",
+   "S-019",
+   "S-023",
+   "S-025",
+   "U-003",
+   "U-005",
+   "U-006",
+   "U-007",
+   "U-009",
+   "U-010",
+   "U-013",
+   "U-014",
+   "U-015",
+   "U-016",
+   "U-017",
+   "U-018",
+   "U-021",
+   "U-023",
+   "U-024",
+   "U-025",
+   "U-026",
+   "U-027",
+   "U-030",
+   "U-031",
+   "U-032",
+   "U-033",
+   "U-034",
+   "U-038",
+   "U-039",
+   "X-004",
+   "X-005",
+   "X-006",
+   "W-027",
+   "AA-012"
+  ],
+  "noEvidence": [],
+  "filesNamedButMissing": []
+ },
+ "contradictions": [
+  {
+   "id": "B-007",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the executive decision line is now tested: a decision is recorded under the signed-in person and role whatever the request claims, and a sales representative is refused.",
+   "says": "The executive decision change has no automated check: FIXED, NOT VERIFIED for that one line."
+  },
+  {
+   "id": "B-021",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: tested again: an uploaded file is not served by its address; it is read only through the signed-in download; a customer login of another account is refused.",
+   "says": "NOT VERIFIED by a probe Phase 10 (Y-005): the static /uploads route is removed; files are read through the signed-in download only."
+  },
+  {
+   "id": "C-006",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the web checkout was run with a request key (the same order sent twice saves one order). Order intake uses the same middleware and was not run separately: NOT VERIFIED for that one route.",
+   "says": "Order creation only was exercised through the API; the web checkout and order intake use the same middleware and were not separately run (NOT VERIFIED for those two routes)."
+  },
+  {
+   "id": "E-009",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: confirmed by reading the code: demo companies are loaded only with SEED_ON_START=true. The deployment checklist says to confirm the setting is absent on the host. No automated test starts a server against an empty non-local database, by rule.",
+   "says": "Fixed, awaiting verification"
+  },
+  {
+   "id": "E-010",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: now exercised by a test: a server asked to stop finishes the requests it has begun, exits by itself with code 0 in under five seconds, closes its database connections and takes no new request.",
+   "says": "Code change; not exercised by a test qa/tools/phase12-process."
+  },
+  {
+   "id": "H-005",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: unchanged and stated plainly: the fix is verified against stand-ins for the outside services. No real provider was called in any test; the first real call is a first-day check on the deployment checklist.",
+   "says": "No real provider was called in any test; the real providers' behaviour is NOT VERIFIED."
+  },
+  {
+   "id": "H-006",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the fix is verified on QA. How many live orders are in this state is unknown until the report is read on the live system: a first-day check on the deployment checklist.",
+   "says": "How many live orders are in this state is NOT VERIFIED (no access); the report will show it once deployed."
+  },
+  {
+   "id": "H-018",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist.",
+   "says": "Their number is NOT VERIFIED."
+  },
+  {
+   "id": "L-031",
+   "severity": "P3",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: verified on QA; whether any exist on live data is a first-day check on the deployment checklist.",
+   "says": "Whether any exist is NOT VERIFIED."
+  },
+  {
+   "id": "M-009",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the error path is now triggered in a browser: with the time records failing to load, the screen says so and shows no hours and no \"demo data\".",
+   "says": "The error path itself was not triggered in a test: NOT VERIFIED qa/sim/phase12-ui."
+  },
+  {
+   "id": "M-013",
+   "severity": "P3",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: now checked on a server started with no database: the jobs list answers 503 and no sample job.",
+   "says": "No automated check (it needs a server with no database): NOT VERIFIED qa/tools/phase12-process."
+  },
+  {
+   "id": "N-004",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: verified on QA; the count on live data is a first-day check on the deployment checklist.",
+   "says": "How many exist in the live database is NOT VERIFIED."
+  },
+  {
+   "id": "N-014",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the documents are verified as files. What a paper looks like on a branch's own printer is not, and no claim is made (K-013): a pilot-branch check in the rollout plan.",
+   "says": "What a paper looks like on a real printer is NOT VERIFIED."
+  },
+  {
+   "id": "W-020",
+   "severity": "P1",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the words \"NOT VERIFIED\" at the start of this finding's verification were left from before Phase 10 and are removed: the restore was run in Phase 10 (qa/results/phase10-restore.json). Live backups remain E-015.",
+   "says": "Live backups (the host's) are not exercised: E-015."
+  },
+  {
+   "id": "W-022",
+   "severity": "P2",
+   "status": "VERIFIED FIXED",
+   "answeredInPhase12": "Phase 12: the words \"NOT VERIFIED with more than one server process\" are out of date: Phase 11 ran it on three and four server copies (Z-002).",
+   "says": "NOT VERIFIED with more than one server process."
+  }
+ ],
+ "documentsThatOverclaim": [
+  {
+   "file": "DESIGN FILES/21-ALRO-PHASE1-DESIGN.md",
+   "claims": 19,
+   "carriesStatusNotice": true,
+   "example": "# ALROWARE PHASE 1 - SERVICE CENTER PLATFORM DESIGN"
+  },
+  {
+   "file": "DESIGN FILES/23-ALRO-BOARD-PITCH.md",
+   "claims": 9,
+   "carriesStatusNotice": true,
+   "example": "# SteelWise — Alro Steel Board Presentation & Live Demo Playbook"
+  },
+  {
+   "file": "docs/INDEX.md",
+   "claims": 8,
+   "carriesStatusNotice": true,
+   "example": "| README.md | ✅ Complete | Jan 18, 2026 |"
+  },
+  {
+   "file": "docs/SETUP.md",
+   "claims": 8,
+   "carriesStatusNotice": true,
+   "example": "cd C:\\Users\\trost\\Desktop\\STEELWISE\\ALROWARE"
+  },
+  {
+   "file": "DESIGN FILES/22-PERSONA-CATALOG.md",
+   "claims": 5,
+   "carriesStatusNotice": true,
+   "example": "# ALROWARE PERSONA CATALOG"
+  },
+  {
+   "file": "DESIGN FILES/70-OPS-COCKPIT-SPECIFICATION.md",
+   "claims": 5,
+   "carriesStatusNotice": true,
+   "example": "# Alro Ops Cockpit — 10× Specification"
+  },
+  {
+   "file": "DESIGN FILES/70-RBAC-PERMISSIONS-SPEC.md",
+   "claims": 4,
+   "carriesStatusNotice": true,
+   "example": "## AlroWare Steel & Plastics Service Center Platform"
+  },
+  {
+   "file": "README.md",
+   "claims": 3,
+   "carriesStatusNotice": true,
+   "example": "> **Internal steel service center management system for Alro Steel**"
+  },
+  {
+   "file": "docs/AI_INTEGRATION.md",
+   "claims": 3,
+   "carriesStatusNotice": true,
+   "example": "Successfully implemented a **unified AI provider system** that supports multiple LLM providers with automatic fallback, cost tracking, and intelligent provider "
+  },
+  {
+   "file": "DEPLOYMENT_SUMMARY.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "## ✅ Deployment Complete"
+  },
+  {
+   "file": "DESIGN FILES/89-PRODUCTION-QUALITY-MODULE.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "│  │  🏭 ALROWARE  │  Quality                          👤 QC Lead │   │"
+  },
+  {
+   "file": "DESIGN FILES/90-MAINTENANCE-RELIABILITY-MODULE.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "│       └── ALROWARE (Enterprise)                                      │"
+  },
+  {
+   "file": "DESIGN FILES/93-SALES-PRICING-RFQ-TO-CASH.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "│  From: Alro Steel - Detroit                                     │"
+  },
+  {
+   "file": "archive-design-files/23-SHOP-FLOOR-EXECUTION-UX.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "│  │                   ✅ COMPLETE JOB                            │   │"
+  },
+  {
+   "file": "archive-design-files/36-AI-DOMAIN-CONTEXT.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "> **Purpose:** Structured domain summary for AI build targeting multi-location metals + plastics service centers (Alro-style operations)."
+  },
+  {
+   "file": "docs/PRODUCTION_WORKFLOW.md",
+   "claims": 2,
+   "carriesStatusNotice": true,
+   "example": "The Production Workflow System is an internal tool built for Alro Steel to manage jobs from order intake through shipping. It provides three integrated screens "
+  },
+  {
+   "file": "DESIGN FILES/70-CUSTOMER-RMA-CAR-MODULE.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "│  Status: ✅ Complete                                            │"
+  },
+  {
+   "file": "DESIGN FILES/80-SAFETY-MODULE-SPEC.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "## AlroWare / SteelWise Multi-Branch EHS Platform"
+  },
+  {
+   "file": "DOCUMENTATION_RESTRUCTURE.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "**Status:** ✅ Complete"
+  },
+  {
+   "file": "MAPBOX_INTEGRATION.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "The system now has enterprise-grade logistics and mapping capabilities!"
+  },
+  {
+   "file": "archive-design-files/31-ECOMMERCE-INTEGRATION.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "This document defines how the SteelWise platform integrates with external e-commerce storefronts (e.g., AlroOnlineStore, custom Shopify/Magento implementations)"
+  },
+  {
+   "file": "docs/IMPLEMENTATION_SUMMARY.md",
+   "claims": 1,
+   "carriesStatusNotice": true,
+   "example": "A complete internal production workflow system for Alro Steel with 3 integrated screens:"
+  }
+ ],
+ "pullRequests": [
+  30,
+  31,
+  32,
+  33,
+  34,
+  35
+ ],
+ "unverifiedAreasCarried": [
+  "Phase 11 scale: one machine carried the database, three server copies and the load. Server copies on separate machines, the live database and its pooler are NOT VERIFIED",
+  "Phase 11 volume: one simulated day built on assumptions, not on real volumes of the business. A year of data is NOT VERIFIED (W-023)",
+  "Phase 11 thresholds: proposed, not approved. Dispatch is above the proposal with 32 or more customer jobs in flight (Z-006)",
+  "Phase 11 AI: the AI service was a stand-in; what a real model answers is NOT VERIFIED",
+  "Live database role: on QA the server runs as steelwise_runtime and cannot alter the books or history. The live server still connects as the owner until the owner applies file 17 and switches DATABASE_URL (Y-008, Y-009, W-014)",
+  "Alerts: raised and delivered to a QA stub only. No live receiver is set (E-017); the scheduled run must be set on the host (B-019)",
+  "Backups: an isolated restore was proven on QA (W-020). The host's own backups have never been restored (E-015); recovery objectives are proposals, not approved",
+  "Deployment: database rollback tested on a copy; a Vercel promote or rollback NOT VERIFIED",
+  "Outside services: every partner, carrier, AI and accounting service was a stub",
+  "Accounting: no accountant has reviewed any policy, account, mapping or posting rule. The tests prove the software does what its documents say, not that the documents are the right accounting (W-001)",
+  "Live data: the ledger has never run on the live database or a copy of it. Opening balances, the number of items with no cost and how long activation holds business saves are unknown (W-005)",
+  "External accounting: nothing is connected. Import of the export file into QuickBooks or Xero is NOT VERIFIED (W-011)"
+ ],
+ "blockersCarried": [
+  "Owner: approve or change the proposed performance thresholds (phase-11-workload-profile.md); without approved thresholds Phase 11 cannot be VERIFIED COMPLETE",
+  "Owner: decide Z-006, the wait at the dock at peak (phase-11-capacity-recommendations.md)",
+  "Owner: apply SQL Editor file 17 before merging the Phase 10 pull request; deploying first stops every sign-in (Y-022 makes the answer say so)",
+  "Owner: Y-008 and W-014 take effect on live only after DATABASE_URL points at steelwise_runtime",
+  "Owner and accountant: W-001. The ledger is switched off and the software refuses to start it until every account and mapping is approved under the accountant's name. Production posting is blocked by design",
+  "Owner and accountant, questions raised by the build: W-002 legal entities, W-003 time zone, W-004 gaps in journal numbers, W-006 and W-007 and W-012 receipts and counter stock with no cost, W-009 payables clearing, W-010 processing revenue, W-011 which accounting product"
+ ]
+}

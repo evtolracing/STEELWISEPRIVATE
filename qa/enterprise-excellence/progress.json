@@ -1,21 +1,22 @@
 {
   "programVersion": "1.0",
   "program": "Enterprise Excellence Program",
-  "currentPhase": 11,
+  "currentPhase": 12,
   "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
-  "updated": "2026-11-18T20:12:43.792Z",
+  "updated": "2026-11-19T02:58:13.757Z",
   "repository": {
     "branch": "claude/project-thread-25z3jd",
-    "commit": "8460e841f26844197a8079cb8471a3941af2926d",
+    "commit": "7fddc98e6b6be679c492f1c2ea7d6c0760e02537",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
-    "pullRequest": 35,
+    "pullRequest": 36,
     "merged": false,
     "previousPullRequests": [
       30,
       31,
       32,
       33,
-      34
+      34,
+      35
     ]
   },
   "modulesDiscovered": 51,
@@ -35,7 +36,7 @@
     "enumerations": 96,
     "migrations": 36,
     "screens": 146,
-    "frontendFiles": 409,
+    "frontendFiles": 410,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -46,32 +47,56 @@
     "kindsOfShopWork": 2
   },
   "findingsBySeverity": {
-    "P1": 128,
-    "P2": 183,
-    "P3": 120,
+    "P1": 130,
+    "P2": 188,
+    "P3": 125,
     "P0": 20,
     "P4": 1
   },
   "findingsByStatus": {
-    "VERIFIED FIXED": 336,
+    "VERIFIED FIXED": 348,
     "IN PROGRESS": 6,
-    "DEFERRED TO SPECIFIC PHASE": 63,
-    "BLOCKED": 3,
+    "REQUIRES BUSINESS DECISION": 92,
+    "BLOCKED": 5,
     "NOT APPLICABLE": 2,
-    "REQUIRES BUSINESS DECISION": 33,
-    "FIXED — NOT VERIFIED": 5,
+    "FIXED — NOT VERIFIED": 7,
     "ACCEPTED RISK WITH APPROVAL": 4
   },
   "openFindingsBySeverity": {
     "P1": 17,
-    "P2": 54,
-    "P3": 40,
+    "P2": 53,
+    "P3": 41,
     "P4": 1,
     "P0": 2
   },
-  "findingsTotal": 452,
-  "findingsAddedThisPhase": 14,
+  "findingsTotal": 464,
+  "findingsAddedThisPhase": 12,
   "testsExecuted": [
+    {
+      "test": "Phase 12: certification of 68 workflows and controls through the real server on three server copies, database read back (qa/sim/phase12-certification.mjs)",
+      "result": "68 of 68 scenarios, 601 checks; Cross-module workflows end to end 10/10; Financial ledger certification 16/16; Financial and inventory reconciliation 6/6; Dashboards and reports agree with the records 7/7; AI assistants 9/9; Security and access revalidation 11/11; Multi-location readiness 6/6; Evidence gaps closed 3/3",
+      "before": "None: no earlier phase certified the workflows across modules in one run"
+    },
+    {
+      "test": "Phase 12: browser checks of the manual, the cockpit question box and the time-tracking error path (qa/sim/phase12-ui.cjs)",
+      "result": "5 of 5 scenarios, 18 checks"
+    },
+    {
+      "test": "Phase 12: process checks: no database, a polite stop with requests in flight, production-mode CORS (qa/tools/phase12-process.mjs)",
+      "result": "23 of 23 checks pass"
+    },
+    {
+      "test": "Phase 12: the in-product manual against the screens (qa/tools/phase12-manual.mjs)",
+      "result": "48 chapters, 156 checks, 0 failed"
+    },
+    {
+      "test": "Phase 12: proof by removal (qa/tools/phase12-mutations.mjs)",
+      "result": "13 of 13 corrections caught by the named check when removed; source restored after each"
+    },
+    {
+      "test": "Phase 12: full gate of every phase on the release candidate (qa/tools/run-gates.sh)",
+      "result": "ran to the end; 6 lines marked failed: ✗ 113 STOCK a stock item opens from its row with the keyboard and shows what is on file  — the heading is the  | ✗ slower than the proposed limit: counter sale paid p95 940.5 (limit 800), p99 1659.1 (limit 1500) | ✗ slower than the proposed limit: shipment dispatched p95 4870.3 (limit 2000), p99 6798.1 (limit 4000) | ✗ Phase 11 enterprise cycle gate: jobs500 yes, transactions2000 yes, everyCategoryMinimum yes, invariantsHold  | ✗ [Failure injection and recovery] Every database connection of the servers is cut while thirty requests are i | ✗ Phase 11 scenarios: 319 of 320 pass, 1383 checks; Sales, inventory and purchasing concurrency 48/48; Manufac"
+    },
     {
       "test": "Phase 11: one working day of the 80-branch model through the real server on three server copies, five cycles (qa/sim/phase11-enterprise.mjs); 500 traced customer jobs and 2,000 completed transactions required",
       "result": "Final cycle: 545 of 545 jobs traced end to end, 5,191 transactions completed, 0 failed, every category above its minimum; trial balance balances and the reconciliation is clean; 0 deadlocks; dispatch P95 4617 ms (proposed limit 2,000)",
@@ -407,6 +432,11 @@
     }
   ],
   "unverifiedAreas": [
+    "Phase 12: nothing was verified on the live system. Which database updates are applied there, the host settings, the live backups, the live database role and real outside providers are NOT VERIFIED",
+    "Phase 12: user acceptance was not run; no business user has tested anything",
+    "Phase 12: no accountant has reviewed the chart, the policies or any figure; the ledger is off on live",
+    "Phase 12: the older manual chapters were not re-read line by line against every screen (M-018, S-024)",
+    "Phase 12: what a real AI model answers is NOT VERIFIED; the assistants were tested with a stand-in for the model",
     "Phase 11 scale: one machine carried the database, three server copies and the load. Server copies on separate machines, the live database and its pooler are NOT VERIFIED",
     "Phase 11 volume: one simulated day built on assumptions, not on real volumes of the business. A year of data is NOT VERIFIED (W-023)",
     "Phase 11 thresholds: proposed, not approved. Dispatch is above the proposal with 32 or more customer jobs in flight (Z-006)",
@@ -421,22 +451,31 @@
     "External accounting: nothing is connected. Import of the export file into QuickBooks or Xero is NOT VERIFIED (W-011)"
   ],
   "currentBlockers": [
-    "Owner: approve or change the proposed performance thresholds (phase-11-workload-profile.md); without approved thresholds Phase 11 cannot be VERIFIED COMPLETE",
-    "Owner: decide Z-006, the wait at the dock at peak (phase-11-capacity-recommendations.md)",
+    "Finance: accounting policies, chart and opening balances are unapproved (W-001); the ledger stays off",
+    "Business: user acceptance has not been run or signed (phase-12-user-acceptance.md)",
+    "Executive: no deployment authorization exists",
+    "Owner: restore one live backup into a scratch project (E-015)",
+    "Owner: apply the missing database updates in order and point the server at the limited role (Y-008, W-014)",
+    "Owner: set the alert receiver and the scheduled run (E-017, B-019)",
+    "Owner: approve or change the performance thresholds and decide Z-006",
     "Owner: apply SQL Editor file 17 before merging the Phase 10 pull request; deploying first stops every sign-in (Y-022 makes the answer say so)",
-    "Owner: Y-008 and W-014 take effect on live only after DATABASE_URL points at steelwise_runtime",
-    "Owner and accountant: W-001. The ledger is switched off and the software refuses to start it until every account and mapping is approved under the accountant's name. Production posting is blocked by design",
     "Owner and accountant, questions raised by the build: W-002 legal entities, W-003 time zone, W-004 gaps in journal numbers, W-006 and W-007 and W-012 receipts and counter stock with no cost, W-009 payables clearing, W-010 processing revenue, W-011 which accounting product"
   ],
   "nextActions": [
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: say when to merge the Phase 12 pull request. It changes no database table",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
+    "Owner: decide AA-007 (branch time zones), AA-008 (adding a branch) and AA-010 (sales staff may dispatch and move work orders)",
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
     "Owner: apply /mnt/project-files/database-updates/18-20261118150000_shared_rate_limits.sql in the SQL editor, then verify-6-to-18.sql; every row OK or APPLIED. Safe before or after the code",
-    "Owner: say when to merge the Phase 11 pull request",
     "Owner: approve the thresholds and decide Z-006",
-    "Owner: issue the Phase 12 prompt. Its handoff is in phase-11-report.md. Phase 12 has not been started",
     "Owner: apply /mnt/project-files/database-updates/17-20261118090000_security_hardening.sql in the SQL editor, then verify-6-to-17.sql; every row OK or APPLIED",
     "Owner, when ready: give steelwise_runtime a password, put it in DATABASE_URL (pooler user steelwise_runtime.<project ref>), keep DIRECT_URL, redeploy",
     "Owner: set ALERT_WEBHOOK_URL and the scheduled run; restore one host backup into a new project once",
     "Still from Phase 9.5: SQL 16 applied? Accountant approval before the ledger is started on live (W-001)"
   ],
-  "lastCompletedCheckpoint": "Phase 11 implemented and measured on a local machine: 14 findings Z-001 to Z-014 (10 VERIFIED FIXED including every P1, 2 REQUIRES BUSINESS DECISION, 2 DEFERRED to Phase 12); E-014 and W-022 closed; five enterprise cycles on three server copies, final cycle 545 jobs and 5,191 transactions with the books reconciled; 320 of 320 scenarios; 13 of 13 fixes proven by removal. Status IMPLEMENTED — VERIFICATION INCOMPLETE: no threshold is approved and dispatch is above the proposal at peak. Database update 18 is for the owner to apply."
+  "lastCompletedCheckpoint": "Phase 12, the last phase, carried out on a local machine: 12 findings AA-001 to AA-012 (9 VERIFIED FIXED, 3 REQUIRES BUSINESS DECISION); 68 of 68 certification scenarios; 13 of 13 corrections proven by removal; 24 certification documents. 464 findings in the register, 114 open. Final recommendation NO-GO: no accounting approval, no user acceptance, no deployment authorization, live backups never restored, controls not yet in force on live. No approval was granted or claimed. Nothing was deployed. Remaining work: phase-12-release-blockers.md."
 }

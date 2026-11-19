@@ -47,8 +47,122 @@ export const PROPOSED_ACCOUNTS = [
   { code: '5310', name: 'Inventory Count Variance', type: 'EXPENSE', control: true, description: 'Count corrections up and down. Proposed in Phase 9.5; not in the starting list.' },
   { code: '5320', name: 'Inventory Cost Adjustments', type: 'EXPENSE', control: true, description: 'A change to the cost of stock already on hand. Proposed in Phase 9.5.' },
   { code: '5390', name: 'Rounding', type: 'EXPENSE', control: true, description: 'Cent differences when an item is relieved in parts. Proposed in Phase 9.5.' },
+  // ── The full chart (Phase 12 follow-up, sandbox). The accounts above are posted by business events. The accounts
+  // below are the rest of a general ledger for a metals service center: no rule posts to them; a finance person
+  // posts to them by journal entry. A standard template, PROPOSED like the rest: an accountant has not reviewed it.
+  { code: '1010', name: 'Operating Bank Account', type: 'ASSET', control: false, description: 'The main bank account. Deposits are moved here from Cash / Payment Clearing by journal entry.' },
+  { code: '1020', name: 'Payroll Bank Account', type: 'ASSET', control: false, description: 'The bank account payroll is paid from.' },
+  { code: '1030', name: 'Petty Cash', type: 'ASSET', control: false, description: 'Cash kept on site.' },
+  { code: '1110', name: 'Allowance for Doubtful Accounts', type: 'ASSET', side: 'CREDIT', control: false, description: 'Contra asset: the part of receivables not expected to be collected.' },
+  { code: '1150', name: 'Other Receivables', type: 'ASSET', control: false, description: 'Amounts owed that are not customer invoices: supplier rebates, claims, employee advances.' },
+  { code: '1230', name: 'Inventory Reserve', type: 'ASSET', side: 'CREDIT', control: false, description: 'Contra asset: allowance for slow-moving, obsolete or damaged stock.' },
+  { code: '1240', name: 'Supplies and Consumables Inventory', type: 'ASSET', control: false, description: 'Blades, gas, packaging and other supplies kept as stock.' },
+  { code: '1400', name: 'Prepaid Expenses', type: 'ASSET', control: false, description: 'Paid in advance and expensed over time.' },
+  { code: '1410', name: 'Prepaid Insurance', type: 'ASSET', control: false, description: 'Insurance premiums paid in advance.' },
+  { code: '1420', name: 'Deposits Paid', type: 'ASSET', control: false, description: 'Security and utility deposits paid to others.' },
+  { code: '1500', name: 'Land', type: 'ASSET', control: false, description: 'Land, at cost. Not depreciated.' },
+  { code: '1510', name: 'Buildings and Leasehold Improvements', type: 'ASSET', control: false, description: 'Buildings owned and improvements to leased buildings, at cost.' },
+  { code: '1520', name: 'Machinery and Equipment', type: 'ASSET', control: false, description: 'Saws, shears, slitters, cranes, forklifts and other equipment, at cost.' },
+  { code: '1530', name: 'Vehicles', type: 'ASSET', control: false, description: 'Trucks and other vehicles, at cost.' },
+  { code: '1540', name: 'Furniture, Fixtures and Computer Equipment', type: 'ASSET', control: false, description: 'Office and computer equipment, at cost.' },
+  { code: '1590', name: 'Accumulated Depreciation', type: 'ASSET', side: 'CREDIT', control: false, description: 'Contra asset: depreciation taken to date on property and equipment.' },
+  { code: '1600', name: 'Intangible Assets and Software', type: 'ASSET', control: false, description: 'Purchased software, licenses and other intangibles, at cost.' },
+  { code: '1690', name: 'Accumulated Amortization', type: 'ASSET', side: 'CREDIT', control: false, description: 'Contra asset: amortization taken to date on intangibles.' },
+  { code: '1700', name: 'Right-of-Use Assets', type: 'ASSET', control: false, description: 'Leased assets carried on the balance sheet.' },
+  { code: '1800', name: 'Other Long-Term Assets', type: 'ASSET', control: false, description: 'Long-term assets with no account of their own.' },
+  { code: '2010', name: 'Accounts Payable', type: 'LIABILITY', control: false, description: 'Supplier invoices entered and not yet paid. A supplier invoice for goods clears Accounts Payable Clearing (2000) to here by journal entry.' },
+  { code: '2110', name: 'Use Tax Payable', type: 'LIABILITY', control: false, description: 'Use tax owed on purchases where the seller charged none.' },
+  { code: '2300', name: 'Accrued Expenses', type: 'LIABILITY', control: false, description: 'Costs incurred and not yet invoiced.' },
+  { code: '2310', name: 'Accrued Payroll and Wages', type: 'LIABILITY', control: false, description: 'Wages earned and not yet paid.' },
+  { code: '2320', name: 'Payroll Taxes and Withholdings Payable', type: 'LIABILITY', control: false, description: 'Tax withheld from pay and the employer\'s payroll taxes, not yet remitted.' },
+  { code: '2330', name: 'Accrued Benefits', type: 'LIABILITY', control: false, description: 'Vacation, health and retirement contributions owed.' },
+  { code: '2340', name: 'Accrued Interest', type: 'LIABILITY', control: false, description: 'Interest owed and not yet paid.' },
+  { code: '2400', name: 'Income Taxes Payable', type: 'LIABILITY', control: false, description: 'Income tax owed for the period.' },
+  { code: '2500', name: 'Line of Credit', type: 'LIABILITY', control: false, description: 'The balance drawn on the revolving credit line.' },
+  { code: '2510', name: 'Current Portion of Long-Term Debt', type: 'LIABILITY', control: false, description: 'Loan principal due within twelve months.' },
+  { code: '2520', name: 'Current Lease Liabilities', type: 'LIABILITY', control: false, description: 'Lease payments due within twelve months.' },
+  { code: '2600', name: 'Long-Term Debt', type: 'LIABILITY', control: false, description: 'Loan principal due after twelve months.' },
+  { code: '2610', name: 'Long-Term Lease Liabilities', type: 'LIABILITY', control: false, description: 'Lease payments due after twelve months.' },
+  { code: '2700', name: 'Deferred Income Taxes', type: 'LIABILITY', control: false, description: 'Income tax that falls due in later periods.' },
+  { code: '2800', name: 'Other Long-Term Liabilities', type: 'LIABILITY', control: false, description: 'Long-term obligations with no account of their own.' },
+  { code: '3100', name: 'Common Stock / Owner\'s Capital', type: 'EQUITY', control: false, description: 'What the owners paid in.' },
+  { code: '3200', name: 'Additional Paid-In Capital', type: 'EQUITY', control: false, description: 'Paid in above the par value of stock.' },
+  { code: '3300', name: 'Owner Distributions / Dividends', type: 'EQUITY', side: 'DEBIT', control: false, description: 'Contra equity: paid out to the owners.' },
+  { code: '3900', name: 'Retained Earnings', type: 'EQUITY', control: false, description: 'Earnings of earlier years kept in the business, when the accountant closes a year here by journal entry. The balance sheet works out earnings not yet closed by itself.' },
+  { code: '4310', name: 'Sales Discounts', type: 'CONTRA_REVENUE', control: false, description: 'Early-payment and other discounts allowed to customers.' },
+  { code: '4400', name: 'Scrap Sales Revenue', type: 'REVENUE', control: false, description: 'Scrap metal sold to a recycler.' },
+  { code: '4900', name: 'Other Operating Revenue', type: 'REVENUE', control: false, description: 'Operating revenue with no account of its own.' },
+  { code: '5110', name: 'Direct Labor', type: 'EXPENSE', control: false, description: 'Wages of the people who cut and process material, when the accountant carries them in cost of goods sold.' },
+  { code: '5120', name: 'Manufacturing Overhead', type: 'EXPENSE', control: false, description: 'Shop costs carried in cost of goods sold.' },
+  { code: '5210', name: 'Freight In', type: 'EXPENSE', control: false, description: 'Freight paid to bring material in, when it is not put into the cost of the stock.' },
+  { code: '5400', name: 'Outside Processing', type: 'EXPENSE', control: false, description: 'Work on customer orders done by another shop.' },
+  { code: '5500', name: 'Purchase Price Variance', type: 'EXPENSE', control: false, description: 'The difference between the cost booked at receipt and the supplier\'s invoice.' },
+  { code: '6000', name: 'Salaries and Wages', type: 'EXPENSE', control: false, description: 'Pay of office, sales and management staff.' },
+  { code: '6010', name: 'Payroll Taxes', type: 'EXPENSE', control: false, description: 'The employer\'s payroll taxes.' },
+  { code: '6020', name: 'Employee Benefits', type: 'EXPENSE', control: false, description: 'Health, retirement and other benefits.' },
+  { code: '6030', name: 'Workers\' Compensation Insurance', type: 'EXPENSE', control: false, description: 'Workers\' compensation premiums.' },
+  { code: '6100', name: 'Rent and Lease Expense', type: 'EXPENSE', control: false, description: 'Rent of buildings and yards.' },
+  { code: '6110', name: 'Utilities', type: 'EXPENSE', control: false, description: 'Electricity, gas, water and waste.' },
+  { code: '6120', name: 'Repairs and Maintenance', type: 'EXPENSE', control: false, description: 'Repair and upkeep of buildings and equipment.' },
+  { code: '6130', name: 'Shop Supplies and Consumables', type: 'EXPENSE', control: false, description: 'Blades, gas, abrasives and packaging used.' },
+  { code: '6140', name: 'Equipment Rental', type: 'EXPENSE', control: false, description: 'Short-term rental of equipment.' },
+  { code: '6200', name: 'Vehicle and Fuel Expense', type: 'EXPENSE', control: false, description: 'Fuel, tires, repairs and registration of vehicles.' },
+  { code: '6210', name: 'Delivery and Freight Out', type: 'EXPENSE', control: false, description: 'Carrier cost of deliveries to customers.' },
+  { code: '6300', name: 'Insurance', type: 'EXPENSE', control: false, description: 'Property, liability and vehicle insurance.' },
+  { code: '6310', name: 'Property Taxes', type: 'EXPENSE', control: false, description: 'Taxes on property and equipment.' },
+  { code: '6400', name: 'Professional Fees', type: 'EXPENSE', control: false, description: 'Accounting, legal and consulting fees.' },
+  { code: '6410', name: 'Software and IT', type: 'EXPENSE', control: false, description: 'Software subscriptions, hosting and IT services.' },
+  { code: '6420', name: 'Telephone and Internet', type: 'EXPENSE', control: false, description: 'Phone and internet service.' },
+  { code: '6430', name: 'Office Supplies', type: 'EXPENSE', control: false, description: 'Office supplies and postage.' },
+  { code: '6500', name: 'Advertising and Marketing', type: 'EXPENSE', control: false, description: 'Advertising, shows and promotion.' },
+  { code: '6510', name: 'Travel, Meals and Entertainment', type: 'EXPENSE', control: false, description: 'Business travel and meals.' },
+  { code: '6520', name: 'Sales Commissions', type: 'EXPENSE', control: false, description: 'Commissions paid on sales.' },
+  { code: '6600', name: 'Bank and Merchant Fees', type: 'EXPENSE', control: false, description: 'Bank charges and card processing fees.' },
+  { code: '6610', name: 'Bad Debt Expense', type: 'EXPENSE', control: false, description: 'Receivables written off or provided for.' },
+  { code: '6700', name: 'Depreciation Expense', type: 'EXPENSE', control: false, description: 'Depreciation of property and equipment for the period.' },
+  { code: '6710', name: 'Amortization Expense', type: 'EXPENSE', control: false, description: 'Amortization of intangibles for the period.' },
+  { code: '6800', name: 'Licenses, Permits and Dues', type: 'EXPENSE', control: false, description: 'Business licenses, permits and memberships.' },
+  { code: '6810', name: 'Safety and Training', type: 'EXPENSE', control: false, description: 'Safety equipment and staff training.' },
+  { code: '6900', name: 'Miscellaneous Expense', type: 'EXPENSE', control: false, description: 'Small costs with no account of their own.' },
+  { code: '7000', name: 'Interest Income', type: 'REVENUE', control: false, description: 'Interest earned.' },
+  { code: '7010', name: 'Gain on Sale of Assets', type: 'REVENUE', control: false, description: 'Gain when equipment is sold for more than its book value.' },
+  { code: '7090', name: 'Other Income', type: 'REVENUE', control: false, description: 'Income outside normal operations.' },
+  { code: '7100', name: 'Interest Expense', type: 'EXPENSE', control: false, description: 'Interest on loans, the credit line and leases.' },
+  { code: '7110', name: 'Loss on Sale of Assets', type: 'EXPENSE', control: false, description: 'Loss when equipment is sold for less than its book value.' },
+  { code: '7190', name: 'Other Expense', type: 'EXPENSE', control: false, description: 'Costs outside normal operations.' },
+  { code: '8000', name: 'Income Tax Expense', type: 'EXPENSE', control: false, description: 'Income tax for the period.' },
 ];
 export const normalSideOf = (type) => (['ASSET', 'EXPENSE', 'CONTRA_REVENUE'].includes(type) ? 'DEBIT' : 'CREDIT');
+/** The side a proposed account carries its balance on: its own `side` when it is a contra account, else by type. */
+export const proposedSideOf = (a) => a.side || normalSideOf(a.type);
+
+/**
+ * Where an account stands on the financial statements. The section comes from the code range of the proposed
+ * chart; an account outside those ranges falls back on its type, so an account added by hand is never left out.
+ *   statement  'BS' balance sheet or 'IS' income statement
+ *   section    the heading it is listed under
+ *   order      the order of the headings
+ */
+export const SECTIONS = {
+  CURRENT_ASSETS: ['BS', 'Current assets', 10], FIXED_ASSETS: ['BS', 'Property and equipment', 20], OTHER_ASSETS: ['BS', 'Other assets', 30],
+  CURRENT_LIABILITIES: ['BS', 'Current liabilities', 40], LONG_TERM_LIABILITIES: ['BS', 'Long-term liabilities', 50], EQUITY: ['BS', 'Equity', 60],
+  REVENUE: ['IS', 'Revenue', 10], COST_OF_SALES: ['IS', 'Cost of goods sold', 20], OPERATING_EXPENSES: ['IS', 'Operating expenses', 30],
+  OTHER_INCOME: ['IS', 'Other income', 40], OTHER_EXPENSE: ['IS', 'Other expense', 50], INCOME_TAX: ['IS', 'Income tax', 60],
+};
+export function sectionOf({ code, type }) {
+  const n = /^[0-9]{4}$/.test(String(code)) ? Number(code) : null;
+  if (type === 'ASSET') return n !== null && n >= 1500 && n < 1600 ? 'FIXED_ASSETS' : n !== null && n >= 1600 && n < 2000 ? 'OTHER_ASSETS' : 'CURRENT_ASSETS';
+  if (type === 'LIABILITY') return n !== null && n >= 2600 && n < 3000 ? 'LONG_TERM_LIABILITIES' : 'CURRENT_LIABILITIES';
+  if (type === 'EQUITY') return 'EQUITY';
+  if (type === 'REVENUE') return n !== null && n >= 7000 && n < 8000 ? 'OTHER_INCOME' : 'REVENUE';
+  if (type === 'CONTRA_REVENUE') return 'REVENUE';
+  if (n !== null && n >= 5000 && n < 6000) return 'COST_OF_SALES';
+  if (n !== null && n >= 7000 && n < 8000) return 'OTHER_EXPENSE';
+  if (n !== null && n >= 8000 && n < 9000) return 'INCOME_TAX';
+  return 'OPERATING_EXPENSES';
+}
+/** The name books carry when they were started as a demonstration, with no accountant. It is shown on every finance screen. */
+export const SANDBOX_APPROVER = 'SANDBOX: demonstration books, not approved by an accountant';
 export const ACCOUNT_TYPES = ['ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'CONTRA_REVENUE', 'EXPENSE'];
 
 /** Each purpose a rule can post to, and the account proposed for it. */

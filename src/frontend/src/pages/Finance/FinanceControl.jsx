@@ -169,6 +169,7 @@ export function CutoverTab({ can, status, onChange }) {
   const action = useAction(() => onChange && onChange())
   const [form, setForm] = useState({ policiesApprovedBy: '', policiesApprovedOn: today(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Detroit', throughWip: false, understood: false })
   const [stop, setStop] = useState(null)
+  const [sandbox, setSandbox] = useState(false)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value })
   const t = dry?.totals
   return (
@@ -214,6 +215,16 @@ export function CutoverTab({ can, status, onChange }) {
           </Stack>
         </Paper>
       )}
+      {!status.effectiveDate && can.activate && (
+        <Paper sx={{ p: 2, mb: 2, border: 1, borderColor: 'warning.main' }} data-testid="sandbox-start">
+          <Typography fontWeight={700}>Or: start sandbox books for a demonstration</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>For a demonstration system only. One step loads the full chart of accounts, records every account and posting rule as approved by nobody, and opens the books today from the records as they are. Every finance screen and statement then says SANDBOX. No accountant is involved, so these books are not for tax, lending or any real decision. It cannot be undone: posted entries are never deleted, and books started as a sandbox stay a sandbox.</Typography>
+          <Button variant="outlined" color="warning" disabled={action.busy} onClick={() => setSandbox(true)}>Start sandbox books</Button>
+        </Paper>
+      )}
+      <AskDialog open={sandbox} title="Start sandbox books" confirm="Start sandbox books" text="This cannot be undone. Type START SANDBOX BOOKS to go on."
+        fields={[{ name: 'confirm', label: 'Type START SANDBOX BOOKS', required: true }, { name: 'timeZone', label: 'Time zone the books are kept in', required: true, value: form.timeZone }]}
+        onClose={() => setSandbox(false)} onConfirm={(v) => { setSandbox(false); action.run(() => client.post('/ledger/sandbox/start', { confirm: String(v.confirm).trim(), timeZone: v.timeZone, throughWip: form.throughWip }), 'The sandbox books are started.') }} />
       {!status.effectiveDate && !can.activate && <Alert severity="info">Starting the books needs the owner, a super administrator or the CFO.</Alert>}
 
       {status.effectiveDate && can.activate && (

@@ -1,4 +1,5 @@
 // Before the books begin, and the cutover itself. These always run: every other group needs an active ledger.
+import { PROPOSED_ACCOUNTS } from '../../../src/backend/src/lib/ledgerRules.js';
 export default async function before(ctx) {
   const { scenario, G, prisma, A, B, cfo, cfo2, owner, auditor, exec, bm1, sales, L1, L2, near, err, tag, num } = ctx;
   const S = (name, fn) => scenario(G.books, name, fn, { always: true });
@@ -44,7 +45,7 @@ export default async function before(ctx) {
     const a = await cfo.post('/api/ledger/chart/load-proposed');
     const b = await cfo.post('/api/ledger/chart/load-proposed');
     const chart = await cfo.get('/api/ledger/chart');
-    ok('22 accounts and 17 mappings were written', a.status === 201 && a.body.accounts === 22 && a.body.mappings === 17, JSON.stringify(a.body));
+    ok(`the whole proposed chart (${PROPOSED_ACCOUNTS.length} accounts) and 17 mappings were written`, a.status === 201 && a.body.accounts === PROPOSED_ACCOUNTS.length && PROPOSED_ACCOUNTS.length >= 100 && a.body.mappings === 17, JSON.stringify(a.body));
     ok('the second load adds nothing', b.body.accounts === 0 && b.body.mappings === 0, JSON.stringify(b.body));
     ok('none is approved', chart.body.accounts.every((x) => !x.approvedAt) && chart.body.mappings.every((m) => !m.approvedAt));
     ok('the proposed accounts are there', ['1000', '1100', '1200', '1210', '1220', '1300', '2000', '2100', '2200', '3000', '4000', '4100', '4200', '4300', '5000', '5100', '5200', '5300'].every((c) => chart.body.accounts.some((x) => x.code === c)));
@@ -58,13 +59,13 @@ export default async function before(ctx) {
     const part = await cfo.post('/api/ledger/approvals', { accounts: ['1000', '1100'], mappings: ['RECEIVABLES'], approvedBy: 'QA Synthetic Accountant' });
     ok('two accounts and one mapping approved', part.status === 200 && part.body.accountsApproved === 2 && part.body.mappingsApproved === 1, JSON.stringify(part.body));
     const again = await owner.post('/api/ledger/activate', { policiesApprovedBy: 'QA Synthetic Accountant', policiesApprovedOn: ctx.today(), dryRunId: dry.body.dryRunId, timeZone: 'America/Detroit' });
-    ok('a partly approved chart is still refused', again.status === 409 && /20 accounts are not approved/.test(err(again)), err(again));
+    ok('a partly approved chart is still refused', again.status === 409 && new RegExp(`${PROPOSED_ACCOUNTS.length - 2} accounts are not approved`).test(err(again)), err(again));
     ok('an approval needs the accountant\'s name', (await cfo.post('/api/ledger/approvals', { accounts: 'ALL', mappings: 'ALL' })).status === 400);
   });
 
   await S('The accountant\'s approval is recorded with a name; a mapping that is changed loses its approval', async (ok) => {
     const all = await cfo.post('/api/ledger/approvals', { accounts: 'ALL', mappings: 'ALL', approvedBy: 'QA Synthetic Accountant (test data only)' });
-    ok('the rest is approved', all.status === 200 && all.body.accountsApproved === 20 && all.body.mappingsApproved === 16, JSON.stringify(all.body));
+    ok('the rest is approved', all.status === 200 && all.body.accountsApproved === PROPOSED_ACCOUNTS.length - 2 && all.body.mappingsApproved === 16, JSON.stringify(all.body));
     const chart = (await cfo.get('/api/ledger/chart')).body;
     ok('no blocker is left', chart.blockers.length === 0, chart.blockers.join(' '));
     const moved = await cfo.put('/api/ledger/mappings/ROUNDING', { accountCode: '5320' });

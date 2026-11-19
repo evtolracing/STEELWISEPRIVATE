@@ -1,0 +1,308 @@
+{
+ "at": "2026-11-19T05:51:40.307Z",
+ "base": "http://localhost:3011",
+ "scenarios": 7,
+ "passed": 7,
+ "checks": 59,
+ "groups": {
+  "Finance ledger sandbox": {
+   "scenarios": 7,
+   "passed": 7,
+   "checks": 59
+  }
+ },
+ "results": [
+  {
+   "group": "Finance ledger sandbox",
+   "name": "Before the start: nothing is posted, and the ordinary path refuses the sandbox name",
+   "asserts": [
+    {
+     "what": "the ledger is not active and not a sandbox",
+     "ok": true
+    },
+    {
+     "what": "the full chart is loaded: 100 accounts or more, none approved",
+     "ok": true
+    },
+    {
+     "what": "accumulated depreciation is an asset account that carries a credit balance",
+     "ok": true
+    },
+    {
+     "what": "real books cannot be opened under a sandbox name",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 254
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "Starting the sandbox: only the owner, a super administrator or the CFO, and only with the phrase",
+   "asserts": [
+    {
+     "what": "an administrator is refused",
+     "ok": true
+    },
+    {
+     "what": "the auditor is refused",
+     "ok": true
+    },
+    {
+     "what": "a sales representative is refused",
+     "ok": true
+    },
+    {
+     "what": "a branch manager is refused",
+     "ok": true
+    },
+    {
+     "what": "without the phrase it is refused and nothing starts",
+     "ok": true
+    },
+    {
+     "what": "a time zone that does not exist is refused",
+     "ok": true
+    },
+    {
+     "what": "with the phrase the books start",
+     "ok": true
+    },
+    {
+     "what": "the answer says SANDBOX and names no accountant",
+     "ok": true
+    },
+    {
+     "what": "the opening balances carry the invoice that was open",
+     "ok": true
+    },
+    {
+     "what": "a second start is refused",
+     "ok": true
+    },
+    {
+     "what": "the mark is saved with the books",
+     "ok": true
+    },
+    {
+     "what": "the start is in the audit trail under the person",
+     "ok": true
+    },
+    {
+     "what": "every account is recorded as approved by the sandbox, not by a person",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 2037
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "Every reader is told these are sandbox books",
+   "asserts": [
+    {
+     "what": "the CFO sees the mark on the status",
+     "ok": true
+    },
+    {
+     "what": "the auditor sees the mark on the status",
+     "ok": true
+    },
+    {
+     "what": "a branch manager sees the mark on the status",
+     "ok": true
+    },
+    {
+     "what": "the balance sheet carries the notice",
+     "ok": true
+    },
+    {
+     "what": "the income statement carries the notice",
+     "ok": true
+    },
+    {
+     "what": "a branch manager cannot read the company statements",
+     "ok": true
+    },
+    {
+     "what": "a sales representative cannot read them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 55
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "The balance sheet balances from the opening balances alone",
+   "asserts": [
+    {
+     "what": "assets equal liabilities and equity",
+     "ok": true
+    },
+    {
+     "what": "receivables show what the open invoice is owed",
+     "ok": true
+    },
+    {
+     "what": "it agrees with the trial balance, which balances",
+     "ok": true
+    },
+    {
+     "what": "the invoice opened before the start (INV-002394) made no revenue in the books",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 35
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "A month of a small company, by journal entry and by business events, reads correctly on both statements",
+   "asserts": [
+    {
+     "what": "net sales: the sale less the discount",
+     "ok": true
+    },
+    {
+     "what": "cost of goods sold: the material shipped",
+     "ok": true
+    },
+    {
+     "what": "gross profit",
+     "ok": true
+    },
+    {
+     "what": "operating expenses: rent, salaries, utilities and depreciation",
+     "ok": true
+    },
+    {
+     "what": "operating income",
+     "ok": true
+    },
+    {
+     "what": "other expense: interest",
+     "ok": true
+    },
+    {
+     "what": "income before tax, tax and net income",
+     "ok": true
+    },
+    {
+     "what": "the sections add up to what the accounts themselves say",
+     "ok": true
+    },
+    {
+     "what": "the discount is listed under revenue as a reduction",
+     "ok": true
+    },
+    {
+     "what": "the lines end with net income",
+     "ok": true
+    },
+    {
+     "what": "the balance sheet still balances",
+     "ok": true
+    },
+    {
+     "what": "the bank account: 250,000 less 20,000 less 39,500",
+     "ok": true
+    },
+    {
+     "what": "equipment at cost, and accumulated depreciation as a reduction",
+     "ok": true
+    },
+    {
+     "what": "the loan is long-term; interest and tax owed are current",
+     "ok": true
+    },
+    {
+     "what": "equity shows the capital and this year's result as its own line",
+     "ok": true
+    },
+    {
+     "what": "the same net income stands on both statements",
+     "ok": true
+    },
+    {
+     "what": "total assets equal the asset accounts of the trial balance",
+     "ok": true
+    },
+    {
+     "what": "the sale posted like any other",
+     "ok": true
+    },
+    {
+     "what": "the books reconcile with the records with no difference in money or stock",
+     "ok": true
+    },
+    {
+     "what": "every reconciliation check on money and stock matches",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 541
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "Earnings of an earlier year stand on their own line; a date before the books is empty",
+   "asserts": [
+    {
+     "what": "next year, this year's loss is \"earnings of earlier years\" and the new year starts at zero",
+     "ok": true
+    },
+    {
+     "what": "before the books began the balance sheet is empty and balances",
+     "ok": true
+    },
+    {
+     "what": "a date that is not a date is refused",
+     "ok": true
+    },
+    {
+     "what": "from after to is refused",
+     "ok": true
+    },
+    {
+     "what": "reading a statement leaves a line in the audit trail",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 29
+  },
+  {
+   "group": "Finance ledger sandbox",
+   "name": "Sandbox books keep every rule of real books",
+   "asserts": [
+    {
+     "what": "an entry that does not balance is refused",
+     "ok": true
+    },
+    {
+     "what": "a control account takes no entry by hand",
+     "ok": true
+    },
+    {
+     "what": "the person who wrote an entry cannot post it",
+     "ok": true
+    },
+    {
+     "what": "a posted entry is never changed through the server",
+     "ok": true
+    },
+    {
+     "what": "stopped books are still marked sandbox",
+     "ok": true
+    },
+    {
+     "what": "started again, still sandbox",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 73
+  }
+ ]
+}

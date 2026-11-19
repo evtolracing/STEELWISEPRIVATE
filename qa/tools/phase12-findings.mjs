@@ -87,7 +87,7 @@ const AA = [
     'A check waits for what it reads, and tries again when told to try again, within a stated limit.',
     'Two false failures in the gate. The product was not at fault. A different scenario failed for the same kind of reason in the first gate (AA-009), so the suites are sensitive to load on a small machine.',
     'Fixed in the tests: the heading is waited for (5 s at most); the reconciliation is asked again for at most ten seconds, and a copy that stays down still fails. The gate log is kept with its two failures (qa/results/phase12-gate.txt). A timing fault cannot be made to fail on demand, so there is no proof by removal for this one.',
-    'The stock scenario passed three times alone; both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt).'],
+    'The stock scenario passed three times alone. Both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt): Phase 11 320 of 320; Phase 9 231 of 232, with scenario 113 passing. The one that failed in that rerun (210, the customers list after a server failure) had passed in the gate: run after the gate, the database also holds the customers Phase 11 adds later, and the check looked for one of its own customers on the first page. It fails every time on that database and passes in gate order. Its pattern was widened and it passed alone. So each of the 232 scenarios passed either in the final gate or, for 113, in the rerun; the suite as a whole did not pass in one run on the final code, and that is stated in phase-12-release-baseline.md.'],
 ];
 
 const today = '2026-11-19';

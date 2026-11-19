@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d5062a3. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 
@@ -114,4 +114,12 @@ Found in Phase 9 and not fixed: `GET /api/v1/dispatch/work-centers?locationId=` 
 1. Which roles are held to their own branch, and which to a region, for reading and for changing (B-003).
 2. The owner department for each area in the table above (B-004).
 3. Whether every staff login should read invoices and cost-bearing records (F-009).
+
+### Phase 12 update (2026-11-19)
+
+The table above is generated from the code and was regenerated for the release candidate. Phase 12 tested it again from outside (`phase-12-security-certification.md`) and it held. Three points for the people who accept it (`phase-12-operational-acceptance.md`):
+
+- Sales staff may dispatch a shipment and move a work order; warehouse and quality staff may move a job (AA-010). This is the role table as written, not a fault in enforcement. Confirm it or change it.
+- The assistants answer only for the caller's own organization, list people by name, role and title only, and write an audit row for every question (AA-003).
+- No one has approved this matrix. Approval status: NOT GIVEN.
 

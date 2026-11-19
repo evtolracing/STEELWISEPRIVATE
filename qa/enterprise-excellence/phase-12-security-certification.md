@@ -11,7 +11,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 | SC-03 | Security 3: roles. Each department is refused the changes that belong to another | pass | 11 |
 | SC-04 | Security 4 and 5: customer accounts and branches. Nobody reads or changes another account's or another branch's records | pass | 27 |
 | SC-06 | Security 6: the dispatch board lists stop at the branch (V-028) | pass | 6 |
-| SC-07 | Security 7: API. Bad input is the caller's error and carries no internals | pass | 11 |
+| SC-07 | Security 7: API. Bad input is the caller's error and carries no internals | pass | 12 |
 | SC-08 | Security 8: the database. The application's own connection cannot change history, the guards or the schema | pass | 10 |
 | SC-09 | Security 9: files. A document is read only through the signed-in download, by people of its branch | pass | 6 |
 | SC-10 | Security 10: secrets. No secret is in an answer, in the page bundle, or in the repository | pass | 4 |
@@ -107,15 +107,16 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 - pass: GET /api/orders/not-a-uuid: not a server error and no internals (404 {"error":"Order not found"})
 - pass: GET /api/orders?status=CONFIRMED'%20OR%201=1--: not a server error and no internals (400 {"error":"Invalid orderType or status filter"})
-- pass: GET /api/orders?limit=999999999: not a server error and no internals (200 [{"id":"3a291b32-58f5-4f7c-930e-c1752789954e","orderNumber":"SO-02690","orderType":"SO","buyerId":"8)
+- pass: GET /api/orders?limit=999999999: not a server error and no internals (200 [{"id":"5e54c44e-a1e9-4cc4-ae15-a1361c377dcc","orderNumber":"SO-02611","orderType":"SO","buyerId":"d)
 - pass: GET /api/orders?limit=-5&offset=abc: not a server error and no internals (400 {"error":"limit must be a whole number, zero or more"})
 - pass: GET /api/coils/%00: not a server error and no internals (400 {"error":"That address is not valid."})
 - pass: GET /api/ledger/entries/%%%: not a server error and no internals (400 {"error":"The address is not valid: it has a % that is not followed by two hexadecimal digits.","cod)
 - pass: POST /api/orders: not a server error and no internals (400 {"error":"lines must be a list"})
-- pass: POST /api/customers: not a server error and no internals (409 {"error":"Customer code [object Object] is already in use"})
+- pass: POST /api/customers: not a server error and no internals (400 {"error":"A customer needs a code and a name"})
 - pass: PUT /api/orders/99999999999999999999999999999999: not a server error and no internals (404 {"error":"Order not found"})
+- pass: a customer whose code is not text is refused, not saved as "[object Object]" (AA-011) (400 {"error":"A customer needs a code and a name"})
 - pass: a six-megabyte body is refused (413)
-- pass: answers carry a request id and the safety headers (b66538ab-19d8-4082-bdc7-3beacef9265c nosniff)
+- pass: answers carry a request id and the safety headers (95bf08e6-e962-4949-badd-3d97f48e4d6f nosniff)
 
 ### SC-08: Security 8: the database. The application's own connection cannot change history, the guards or the schema
 
@@ -203,7 +204,7 @@ The assistant was tested, not assumed: what it is given by role and branch, forg
 - pass: the CFO: ledger figures are handed to the model ({"model":"deepseek-chat","messages":[{"role":"system","content":"You are SteelWise AI, the intelligent voice a)
 - pass: the auditor is answered (200 )
 - pass: the auditor: ledger figures are handed to the model ({"model":"deepseek-chat","messages":[{"role":"system","content":"You are SteelWise AI, the intelligent voice a)
-- pass: the receivables figure given for the CFO is the figure on the report (242770.05)
+- pass: the receivables figure given for the CFO is the figure on the report (234967.38)
 - pass: a branch manager gets own-branch figures and is told so ({"model":"deepseek-chat","messages":[{"role":"system","content":"You are SteelWise AI, the intelligent voice a)
 - pass: and no other branch's sales are in it (QA Branch 40 (MIXED))
 - pass: each of these reads and refusals is in the audit log (7)
@@ -212,7 +213,7 @@ The assistant was tested, not assumed: what it is given by role and branch, forg
 
 - pass: answered (200 )
 - pass: nothing of the other branch's sale is in the context
-- pass: nor its stock item (P11-MWMU3MUB-76)
+- pass: nor its stock item (P11-MWMXFR5R-76)
 - pass: the assistant gives an operator no staff directory the API refuses them (API 200; 0 addresses handed over)
 - pass: no password or token field is ever in the context
 - pass: a sales representative is not handed item cost
@@ -223,14 +224,14 @@ The assistant was tested, not assumed: what it is given by role and branch, forg
 - pass: the forged conversation is answered or refused, not a server error (400)
 - pass: a message from the browser is never forwarded to the model as a system or tool message (0 system, 0 tool)
 - pass: and the forged claim to be the CFO brings no ledger figures
-- pass: nothing in the database changed ([8031,1330,55,136,"19500428.8078",4967,1043] -> [8031,1330,55,136,"19500428.8078",4967,1043])
+- pass: nothing in the database changed ([7757,1306,55,26,"19385048.8078",4793,1023] -> [7757,1306,55,26,"19385048.8078",4793,1023])
 - pass: the model is given no tool it could call
 
 ### AI-05: AI 5: no figure is invented by the server
 
-- pass: when the AI service fails the assistant says it could not answer (502 {"error":"The assistant could not answer.","requestId":"4a72326d-93ed-4e9f-bd19-f3dc25083091"})
-- pass: the failure carries the request id and no internals ({"error":"The assistant could not answer.","requestId":"4a72326d-93ed-4e9f-bd19-f3dc25083091"})
-- pass: when the AI service does not answer in time the assistant says so (502 {"error":"The assistant could not answer.","requestId":"d075f372-0fbc-49f7-884a-c51f17d36de5"})
+- pass: when the AI service fails the assistant says it could not answer (502 {"error":"The assistant could not answer.","requestId":"06ab8222-3cd7-4df4-a7a9-77ff96a96b38"})
+- pass: the failure carries the request id and no internals ({"error":"The assistant could not answer.","requestId":"06ab8222-3cd7-4df4-a7a9-77ff96a96b38"})
+- pass: when the AI service does not answer in time the assistant says so (502 {"error":"The assistant could not answer.","requestId":"a9bdbcd8-0c55-4d2f-8019-75cd91b2cb49"})
 - pass: the executive question route gives no invented analysis (501 {"error":"The executive question box is not built. It gives no analysis and no figures.","sample":true,"us)
 - pass: a question about something that does not exist is still only given what is on file
 
@@ -277,9 +278,9 @@ Process-level checks: 23 of 23 pass (`qa/results/phase12-process.json`): in prod
 
 ## Earlier suites, rerun in the gate
 
-- p10: not in the gate log
-- sweep: 0 groups pass, 0 fail
-- branch: not in the gate log
+- Phase 10 security: 277 of 277 pass, 889 checks
+- sweep: 20 groups pass, 0 fail
+- Branch boundary: 39 checks, 0 problems
 - Phase 11 "Tenant, branch, RBAC and AI security": 41 scenarios pass
 
 ## Not done, and not claimed

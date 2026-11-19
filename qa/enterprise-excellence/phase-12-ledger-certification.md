@@ -71,8 +71,8 @@ Missing approvals: all fourteen rows above, the account mappings, the posting ru
 
 ## Earlier suites, rerun in the gate
 
-- p95: not in the gate log
-- not in the gate log
+- Phase 9.5 ledger: 158 of 158 pass, 915 checks
+- Phase 9.5 load: 16 of 16 checks pass
 - Phase 11 "Ledger posting and reconciliation": 63 scenarios pass
 
 ## Open findings

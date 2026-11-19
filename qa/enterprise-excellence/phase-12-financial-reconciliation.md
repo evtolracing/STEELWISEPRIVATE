@@ -23,17 +23,17 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 ### RC-01: Reconciliation 1: the books balance, by SQL and by the product
 
-- pass: total debits equal total credits to the cent (15215471.35 / 15215471.35)
+- pass: total debits equal total credits to the cent (15253063.53 / 15253063.53)
 - pass: no single posted entry is out of balance
-- pass: the trial balance says the same ({"debit":"15215471.35","credit":"15215471.35"})
+- pass: the trial balance says the same ({"debit":"15253063.53","credit":"15253063.53"})
 - pass: the product's own check agrees ({"key":"BOOKS_BALANCE","title":"Debits equal credits, in total and in every entry","status":"MATCH","ledger":")
 
 ### RC-02: Reconciliation 2: receivables in the ledger equal the open invoices, customer by customer
 
-- pass: the report's ledger figure is the account balance (242385.65 / 242385.65)
-- pass: the report shows no difference between ledger and records ({"owed":"246725.65","creditOwedBack":"4340.00","records":"242385.65","ledger":"242385.65","difference":"0.00"})
+- pass: the report's ledger figure is the account balance (234582.98 / 234582.98)
+- pass: the report shows no difference between ledger and records ({"owed":"238798.98","creditOwedBack":"4216.00","records":"234582.98","ledger":"234582.98","difference":"0.00"})
 - pass: the reconciliation says the same ({"key":"RECEIVABLES","title":"Accounts receivable: the books beside the open invoices and credits","status":"M)
-- pass: the customers add up to the total (101 customers)
+- pass: the customers add up to the total (93 customers)
 
 ### RC-03: Reconciliation 3: inventory in the ledger equals stock on hand at cost, branch by branch
 
@@ -47,17 +47,17 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 ### RC-04: Reconciliation 4: revenue in the ledger equals the invoices issued
 
 - pass: no revenue difference (0.00)
-- pass: revenue by branch, by customer and by product give one total (1175767.71 1175767.71 1175767.71)
-- pass: cost of sales in the margin report is the cost-of-sales account (677776.23)
+- pass: revenue by branch, by customer and by product give one total (1181568.01 1181568.01 1181568.01)
+- pass: cost of sales in the margin report is the cost-of-sales account (685056.33)
 
 ### RC-05: Reconciliation 5: every business event since the ledger began is in the books or held by name
 
 - pass: no event of this run is failed, pending or held (0)
-- pass: the exceptions report answers and counts the same open events as the table (3)
+- pass: the exceptions report answers and counts the same open events as the table (2)
 - pass: no business event has two entries (0)
 - pass: every posted event points at an entry that exists (0)
-- pass: invoice INV-001773 of this run is posted once
-- pass: invoice INV-001774 of this run is posted once
+- pass: invoice INV-001714 of this run is posted once
+- pass: invoice INV-001715 of this run is posted once
 
 ### RC-06: Reconciliation 6: the reconciliation itself is honest: it reports a planted difference and corrects nothing
 
@@ -68,17 +68,17 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 ## The enterprise day (Phase 11 run in the gate)
 
-Trial balance: debits 14,217,738.73, credits 14,217,738.73. Reconciliation clean:
+Trial balance: debits 14,398,390.10, credits 14,398,390.10. Reconciliation clean:
 
 | Check | Books | Records | Difference |
 |---|---|---|---|
-| BOOKS_BALANCE | 14,217,738.73 | 14,217,738.73 | 0.00 |
-| RECEIVABLES | 170,558.83 | 170,558.83 | 0.00 |
-| INVENTORY | 9,395,592.42 | 9,395,592.42 | 0.00 |
+| BOOKS_BALANCE | 14,398,390.10 | 14,398,390.10 | 0.00 |
+| RECEIVABLES | 175,530.76 | 175,530.76 | 0.00 |
+| INVENTORY | 9,424,849.02 | 9,424,849.02 | 0.00 |
 | IN_TRANSIT | 700.00 | 700.00 | 0.00 |
-| REVENUE | 1,067,397.09 | 1,067,397.09 | 0.00 |
-| SALES_TAX | 3,119.15 | 3,119.15 | 0.00 |
-| PAYMENTS | 989,714.29 | 989,714.29 | 0.00 |
+| REVENUE | 1,095,261.84 | 1,095,261.84 | 0.00 |
+| SALES_TAX | 2,783.85 | 2,783.85 | 0.00 |
+| PAYMENTS | 1,012,299.31 | 1,012,299.31 | 0.00 |
 
 ## Unexplained discrepancies
 

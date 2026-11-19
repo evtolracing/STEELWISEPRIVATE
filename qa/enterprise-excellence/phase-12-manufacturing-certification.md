@@ -8,22 +8,22 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Work orders | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Routing | NOT VERIFIED (its suite did not pass in this run) | Processing recipes: versioned steps a job follows in order | FAIL: p7: not in the gate log |  |
+| Work orders | VERIFIED ON QA | As above | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Routing | VERIFIED ON QA | Processing recipes: versioned steps a job follows in order | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks |  |
 | BOMs | NOT BUILT | What is called a BOM recipe is a routing. No bill of materials | none | M-011 |
-| Work centers | NOT VERIFIED (its suite did not pass in this run) | Master data with validation and lockout | FAIL: p7: not in the gate log; FAIL: p2: not in the gate log |  |
-| Scheduling | PARTIAL | As above | FAIL: p7: not in the gate log | L-025 |
-| Dispatch | NOT VERIFIED (its suite did not pass in this run) | Dispatch board per branch | FAIL: p7: not in the gate log; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
-| Material consumption | NOT VERIFIED (its suite did not pass in this run) | Through the work order: weight in, pieces and scrap out, nothing created from nothing | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Machine assignment | NOT VERIFIED (its suite did not pass in this run) | A step runs on a work center of the right kind | FAIL: p7: not in the gate log |  |
-| Labor tracking | PARTIAL | Time from start and complete. Labor rates must be entered before job cost means anything | FAIL: p7: not in the gate log | L-026 |
-| Production completion | NOT VERIFIED (its suite did not pass in this run) | Completion moves the job on, to QC where required | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Scrap | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p7: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
-| Remnants | PARTIAL | As above | FAIL: p7: not in the gate log | K-006 |
-| Rework | NOT VERIFIED (its suite did not pass in this run) | A rework step added to the plan and clocked | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Work centers | VERIFIED ON QA | Master data with validation and lockout | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 2 integrity: 82 checks, 0 problems |  |
+| Scheduling | PARTIAL | As above | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks | L-025 |
+| Dispatch | VERIFIED ON QA | Dispatch board per branch | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
+| Material consumption | VERIFIED ON QA | Through the work order: weight in, pieces and scrap out, nothing created from nothing | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Machine assignment | VERIFIED ON QA | A step runs on a work center of the right kind | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks |  |
+| Labor tracking | PARTIAL | Time from start and complete. Labor rates must be entered before job cost means anything | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks | L-026 |
+| Production completion | VERIFIED ON QA | Completion moves the job on, to QC where required | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Scrap | VERIFIED ON QA | As above | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
+| Remnants | PARTIAL | As above | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks | K-006 |
+| Rework | VERIFIED ON QA | A rework step added to the plan and clocked | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
 | Outside processing | NOT BUILT | None | none | L-027 |
-| Job costing | PARTIAL | Material and labor per job. No overhead, no cost report across jobs, no work-in-progress valuation | FAIL: p7: not in the gate log; FAIL: p95: not in the gate log | L-026 |
-| Traceability | NOT VERIFIED (its suite did not pass in this run) | Shipped piece back to heat, parent item and work order | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Job costing | PARTIAL | Material and labor per job. No overhead, no cost report across jobs, no work-in-progress valuation | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 9.5 ledger: 158 of 158 pass, 915 checks | L-026 |
+| Traceability | VERIFIED ON QA | Shipped piece back to heat, parent item and work order | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
 
 ## Quality control (section 12)
 
@@ -32,15 +32,15 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
 | Incoming inspection | NOT BUILT | A certificate hold at receipt only. Supplier quality screens are samples | none | I-011 |
-| In-process inspection | PARTIAL | An inspection can be required at a step | FAIL: p7: not in the gate log | L-028 |
-| Final inspection | NOT VERIFIED (its suite did not pass in this run) | The QC gate before packaging | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Quality holds | NOT VERIFIED (its suite did not pass in this run) | Held stock cannot be reserved or shipped | FAIL: p6: not in the gate log; FAIL: p7: not in the gate log; FAIL: p8: not in the gate log |  |
+| In-process inspection | PARTIAL | An inspection can be required at a step | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks | L-028 |
+| Final inspection | VERIFIED ON QA | The QC gate before packaging | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Quality holds | VERIFIED ON QA | Held stock cannot be reserved or shipped | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks |  |
 | Nonconformance | NOT BUILT | No nonconformance or corrective-action record | none | L-023 |
-| Rework and reinspection | NOT VERIFIED (its suite did not pass in this run) | Fail, rework, inspect again | FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Material certification | PARTIAL | Attached and required; content not read | FAIL: p6: not in the gate log |  |
-| Traceability | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p7: not in the gate log |  |
-| Release authorization | NOT VERIFIED (its suite did not pass in this run) | Release by the quality role or a manager, recorded | FAIL: p7: not in the gate log |  |
-| Nonconforming material cannot bypass controls | NOT VERIFIED (its suite did not pass in this run) | A failed or held job cannot be packed or dispatched; checked inside the dispatch save | FAIL: p8: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Rework and reinspection | VERIFIED ON QA | Fail, rework, inspect again | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Material certification | PARTIAL | Attached and required; content not read | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks |  |
+| Traceability | VERIFIED ON QA | As above | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks |  |
+| Release authorization | VERIFIED ON QA | Release by the quality role or a manager, recorded | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks |  |
+| Nonconforming material cannot bypass controls | VERIFIED ON QA | A failed or held job cannot be packed or dispatched; checked inside the dispatch save | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
 
 ## End-to-end evidence from this phase
 
@@ -63,12 +63,12 @@ PASS, 41 checks.
 - pass: step "Deburr and stack" is started and finished by the operator (200 200  )
 - pass: time on each step is recorded against a person (2)
 - pass: the dock cannot mark the job ready to ship before inspection (409 This job is waiting for inspection. Record the inspection result in Quality; a pass moves it to packaging.)
-- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00631 (waiting qc) is not finished. Finish or )
+- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00629 (waiting qc) is not finished. Finish or )
 - pass: nothing left the building
 - pass: the inspection is opened (201 )
 - pass: a failed inspection is recorded (200 )
-- pass: a job that failed inspection cannot be staged (409 Inspection INS-00353 failed. This job needs a passed inspection before it can move on: send it to inspecti)
-- pass: the rework step "Rework (INS-00353)" is run (200 200  )
+- pass: a job that failed inspection cannot be staged (409 Inspection INS-00349 failed. This job needs a passed inspection before it can move on: send it to inspecti)
+- pass: the rework step "Rework (INS-00349)" is run (200 200  )
 - pass: a new inspection is opened after the rework (201 )
 - pass: the new inspection passes (200 )
 - pass: both inspections are kept: the failure is not overwritten (2)
@@ -97,7 +97,7 @@ PASS, 20 checks.
 - pass: the operator starts it (200 )
 - pass: it cannot be started twice (409 This work order is already in progress)
 - pass: 100 lb of the item are reserved for a customer (201 )
-- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMU3MUB-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
+- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMXFR5R-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
 - pass: and the refusal changed nothing
 - pass: completed with two pieces and 30 lb of scrap (200 )
 - pass: the source keeps exactly the 100 lb promised to the customer (ALLOCATED: on hand 100, reserved 100)
@@ -116,7 +116,7 @@ PASS, 20 checks.
 
 ## Earlier suites, rerun in the gate
 
-- p7: not in the gate log
+- Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks
 - Phase 11 "Manufacturing, scheduling and quality": 40 scenarios pass
 
 ## Not built, stated plainly

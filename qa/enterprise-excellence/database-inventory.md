@@ -1,6 +1,6 @@
 # Database inventory
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d5062a3. Do not edit by hand: change the source and rerun.
 
 Schema: `src/backend/prisma/schema.prisma`. Row counts and enforced rules are read from the local QA database after a full gate run (2026-11-19 02:17 UTC); they describe test data, not the live database, which was not touched.
 

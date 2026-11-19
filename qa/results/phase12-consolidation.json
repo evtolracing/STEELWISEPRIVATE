@@ -1,6 +1,6 @@
 {
- "ranAt": "2026-11-19T00:53:36.641Z",
- "commit": "9e12319",
+ "ranAt": "2026-11-19T02:57:08.792Z",
+ "commit": "d5062a3",
  "phases": [
   {
    "phase": "1",
@@ -89,10 +89,10 @@
  ],
  "phasesVerifiedComplete": 0,
  "findings": {
-  "total": 462,
+  "total": 464,
   "open": 114,
   "byStatus": {
-   "VERIFIED FIXED": 346,
+   "VERIFIED FIXED": 348,
    "IN PROGRESS": 6,
    "REQUIRES BUSINESS DECISION": 92,
    "BLOCKED": 5,
@@ -103,7 +103,7 @@
   "bySeverity": {
    "P1": 130,
    "P2": 188,
-   "P3": 123,
+   "P3": 125,
    "P0": 20,
    "P4": 1
   },
@@ -216,7 +216,7 @@
     "openP0P1": 0
    },
    "AA": {
-    "total": 10,
+    "total": 12,
     "open": 3,
     "openP0P1": 0
    }
@@ -340,11 +340,11 @@
  ],
  "statusesNotAllowedInPhase12": [],
  "evidence": {
-  "verifiedFixed": 346,
-  "testFilesRead": 165,
+  "verifiedFixed": 348,
+  "testFilesRead": 169,
   "named": 176,
-  "suite": 64,
-  "words": 106,
+  "suite": 65,
+  "words": 107,
   "none": 0,
   "suiteOnly": [
    "B-003",
@@ -410,7 +410,8 @@
    "AA-003",
    "AA-004",
    "AA-005",
-   "AA-006"
+   "AA-006",
+   "AA-011"
   ],
   "wordsOnly": [
    "B-023",
@@ -518,7 +519,8 @@
    "X-004",
    "X-005",
    "X-006",
-   "W-027"
+   "W-027",
+   "AA-012"
   ],
   "noEvidence": [],
   "filesNamedButMissing": []

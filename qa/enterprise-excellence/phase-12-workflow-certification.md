@@ -2,17 +2,17 @@
 
 Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of Phase 11; RC-2 is RC-1 plus the corrections of this phase, listed in `phase-12-release-baseline.md`). Everything here was run in this session on one local machine against a local PostgreSQL 16 database whose name contains `qa`, with synthetic data only. Nothing was run against the live system, and nothing here is a statement about it.
 
-68 workflows and controls were run through the real server on three copies, and the database read back after each: 68 pass, 0 fail, 600 checks (`qa/results/phase12-certification.json`, from **the full gate on RC-2 has not finished: figures marked "gate" below are NOT VERIFIED until it has**).
+68 workflows and controls were run through the real server on three copies, and the database read back after each: 68 pass, 0 fail, 601 checks (`qa/results/phase12-certification.json`, from the full gate on RC-2 (`qa/results/phase12-gate.txt`)).
 
 | Workflow ID | Purpose | Starting event | Responsible role | Required permissions | UI entry point | API or service path | Database changes | Events and integrations | Financial consequences | Expected final state | Evidence | Result |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| WF-01 | Sell stock material to a new account from request to cash | A new customer asks for a price | CSR, estimator, inventory manager, shipping coordinator | the role's department rule and its own branch | Customers; Sales and Quoting; Orders; Shipping; Invoices | POST /api/customers, /api/rfqs, /api/rfqs/:id/quotes, /api/quotes/:id/send, /api/quotes/:id/accept, /api/orders/:id/allocate, /api/shipments, PUT /api/shipments/:id/dispatch and /deliver, POST /api/invoices/:id/payments | Organization, RFQ, Quote, Order, OrderLine, Inventory, Shipment, MaterialMovement, Invoice, Payment, LedgerEvent, JournalEntry | INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECEIVED ledger events | receivables and revenue at dispatch; cost of goods at the item's cost; cash at payment | order shipped, shipment delivered, invoice paid, receivable zero, books reconciled | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 36 checks | PASS |
+| WF-01 | Sell stock material to a new account from request to cash | A new customer asks for a price | CSR, estimator, inventory manager, shipping coordinator | the role's department rule and its own branch | Customers; Sales and Quoting; Orders; Shipping; Invoices | POST /api/customers, /api/rfqs, /api/rfqs/:id/quotes, /api/quotes/:id/send, /api/quotes/:id/accept, /api/orders/:id/allocate, /api/shipments, PUT /api/shipments/:id/dispatch and /deliver, POST /api/invoices/:id/payments | Organization, RFQ, Quote, Order, OrderLine, Inventory, Shipment, MaterialMovement, Invoice, Payment, LedgerEvent, JournalEntry | INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECORDED ledger events | receivables and revenue at dispatch; cost of goods at the item's cost; cash at payment | order shipped, shipment delivered, invoice paid, receivable zero, books reconciled | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 36 checks | PASS |
 | WF-02 | Sell processed material: quote, production, quality release, shipment, invoice | A customer accepts a quote for cut-to-size material | Estimator, CSR, scheduler, operator, QC inspector, shipping coordinator, branch manager | the role's department rule and its own branch | Sales and Quoting; Scheduling; Shop Floor; QC Inspections; Shipping | POST /api/jobs, /api/jobs/:id/plan, /api/v1/operations/:id/start and /complete, /api/qc/inspections, /api/qc/inspections/:id/pass, POST /api/jobs/:id/status, shipments and invoices as flow 1, GET /api/orders/:id/cost | Job, DispatchJob, DispatchOperation, DispatchTimeLog, JobInspection and the flow 1 records | INVOICE_ISSUED, STOCK_SHIPPED | as flow 1; the job cost shows material at actual cost | job complete and inspected, shipment delivered, invoice paid | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 41 checks | PASS |
 | WF-03 | Buy material and bring it into stock at its actual cost | A buyer raises a purchase order | Buyer, receiving clerk | the role's department rule and its own branch | Purchasing; Receiving | POST /api/purchase-orders, PUT /api/purchase-orders/:id, POST /api/inventory/receipts | Order (PO), OrderLine, Coil, Inventory, MaterialMovement, LedgerEvent, JournalEntry | STOCK_RECEIVED per receipt | raw inventory up and received-not-invoiced up by pounds times the line price, per receipt | purchase order fully received; two stock items at the branch at cost | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 30 checks | PASS |
 | WF-04 | Move stock between two branches without losing it from the books | The sending branch ships a transfer | Inventory manager (sending), receiving clerk (receiving) | the role's department rule and its own branch | Inventory: Transfers | POST /api/inventory/transfers, POST /api/inventory/transfers/:id/receive | StockTransfer, StockTransferLine, Coil, Inventory, MaterialMovement | TRANSFER_SHIPPED and TRANSFER_RECEIVED ledger events | inventory moves to in transit at cost, then to the receiving branch; no revenue | the item is at the receiving branch at the same cost; nothing in transit | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks | PASS |
 | WF-05 | Process material and keep weight, cost and traceability through the cut | A scheduler writes a work order against a stock item | Scheduler, operator | the role's department rule and its own branch | Work Orders | POST /api/work-orders, PUT /api/work-orders/:id/release, /start, /complete | WorkOrder, Coil (source and outputs), Inventory, MaterialMovement | material issued, production completed, scrap written off | the source leaves raw stock at cost; outputs enter at the same cost per pound; scrap is expensed at cost | source consumed; two outputs in stock tracing to the source heat; scrap recorded | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 20 checks | PASS |
-| WF-06 | Take an order from the web store through to cash | A customer buyer checks out on the web store | Customer buyer; CSR; inventory manager; shipping coordinator | the role's department rule and its own branch | Shop (customer); Online Order Inbox; Shipping | POST /api/ecom/checkout/submit, POST /api/orders/online/:id/accept, GET /api/ecom/my-orders, then shipments and payments | OnlineOrder, Order, Inventory, Shipment, Invoice, Payment | INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECEIVED | as a sale; nothing is charged to a card by the product | one internal order for the web order; shipped, invoiced, paid; visible to its buyer only | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks | PASS |
-| WF-07 | Sell shelf goods over the counter for immediate payment | A walk-in customer pays at the counter | CSR at the counter | the role's department rule and its own branch | Quick Sale (counter) | POST /api/pos/quick-sale/process-payment | Order, Invoice, Payment, Inventory, MaterialMovement | INVOICE_ISSUED, PAYMENT_RECEIVED, STOCK_SHIPPED | cash and revenue at once; sales tax where the branch state has a rate; cost of goods at the item's cost | one order, one paid invoice, shelf reduced once | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 13 checks | PASS |
+| WF-06 | Take an order from the web store through to cash | A customer buyer checks out on the web store | Customer buyer; CSR; inventory manager; shipping coordinator | the role's department rule and its own branch | Shop (customer); Online Order Inbox; Shipping | POST /api/ecom/checkout/submit, POST /api/orders/online/:id/accept, GET /api/ecom/my-orders, then shipments and payments | OnlineOrder, Order, Inventory, Shipment, Invoice, Payment | INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECORDED | as a sale; nothing is charged to a card by the product | one internal order for the web order; shipped, invoiced, paid; visible to its buyer only | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks | PASS |
+| WF-07 | Sell shelf goods over the counter for immediate payment | A walk-in customer pays at the counter | CSR at the counter | the role's department rule and its own branch | Quick Sale (counter) | POST /api/pos/quick-sale/process-payment | Order, Invoice, Payment, Inventory, MaterialMovement | INVOICE_ISSUED, PAYMENT_RECORDED, STOCK_SHIPPED | cash and revenue at once; sales tax where the branch state has a rate; cost of goods at the item's cost | one order, one paid invoice, shelf reduced once | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 13 checks | PASS |
 | WF-08 | Take material back and return the customer's money | A customer returns part of a paid shipment | CSR, receiving clerk, branch manager | the role's department rule and its own branch | Returns | POST /api/returns, POST /api/returns/:id/receive, POST /api/invoices/:id/refund | Return, ReturnLine, Inventory, MaterialMovement, Invoice (CREDIT), Payment (refund) | CREDIT_MEMO_ISSUED, STOCK_RETURNED, REFUND_PAID | revenue and receivables reversed by the credit; stock back at cost when restocked; cash out at refund | return received; one credit memo; refund paid; the invoice history intact | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks | PASS |
 | WF-09 | Ship what is ready and bill only that; keep the rest reserved | Part of an order is ready before the rest | Inventory manager, shipping coordinator, CSR | the role's department rule and its own branch | Orders; Shipping; Invoices | as flow 1, with two shipments | Order, Shipment (2), Invoice (2) | two INVOICE_ISSUED, two STOCK_SHIPPED | receivables rise by each part as it leaves; never by the whole order early | two shipments, two invoices adding up to the order, order closed | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 15 checks | PASS |
 | WF-10 | Consolidate the branches into one set of books | Finance reads the reports after the day's work | CFO, auditor, branch manager | the role's department rule and its own branch | Finance: Reports | GET /api/ledger/reports/trial-balance, revenue, gross-margin, inventory, receivables | read only | each report read is recorded | total debits equal total credits; branch revenue adds to enterprise revenue | one total whichever way it is cut | qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 16 checks | PASS |
@@ -59,7 +59,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 | SC-03 | Role-based access | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | as the checks state | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 11 checks | PASS |
 | SC-04 | Tenant (customer account) and branch isolation | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | as the checks state | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 27 checks | PASS |
 | SC-06 | Branch boundary on the dispatch board | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | GET /api/v1/dispatch/work-centers, /queue, /stats, /operators | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks | PASS |
-| SC-07 | API security | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | as the checks state | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 11 checks | PASS |
+| SC-07 | API security | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | as the checks state | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 12 checks | PASS |
 | SC-08 | Database security | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | SQL as steelwise_runtime | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 10 checks | PASS |
 | SC-09 | File security | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | POST /api/documents/upload, GET /api/documents/:id/download | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks | PASS |
 | SC-10 | Secrets | as the name states | attacker or the wrong person | the role's department rule and its own branch | none: the API is called directly | as the checks state | none outside the scenario | none | none | as the checks state | qa/sim/phase12-certification.mjs, Security and access revalidation; 4 checks | PASS |
@@ -133,12 +133,12 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 - pass: step "Deburr and stack" is started and finished by the operator (200 200  )
 - pass: time on each step is recorded against a person (2)
 - pass: the dock cannot mark the job ready to ship before inspection (409 This job is waiting for inspection. Record the inspection result in Quality; a pass moves it to packaging.)
-- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00631 (waiting qc) is not finished. Finish or )
+- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00629 (waiting qc) is not finished. Finish or )
 - pass: nothing left the building
 - pass: the inspection is opened (201 )
 - pass: a failed inspection is recorded (200 )
-- pass: a job that failed inspection cannot be staged (409 Inspection INS-00353 failed. This job needs a passed inspection before it can move on: send it to inspecti)
-- pass: the rework step "Rework (INS-00353)" is run (200 200  )
+- pass: a job that failed inspection cannot be staged (409 Inspection INS-00349 failed. This job needs a passed inspection before it can move on: send it to inspecti)
+- pass: the rework step "Rework (INS-00349)" is run (200 200  )
 - pass: a new inspection is opened after the rework (201 )
 - pass: the new inspection passes (200 )
 - pass: both inspections are kept: the failure is not overwritten (2)
@@ -163,13 +163,13 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 ### WF-03: Flow 3: a purchase order is approved, received in two parts, costed from its line and posted
 
 - pass: the purchase order is written (201 )
-- pass: goods cannot be received against a purchase order that is not placed (409 Purchase order PO-02005 is still a draft: it has not been placed with the supplier)
+- pass: goods cannot be received against a purchase order that is not placed (409 Purchase order PO-01930 is still a draft: it has not been placed with the supplier)
 - pass: the purchase order is placed (200 )
 - pass: a sales representative cannot receive goods (403)
 - pass: the first part is received (201 )
 - pass: the rest is received (201 )
 - pass: 500 lb more than was ordered is received on hold, not into free stock (201 hold 500 available 0 )
-- pass: with a hold that says why ([["DISPUTE","Received against PO PO-02005 line 1, and more than ordered: 4500 LB received against 4000 ordered)
+- pass: with a hold that says why ([["DISPUTE","Received against PO PO-01930 line 1, and more than ordered: 4500 LB received against 4000 ordered)
 - pass: and it cannot be reserved for a customer while held (409 This stock is on hold and cannot be reserved)
 - pass: the 2500 lb item is in stock at the branch at the line's price (true cost 0.38 on hand 2500)
 - pass: the 2500 lb receipt: an entry was posted (POSTED)
@@ -177,14 +177,14 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 - pass: the 2500 lb receipt: account 1200 moves by 950 (got 950; entry {"1200":950,"2000":-950})
 - pass: the 2500 lb receipt: account 2000 moves by -950 (got -950; entry {"1200":950,"2000":-950})
 - pass: the 2500 lb receipt: no other account is touched (also )
-- pass: the 2500 lb item carries its heat (83f5e26f-41fa-403d-a088-c06de504c7ab)
+- pass: the 2500 lb item carries its heat (54e70c2f-e5a2-4c72-85d6-2a4dd3057635)
 - pass: the 1500 lb item is in stock at the branch at the line's price (true cost 0.38 on hand 1500)
 - pass: the 1500 lb receipt: an entry was posted (POSTED)
 - pass: the 1500 lb receipt: debits equal credits (570 vs 570, header 570)
 - pass: the 1500 lb receipt: account 1200 moves by 570 (got 570; entry {"1200":570,"2000":-570})
 - pass: the 1500 lb receipt: account 2000 moves by -570 (got -570; entry {"1200":570,"2000":-570})
 - pass: the 1500 lb receipt: no other account is touched (also )
-- pass: the 1500 lb item carries its heat (83f5e26f-41fa-403d-a088-c06de504c7ab)
+- pass: the 1500 lb item carries its heat (54e70c2f-e5a2-4c72-85d6-2a4dd3057635)
 - pass: the purchase order line shows what arrived, including the part on hold (4500)
 - pass: the buyer closes it, and nothing more can be received against it (200 )
 - pass: after receiving: the reconciliation ran (201)
@@ -198,7 +198,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 - pass: another branch cannot send this branch's stock (404 Stock item not found)
 - pass: the transfer is sent (201 )
 - pass: in transit, none of it is available to either branch (available 0, in transit 2200, IN_TRANSIT)
-- pass: stock in transit cannot be reserved for an order (409 Stock item P11-MWMU3MUB-35 is on its way to another branch. Reserve it after the receiving branch has rece)
+- pass: stock in transit cannot be reserved for an order (409 Stock item P11-MWMXFR5R-35 is on its way to another branch. Reserve it after the receiving branch has rece)
 - pass: while in transit: the reconciliation ran (201)
 - pass: while in transit: BOOKS_BALANCE agrees (MATCH 0.00 )
 - pass: while in transit: INVENTORY agrees (MATCH 0.00 )
@@ -223,7 +223,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 - pass: the operator starts it (200 )
 - pass: it cannot be started twice (409 This work order is already in progress)
 - pass: 100 lb of the item are reserved for a customer (201 )
-- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMU3MUB-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
+- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMXFR5R-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
 - pass: and the refusal changed nothing
 - pass: completed with two pieces and 30 lb of scrap (200 )
 - pass: the source keeps exactly the 100 lb promised to the customer (ALLOCATED: on hand 100, reserved 100)
@@ -242,7 +242,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 ### WF-06: Flow 6: a web order is placed once, accepted, fulfilled, paid, and shown to the buyer
 
-- pass: the checkout pressed twice makes one web order (200 409  The same request is still being processed. Wait a moment before trying again.)
+- pass: the checkout pressed twice makes one web order (409 200 The same request is still being processed. Wait a moment before trying again. )
 - pass: the branch accepts it into an order (200 )
 - pass: accepting it again makes no second order (409)
 - pass: the order is the buyer's company's, at the branch, for three pieces (1 lines, qty 3)
@@ -266,11 +266,11 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 ### WF-07: Flow 7: a counter sale takes stock, gives a receipt and posts once, however often the button is pressed
 
-- pass: pressed three times at once, the sale is taken once (200  \| 201  \| 200 )
+- pass: pressed three times at once, the sale is taken once (200  \| 200  \| 201 )
 - pass: one order for the sale
 - pass: one invoice, paid in full (1 PAID)
 - pass: the receipt total is the invoice total (13.89 vs 13.89)
-- pass: the shelf fell by two, once (390→388)
+- pass: the shelf fell by two, once (396→394)
 - pass: the sale is posted once and balances ({"1100":13.89,"2100":-0.91,"4000":-12.98})
 - pass: one payment, posted once (1)
 - pass: more than the shelf holds cannot be sold (400 Item 1: quantity must be a whole number more than zero)
@@ -285,7 +285,7 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 - pass: more than was shipped cannot be returned (409 Line 1: only 800 can be returned (shipped 800, already on returns 0))
 - pass: the return is opened (201 )
 - pass: nothing is credited before the goods are checked in
-- pass: checked in twice at once, it is received once (200,409)
+- pass: checked in twice at once, it is received once (409,200)
 - pass: 200 lb are back in stock, once (2200→2400)
 - pass: one credit memo for a quarter of the invoice (1 -124 vs 124)
 - pass: the credit is posted once: revenue and receivables reversed, the entry balances (CREDIT_ISSUED:POSTED {"1100":-124,"4300":124})
@@ -325,16 +325,16 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 ### WF-10: Flow 10: every branch's figures add up to the enterprise's, and a branch manager reads only the branch
 
 - pass: the trial balance answers (200 )
-- pass: total debits equal total credits (15201317.98 vs 15201317.98)
-- pass: and both equal the journal lines summed in the database (15201317.98 vs 15201317.98)
-- pass: revenue by branch and by customer have one total (1172636.71 vs 1172636.71)
-- pass: and it is revenue less returns in the journal (1172636.71 vs 1172636.71)
+- pass: total debits equal total credits (15238910.16 vs 15238910.16)
+- pass: and both equal the journal lines summed in the database (15238910.16 vs 15238910.16)
+- pass: revenue by branch and by customer have one total (1178437.01 vs 1178437.01)
+- pass: and it is revenue less returns in the journal (1178437.01 vs 1178437.01)
 - pass: the branch rows add up to the total
-- pass: the gross margin report's net sales are the same revenue (200 1172636.7099999997 vs 1172636.71)
+- pass: the gross margin report's net sales are the same revenue (200 1178437.0099999995 vs 1178437.01)
 - pass: and it says it is not a profit and loss statement
 - pass: a branch manager's revenue report holds only the branch (200 1 rows)
-- pass: and its total is that branch's row in the enterprise report (46040.00 vs 46040.00)
-- pass: the report reads are in the audit log (8)
+- pass: and its total is that branch's row in the enterprise report (37040.00 vs 37040.00)
+- pass: the report reads are in the audit log (37)
 - pass: at the end of the flows: the reconciliation ran (201)
 - pass: at the end of the flows: BOOKS_BALANCE agrees (MATCH 0.00 )
 - pass: at the end of the flows: INVENTORY agrees (MATCH 0.00 )

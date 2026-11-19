@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d9742e8. Do not edit by hand: change the source and rerun.
+Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit d5062a3. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
@@ -13,12 +13,12 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | P0 | 20 | 2 |
 | P1 | 130 | 17 |
 | P2 | 188 | 53 |
-| P3 | 124 | 41 |
-| Total | 463 | 114 |
+| P3 | 125 | 41 |
+| Total | 464 | 114 |
 
 | Status | Count |
 |---|---:|
-| VERIFIED FIXED | 347 |
+| VERIFIED FIXED | 348 |
 | REQUIRES BUSINESS DECISION | 92 |
 | FIXED — NOT VERIFIED | 7 |
 | IN PROGRESS | 6 |
@@ -8030,15 +8030,15 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Workflow:** Tests
 - **Category:** Test reliability
 - **Source file or endpoint:** qa/sim/phase9/make.cjs
-- **Evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **Evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build, and passed in both later gate runs (qa/results/phase12-gate-run-2-stopped.txt, qa/results/phase12-gate.txt).
 - **Expected:** The scenario waits for the list, not for a fixed time.
 - **Actual:** In the gate run on the release candidate one of 232 Phase 9 browser scenarios failed ("the schedule: the Queue View tab lists jobs waiting, by keyboard"): it read the page a fixed 0.8 s after changing tab, while the machine was busy.
 - **Operational impact:** A false failure in the gate. The product was not at fault: the scenario passes when run alone on the same build.
 - **Recommended correction:** Fixed: the scenario waits for the list to be drawn. The first run is kept as it was (qa/results/phase12-gate-run-1.txt).
-- **Required tests:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **Required tests:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build, and passed in both later gate runs (qa/results/phase12-gate-run-2-stopped.txt, qa/results/phase12-gate.txt).
 - **Assigned phase:** Phase 12: production certification
 - **Status note:** Fixed: the scenario waits for the list to be drawn. The first run is kept as it was (qa/results/phase12-gate-run-1.txt).
-- **Verification evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build; the full gate on the corrected candidate (qa/results/phase12-gate.txt).
+- **Verification evidence:** qa/sim/phase9-ui.cjs --match "Queue View tab lists jobs waiting" passed alone on the same build, and passed in both later gate runs (qa/results/phase12-gate-run-2-stopped.txt, qa/results/phase12-gate.txt).
 - **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
 
 ### AA-010 · P3 · REQUIRES BUSINESS DECISION
@@ -8075,5 +8075,23 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Assigned phase:** Phase 12: production certification
 - **Status note:** Fixed at the route: the code and the name must be text. Found after the gate on RC-2 had started; that gate was stopped (its log is kept as qa/results/phase12-gate-run-2-stopped.txt) and the whole gate was run again on the candidate with this correction.
 - **Verification evidence:** qa/sim/phase12-certification.mjs "Security 7" (refused with 400 and nothing saved); qa/tools/phase12-mutations.mjs AA-011.
+- **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
+
+### AA-012 · P3 · VERIFIED FIXED
+
+- **Discovered:** 2026-11-19
+- **Module:** Tests
+- **Workflow:** Tests
+- **Category:** Test reliability
+- **Source file or endpoint:** qa/sim/phase9/stock.cjs, qa/sim/phase11/s7-fail.mjs
+- **Evidence:** The stock scenario passed three times alone. Both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt): Phase 11 320 of 320; Phase 9 231 of 232, with scenario 113 passing. The one that failed in that rerun (210, the customers list after a server failure) had passed in the gate: run after the gate, the database also holds the customers Phase 11 adds later, and the check looked for one of its own customers on the first page. It fails every time on that database and passes in gate order. Its pattern was widened and it passed alone. So each of the 232 scenarios passed either in the final gate or, for 113, in the rerun; the suite as a whole did not pass in one run on the final code, and that is stated in phase-12-release-baseline.md.
+- **Expected:** A check waits for what it reads, and tries again when told to try again, within a stated limit.
+- **Actual:** In the final gate one scenario failed in each of two older suites, each for timing in the test on a busy machine. Phase 9 browser scenario 113 read the heading of a stock item half a second after the page opened, before it was drawn. The Phase 11 scenario that cuts every database connection asked for a reconciliation while one server copy was still reconnecting and was answered 503 "try again", which is the designed answer.
+- **Operational impact:** Two false failures in the gate. The product was not at fault. A different scenario failed for the same kind of reason in the first gate (AA-009), so the suites are sensitive to load on a small machine.
+- **Recommended correction:** Fixed in the tests: the heading is waited for (5 s at most); the reconciliation is asked again for at most ten seconds, and a copy that stays down still fails. The gate log is kept with its two failures (qa/results/phase12-gate.txt). A timing fault cannot be made to fail on demand, so there is no proof by removal for this one.
+- **Required tests:** The stock scenario passed three times alone. Both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt): Phase 11 320 of 320; Phase 9 231 of 232, with scenario 113 passing. The one that failed in that rerun (210, the customers list after a server failure) had passed in the gate: run after the gate, the database also holds the customers Phase 11 adds later, and the check looked for one of its own customers on the first page. It fails every time on that database and passes in gate order. Its pattern was widened and it passed alone. So each of the 232 scenarios passed either in the final gate or, for 113, in the rerun; the suite as a whole did not pass in one run on the final code, and that is stated in phase-12-release-baseline.md.
+- **Assigned phase:** Phase 12: production certification
+- **Status note:** Fixed in the tests: the heading is waited for (5 s at most); the reconciliation is asked again for at most ten seconds, and a copy that stays down still fails. The gate log is kept with its two failures (qa/results/phase12-gate.txt). A timing fault cannot be made to fail on demand, so there is no proof by removal for this one.
+- **Verification evidence:** The stock scenario passed three times alone. Both whole suites were run again on the same build and database (qa/results/phase12-gate-reruns.txt): Phase 11 320 of 320; Phase 9 231 of 232, with scenario 113 passing. The one that failed in that rerun (210, the customers list after a server failure) had passed in the gate: run after the gate, the database also holds the customers Phase 11 adds later, and the check looked for one of its own customers on the first page. It fails every time on that database and passes in gate order. Its pattern was widened and it passed alone. So each of the 232 scenarios passed either in the final gate or, for 113, in the rerun; the suite as a whole did not pass in one run on the final code, and that is stated in phase-12-release-baseline.md.
 - **First recorded in:** Phase 12 certification: the cross-module flows, the revalidation suites and the document checks, on three server copies
 

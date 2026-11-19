@@ -8,18 +8,18 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Customer creation | NOT VERIFIED (its suite did not pass in this run) | Created, edited, closed and reopened with an audit line | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Customer creation | VERIFIED ON QA | Created, edited, closed and reopened with an audit line | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
 | CRM activity | NOT BUILT | No activity, visit or follow-up record exists | none |  |
-| RFQ intake | NOT VERIFIED (its suite did not pass in this run) | Three channels, one inbox | FAIL: p5: not in the gate log; FAIL: p4: not in the gate log |  |
-| Product configuration | PARTIAL | Requirements carried end to end; no rule engine | FAIL: p5: not in the gate log |  |
-| Contract pricing | NOT VERIFIED (its suite did not pass in this run) | Contract and tier price applied at order entry and at the counter | FAIL: p5: not in the gate log | J-008 |
-| Quoting | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | S-027 |
-| Approvals | PARTIAL | Quote approval and price-floor override with a reason and an audit line. No approval chain by amount | FAIL: p5: not in the gate log |  |
-| Quote revisions | PARTIAL | A quote is edited until sent; a new quote replaces a lapsed one. No numbered revision history | FAIL: p5: not in the gate log |  |
-| Sales orders | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Backorders | PARTIAL | A line shipped in part stays open for the remainder. No backorder record of its own | FAIL: p8: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Order changes | NOT VERIFIED (its suite did not pass in this run) | Changes refused from a stale copy; status moves by rule | FAIL: p5: not in the gate log; FAIL: p4: not in the gate log | G-020 |
-| Cancellations | NOT VERIFIED (its suite did not pass in this run) | Cancel releases reservations; a cancel racing a dispatch never leaves both | FAIL: p11s: not in the gate log; FAIL: p5: not in the gate log |  |
+| RFQ intake | VERIFIED ON QA | Three channels, one inbox | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 4 integration scenarios: 66 of 66 pass, 555 checks |  |
+| Product configuration | PARTIAL | Requirements carried end to end; no rule engine | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
+| Contract pricing | VERIFIED ON QA | Contract and tier price applied at order entry and at the counter | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks | J-008 |
+| Quoting | VERIFIED ON QA | As above | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | S-027 |
+| Approvals | PARTIAL | Quote approval and price-floor override with a reason and an audit line. No approval chain by amount | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
+| Quote revisions | PARTIAL | A quote is edited until sent; a new quote replaces a lapsed one. No numbered revision history | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
+| Sales orders | VERIFIED ON QA | As above | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Backorders | PARTIAL | A line shipped in part stays open for the remainder. No backorder record of its own | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Order changes | VERIFIED ON QA | Changes refused from a stale copy; status moves by rule | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 4 integration scenarios: 66 of 66 pass, 555 checks | G-020 |
+| Cancellations | VERIFIED ON QA | Cancel releases reservations; a cancel racing a dispatch never leaves both | pass: in the gate Phase 11 scenarios: 319 of 320 pass, 1383 checks; one scenario failed on timing in the test (AA-012); whole suite run again on the same build: Phase 11 scenarios: 320 of 320 pass, 1384 checks; pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
 | Customer communication | NOT BUILT | No email or text is sent. The buttons say so. The owner put this later (decision 5) | none | D-034, N-028 |
 
 ## POS and ecommerce (section 8)
@@ -28,16 +28,16 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Product search and selection | NOT VERIFIED (its suite did not pass in this run) | Shop search and counter item pick | FAIL: shop browser suite: ; FAIL: p5: not in the gate log |  |
-| Customer identification | NOT VERIFIED (its suite did not pass in this run) | Account forced from the login on the web; chosen at the counter | FAIL: p5: not in the gate log; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
-| Pricing | NOT VERIFIED (its suite did not pass in this run) | List, tier, contract | FAIL: p5: not in the gate log |  |
-| Tax | PARTIAL | By state, where a rate is on file; none charged where none is, and the screen says so. Counties and cities are not on record. Web estimate by ship-to, order taxed by selling branch | FAIL: p5: not in the gate log; pass: Phase 12 "Multi-location readiness" 6 of 6 | D-035, F-008 |
-| Payment or approved terms | PARTIAL | A payment is a typed record with the approval code from a separate terminal. No card is charged by the product | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | D-033, H-015 |
-| Order creation | NOT VERIFIED (its suite did not pass in this run) | One order per request key | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10; FAIL: p11s: not in the gate log |  |
-| Inventory effects | NOT VERIFIED (its suite did not pass in this run) | Shelf stock falls once; refused when short | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | W-012 |
-| Receipt generation | NOT VERIFIED (its suite did not pass in this run) | Receipt shown and reprintable. Not printed on a printer here | FAIL: p5: not in the gate log | K-013 |
-| Ecommerce order intake | NOT VERIFIED (its suite did not pass in this run) | Online inbox, accept to sales order | FAIL: p5: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Customer portal updates | NOT VERIFIED (its suite did not pass in this run) | Order, shipment and invoice state read by the customer | FAIL: p5: not in the gate log |  |
+| Product search and selection | VERIFIED ON QA | Shop search and counter item pick | pass: shop browser suite: 31 checks, 0 failed; pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
+| Customer identification | VERIFIED ON QA | Account forced from the login on the web; chosen at the counter | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
+| Pricing | VERIFIED ON QA | List, tier, contract | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
+| Tax | PARTIAL | By state, where a rate is on file; none charged where none is, and the screen says so. Counties and cities are not on record. Web estimate by ship-to, order taxed by selling branch | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Multi-location readiness" 6 of 6 | D-035, F-008 |
+| Payment or approved terms | PARTIAL | A payment is a typed record with the approval code from a separate terminal. No card is charged by the product | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | D-033, H-015 |
+| Order creation | VERIFIED ON QA | One order per request key | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10; pass: in the gate Phase 11 scenarios: 319 of 320 pass, 1383 checks; one scenario failed on timing in the test (AA-012); whole suite run again on the same build: Phase 11 scenarios: 320 of 320 pass, 1384 checks |  |
+| Inventory effects | VERIFIED ON QA | Shelf stock falls once; refused when short | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | W-012 |
+| Receipt generation | VERIFIED ON QA | Receipt shown and reprintable. Not printed on a printer here | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks | K-013 |
+| Ecommerce order intake | VERIFIED ON QA | Online inbox, accept to sales order | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Customer portal updates | VERIFIED ON QA | Order, shipment and invoice state read by the customer | pass: Phase 5 sales scenarios: 76 of 76 pass, 387 checks |  |
 | Sandbox payment systems | NOT BUILT | There is no payment integration to put in a sandbox | none | D-033 |
 
 ## End-to-end evidence from this phase
@@ -87,7 +87,7 @@ PASS, 36 checks.
 
 PASS, 21 checks.
 
-- pass: the checkout pressed twice makes one web order (200 409  The same request is still being processed. Wait a moment before trying again.)
+- pass: the checkout pressed twice makes one web order (409 200 The same request is still being processed. Wait a moment before trying again. )
 - pass: the branch accepts it into an order (200 )
 - pass: accepting it again makes no second order (409)
 - pass: the order is the buyer's company's, at the branch, for three pieces (1 lines, qty 3)
@@ -113,11 +113,11 @@ PASS, 21 checks.
 
 PASS, 13 checks.
 
-- pass: pressed three times at once, the sale is taken once (200  \| 201  \| 200 )
+- pass: pressed three times at once, the sale is taken once (200  \| 200  \| 201 )
 - pass: one order for the sale
 - pass: one invoice, paid in full (1 PAID)
 - pass: the receipt total is the invoice total (13.89 vs 13.89)
-- pass: the shelf fell by two, once (390→388)
+- pass: the shelf fell by two, once (396→394)
 - pass: the sale is posted once and balances ({"1100":13.89,"2100":-0.91,"4000":-12.98})
 - pass: one payment, posted once (1)
 - pass: more than the shelf holds cannot be sold (400 Item 1: quantity must be a whole number more than zero)
@@ -134,7 +134,7 @@ PASS, 21 checks.
 - pass: more than was shipped cannot be returned (409 Line 1: only 800 can be returned (shipped 800, already on returns 0))
 - pass: the return is opened (201 )
 - pass: nothing is credited before the goods are checked in
-- pass: checked in twice at once, it is received once (200,409)
+- pass: checked in twice at once, it is received once (409,200)
 - pass: 200 lb are back in stock, once (2200→2400)
 - pass: one credit memo for a quarter of the invoice (1 -124 vs 124)
 - pass: the credit is posted once: revenue and receivables reversed, the entry balances (CREDIT_ISSUED:POSTED {"1100":-124,"4300":124})
@@ -175,9 +175,9 @@ PASS, 15 checks.
 
 ## Earlier suites, rerun in the gate
 
-- p5: not in the gate log
-- shop browser suite: 
-- sweep: 0 groups pass, 0 fail
+- Phase 5 sales scenarios: 76 of 76 pass, 387 checks
+- shop browser suite: 31 checks, 0 failed
+- sweep: 20 groups pass, 0 fail
 
 ## Open findings in this area
 

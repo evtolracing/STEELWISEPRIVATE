@@ -25,7 +25,7 @@ Made by `qa/tools/phase12-consolidate.mjs` from the phase reports, the findings 
 
 ## Findings
 
-462 findings in one register, ids and history kept, none deleted. 114 open (2 P0, 17 P1, 53 P2, 41 P3, 1 P4). By status: VERIFIED FIXED 346; IN PROGRESS 6; REQUIRES BUSINESS DECISION 92; BLOCKED 5; NOT APPLICABLE 2; FIXED — NOT VERIFIED 7; ACCEPTED RISK WITH APPROVAL 4.
+464 findings in one register, ids and history kept, none deleted. 114 open (2 P0, 17 P1, 53 P2, 41 P3, 1 P4). By status: VERIFIED FIXED 348; IN PROGRESS 6; REQUIRES BUSINESS DECISION 92; BLOCKED 5; NOT APPLICABLE 2; FIXED — NOT VERIFIED 7; ACCEPTED RISK WITH APPROVAL 4.
 
 Before this phase 63 findings carried the status "deferred to a specific phase". There is no later phase, so each was given a status this phase allows (`phase-12-dispositions.json`): fixed and verified now, blocked on a named thing, or "requires business decision" where the work is simply not done and nobody has approved leaving it. **None was marked "deferred with approval": no approval to defer is on file.**
 
@@ -34,11 +34,11 @@ Before this phase 63 findings carried the status "deferred to a specific phase".
 | Class | Findings | Meaning |
 |---|---|---|
 | Names a test that exists on disk | 176 | Strong: the check can be rerun |
-| Names a suite only | 64 | The suite exists and passes in the gate; the single check is not named |
-| Words only | 106 | Mostly the first audit (series D, E, F, I, M, S, U, X): fixed and looked at in a browser at the time, with no automated check named. The later suites cover many of these screens, but the register does not tie them together |
+| Names a suite only | 65 | The suite exists and passes in the gate; the single check is not named |
+| Words only | 107 | Mostly the first audit (series D, E, F, I, M, S, U, X): fixed and looked at in a browser at the time, with no automated check named. The later suites cover many of these screens, but the register does not tie them together |
 | No evidence | 0 |  |
 
-This is a weakness of the record, stated as it is: 106 findings are "verified" by a person's reading, not by a named automated check. They are listed in `qa/results/phase12-consolidation.json` (evidence.wordsOnly).
+This is a weakness of the record, stated as it is: 107 findings are "verified" by a person's reading, not by a named automated check. They are listed in `qa/results/phase12-consolidation.json` (evidence.wordsOnly).
 
 ## Notes that contradicted their own status
 

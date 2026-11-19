@@ -8,19 +8,19 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Finished goods availability | NOT VERIFIED (its suite did not pass in this run) | Only reserved, released stock ships | FAIL: p8: not in the gate log |  |
-| Picking | PARTIAL | As above | FAIL: p8: not in the gate log |  |
-| Packaging | NOT VERIFIED (its suite did not pass in this run) | Packages from reserved stock, sealed, tagged | FAIL: p8: not in the gate log |  |
-| Staging | NOT VERIFIED (its suite did not pass in this run) | Ready-to-ship and shipped lists | FAIL: p8: not in the gate log |  |
-| Carrier selection | PARTIAL | A carrier name typed on the shipment. No carrier integration | FAIL: p8: not in the gate log | N-026 |
-| Shipping labels | PARTIAL | Tags and papers rendered; not printed on a printer here | FAIL: p8: not in the gate log | K-013 |
-| Partial shipments | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p8: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Tracking | PARTIAL | A tracking number typed. No feed | FAIL: p8: not in the gate log | N-026 |
-| Proof of delivery | NOT VERIFIED (its suite did not pass in this run) | Receiver's name and time on delivery | FAIL: p8: not in the gate log; FAIL: p11s: not in the gate log |  |
-| Returns | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p8: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Freight costs | PARTIAL | Freight typed on the order is billed once. No rating, no freight cost | FAIL: p8: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 | N-026 |
+| Finished goods availability | VERIFIED ON QA | Only reserved, released stock ships | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks |  |
+| Picking | PARTIAL | As above | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks |  |
+| Packaging | VERIFIED ON QA | Packages from reserved stock, sealed, tagged | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks |  |
+| Staging | VERIFIED ON QA | Ready-to-ship and shipped lists | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks |  |
+| Carrier selection | PARTIAL | A carrier name typed on the shipment. No carrier integration | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks | N-026 |
+| Shipping labels | PARTIAL | Tags and papers rendered; not printed on a printer here | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks | K-013 |
+| Partial shipments | VERIFIED ON QA | As above | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Tracking | PARTIAL | A tracking number typed. No feed | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks | N-026 |
+| Proof of delivery | VERIFIED ON QA | Receiver's name and time on delivery | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: in the gate Phase 11 scenarios: 319 of 320 pass, 1383 checks; one scenario failed on timing in the test (AA-012); whole suite run again on the same build: Phase 11 scenarios: 320 of 320 pass, 1384 checks |  |
+| Returns | VERIFIED ON QA | As above | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Freight costs | PARTIAL | Freight typed on the order is billed once. No rating, no freight cost | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 | N-026 |
 | Customer notifications | NOT BUILT | None sent | none | D-034 |
-| Sandbox integrations | NOT BUILT | No carrier integration exists to sandbox; the partner API was tested against a stand-in | FAIL: p4: not in the gate log |  |
+| Sandbox integrations | NOT BUILT | No carrier integration exists to sandbox; the partner API was tested against a stand-in | pass: Phase 4 integration scenarios: 66 of 66 pass, 555 checks |  |
 
 ## End-to-end evidence from this phase
 
@@ -84,12 +84,12 @@ PASS, 41 checks.
 - pass: step "Deburr and stack" is started and finished by the operator (200 200  )
 - pass: time on each step is recorded against a person (2)
 - pass: the dock cannot mark the job ready to ship before inspection (409 This job is waiting for inspection. Record the inspection result in Quality; a pass moves it to packaging.)
-- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00631 (waiting qc) is not finished. Finish or )
+- pass: a shipment of the uninspected job cannot be dispatched (shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00629 (waiting qc) is not finished. Finish or )
 - pass: nothing left the building
 - pass: the inspection is opened (201 )
 - pass: a failed inspection is recorded (200 )
-- pass: a job that failed inspection cannot be staged (409 Inspection INS-00353 failed. This job needs a passed inspection before it can move on: send it to inspecti)
-- pass: the rework step "Rework (INS-00353)" is run (200 200  )
+- pass: a job that failed inspection cannot be staged (409 Inspection INS-00349 failed. This job needs a passed inspection before it can move on: send it to inspecti)
+- pass: the rework step "Rework (INS-00349)" is run (200 200  )
 - pass: a new inspection is opened after the rework (201 )
 - pass: the new inspection passes (200 )
 - pass: both inspections are kept: the failure is not overwritten (2)
@@ -132,7 +132,7 @@ PASS, 15 checks.
 
 ## Earlier suites, rerun in the gate
 
-- p8: not in the gate log
+- Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks
 - Phase 11 "Shipping, logistics and invoicing": 35 scenarios pass
 
 ## Not built, stated plainly

@@ -12,17 +12,17 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 |---|---|
 | Source | local QA database steelwise_qa |
 | Target | separate PostgreSQL 16 server on port 5433, database steelwise_qa_restore |
-| Backup | pg_dump custom format, compression 6; 2,492,751 bytes in 0.4 s |
-| Restore | 1.7 s, exit 0, 0 errors |
+| Backup | pg_dump custom format, compression 6; 2,488,973 bytes in 0.4 s |
+| Restore | 1.4 s, exit 0, 0 errors |
 | Recovery point | the start of pg_dump (one consistent snapshot); written after the start and lost: 1 |
 | Tables | 173 |
-| Journal (lines : debits : credits) before | 1478:277130.84:277130.84 |
-| Journal after | 1478:277130.84:277130.84 |
-| Stock (items : value) before / after | 1306:5881060.807800000000000000000000000000 / 1306:5881060.807800000000000000000000000000 |
-| Audit rows before / after | 6578 / 6578 |
-| Run at | 2026-11-19T00:15:38.728Z |
+| Journal (lines : debits : credits) before | 1482:277168.34:277168.34 |
+| Journal after | 1482:277168.34:277168.34 |
+| Stock (items : value) before / after | 1307:5881605.807800000000000000000000000000 / 1307:5881605.807800000000000000000000000000 |
+| Audit rows before / after | 6601 / 6601 |
+| Run at | 2026-11-19T02:13:41.865Z |
 
-The restore test is part of the Phase 10 security suite, which ran again in the final gate: p10: not in the gate log.
+The restore test is part of the Phase 10 security suite, which ran again in the final gate: Phase 10 security: 277 of 277 pass, 889 checks.
 
 ## Section 24, item by item
 
@@ -40,7 +40,7 @@ The restore test is part of the Phase 10 security suite, which ran again in the 
 
 ## Does RC-2 change recovery behaviour
 
-No. This phase made no database change (no migration, no SQL Editor file) and changed no backup or restore code. Product files changed: 10, all in request handling and the help manual. An additional restore test is therefore not required by the change; the one in the gate was run anyway.
+No. This phase made no database change (no migration, no SQL Editor file) and changed no backup or restore code. Product files changed: 12, all in request handling and the help manual. An additional restore test is therefore not required by the change; the one in the gate was run anyway.
 
 ## Unresolved limitations
 

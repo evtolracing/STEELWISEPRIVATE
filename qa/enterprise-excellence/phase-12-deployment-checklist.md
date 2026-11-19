@@ -44,8 +44,8 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 | Production configuration | A server started in production mode on QA: pass: a production server starts on the QA database; pass: in production, with no list of allowed websites, another website is given no permission to read answers; pass: with a list, a website not on it is given no permission; pass: and the listed website is | Verified for the code; **host values not read** |
 | Environment variables and secrets | The server refuses to start in production with a short or missing secret (Phase 10); no secret is in the repository or the page bundle (Security 10) | Verified for the code |
 | Database migrations | Rebuilt from migrations in the gate; no new one in this phase | Verified on QA; **live state unknown** |
-| API compatibility | p4: not in the gate log | Verified on QA |
-| Frontend build | not in the gate log | NOT VERIFIED until the gate ends |
+| API compatibility | Phase 4 integration scenarios: 66 of 66 pass, 555 checks | Verified on QA |
+| Frontend build | built in 16.21s | Verified |
 | Worker deployment and queue configuration | There is no separate worker: scheduled work is one route a scheduler calls. Tested on three copies in Phase 11 | **Not configured on the host (B-019)** |
 | Integration configuration | Stand-ins only | **NOT VERIFIED against real providers** |
 | Monitoring and alerting | See `phase-12-operational-acceptance.md` | **Reaches nobody on live (E-017)** |

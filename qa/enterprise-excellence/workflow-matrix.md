@@ -255,3 +255,25 @@ Remnant records can be listed, priced, reserved and released (`/api/remnants`) a
 2. Every job move, shipment step and money action writes a record with the person.
 3. The stock balance rule (on hand = available + allocated + on hold) is enforced by the database.
 4. Order status PARTIAL and COMPLETE come only from shipping.
+
+### Phase 12 update (2026-11-19)
+
+Phase 12 changed no workflow step. It ran ten cross-module workflows from the first document to the books in one script and read the database after each (`phase-12-workflow-certification.md`): 68 of 68 scenarios, 601 checks on the release candidate.
+
+| Certification workflow | Purpose | Result on QA |
+|---|---|---|
+| WF-01: Flow 1: a new customer is quoted, orders, is shipped, invoiced and pays, and the books agree | Sell stock material to a new account from request to cash | pass, 36 checks |
+| WF-02: Flow 2: a quoted job is made on the floor, inspected, shipped and invoiced; it cannot leave before it passes | Sell processed material: quote, production, quality release, shipment, invoice | pass, 41 checks |
+| WF-03: Flow 3: a purchase order is approved, received in two parts, costed from its line and posted | Buy material and bring it into stock at its actual cost | pass, 30 checks |
+| WF-04: Flow 4: stock is transferred, is in transit, is received at the other branch, and the books agree at each moment | Move stock between two branches without losing it from the books | pass, 21 checks |
+| WF-05: Flow 5: a work order consumes an item, makes two pieces and scrap, and the stock value follows | Process material and keep weight, cost and traceability through the cut | pass, 20 checks |
+| WF-06: Flow 6: a web order is placed once, accepted, fulfilled, paid, and shown to the buyer | Take an order from the web store through to cash | pass, 21 checks |
+| WF-07: Flow 7: a counter sale takes stock, gives a receipt and posts once, however often the button is pressed | Sell shelf goods over the counter for immediate payment | pass, 13 checks |
+| WF-08: Flow 8: goods come back, are checked in with a decision, credited once, refunded, and the books reverse | Take material back and return the customer's money | pass, 21 checks |
+| WF-09: Flow 9: an order ships in two parts, each billed for what left, and closes when the rest has gone | Ship what is ready and bill only that; keep the rest reserved | pass, 15 checks |
+| WF-10: Flow 10: every branch's figures add up to the enterprise's, and a branch manager reads only the branch | Consolidate the branches into one set of books | pass, 16 checks |
+
+Facts about the steps confirmed while certifying, which the sections above should be read with: a draft quote may be accepted; an order ends COMPLETE (PARTIAL while part has shipped); material received beyond the purchase order is received on hold; a purchase order stays CONFIRMED after full receipt until the buyer closes it; a work order uses only pounds that are not reserved; a reversed journal entry stays posted and is answered by a second entry.
+
+Not certified because not built: the sample modules (`phase-12-system-certification.md`). No workflow was certified with a real user: that is user acceptance, not run.
+

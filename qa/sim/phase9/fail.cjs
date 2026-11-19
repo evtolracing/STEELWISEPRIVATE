@@ -1,7 +1,7 @@
 // Error handling, two people at once, and recovery.
 module.exports = async (s) => {
   const { sc, P, boss, clerk, api, rowsOf, ctx, open, text, has, shown, gone, pathOf, settle, until, APP, PASSWORD, w, B, prisma, run } = s;
-  const LISTS = [['/orders', /\/api\/orders\/intake\?|\/api\/orders\?/, /SO-\d{4,}/], ['/customers', /\/api\/customers\?/, /QA-C\d/], ['/units', /\/api\/coils\?/, /RC-[A-Z0-9]+-\d/], ['/shipping', /\/api\/shipments(\?|$)/, /SHP-\d{4,}/], ['/work-orders', /\/api\/work-orders/, /WO-\d{4,}/], ['/orders/invoices', /\/api\/invoices/, /INV-\d{4,}/]];
+  const LISTS = [['/orders', /\/api\/orders\/intake\?|\/api\/orders\?/, /SO-\d{4,}/], ['/customers', /\/api\/customers\?/, /QA-C\d|ACME|P11-C-/], ['/units', /\/api\/coils\?/, /RC-[A-Z0-9]+-\d/], ['/shipping', /\/api\/shipments(\?|$)/, /SHP-\d{4,}/], ['/work-orders', /\/api\/work-orders/, /WO-\d{4,}/], ['/orders/invoices', /\/api\/invoices/, /INV-\d{4,}/]];
   const SAYS_FAILED = /could not|couldn.t|failed|unable|try again|not be loaded|went wrong|error|problem/i;
 
   for (const [url, pattern, record] of LISTS) {

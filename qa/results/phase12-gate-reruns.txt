@@ -1,2 +1,29 @@
 Reruns after the full gate (qa/results/phase12-gate.txt), same build, same database, after AA-012 hardened two timing-sensitive checks in the tests. No product file changed.
 == phase 9 UI scenarios (whole suite)
+✗ 210 FAIL  /customers: when the server fails, the screen says so in words, invents no records, and loads again once the server is back  — with the server back the records appear: Customers Manage customer organizations, contacts & account details Upload Documents New Customer ​ ​ Type ​ Type 404 customers Customer Code Type City / State Phone Email Status A Acme <script
+Phase 9 UI scenarios: 231 of 232 passed, 1 failed, 0 not applicable, 1093 checks
+== phase 11 scenarios (whole suite, three server copies)
+up: 3 copies on steelwise_qa behind port 3110
+  Manufacturing, scheduling and quality: 40 scenarios in 17s
+  Shipping, logistics and invoicing: 35 scenarios in 32s
+  Ledger posting and reconciliation: 63 scenarios in 31s
+  Tenant, branch, RBAC and AI security: 41 scenarios in 13s
+  Integrations, events and background jobs: 39 scenarios in 75s
+  Failure injection and recovery: 36 scenarios in 192s
+  Reporting, frontend and deployment: 18 scenarios in 32s
+✓ Phase 11 scenarios: 320 of 320 pass, 1384 checks; Sales, inventory and purchasing concurrency 48/48; Manufacturing, scheduling and quality 40/40; Shipping, logistics and invoicing 35/35; Ledger posting and reconciliation 63/63; Tenant, branch, RBAC and AI security 41/41; Integrations, events and background jobs 39/39; Failure injection and recovery 36/36; Reporting, frontend and deployment 18/18
+✓ Sales, inventory and purchasing concurrency: 48 passed of 48 (minimum 45)
+✓ Manufacturing, scheduling and quality: 40 passed of 40 (minimum 40)
+✓ Shipping, logistics and invoicing: 35 passed of 35 (minimum 35)
+✓ Ledger posting and reconciliation: 63 passed of 63 (minimum 60)
+✓ Tenant, branch, RBAC and AI security: 41 passed of 41 (minimum 35)
+✓ Integrations, events and background jobs: 39 passed of 39 (minimum 35)
+✓ Failure injection and recovery: 36 passed of 36 (minimum 35)
+✓ Reporting, frontend and deployment: 18 passed of 18 (minimum 15)
+== done
+== phase 9 UI scenario 210 alone, after its check was corrected (it looked for a QA customer on the first page of the list; on this database, which also holds the 320 customers Phase 11 adds after this suite in the gate, the first page holds other customers)
+Phase 9 UI scenarios: 1 of 1 passed, 0 failed, 0 not applicable, 5 checks
+✗ 211 FAIL  /units: when the server fails, the screen says so in words, invents no records, and loads again once the server is back  — with the server back the records appear: Inventory Every tracked stock item, with its heat, size, location and status Refresh Upload ​ ​ Status ​ Status Grade ​ Grade 3,222 items Item number Heat Grade Form Size On hand Available Locatio
+Phase 9 UI scenarios: 6 of 7 passed, 1 failed, 0 not applicable, 35 checks
+== done
+Note: the /units scenario in the last line above fails on this database for the same reason as 210 did: the stock list shows the newest items first, and the Phase 11 rerun just above had added its own items (P11-...) after the Phase 9 rerun, where /units passed. In the gate these scenarios run before Phase 11 adds its data, and all of them passed there.

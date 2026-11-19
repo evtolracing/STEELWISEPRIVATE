@@ -8,23 +8,23 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Material master | NOT VERIFIED (its suite did not pass in this run) | Grades, products, heat and grade required by the database | FAIL: p6: not in the gate log; FAIL: p3: not in the gate log |  |
-| Units of measure | NOT VERIFIED (its suite did not pass in this run) | One unit per balance; conversions by rule | FAIL: p6: not in the gate log |  |
-| Heat and lot tracking | NOT VERIFIED (its suite did not pass in this run) | Heat carried from receipt to every piece and shipment | FAIL: p6: not in the gate log; FAIL: p7: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Certifications | PARTIAL | Certificate upload and a hold when a required one is missing. The check is that a document is attached, not what it says | FAIL: p6: not in the gate log; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
-| Receiving | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p6: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | I-017 |
+| Material master | VERIFIED ON QA | Grades, products, heat and grade required by the database | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 3 database scenarios: 74 of 74 pass, 612 checks |  |
+| Units of measure | VERIFIED ON QA | One unit per balance; conversions by rule | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks |  |
+| Heat and lot tracking | VERIFIED ON QA | Heat carried from receipt to every piece and shipment | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Certifications | PARTIAL | Certificate upload and a hold when a required one is missing. The check is that a document is attached, not what it says | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 12 "Security and access revalidation" 11 of 11 |  |
+| Receiving | VERIFIED ON QA | As above | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 | I-017 |
 | Putaway | NOT BUILT | No putaway step or task | none | K-009 |
 | Bin locations | NOT BUILT | A typed bin text on the item; no bin master | none | K-009 |
-| Reservations and allocation | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p6: not in the gate log; FAIL: p11s: not in the gate log |  |
-| Picking | PARTIAL | Pick list paper from the shipment. No pick confirmation by scan | FAIL: p8: not in the gate log | K-013 |
-| Transfers | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p6: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Adjustments | NOT VERIFIED (its suite did not pass in this run) | With a reason, an audit line and a ledger entry | FAIL: p6: not in the gate log; FAIL: p95: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
-| Cycle counts | PARTIAL | A single-item correction only. No count programme, sheets or variance approval | FAIL: p6: not in the gate log | K-008 |
-| Remnants | PARTIAL | Pieces from a work order are stock. The Steel Outlet remnant list is separate and its discounts are fixed in code | FAIL: p7: not in the gate log | K-006, S-009 |
-| Scrap | NOT VERIFIED (its suite did not pass in this run) | Recorded on work orders and returns, valued at cost on file | FAIL: p7: not in the gate log; FAIL: p95: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
-| Returns | NOT VERIFIED (its suite did not pass in this run) | Return, receive, restock or scrap, credit with tax | FAIL: p8: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Authoritative quantities reconciled | NOT VERIFIED (its suite did not pass in this run) | On hand equals available plus reserved plus held on every item; books equal stock at cost | pass: Phase 12 "Financial and inventory reconciliation" 6 of 6; FAIL: database checks after the scenarios |  |
-| Branch isolation | NOT VERIFIED (its suite did not pass in this run) | Enforced under every route | FAIL: branch: not in the gate log; pass: Phase 12 "Security and access revalidation" 11 of 11; pass: Phase 12 "Multi-location readiness" 6 of 6 |  |
+| Reservations and allocation | VERIFIED ON QA | As above | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: in the gate Phase 11 scenarios: 319 of 320 pass, 1383 checks; one scenario failed on timing in the test (AA-012); whole suite run again on the same build: Phase 11 scenarios: 320 of 320 pass, 1384 checks |  |
+| Picking | PARTIAL | Pick list paper from the shipment. No pick confirmation by scan | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks | K-013 |
+| Transfers | VERIFIED ON QA | As above | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Adjustments | VERIFIED ON QA | With a reason, an audit line and a ledger entry | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 9.5 ledger: 158 of 158 pass, 915 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
+| Cycle counts | PARTIAL | A single-item correction only. No count programme, sheets or variance approval | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks | K-008 |
+| Remnants | PARTIAL | Pieces from a work order are stock. The Steel Outlet remnant list is separate and its discounts are fixed in code | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks | K-006, S-009 |
+| Scrap | VERIFIED ON QA | Recorded on work orders and returns, valued at cost on file | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 9.5 ledger: 158 of 158 pass, 915 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 |  |
+| Returns | VERIFIED ON QA | Return, receive, restock or scrap, credit with tax | pass: Phase 8 fulfilment scenarios: 155 of 155 pass, 518 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Authoritative quantities reconciled | VERIFIED ON QA | On hand equals available plus reserved plus held on every item; books equal stock at cost | pass: Phase 12 "Financial and inventory reconciliation" 6 of 6; pass: database checks after the scenarios |  |
+| Branch isolation | VERIFIED ON QA | Enforced under every route | pass: Branch boundary: 39 checks, 0 problems; pass: Phase 12 "Security and access revalidation" 11 of 11; pass: Phase 12 "Multi-location readiness" 6 of 6 |  |
 
 ## Purchasing (section 10)
 
@@ -32,17 +32,17 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 
 | Capability | State | What the product has | Evidence in this run | Open findings |
 |---|---|---|---|---|
-| Supplier management | PARTIAL | Suppliers are organisations with contact details. No supplier terms, ratings or approvals | FAIL: p6: not in the gate log | I-011 |
+| Supplier management | PARTIAL | Suppliers are organisations with contact details. No supplier terms, ratings or approvals | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks | I-011 |
 | Purchase requisitions | NOT BUILT | None | none |  |
-| Purchase orders | NOT VERIFIED (its suite did not pass in this run) | As above | FAIL: p6: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Purchase orders | VERIFIED ON QA | As above | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
 | Approvals | NOT BUILT | A purchase order needs no approval | none | K-011 |
-| Supplier pricing | PARTIAL | The price typed on the line; no supplier price list | FAIL: p6: not in the gate log |  |
-| Partial receipts | NOT VERIFIED (its suite did not pass in this run) | A line received in parts; the remainder stays on order | FAIL: p6: not in the gate log; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
-| Overreceipts | PARTIAL | Exact quantity enforced; more is held. No tolerance is set | FAIL: p6: not in the gate log | K-011 |
-| Cost updates | NOT VERIFIED (its suite did not pass in this run) | Cost per item from the purchase order line at receipt, carried to pieces | FAIL: p7: not in the gate log; FAIL: p95: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 | K-007 |
+| Supplier pricing | PARTIAL | The price typed on the line; no supplier price list | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks |  |
+| Partial receipts | VERIFIED ON QA | A line received in parts; the remainder stays on order | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks; pass: Phase 12 "Cross-module workflows end to end" 10 of 10 |  |
+| Overreceipts | PARTIAL | Exact quantity enforced; more is held. No tolerance is set | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks | K-011 |
+| Cost updates | VERIFIED ON QA | Cost per item from the purchase order line at receipt, carried to pieces | pass: Phase 7 manufacturing scenarios: 141 of 141 pass, 618 checks; pass: Phase 9.5 ledger: 158 of 158 pass, 915 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 | K-007 |
 | Replenishment | NOT BUILT | A supply position to read; no reorder points or suggestions | none | K-010 |
-| Receiving discrepancies | PARTIAL | Over-receipt and missing certificate are held. No discrepancy report to the supplier | FAIL: p6: not in the gate log | I-011 |
-| Financial consequences | PARTIAL | A receipt debits inventory and credits a clearing account. Nothing ever clears it: supplier invoices are not in the product | FAIL: p95: not in the gate log; pass: Phase 12 "Financial ledger certification" 16 of 16 | W-009, K-012 |
+| Receiving discrepancies | PARTIAL | Over-receipt and missing certificate are held. No discrepancy report to the supplier | pass: Phase 6 inventory scenarios: 106 of 106 pass, 494 checks | I-011 |
+| Financial consequences | PARTIAL | A receipt debits inventory and credits a clearing account. Nothing ever clears it: supplier invoices are not in the product | pass: Phase 9.5 ledger: 158 of 158 pass, 915 checks; pass: Phase 12 "Financial ledger certification" 16 of 16 | W-009, K-012 |
 
 ## End-to-end evidence from this phase
 
@@ -51,13 +51,13 @@ Date: 2026-11-19. Release candidate RC-2 (RC-1 is commit `9e12319`, the merge of
 PASS, 30 checks.
 
 - pass: the purchase order is written (201 )
-- pass: goods cannot be received against a purchase order that is not placed (409 Purchase order PO-02005 is still a draft: it has not been placed with the supplier)
+- pass: goods cannot be received against a purchase order that is not placed (409 Purchase order PO-01930 is still a draft: it has not been placed with the supplier)
 - pass: the purchase order is placed (200 )
 - pass: a sales representative cannot receive goods (403)
 - pass: the first part is received (201 )
 - pass: the rest is received (201 )
 - pass: 500 lb more than was ordered is received on hold, not into free stock (201 hold 500 available 0 )
-- pass: with a hold that says why ([["DISPUTE","Received against PO PO-02005 line 1, and more than ordered: 4500 LB received against 4000 ordered)
+- pass: with a hold that says why ([["DISPUTE","Received against PO PO-01930 line 1, and more than ordered: 4500 LB received against 4000 ordered)
 - pass: and it cannot be reserved for a customer while held (409 This stock is on hold and cannot be reserved)
 - pass: the 2500 lb item is in stock at the branch at the line's price (true cost 0.38 on hand 2500)
 - pass: the 2500 lb receipt: an entry was posted (POSTED)
@@ -65,14 +65,14 @@ PASS, 30 checks.
 - pass: the 2500 lb receipt: account 1200 moves by 950 (got 950; entry {"1200":950,"2000":-950})
 - pass: the 2500 lb receipt: account 2000 moves by -950 (got -950; entry {"1200":950,"2000":-950})
 - pass: the 2500 lb receipt: no other account is touched (also )
-- pass: the 2500 lb item carries its heat (83f5e26f-41fa-403d-a088-c06de504c7ab)
+- pass: the 2500 lb item carries its heat (54e70c2f-e5a2-4c72-85d6-2a4dd3057635)
 - pass: the 1500 lb item is in stock at the branch at the line's price (true cost 0.38 on hand 1500)
 - pass: the 1500 lb receipt: an entry was posted (POSTED)
 - pass: the 1500 lb receipt: debits equal credits (570 vs 570, header 570)
 - pass: the 1500 lb receipt: account 1200 moves by 570 (got 570; entry {"1200":570,"2000":-570})
 - pass: the 1500 lb receipt: account 2000 moves by -570 (got -570; entry {"1200":570,"2000":-570})
 - pass: the 1500 lb receipt: no other account is touched (also )
-- pass: the 1500 lb item carries its heat (83f5e26f-41fa-403d-a088-c06de504c7ab)
+- pass: the 1500 lb item carries its heat (54e70c2f-e5a2-4c72-85d6-2a4dd3057635)
 - pass: the purchase order line shows what arrived, including the part on hold (4500)
 - pass: the buyer closes it, and nothing more can be received against it (200 )
 - pass: after receiving: the reconciliation ran (201)
@@ -88,7 +88,7 @@ PASS, 21 checks.
 - pass: another branch cannot send this branch's stock (404 Stock item not found)
 - pass: the transfer is sent (201 )
 - pass: in transit, none of it is available to either branch (available 0, in transit 2200, IN_TRANSIT)
-- pass: stock in transit cannot be reserved for an order (409 Stock item P11-MWMU3MUB-35 is on its way to another branch. Reserve it after the receiving branch has rece)
+- pass: stock in transit cannot be reserved for an order (409 Stock item P11-MWMXFR5R-35 is on its way to another branch. Reserve it after the receiving branch has rece)
 - pass: while in transit: the reconciliation ran (201)
 - pass: while in transit: BOOKS_BALANCE agrees (MATCH 0.00 )
 - pass: while in transit: INVENTORY agrees (MATCH 0.00 )
@@ -115,7 +115,7 @@ PASS, 20 checks.
 - pass: the operator starts it (200 )
 - pass: it cannot be started twice (409 This work order is already in progress)
 - pass: 100 lb of the item are reserved for a customer (201 )
-- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMU3MUB-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
+- pass: the work order cannot use the pounds promised to the customer (409 Stock item P11-MWMXFR5R-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output)
 - pass: and the refusal changed nothing
 - pass: completed with two pieces and 30 lb of scrap (200 )
 - pass: the source keeps exactly the 100 lb promised to the customer (ALLOCATED: on hand 100, reserved 100)
@@ -134,8 +134,8 @@ PASS, 20 checks.
 
 ## Earlier suites, rerun in the gate
 
-- p6: not in the gate log
-- p3: not in the gate log
+- Phase 6 inventory scenarios: 106 of 106 pass, 494 checks
+- Phase 3 database scenarios: 74 of 74 pass, 612 checks
 
 ## Purchasing: how the product behaves, as observed
 

@@ -1,7 +1,7 @@
 {
- "ranAt": "2026-11-19T00:49:06.318Z",
- "mutations": 12,
- "held": 12,
+ "ranAt": "2026-11-19T02:57:03.511Z",
+ "mutations": 13,
+ "held": 13,
  "results": [
   {
    "id": "AA-001",
@@ -98,7 +98,18 @@
    "check": "Bad input is the caller's error",
    "failed": [
     "✗ [Security and access revalidation] Security 7: API. Bad input is the caller's error and carries no internals",
-    "✗ Phase 12 certification: 0 of 1 pass, 11 checks; Security and access revalidation 0/1"
+    "✗ Phase 12 certification: 0 of 1 pass, 12 checks; Security and access revalidation 0/1"
+   ]
+  },
+  {
+   "id": "AA-011",
+   "what": "a customer code that is not text is refused",
+   "kind": "sim",
+   "held": true,
+   "check": "Bad input is the caller's error",
+   "failed": [
+    "✗ [Security and access revalidation] Security 7: API. Bad input is the caller's error and carries no internals",
+    "✗ Phase 12 certification: 0 of 1 pass, 12 checks; Security and access revalidation 0/1"
    ]
   },
   {

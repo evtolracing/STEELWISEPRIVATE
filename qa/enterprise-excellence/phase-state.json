@@ -261,6 +261,10 @@
     "Owner: decide AA-007 (branch time zones), AA-008 (adding a branch) and AA-010 (sales staff may dispatch and move work orders)",
     "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
     "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
     "Owner: apply /mnt/project-files/database-updates/18-20261118150000_shared_rate_limits.sql in the SQL editor, then verify-6-to-18.sql; every row OK or APPLIED. Safe before or after the code",
     "Owner: approve the thresholds and decide Z-006",
     "Owner: apply /mnt/project-files/database-updates/17-20261118090000_security_hardening.sql in the SQL editor, then verify-6-to-17.sql; every row OK or APPLIED",
@@ -562,13 +566,14 @@
       "evidence": "Phase 12: with no database every signed-in route answers 503 and the dashboard no longer invents figures (AA-001); a polite stop finishes requests in flight. Held at 88: one machine; the database server itself never failed over"
     }
   ],
-  "pullRequest": 35,
+  "pullRequest": 36,
   "previousPullRequests": [
     30,
     31,
     32,
     33,
-    34
+    34,
+    35
   ],
   "phase3BaselineCommit": "181a874",
   "phase4BaselineCommit": "dffa7d2",

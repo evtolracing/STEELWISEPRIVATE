@@ -16,6 +16,15 @@ const DEMO_USER = {
 
 const AuthContext = createContext(null)
 
+// The branch picked in the top bar and an administrator's role preview. The API client sends both
+// with every request (api/client.js); the server decides what they may narrow (lib/viewScope.js).
+export const VIEW_KEYS = { branch: 'sw.branchId', viewAs: 'sw.viewAsRole' }
+const readView = (key) => { try { return localStorage.getItem(key) || '' } catch { return '' } }
+const writeView = (key, value) => {
+  try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key) } catch { /* private mode */ }
+}
+const clearView = () => { writeView(VIEW_KEYS.branch, ''); writeView(VIEW_KEYS.viewAs, '') }
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(DEMO_MODE ? DEMO_USER : null)
   const [token, setToken] = useState(() => DEMO_MODE ? 'demo-token' : localStorage.getItem('token'))
@@ -23,6 +32,8 @@ export function AuthProvider({ children }) {
   // instead of bouncing to the login page.
   const [loading, setLoading] = useState(() => !DEMO_MODE && !!localStorage.getItem('token'))
   const [error, setError] = useState(null)
+  // Changes whenever the branch or the previewed role changes, so the screens load again.
+  const [viewVersion, setViewVersion] = useState(0)
 
   // Load user on mount if token exists (skip in demo mode)
   useEffect(() => {
@@ -77,13 +88,17 @@ export function AuthProvider({ children }) {
       setLoading(true)
       setError(null)
       
+ // A new sign-in starts in the person's own view: no branch or preview carried over from the last one.
+      clearView()
       const { apiClient } = await import('../api/client')
       const response = await apiClient.post('/auth/login', { email, password })
-      const { token: newToken, user: userData } = response.data
+      const { token: newToken } = response.data
       
       localStorage.setItem('token', newToken)
       setToken(newToken)
-      setUser(userData)
+      // /auth/me also says which branches the person may pick and whether they may preview roles.
+      const me = await apiClient.get('/auth/me')
+      setUser(me.data?.user || me.data)
       
       return { success: true }
     } catch (err) {
@@ -126,6 +141,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem('token')
+    clearView()
     setToken(null)
     setUser(DEMO_MODE ? DEMO_USER : null)
     setError(null)
@@ -177,6 +193,20 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  // Picks the branch to work in ('' = every branch the person may see) and reloads the screens.
+  const setBranch = useCallback(async (branchId) => {
+    writeView(VIEW_KEYS.branch, branchId)
+    await fetchCurrentUser()
+    setViewVersion((v) => v + 1)
+  }, [])
+
+  // An administrator previews what another role sees ('' ends the preview). View-only.
+  const setViewAsRole = useCallback(async (role) => {
+    writeView(VIEW_KEYS.viewAs, role)
+    await fetchCurrentUser()
+    setViewVersion((v) => v + 1)
+  }, [])
+
   const value = {
     user,
     token,
@@ -190,6 +220,13 @@ export function AuthProvider({ children }) {
     updateProfile,
     changePassword,
     refreshUser: fetchCurrentUser,
+    // The person's own role, also while previewing another one.
+    realRole: user?.realRole || user?.role || null,
+    previewRole: user?.previewRole || null,
+    branchId: user?.branchId || '',
+    viewVersion,
+    setBranch,
+    setViewAsRole,
   }
 
   return (

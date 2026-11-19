@@ -269,6 +269,33 @@ export const DASHBOARD_CONFIG = {
 // Available roles for dropdown selection
 export const AVAILABLE_ROLES = Object.keys(DASHBOARD_CONFIG);
 
+/**
+ * The dashboard layout for each login role (the roles in config/roleAccess.js). The dashboard is
+ * chosen by the signed-in person's role, never picked from a list: a list let anyone look at any
+ * role's dashboard and changed nothing about what they were allowed to see.
+ */
+export const DASHBOARD_FOR_ROLE = {
+  SUPER_ADMIN: 'CEO', TENANT_OWNER: 'CEO', ADMIN: 'CEO', EXECUTIVE: 'CEO', COO: 'CEO', DIVISION_DIRECTOR: 'CEO',
+  CFO: 'CFO',
+  OPS_MANAGER: 'VP_OPERATIONS', SERVICE_CENTER: 'VP_OPERATIONS', DATA_ANALYST: 'VP_OPERATIONS',
+  BRANCH_MANAGER: 'BRANCH_MANAGER',
+  PRODUCTION_MANAGER: 'SCHEDULER', SCHEDULER: 'SCHEDULER',
+  WORKCENTER_LEAD: 'SUPERVISOR', MAINTENANCE_MANAGER: 'SUPERVISOR',
+  OPERATOR_SAW: 'OPERATOR', OPERATOR_ROUTER: 'OPERATOR', OPERATOR_SHEAR: 'OPERATOR', OPERATOR_PLASMA: 'OPERATOR',
+  OPERATOR_GENERAL: 'OPERATOR', MILL_OPERATOR: 'OPERATOR', MATERIAL_HANDLER: 'OPERATOR',
+  PACKAGING_LEAD: 'PACKAGING',
+  SHIPPING_COORDINATOR: 'SHIPPING', RECEIVING_CLERK: 'SHIPPING',
+  QC_MANAGER: 'QUALITY', QC_INSPECTOR: 'QUALITY', AUDITOR: 'QUALITY',
+  INVENTORY_MANAGER: 'PROCUREMENT', BUYER: 'PROCUREMENT',
+  CIO: 'IT_ADMIN', INTEGRATION_ADMIN: 'IT_ADMIN',
+  SALES_DIRECTOR: 'SALES_MANAGER', SALES_REP: 'SALES_REP',
+  CSR: 'CSR', SUPPORT_AGENT: 'CSR', ESTIMATOR: 'INSIDE_SALES', CREDIT_MANAGER: 'INSIDE_SALES',
+  CUSTOMER_ADMIN: 'CUSTOMER_PORTAL', CUSTOMER_BUYER: 'CUSTOMER_PORTAL', CUSTOMER_VIEWER: 'CUSTOMER_PORTAL',
+};
+
+/** The dashboard layout for a login role; a role with none gets the branch view. */
+export const dashboardFor = (role) => DASHBOARD_FOR_ROLE[role] || 'BRANCH_MANAGER';
+
 // Role display names
 export const ROLE_DISPLAY_NAMES = {
   CEO: 'CEO',

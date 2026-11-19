@@ -6,6 +6,9 @@ import { authenticate, requireRole, signUserToken, missingUpdate17, UPDATE_17 } 
 import { raiseAlertLater } from '../lib/alerts.js';
 import { userChangeDenial } from '../lib/userAdminRules.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
+import { ALL_BRANCH_ROLES } from '../lib/branchScope.js';
+import { EXTERNAL_ROLES } from '../lib/roleAccess.js';
+import { SYSTEM_ADMIN_ROLES, PREVIEW_ROLES } from '../lib/viewScope.js';
 
 const router = Router();
 
@@ -195,9 +198,39 @@ router.post('/logout-all', authenticate, async (req, res, next) => {
 
 // Get current user. The user is returned under `user` (what the frontend
 // reads) and also at the top level for older callers.
-router.get('/me', authenticate, (req, res) => {
-  const user = publicUser(req.user);
-  res.json({ ...user, user });
+//
+// While an administrator previews another role, `role` is the previewed role (what every screen goes
+// by) and `realRole` is their own. `branches` are the branches the person may pick in the top bar
+// (every active branch for a login that sees every branch), and `branchId` the one picked, if any.
+router.get('/me', authenticate, async (req, res, next) => {
+  try {
+    const real = req.realUser || req.user;
+    const view = req.view || {};
+    const external = EXTERNAL_ROLES.has(real.role);
+    const allBranches = !external && ALL_BRANCH_ROLES.has(real.role);
+    const own = [...new Set([real.homeLocationId, ...(real.userLocations || []).map((l) => l.locationId)].filter(Boolean))];
+    const branches = external ? [] : await prisma.location.findMany({
+      where: allBranches ? { isActive: true } : { id: { in: own } },
+      select: { id: true, code: true, name: true },
+      orderBy: { code: 'asc' },
+    });
+    const user = {
+      ...publicUser(req.user),
+      realRole: real.role,
+      previewRole: view.previewRole || null,
+      canPreviewRoles: SYSTEM_ADMIN_ROLES.has(real.role),
+      previewableRoles: SYSTEM_ADMIN_ROLES.has(real.role) ? [...PREVIEW_ROLES].filter((r) => r !== real.role && (real.role !== 'ADMIN' || !['SUPER_ADMIN', 'TENANT_OWNER'].includes(r))) : [],
+      allBranches,
+      branches,
+      branchId: view.branchId || null,
+      // What this request is held to: 'ALL', or how many branches (a preview of a branch role, with
+      // no branch picked, shows the administrator's own branches).
+      branchScope: view.branches === null || view.branches === undefined ? 'ALL' : view.branches.length,
+    };
+    res.json({ ...user, user });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

@@ -22,11 +22,12 @@ import ChangePasswordDialog from './ChangePasswordDialog'
 import HeaderAIAssistant from './HeaderAIAssistant'
 import CutoffClockChip from './CutoffClockChip'
 import GlobalSearch from './GlobalSearch'
+import ViewControls from './ViewControls'
 
 export default function TopBar({ drawerWidth, onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
-  const { user, logout } = useAuth()
+  const { user, realRole, previewRole, logout } = useAuth()
   const navigate = useNavigate()
 
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || ''
@@ -78,6 +79,9 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
 
         <Box sx={{ flex: 1 }} />
 
+        {/* Branch, and for an administrator the role to preview */}
+        <ViewControls />
+
         {/* Cutoff Clock */}
         <Box sx={{ mr: 1, display: { xs: 'none', sm: 'block' } }}>
           <CutoffClockChip />
@@ -109,7 +113,7 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <MenuItem disabled sx={{ opacity: '1 !important' }}>
-            <ListItemText primary={displayName} secondary={user?.role?.replace(/_/g, ' ')} />
+            <ListItemText primary={displayName} secondary={`${(realRole || '').replace(/_/g, ' ')}${previewRole ? ` (viewing as ${previewRole.replace(/_/g, ' ')})` : ''}`} />
           </MenuItem>
           <Divider />
           <MenuItem onClick={handleChangePassword}>Change password</MenuItem>

@@ -36,6 +36,11 @@ if (typeof window !== 'undefined' && window.fetch && !window.fetch.__steelwiseAu
     if (token) {
       const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined))
       if (!headers.has('Authorization')) headers.set('Authorization', `Bearer ${token}`)
+      // The branch picked in the top bar and an administrator's role preview, as the axios client sends them.
+      const branchId = localStorage.getItem('sw.branchId')
+      const viewAs = localStorage.getItem('sw.viewAsRole')
+      if (branchId && !headers.has('X-Branch-Id')) headers.set('X-Branch-Id', branchId)
+      if (viewAs && !headers.has('X-View-As-Role')) headers.set('X-View-As-Role', viewAs)
       options = { ...init, headers }
     }
 

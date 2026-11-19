@@ -8,11 +8,18 @@
  */
 
 // App areas, by the first part of the page URL (two parts where noted).
+// Every page on the menu belongs to an area or is listed in OPEN_TO_STAFF below; a check
+// (src/backend/test/frontendRoleAccess.test.js) fails when a new page is in neither.
 export const SECTION_PATHS = {
   sales: ['customers', 'sales', 'commercial', 'pricing', 'mobile-rep'],
   orders: ['orders', 'order-board', 'orderhub', 'pos', 'portal'],
+  // Invoices, payments and credit holds: what customers owe. The server lets only sales, managers,
+  // leadership and the view-only roles read them (INVOICE_READERS in src/backend/src/lib/roleAccess.js).
+  billing: ['orders/invoices', 'orders/credit-holds'],
   production: ['planning', 'schedule', 'shopfloor', 'shop-floor', 'time-tracking', 'production', 'jobs', 'work-orders', 'optimization', 'boms', 'bom'],
-  inventory: ['inventory', 'heats', 'units', 'provenance'],
+  inventory: ['inventory', 'heats', 'units', 'provenance', 'transfers'],
+  purchasing: ['purchase-orders'],
+  opsCockpit: ['ops-cockpit'],
   quality: ['qc', 'qaqc', 'production-quality'],
   materialTracking: ['material-tracking'],
   logistics: ['receiving', 'shipping', 'freight', 'logistics'],
@@ -23,13 +30,27 @@ export const SECTION_PATHS = {
   maintenance: ['maintenance'],
   contractors: ['contractors'],
   executive: ['executive'],
+  // The admin pages, one area each, so a manager can be given one without the rest.
+  adminUsers: ['admin/users'],
+  adminStaff: ['admin/staff'],
+  adminRecipes: ['admin/processing-recipes'],
+  // Everything else under /admin: partner API, integrations, audit log, tax rates.
   admin: ['admin'],
   finance: ['finance'],
 }
 
+// Pages every staff login may open: the dashboards (which show the person's own role and branch),
+// safety, training and help.
+export const OPEN_TO_STAFF = ['', 'role-dashboard', 'safety', 'training', 'help']
 
+// Must match STAFF_GROUPS in src/backend/src/lib/roleAccess.js, except that the auditor sits with
+// quality here (for the quality screens) and the system administrators are split from the managers.
 const ROLE_GROUPS = {
-  admin: ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER'],
+  // The system administrators: everything, every branch.
+  system: ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN'],
+  // Managers run branches (BRANCH_MANAGER: their own; OPS_MANAGER: every branch). They see every
+  // working area but not the system's settings, partner API keys or audit log.
+  management: ['BRANCH_MANAGER', 'OPS_MANAGER'],
   leadership: ['EXECUTIVE', 'CFO', 'COO', 'CIO', 'DIVISION_DIRECTOR', 'SERVICE_CENTER'],
   sales: ['SALES_DIRECTOR', 'SALES_REP', 'CSR', 'ESTIMATOR', 'CREDIT_MANAGER', 'SUPPORT_AGENT'],
   production: ['PRODUCTION_MANAGER', 'SCHEDULER', 'WORKCENTER_LEAD', 'OPERATOR_SAW', 'OPERATOR_ROUTER', 'OPERATOR_SHEAR', 'OPERATOR_PLASMA', 'OPERATOR_GENERAL', 'MILL_OPERATOR', 'PACKAGING_LEAD', 'MATERIAL_HANDLER'],
@@ -42,18 +63,24 @@ const ROLE_GROUPS = {
   partner: ['SUPPLIER_USER', 'CARRIER_USER'],
 }
 
-const ALL_SECTIONS = Object.keys(SECTION_PATHS)
+export const SYSTEM_ADMIN_ROLES = ROLE_GROUPS.system
+
+const ADMIN_AREAS = ['admin', 'adminUsers', 'adminStaff', 'adminRecipes', 'ecommerceAdmin']
+const WORKING_AREAS = Object.keys(SECTION_PATHS).filter((s) => !ADMIN_AREAS.includes(s))
 
 const GROUP_SECTIONS = {
-  admin: ['*'],
-  leadership: [...ALL_SECTIONS.filter((s) => s !== 'admin')],
-  sales: ['sales', 'orders', 'inventory', 'logistics', 'customerQuality', 'ecommerce'],
+  system: ['*'],
+  management: [...WORKING_AREAS, 'adminStaff', 'adminRecipes'],
+  leadership: [...WORKING_AREAS, 'ecommerceAdmin'],
+  sales: ['sales', 'orders', 'billing', 'inventory', 'logistics', 'customerQuality', 'ecommerce'],
   production: ['production', 'orders', 'inventory', 'materialTracking', 'quality', 'maintenance'],
-  warehouse: ['inventory', 'materialTracking', 'logistics', 'supplierQuality', 'orders'],
+  warehouse: ['inventory', 'purchasing', 'materialTracking', 'logistics', 'supplierQuality', 'orders'],
   quality: ['quality', 'supplierQuality', 'customerQuality', 'materialTracking', 'inventory', 'orders', 'production'],
   maintenance: ['maintenance', 'production', 'inventory', 'contractors'],
-  analyst: ['executive', 'sales', 'orders', 'inventory', 'production', 'quality', 'logistics'],
-  integration: ['admin'],
+  analyst: ['executive', 'sales', 'orders', 'billing', 'inventory', 'purchasing', 'opsCockpit', 'production', 'quality', 'logistics'],
+  // The integration admin has no screen of its own yet: the partner API and integration pages are
+  // for system administrators on the server (routes/integrations.js, routes/partner/adminRoutes.js).
+  integration: [],
   customer: ['ecommerce'],
   partner: [],
 }
@@ -65,20 +92,25 @@ const ROLE_ONLY_SECTIONS = {
   finance: ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'CFO', 'EXECUTIVE', 'AUDITOR', 'BRANCH_MANAGER'],
 }
 
-// A few roles get one extra area on top of their group.
+// A few roles get extra areas on top of their group.
 const ROLE_EXTRAS = {
   SALES_DIRECTOR: ['executive'],
-  PRODUCTION_MANAGER: ['logistics', 'contractors'],
-  INVENTORY_MANAGER: ['ecommerceAdmin'],
+  PRODUCTION_MANAGER: ['logistics', 'contractors', 'opsCockpit'],
+  SCHEDULER: ['opsCockpit'],
+  INVENTORY_MANAGER: ['ecommerceAdmin', 'opsCockpit'],
+  // A branch manager adds and changes the staff logins of their own branch (lib/userAdminRules.js).
+  BRANCH_MANAGER: ['adminUsers'],
+  AUDITOR: ['billing'],
 }
 
 const EXTERNAL_GROUPS = new Set(['customer', 'partner'])
+export const ALL_ROLES = Object.values(ROLE_GROUPS).flat()
 
 function groupOf(role) {
   return Object.keys(ROLE_GROUPS).find((g) => ROLE_GROUPS[g].includes(role)) || null
 }
 
-/** Sections a role can open; ['*'] means everything. Unknown roles get the staff basics. */
+/** Sections a role can open; ['*'] means everything. Unknown roles get only the pages open to all staff. */
 export function sectionsFor(role) {
   const group = groupOf(role)
   if (!group) return []
@@ -101,6 +133,7 @@ export function sectionForPath(pathname) {
 }
 
 export function canAccessPath(role, pathname) {
+  if (!role) return false
   const allowed = sectionsFor(role)
   const section = sectionForPath(pathname)
   if (section && ROLE_ONLY_SECTIONS[section]) return ROLE_ONLY_SECTIONS[section].includes(role)
@@ -110,6 +143,12 @@ export function canAccessPath(role, pathname) {
   // staff. Customers and partners only get help.
   if (!isExternalRole(role)) return true
   return String(pathname || '').replace(/^\/+/, '').split('/')[0] === 'help'
+}
+
+/** Role names as people say them: SALES_REP -> "Sales rep". */
+export function roleLabel(role) {
+  const s = String(role || '').replace(/_/g, ' ').toLowerCase()
+  return s ? s[0].toUpperCase() + s.slice(1) : ''
 }
 
 /** Where to send a user who lands somewhere they can't open. */

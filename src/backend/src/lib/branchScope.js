@@ -144,10 +144,16 @@ export function scopedArgs(model, operation, args, scope) {
 
 export const currentScope = () => requestContext.getStore()?.branchScope;
 
-/** Called once per request, after sign-in. */
-export function setBranchScope(user) {
+/**
+ * Called once per request, after sign-in. `view` (lib/viewScope.js) narrows the user's branches to
+ * the branch picked in the top bar; without it the user's own branches apply.
+ */
+export function setBranchScope(user, view) {
   const store = requestContext.getStore();
-  if (store) store.branchScope = { branches: branchesOf(user), home: user?.homeLocationId || null, bypass: 0 };
+  if (!store) return;
+  store.branchScope = view
+    ? { branches: view.branches, home: view.home, bypass: 0 }
+    : { branches: branchesOf(user), home: user?.homeLocationId || null, bypass: 0 };
 }
 
 /**

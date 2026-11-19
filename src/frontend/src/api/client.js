@@ -33,6 +33,14 @@ client.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    // The branch picked in the top bar and an administrator's role preview (hooks/useAuth.jsx). The
+    // server ignores either one when the login may not use it (src/backend/src/lib/viewScope.js).
+    try {
+      const branchId = localStorage.getItem('sw.branchId')
+      const viewAs = localStorage.getItem('sw.viewAsRole')
+      if (branchId) config.headers['X-Branch-Id'] = branchId
+      if (viewAs) config.headers['X-View-As-Role'] = viewAs
+    } catch { /* private mode: the person's own view */ }
     // A request that creates a business document carries a key, so a repeat is not run twice.
     const path = `/api${config.url?.startsWith('/') ? '' : '/'}${config.url || ''}`
     if (needsRequestKey(config.method, path) && !config.headers['Idempotency-Key']) {

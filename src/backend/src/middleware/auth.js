@@ -5,7 +5,11 @@ import jwt from 'jsonwebtoken';
 import prisma from '../lib/db.js';
 import config from '../config/index.js';
 import { setBranchScope } from '../lib/branchScope.js';
+import { requestView, SYSTEM_ADMIN_ROLES } from '../lib/viewScope.js';
 
+// The roles of the "admin" department in lib/roleAccess.js: their changes are not held to a department.
+// They are NOT all system administrators: a branch or operations manager runs a branch, not the system,
+// and does not pass a role check that does not name them (see requireRole).
 export const ADMIN_ROLES = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER'];
 
 /** The login's session mark: 0 until its sessions are first ended, then the moment they were ended, in ms. */
@@ -68,8 +72,13 @@ export async function authenticate(req, res, next) {
     if (user.isActive === false) return res.status(403).json({ error: 'User account is disabled' });
     if (!tokenStillValid(decoded, user)) return res.status(401).json({ error: 'This sign-in has ended. Please sign in again.', code: 'SESSION_ENDED' });
 
-    req.user = user;
-    setBranchScope(user);
+    // The branch picked in the top bar and an administrator's role preview (lib/viewScope.js). Both can
+    // only narrow what the login may see. req.realUser is the login itself.
+    const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] });
+    req.realUser = user;
+    req.view = view;
+    req.user = view.user;
+    setBranchScope(view.user, view);
     next();
   } catch (error) {
     if (missingUpdate17(error)) return res.status(503).json(UPDATE_17);
@@ -87,12 +96,23 @@ export function missingUpdate17(error) {
 }
 export const UPDATE_17 = { error: 'Database update 17 (security hardening) has to be applied first.', code: 'DATABASE_UPDATE_REQUIRED' };
 
-// Allows the listed roles plus the admin roles.
+/**
+ * Allows the listed roles plus the system administrators (SUPER_ADMIN, TENANT_OWNER, ADMIN). With no
+ * roles listed it means the system administrators only.
+ *
+ * Until this change every role in ADMIN_ROLES passed every check, so a branch manager or operations
+ * manager could delete any login, reset passwords, manage partner API keys, create roles and load
+ * demo data: they could do what the super admin could.
+ */
+export function roleAllowed(role, roles = []) {
+  return SYSTEM_ADMIN_ROLES.has(role) || roles.includes(role);
+}
+
 export function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 
-    if (!roles.includes(req.user.role) && !ADMIN_ROLES.includes(req.user.role)) {
+    if (!roleAllowed(req.user.role, roles)) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
     next();

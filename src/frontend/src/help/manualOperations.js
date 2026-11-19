@@ -23,12 +23,12 @@ const manualOperations = [
     sections: [
       { id: 'what-it-is', title: 'What the Ledger Is and Is Not', blocks: [
         { type: 'text', value: 'Finance shows the ledger the system keeps by itself from the work people do: an invoice, a payment, a credit, a refund, a receipt of stock, a shipment, a transfer, a stock correction and a work order each write a balanced journal entry. Nobody types those entries.' },
-        { type: 'warning', value: 'It is a subledger for your accountant, not a full set of accounts. Payroll, rent, supplier bills and the bank are not in it. Do not use it as the company\'s books of record unless your accountant has said so.' },
+        { type: 'warning', value: 'Only sales, payments, stock and work orders post by themselves. Payroll, rent, supplier bills, bank activity, depreciation and income tax are in it only where a finance person posts them by journal entry. Do not use it as the company\'s books of record unless your accountant has said so.' },
         { type: 'text', value: 'Until the books are started the Overview says they are not running and lists what is still needed under "Before the books can start". Business carries on exactly as before while the books are off.' },
         { type: 'table', headers: ['Tab', 'What it shows', 'Who sees it'], rows: [
           ['Overview', 'Whether the books are running, and the last check of the books beside the business records', 'Everyone with Finance'],
           ['Trial balance', 'Every account with its debits, credits and balance', 'Everyone with Finance (a branch sees its own branch)'],
-          ['Reports', 'Revenue, gross margin on material, what customers owe, sales tax, inventory value, scrap, monthly statement', 'Everyone with Finance'],
+          ['Reports', 'Income statement and balance sheet (company finance roles), revenue, gross margin on material, what customers owe, sales tax, inventory value, scrap, monthly statement', 'Everyone with Finance'],
           ['Journal', 'Every entry, with the record it came from', 'Everyone with Finance'],
           ['Not posted', 'Business events that could not post, each with its reason', 'Company finance roles'],
           ['Months', 'Open and closed months', 'Company finance roles'],
@@ -36,6 +36,17 @@ const manualOperations = [
           ['Start and stop', 'The dry run, starting the books, and stopping posting', 'Company finance roles'],
           ['Export', 'The file for your accounting system', 'Company finance roles'],
         ] },
+      ] },
+      { id: 'sandbox', title: 'Sandbox Books for a Demonstration', blocks: [
+        { type: 'text', value: 'A demonstration system can run sandbox books: the full chart of accounts is loaded, every account and posting rule is recorded as approved by nobody, and the books open from the records as they are. Use it to show and to learn the ledger, never to keep a real company\'s accounts.' },
+        { type: 'steps', items: [
+          'Sign in as the owner, the chief financial officer or a super administrator. An administrator cannot start books.',
+          'Open Finance, then the "Start and stop" tab.',
+          'Under "Or: start sandbox books for a demonstration", press "Start sandbox books".',
+          'Type START SANDBOX BOOKS, check the time zone, and confirm.',
+        ] },
+        { type: 'warning', value: 'Starting books cannot be undone, and books started as a sandbox stay marked SANDBOX for good. Every Finance tab and both financial statements carry the SANDBOX notice. Real books are started the ordinary way, after an accountant has approved the accounts.' },
+        { type: 'text', value: 'The income statement and the balance sheet are under Reports. The balance sheet shows this year\'s net income and the earnings of earlier years as their own lines in equity, because the system does not write a year-end closing entry.' },
       ] },
       { id: 'daily', title: 'Checking the Books Against the Records', blocks: [
         { type: 'steps', items: [

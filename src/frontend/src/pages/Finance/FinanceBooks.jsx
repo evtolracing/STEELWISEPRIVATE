@@ -232,6 +232,9 @@ export function JournalTab({ can, active }) {
 
 // Each report: its address, the choices it takes, and the columns to show. `company`: not for a branch view.
 const REPORTS = {
+  // The two financial statements: a list of headings, accounts, totals and results, not a table of like rows.
+  'income-statement': { label: 'Income statement', company: true, dates: true, statement: true, total: (d) => `Net income ${money(d.summary.netIncome)}${d.agreesWithAccounts ? '' : '. THE SECTIONS DO NOT ADD UP TO THE ACCOUNTS'}` },
+  'balance-sheet': { label: 'Balance sheet', company: true, asOf: true, statement: true, total: (d) => (d.balanced ? `Assets ${money(d.totals.assets)} equal liabilities and equity ${money(d.totals.liabilitiesAndEquity)}.` : `OUT OF BALANCE by ${money(d.difference)}.`) },
   revenue: { label: 'Revenue', by: ['branch', 'division', 'customer', 'product'], dates: true, rows: (d) => d.rows, cols: [['name', 'Name'], ['sales', 'Sales', 1], ['returns', 'Returns and allowances', 1], ['net', 'Net', 1]], total: (d) => `Net sales ${money(d.total)}` },
   'gross-margin': { label: 'Gross margin on material', by: ['branch', 'division'], dates: true, rows: (d) => d.rows, cols: [['name', 'Name'], ['netSales', 'Net sales', 1], ['materialCost', 'Material cost', 1], ['grossMarginOnMaterial', 'Margin on material', 1], ['percent', '%']] },
   receivables: { label: 'Receivables against invoices', company: true, rows: (d) => d.customers, cols: [['name', 'Customer'], ['owed', 'Owed', 1], ['creditOwedBack', 'Credit owed back', 1], ['records', 'Invoices net', 1], ['ledger', 'Books', 1], ['difference', 'Difference', 1]], total: (d) => `Books ${money(d.totals.ledger)} · invoices ${money(d.totals.records)} · difference ${money(d.totals.difference)}` },
@@ -246,14 +249,15 @@ export function ReportsTab({ can }) {
   const [name, setName] = useState(names[0]); const [by, setBy] = useState('branch'); const [from, setFrom] = useState(''); const [to, setTo] = useState('')
   const now = new Date(); const [year, setYear] = useState(now.getFullYear()); const [month, setMonth] = useState(now.getMonth() + 1)
   const def = REPORTS[name]
-  const r = useLoad(`/ledger/reports/${name}`, { ...(def.by && { by: def.by.includes(by) ? by : def.by[0] }), ...(def.dates && { from: from || undefined, to: to || undefined }), ...(def.month && { year, month }) })
-  const rows = r.data ? def.rows(r.data) || [] : []
+  const r = useLoad(`/ledger/reports/${name}`, { ...(def.by && { by: def.by.includes(by) ? by : def.by[0] }), ...(def.dates && { from: from || undefined, to: to || undefined }), ...(def.month && { year, month }), ...(def.asOf && { asOf: to || undefined }) })
+  const rows = r.data && def.rows ? def.rows(r.data) || [] : []
   return (
     <Box>
       <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap" useFlexGap>
         <TextField select size="small" label="Report" sx={{ minWidth: 280 }} value={name} onChange={(e) => setName(e.target.value)}>{names.map((k) => <MenuItem key={k} value={k}>{REPORTS[k].label}</MenuItem>)}</TextField>
         {def.by && <TextField select size="small" label="By" sx={{ width: 150 }} value={def.by.includes(by) ? by : def.by[0]} onChange={(e) => setBy(e.target.value)}>{def.by.map((b) => <MenuItem key={b} value={b}>{b}</MenuItem>)}</TextField>}
         {def.dates && dateField('From', from, setFrom)}{def.dates && dateField('To', to, setTo)}
+        {def.asOf && dateField('As of', to, setTo)}
         {def.month && <TextField size="small" type="number" label="Year" sx={{ width: 110 }} value={year} onChange={(e) => setYear(e.target.value)} />}
         {def.month && <TextField select size="small" label="Month" sx={{ width: 110 }} value={month} onChange={(e) => setMonth(e.target.value)}>{Array.from({ length: 12 }, (_, i) => <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>)}</TextField>}
       </Stack>
@@ -261,8 +265,24 @@ export function ReportsTab({ can }) {
       {r.data && (
         <>
           {r.data.title && <Typography fontWeight={700} sx={{ mb: 1 }}>{r.data.title}</Typography>}
+          {r.data.sandboxNotice && <Alert severity="warning" sx={{ mb: 2 }} data-testid="statement-sandbox-notice">{r.data.sandboxNotice}</Alert>}
           {r.data.note && <Alert severity="info" sx={{ mb: 2 }}>{r.data.note}</Alert>}
-          <Paper>
+          {def.statement && (
+            <Paper data-testid="financial-statement">
+              <Table size="small" aria-label={def.label}>
+                <TableHead><TableRow><TableCell>Account</TableCell><TableCell align="right">Amount</TableCell></TableRow></TableHead>
+                <TableBody>
+                  {(r.data.lines || []).map((line, i) => (
+                    <TableRow key={i} sx={line.kind === 'result' ? { '& td': { fontWeight: 700, borderTop: 2, borderColor: 'divider' } } : undefined}>
+                      <TableCell sx={{ pl: line.kind === 'account' ? 4 : 2, fontWeight: line.kind === 'account' ? 400 : 700 }}>{line.kind === 'account' && line.code ? `${line.code} ` : ''}{line.label}</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: line.kind === 'account' ? 400 : 700 }}>{line.kind === 'heading' ? '' : money(line.amount)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
+          )}
+          {!def.statement && <Paper>
             <Table size="small">
               <TableHead><TableRow>{def.cols.map(([k, label, right]) => <TableCell key={k} align={right ? 'right' : 'left'}>{label}</TableCell>)}</TableRow></TableHead>
               <TableBody>
@@ -270,7 +290,7 @@ export function ReportsTab({ can }) {
                 {rows.length === 0 && <TableRow><TableCell colSpan={def.cols.length}>Nothing to show for these choices.</TableCell></TableRow>}
               </TableBody>
             </Table>
-          </Paper>
+          </Paper>}
           {def.total && <Typography variant="body2" sx={{ mt: 1 }}>{def.total(r.data)}</Typography>}
           {name === 'inventory' && r.data.itemsThatDisagree?.filter((i) => !i.withinRounding).length > 0 && (
             <Alert severity="warning" sx={{ mt: 2 }}>{r.data.itemsThatDisagree.filter((i) => !i.withinRounding).length} item(s) disagree by more than rounding: {r.data.itemsThatDisagree.filter((i) => !i.withinRounding).slice(0, 8).map((i) => `${i.number} (${money(i.difference)})`).join(', ')}. See "Not posted" for the reason each is held.</Alert>

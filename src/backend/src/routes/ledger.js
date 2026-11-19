@@ -81,6 +81,8 @@ router.get('/status', handle('read the ledger status', async (req, res) => {
   const finance = LEDGER_READERS.includes(req.user.role);
   res.json({
     active: act.active, effectiveDate: act.effectiveDate, timeZone: act.timeZone, stopped: Boolean(act.effectiveDate) && !act.active,
+    // Books started as a demonstration say so to every reader, on every finance screen.
+    sandbox: act.sandbox === true, ...(act.sandbox === true && { sandboxNotice: 'SANDBOX: demonstration books. Not approved by an accountant. Not for tax, lending or any real decision.' }),
     ...(finance && { policiesApprovedBy: act.policiesApprovedBy || null, policiesApprovedOn: act.policiesApprovedOn || null, activatedAt: act.activatedAt || null, blockers: act.active ? [] : await ledger.activationBlockers(), openExceptions: (await reports.exceptions({ limit: 1 })).open }),
     can: { read: true, company: finance, change: FINANCE_ROLES.includes(req.user.role), activate: ACTIVATION_ROLES.includes(req.user.role) },
     message: act.active ? `Posting since ${act.effectiveDate}.` : act.effectiveDate ? 'Posting is stopped. What is posted stays.' : 'Not active. Nothing posts until an accountant has approved the chart of accounts and the accounting policies, and the books are started.',
@@ -105,6 +107,8 @@ const REPORTS = {
   inventory: (q, s) => reports.inventoryValuation(s),
   scrap: (q, s) => reports.scrap({ ...q, ...s }),
   monthly: (q, s) => reports.monthlyStatement({ ...q, ...s }),
+  'income-statement': (q, s) => reports.incomeStatement({ ...q, ...s }),
+  'balance-sheet': (q, s) => reports.balanceSheet({ ...q, ...s }),
   exceptions: (q) => reports.exceptions(q),
 };
 router.get('/reports/:name', handle('read the report', async (req, res) => {
@@ -174,6 +178,9 @@ router.get('/reconciliations/:id', reader, handle('read the reconciliation', asy
 // ── Cutover and activation ───────────────────────────────────────────────────────────────────
 router.post('/cutover/dry-run', finance, handle('run the cutover dry run', async (req, res) => { res.json(await cutover.dryRun(req.user.id)); }));
 router.post('/activate', activator, handle('activate the ledger', async (req, res) => { res.json(await cutover.activate(req.body || {}, req.user.id)); }));
+// Starts demonstration books in one step: the full proposed chart, every account and mapping recorded as approved by
+// nobody ("SANDBOX: ..."), a dry run, and the books opened today. It cannot be undone, so the caller types the phrase.
+router.post('/sandbox/start', activator, handle('start the sandbox books', async (req, res) => { res.json(await cutover.startSandbox(req.body || {}, req.user.id)); }));
 router.put('/settings', activator, handle('save the ledger setting', async (req, res) => { res.json(await ledger.saveSettings(req.body || {}, req.user.id)); }));
 router.post('/deactivate', activator, handle('stop posting', async (req, res) => { res.json(await ledger.deactivate(req.body?.reason, req.user.id)); }));
 router.post('/resume', activator, handle('start posting again', async (req, res) => { res.json(await cutover.resume(req.body?.reason, req.user.id)); }));

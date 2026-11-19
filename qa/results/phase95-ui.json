@@ -1,10 +1,10 @@
 {
-  "ranAt": "2026-11-19T02:12:31.725Z",
+  "ranAt": "2026-11-19T05:52:49.659Z",
   "app": "http://localhost:5199",
   "api": "http://localhost:3001",
   "passed": 13,
   "total": 13,
-  "checks": 69,
+  "checks": 67,
   "results": [
     {
       "id": 1,
@@ -27,7 +27,7 @@
           "detail": ""
         },
         {
-          "what": "it says this is a subledger, not a full set of accounts",
+          "what": "it says what posts by itself and what only a journal entry brings in",
           "ok": true,
           "detail": ""
         },
@@ -43,7 +43,7 @@
         }
       ],
       "crashed": "",
-      "ms": 3532
+      "ms": 3531
     },
     {
       "id": 2,
@@ -67,7 +67,7 @@
         }
       ],
       "crashed": "",
-      "ms": 6391
+      "ms": 6343
     },
     {
       "id": 3,
@@ -86,7 +86,7 @@
         }
       ],
       "crashed": "",
-      "ms": 6576
+      "ms": 6739
     },
     {
       "id": 4,
@@ -120,7 +120,7 @@
         }
       ],
       "crashed": "",
-      "ms": 2773
+      "ms": 2691
     },
     {
       "id": 5,
@@ -184,7 +184,7 @@
         }
       ],
       "crashed": "",
-      "ms": 8603
+      "ms": 8645
     },
     {
       "id": 6,
@@ -208,7 +208,7 @@
         }
       ],
       "crashed": "",
-      "ms": 3258
+      "ms": 3131
     },
     {
       "id": 7,
@@ -252,7 +252,7 @@
         }
       ],
       "crashed": "",
-      "ms": 4520
+      "ms": 4635
     },
     {
       "id": 8,
@@ -286,7 +286,7 @@
         }
       ],
       "crashed": "",
-      "ms": 2369
+      "ms": 2214
     },
     {
       "id": 9,
@@ -299,23 +299,13 @@
           "detail": ""
         },
         {
-          "what": "the closed month says Closed and offers Reopen, not Close",
-          "ok": true,
-          "detail": ""
-        },
-        {
-          "what": "Reopen is off until a reason is given",
-          "ok": true,
-          "detail": ""
-        },
-        {
-          "what": "the month is still closed",
+          "what": "no month is closed on this database",
           "ok": true,
           "detail": ""
         }
       ],
       "crashed": "",
-      "ms": 2267
+      "ms": 2065
     },
     {
       "id": 10,
@@ -364,7 +354,7 @@
         }
       ],
       "crashed": "",
-      "ms": 3498
+      "ms": 3790
     },
     {
       "id": 11,
@@ -398,7 +388,7 @@
         }
       ],
       "crashed": "",
-      "ms": 2945
+      "ms": 2969
     },
     {
       "id": 12,
@@ -442,7 +432,7 @@
         }
       ],
       "crashed": "",
-      "ms": 3149
+      "ms": 3571
     },
     {
       "id": 13,
@@ -466,7 +456,7 @@
         }
       ],
       "crashed": "",
-      "ms": 1663
+      "ms": 1748
     }
   ]
 }

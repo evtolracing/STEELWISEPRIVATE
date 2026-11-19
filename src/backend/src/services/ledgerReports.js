@@ -11,7 +11,7 @@
 import crypto from 'node:crypto';
 import { Prisma } from '@prisma/client';
 import prisma from '../lib/db.js';
-import { cents, ZERO, isoDay } from '../lib/ledgerRules.js';
+import { cents, ZERO, isoDay, sectionOf, SECTIONS } from '../lib/ledgerRules.js';
 import { LedgerError, activation, audit, record, movementKind } from './ledger.js';
 
 const refuse = (status, message, code) => { throw new LedgerError(status, message, code); };
@@ -246,6 +246,96 @@ export async function monthlyStatement({ year, month, branches = null } = {}) {
     year: y, month: m, from: first, to: last, period: period ? period.status : 'NO ENTRIES', accounts,
     summary: { netSales: money(sales), expensesInThisLedger: money(expenses), salesLessExpensesInThisLedger: money(sales.minus(expenses)), assets: money(total(['ASSET'])), liabilities: money(total(['LIABILITY'])), equityAccounts: money(total(['EQUITY'])) },
     note: 'A statement of this ledger for the month. It is not a profit and loss statement or a balance sheet: payroll, rent, supplier invoices, bank activity and everything else kept in the accounting system are not here.',
+  };
+}
+
+// ── Financial statements ─────────────────────────────────────────────────────────────────────
+
+/** Net balance of every account from posted entries in a range of days, on the account's own side. */
+async function balances({ from = null, to = null, branches = null }) {
+  const rows = await prisma.$queryRaw(S`
+    SELECT a."code", a."name", a."type", a."normalSide", COALESCE(SUM(l."debit" - l."credit"), 0)::text AS "net"
+      FROM "LedgerAccount" a LEFT JOIN ("JournalLine" l JOIN "JournalEntry" e ON e."id" = l."entryId" AND ${POSTED} AND ${between(from, to)}) ON l."accountId" = a."id" AND ${inBranches(branches)}
+     GROUP BY a."id" ORDER BY a."code"`);
+  return rows.map((r) => ({ code: r.code, name: r.name, type: r.type, normalSide: r.normalSide, section: sectionOf(r), net: cents(r.net) }));
+}
+const INCOME_TYPES = ['REVENUE', 'CONTRA_REVENUE', 'EXPENSE'];
+/** What the income and expense accounts add up to: credits less debits, so a profit is positive. */
+const earned = (rows) => rows.filter((r) => INCOME_TYPES.includes(r.type)).reduce((s, r) => s.minus(r.net), ZERO);
+const STATEMENT_NOTE = 'Made from posted entries of this ledger only. It is as complete as the entries are: payroll, rent, supplier invoices, bank activity, depreciation and tax are in it only where a finance person has posted them by journal entry.';
+const sandboxOf = async () => { const act = await activation(); return act.sandbox === true ? { sandbox: true, sandboxNotice: 'SANDBOX: demonstration books. Not approved by an accountant. Not for tax, lending or any real decision.' } : {}; };
+
+/**
+ * Income statement for a range of days: revenue, cost of goods sold, gross profit, operating expenses,
+ * operating income, other income and expense, income before tax, income tax and net income.
+ */
+export async function incomeStatement({ from, to, branches = null } = {}) {
+  const [f, t] = [day(from, 'from'), day(to, 'to')];
+  if (f && t && f > t) refuse(400, 'from is after to');
+  const rows = (await balances({ from: f, to: t, branches })).filter((r) => INCOME_TYPES.includes(r.type));
+  // Shown as people read it: revenue and other income positive when credit; costs positive when debit. A contra-revenue account reduces revenue.
+  const amount = (r) => (r.type === 'EXPENSE' || r.type === 'CONTRA_REVENUE' ? r.net : r.net.neg());
+  const section = (key) => {
+    const accounts = rows.filter((r) => r.section === key && !r.net.isZero()).map((r) => ({ code: r.code, name: r.name, type: r.type, amount: money(r.type === 'CONTRA_REVENUE' ? amount(r).neg() : amount(r)) }));
+    const total = accounts.reduce((s, a) => s.plus(a.amount), ZERO);
+    return { key, title: SECTIONS[key][1], accounts, total: money(total), value: total };
+  };
+  const s = Object.fromEntries(['REVENUE', 'COST_OF_SALES', 'OPERATING_EXPENSES', 'OTHER_INCOME', 'OTHER_EXPENSE', 'INCOME_TAX'].map((k) => [k, section(k)]));
+  const gross = s.REVENUE.value.minus(s.COST_OF_SALES.value); const operating = gross.minus(s.OPERATING_EXPENSES.value);
+  const beforeTax = operating.plus(s.OTHER_INCOME.value).minus(s.OTHER_EXPENSE.value); const net = beforeTax.minus(s.INCOME_TAX.value);
+  const check = earned(rows);
+  const lines = [];
+  const put = (sec) => { lines.push({ kind: 'heading', label: sec.title }); for (const a of sec.accounts) lines.push({ kind: 'account', code: a.code, label: a.name, amount: a.amount }); lines.push({ kind: 'total', label: `Total ${sec.title.toLowerCase()}`, amount: sec.total }); };
+  put(s.REVENUE); put(s.COST_OF_SALES); lines.push({ kind: 'result', label: 'Gross profit', amount: money(gross) });
+  put(s.OPERATING_EXPENSES); lines.push({ kind: 'result', label: 'Operating income', amount: money(operating) });
+  put(s.OTHER_INCOME); put(s.OTHER_EXPENSE); lines.push({ kind: 'result', label: 'Income before income tax', amount: money(beforeTax) });
+  put(s.INCOME_TAX); lines.push({ kind: 'result', label: 'Net income', amount: money(net) });
+  return {
+    from: f, to: t, lines,
+    sections: Object.values(s).map((sec) => ({ ...sec, value: undefined })),
+    summary: { netSales: s.REVENUE.total, costOfGoodsSold: s.COST_OF_SALES.total, grossProfit: money(gross), operatingExpenses: s.OPERATING_EXPENSES.total, operatingIncome: money(operating), otherIncome: s.OTHER_INCOME.total, otherExpense: s.OTHER_EXPENSE.total, incomeBeforeTax: money(beforeTax), incomeTax: s.INCOME_TAX.total, netIncome: money(net) },
+    // The sections must add up to what the accounts themselves say: credits less debits of every income and expense account.
+    agreesWithAccounts: net.equals(check),
+    scope: branches == null ? 'all branches' : 'your branches', note: STATEMENT_NOTE, ...(await sandboxOf()),
+  };
+}
+
+/**
+ * Balance sheet as of a day: assets, liabilities and equity. No year-end closing entry is made by this
+ * product, so earnings that have not been closed to Retained Earnings are worked out here and shown as
+ * two lines of equity: earlier years, and the year of the statement to date. Assets equal liabilities
+ * plus equity, or the statement says they do not.
+ */
+export async function balanceSheet({ asOf, branches = null } = {}) {
+  const t = day(asOf, 'asOf') || isoDay(new Date());
+  const yearStart = `${t.slice(0, 4)}-01-01`;
+  const dayBefore = isoDay(new Date(new Date(`${yearStart}T00:00:00Z`).getTime() - 86_400_000));
+  const [all, earlier] = await Promise.all([balances({ to: t, branches }), balances({ to: dayBefore, branches })]);
+  const amount = (r) => (r.type === 'ASSET' ? r.net : r.net.neg());
+  const section = (key) => {
+    const accounts = all.filter((r) => r.section === key && !r.net.isZero()).map((r) => ({ code: r.code, name: r.name, amount: money(amount(r)) }));
+    return { key, title: SECTIONS[key][1], accounts, value: accounts.reduce((s, a) => s.plus(a.amount), ZERO) };
+  };
+  const s = Object.fromEntries(['CURRENT_ASSETS', 'FIXED_ASSETS', 'OTHER_ASSETS', 'CURRENT_LIABILITIES', 'LONG_TERM_LIABILITIES', 'EQUITY'].map((k) => [k, section(k)]));
+  const earlierYears = earned(earlier); const thisYear = earned(all).minus(earlierYears);
+  if (!earlierYears.isZero()) s.EQUITY.accounts.push({ code: null, name: `Earnings of earlier years, not yet closed to Retained Earnings (through ${dayBefore})`, amount: money(earlierYears), computed: true });
+  s.EQUITY.accounts.push({ code: null, name: `Net income, ${yearStart} to ${t}`, amount: money(thisYear), computed: true });
+  s.EQUITY.value = s.EQUITY.value.plus(earlierYears).plus(thisYear);
+  const assets = s.CURRENT_ASSETS.value.plus(s.FIXED_ASSETS.value).plus(s.OTHER_ASSETS.value);
+  const liabilities = s.CURRENT_LIABILITIES.value.plus(s.LONG_TERM_LIABILITIES.value);
+  const lines = [];
+  const put = (sec) => { lines.push({ kind: 'heading', label: sec.title }); for (const a of sec.accounts) lines.push({ kind: 'account', code: a.code, label: a.name, amount: a.amount }); lines.push({ kind: 'total', label: `Total ${sec.title.toLowerCase()}`, amount: money(sec.value) }); };
+  put(s.CURRENT_ASSETS); put(s.FIXED_ASSETS); put(s.OTHER_ASSETS); lines.push({ kind: 'result', label: 'Total assets', amount: money(assets) });
+  put(s.CURRENT_LIABILITIES); put(s.LONG_TERM_LIABILITIES); lines.push({ kind: 'result', label: 'Total liabilities', amount: money(liabilities) });
+  put(s.EQUITY); lines.push({ kind: 'result', label: 'Total liabilities and equity', amount: money(liabilities.plus(s.EQUITY.value)) });
+  const difference = assets.minus(liabilities).minus(s.EQUITY.value);
+  return {
+    asOf: t, lines,
+    sections: Object.values(s).map(({ value, ...rest }) => ({ ...rest, total: money(value) })),
+    totals: { assets: money(assets), liabilities: money(liabilities), equity: money(s.EQUITY.value), liabilitiesAndEquity: money(liabilities.plus(s.EQUITY.value)), netIncomeThisYear: money(thisYear), earningsOfEarlierYears: money(earlierYears) },
+    balanced: difference.isZero(), difference: money(difference),
+    scope: branches == null ? 'all branches' : 'your branches',
+    note: `${STATEMENT_NOTE}${branches == null ? '' : ' Limited to lines of your branches: a branch view need not balance, because the other side of an entry can sit at another branch.'}`, ...(await sandboxOf()),
   };
 }
 

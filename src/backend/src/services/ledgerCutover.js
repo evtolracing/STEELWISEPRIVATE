@@ -15,8 +15,8 @@
  */
 import { Prisma } from '@prisma/client';
 import prisma from '../lib/db.js';
-import { cents, valueOf, usableCost, dayIn, isoDay, isTimeZone, RULE_VERSION, ZERO } from '../lib/ledgerRules.js';
-import { LedgerError, ACTIVATION_KEY, activation, activationBlockers, accountsByKey, writeEntry, ownerOf, record, audit } from './ledger.js';
+import { cents, valueOf, usableCost, dayIn, isoDay, isTimeZone, RULE_VERSION, ZERO, SANDBOX_APPROVER } from '../lib/ledgerRules.js';
+import { LedgerError, ACTIVATION_KEY, activation, activationBlockers, accountsByKey, writeEntry, ownerOf, record, audit, loadProposedChart, approve } from './ledger.js';
 
 const refuse = (status, message, code) => { throw new LedgerError(status, message, code); };
 const CHUNK = 400;
@@ -120,8 +120,10 @@ async function postOpening(tx, { lines, date, locationId, memo, userId, accounts
  *   timeZone                                 the zone the books' days are counted in
  *   throughWip                               show work orders passing through Work in Progress
  */
-export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunId, timeZone, throughWip = false }, userId) {
+export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunId, timeZone, throughWip = false }, userId, { sandbox = false } = {}) {
   const who = String(policiesApprovedBy || '').trim();
+  // Only the sandbox start may use the sandbox name: real books cannot be opened under it by the ordinary path, and sandbox books are always marked.
+  if (!sandbox && /^\s*sandbox/i.test(who)) refuse(400, 'That name is kept for demonstration books. Give the name of the accountant who approved the accounting policies');
   if (who.length < 3) refuse(400, 'Give the name of the accountant who approved the accounting policies');
   const on = policiesApprovedOn ? new Date(policiesApprovedOn) : null;
   if (!on || Number.isNaN(on.getTime()) || on.getTime() > Date.now() + 86_400_000) refuse(400, 'Give the date the accounting policies were approved');
@@ -143,6 +145,7 @@ export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunI
     const value = {
       active: true, effectiveDate: isoDay(today), timeZone, policiesApprovedBy: who, policiesApprovedOn: isoDay(on), throughWip: throughWip === true,
       activatedById: userId || null, activatedAt: new Date().toISOString(), ruleVersion: RULE_VERSION, dryRunId: dry.id,
+      ...(sandbox && { sandbox: true }),
     };
     await tx.appSetting.upsert({ where: { key: ACTIVATION_KEY }, create: { key: ACTIVATION_KEY, value }, update: { value } });
 
@@ -169,6 +172,29 @@ export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunI
     await audit(tx, { eventType: 'LEDGER_ACTIVATED', userId, resourceType: 'Ledger', resourceId: 'activation', details: result });
     return result;
   }, { isolationLevel: 'Serializable', timeout: 600_000, maxWait: 30_000 });
+}
+
+export const SANDBOX_PHRASE = 'START SANDBOX BOOKS';
+/**
+ * Starts demonstration books (owner's instruction of 2026-11-18). One step does what the real path needs an
+ * accountant for: it loads the full proposed chart, records every account and mapping as approved under the
+ * sandbox name, runs the dry run and opens the books today from the records as they are.
+ *   - The books are marked `sandbox` for good: the status, the statements and every finance screen say so.
+ *   - It is refused on books that were ever started, real or sandbox: a started ledger is never restarted.
+ *   - It cannot be undone (posted entries are never deleted), so the caller sends the phrase.
+ */
+export async function startSandbox({ confirm, timeZone = 'America/Detroit', throughWip = false } = {}, userId) {
+  if (confirm !== SANDBOX_PHRASE) refuse(400, `This starts demonstration books and cannot be undone. Send confirm: "${SANDBOX_PHRASE}".`);
+  if (!isTimeZone(timeZone)) refuse(400, 'Give the time zone the books are kept in, for example America/Detroit');
+  const now = await activation();
+  if (now.effectiveDate) refuse(409, now.sandbox ? 'The sandbox books are already started.' : `The books were started on ${now.effectiveDate}. Books that were started are never turned into sandbox books.`, 'ALREADY_STARTED');
+  const loaded = await loadProposedChart(prisma, userId);
+  const approved = await approve({ accounts: 'ALL', mappings: 'ALL', approvedBy: SANDBOX_APPROVER }, userId).catch((e) => { if (e instanceof LedgerError && e.status === 409) return { accountsApproved: 0, mappingsApproved: 0 }; throw e; });
+  const dry = await dryRun(userId);
+  if (dry.blockers.length) refuse(409, `The sandbox books cannot be started yet. ${dry.blockers.join(' ')}`, 'NOT_APPROVED');
+  const started = await activate({ policiesApprovedBy: SANDBOX_APPROVER, policiesApprovedOn: new Date().toISOString(), dryRunId: dry.dryRunId, timeZone, throughWip }, userId, { sandbox: true });
+  await audit(prisma, { eventType: 'LEDGER_SANDBOX_STARTED', userId, resourceType: 'Ledger', resourceId: 'activation', details: { chart: loaded, approved, effectiveDate: started.effectiveDate } });
+  return { ...started, chart: loaded, approved, notice: 'SANDBOX: demonstration books. Not approved by an accountant. Not for tax, lending or any real decision.' };
 }
 
 /** Starts posting again after it was stopped. The cutover date does not move; what happened in between is found by the reconciliation ("not recorded") and posted from there. */

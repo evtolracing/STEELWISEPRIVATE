@@ -16,7 +16,7 @@ import { randomUUID } from 'node:crypto';
 import prisma from '../lib/db.js';
 import { acrossBranches } from '../lib/branchScope.js';
 import {
-  ACCOUNT_TYPES, RULE_VERSION, PROPOSED_ACCOUNTS, PROPOSED_MAPPING, LedgerRuleError, normalSideOf, cents, totals, periodOf, dayOf, dayIn, isoDay, reversedLines, ZERO,
+  ACCOUNT_TYPES, RULE_VERSION, PROPOSED_ACCOUNTS, PROPOSED_MAPPING, LedgerRuleError, normalSideOf, proposedSideOf, cents, totals, periodOf, dayOf, dayIn, isoDay, reversedLines, ZERO,
   invoiceIssued, creditIssued, paymentReceived, refundPaid, stockReceived, stockShipped, returnRestocked, stockScrapped, stockAdjusted,
   pieceCut, workOrderCompleted, transferShipped, transferReceived, costChanged, manualLines,
 } from '../lib/ledgerRules.js';
@@ -46,7 +46,7 @@ export async function loadProposedChart(db = prisma, userId = null) {
   for (const a of PROPOSED_ACCOUNTS) {
     const found = await db.ledgerAccount.findUnique({ where: { code: a.code }, select: { id: true } });
     if (found) continue;
-    await db.ledgerAccount.create({ data: { code: a.code, name: a.name, type: a.type, normalSide: normalSideOf(a.type), isControl: a.control, description: a.description } });
+    await db.ledgerAccount.create({ data: { code: a.code, name: a.name, type: a.type, normalSide: proposedSideOf(a), isControl: a.control, description: a.description } });
     accounts += 1;
   }
   for (const [key, [accountCode, description]] of Object.entries(PROPOSED_MAPPING)) {
@@ -651,7 +651,8 @@ export async function saveAccount({ code, name, type, description, isActive, isC
     if (!ACCOUNT_TYPES.includes(kind)) refuse(400, `type must be one of: ${ACCOUNT_TYPES.join(', ')}`);
     if (found && kind !== found.type && await tx.journalLine.count({ where: { accountId: found.id } })) refuse(409, 'This account has entries. Its type cannot change; open a new account instead.');
     if (found && isActive === false && await tx.ledgerMapping.count({ where: { accountCode: c } })) refuse(409, 'A posting rule is mapped to this account. Map the rule to another account first.');
-    const data = { name: title, type: kind, normalSide: normalSideOf(kind), description: description === undefined ? found?.description ?? null : String(description || '').slice(0, 500) || null, isActive: isActive === undefined ? found?.isActive ?? true : isActive === true, isControl: isControl === undefined ? found?.isControl ?? false : isControl === true };
+    // A contra account (accumulated depreciation, an allowance) keeps its side while its type stays the same.
+    const data = { name: title, type: kind, normalSide: found && found.type === kind ? found.normalSide : normalSideOf(kind), description: description === undefined ? found?.description ?? null : String(description || '').slice(0, 500) || null, isActive: isActive === undefined ? found?.isActive ?? true : isActive === true, isControl: isControl === undefined ? found?.isControl ?? false : isControl === true };
     const unchanged = found && ['name', 'type', 'description', 'isActive', 'isControl'].every((k) => found[k] === data[k]);
     if (unchanged) return found;
     const saved = found ? await tx.ledgerAccount.update({ where: { code: c }, data: { ...data, approvedAt: null, approvedBy: null } }) : await tx.ledgerAccount.create({ data: { code: c, ...data } });

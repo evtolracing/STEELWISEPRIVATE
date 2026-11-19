@@ -70,7 +70,8 @@ export default async function money(ctx, state) {
     const chart = (await cfo.get('/api/ledger/chart')).body;
     const acct = chart.accounts.find((a) => a.code === '1000');
     ok('the account is named a clearing account', /Clearing/i.test(acct.name), acct.name);
-    ok('there is no bank account in the proposed chart', !chart.accounts.some((a) => /\bbank\b/i.test(a.name)));
+    // The full chart has bank accounts (1010, 1020) for journal entries. No posting rule is mapped to one, so a recorded payment cannot land there.
+    ok('no posting rule is mapped to a bank account', !chart.mappings.some((m) => chart.accounts.some((a) => a.code === m.accountCode && /\bbank\b/i.test(a.name))));
     const { entry } = await posted('PAYMENT_RECORDED', 'Payment', (await lastPayment(r.invoice.id)).id);
     ok('the card payment went to the clearing account', near(ctx.nets(entry)['1000'], 100) && /CARD/.test(entry.memo));
     const rec = (await cfo.post('/api/ledger/reconciliations')).body.checks.find((c) => c.key === 'PAYMENTS');

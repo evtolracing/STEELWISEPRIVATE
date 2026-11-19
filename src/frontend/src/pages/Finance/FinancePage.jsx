@@ -83,11 +83,12 @@ export default function FinancePage() {
     <Box sx={{ p: 3 }}>
       <Typography component="h1" variant="h5" fontWeight={700}>Finance</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        The ledger kept from invoices, payments, stock and work orders. It is a subledger for your accountant, not a full set of accounts: payroll, rent, supplier bills and the bank are not here.
+        The ledger kept from invoices, payments, stock and work orders. Invoices, payments, stock and work orders post by themselves. Payroll, rent, supplier bills and bank activity are in it only where a finance person posts them by journal entry, so have your accountant review it before relying on it.
       </Typography>
       <Notices load={status} />
       {status.data && (
         <>
+          {status.data.sandbox && <Alert severity="warning" variant="filled" sx={{ mb: 2 }} data-testid="ledger-sandbox-banner">{status.data.sandboxNotice}</Alert>}
           <Tabs value={tab} onChange={(e, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}>
             {tabs.map(([key, label]) => <Tab key={key} value={key} label={label} />)}
           </Tabs>

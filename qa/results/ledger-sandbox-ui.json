@@ -1,0 +1,185 @@
+{
+  "ranAt": "2026-11-19T05:51:55.204Z",
+  "app": "http://localhost:5199",
+  "api": "http://localhost:3001",
+  "passed": 5,
+  "total": 5,
+  "checks": 27,
+  "results": [
+    {
+      "id": 1,
+      "name": "The Finance screen says on every tab that these are sandbox books",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the banner shows on the overview",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it says sandbox and that no accountant approved the books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the banner still shows on the Reports tab",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error and no server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    },
+    {
+      "id": 2,
+      "name": "The income statement on screen matches the server and carries the sandbox notice",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the statement shows",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the sandbox notice shows above it",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Total revenue\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Gross profit\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Operating income\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Net income\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "net income on screen is the server figure",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the server says the sections add up to the accounts",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error and no server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    },
+    {
+      "id": 3,
+      "name": "The balance sheet on screen balances and matches the server",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the statement shows",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Total assets\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Total liabilities\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it has the line \"Total equity\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the server says it balances",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "total assets on screen is the server figure",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the screen says assets equal liabilities and equity",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error and no server error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    },
+    {
+      "id": 4,
+      "name": "An administrator who may not start books is not offered the sandbox start",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the server says an administrator may not start or stop the books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the banner shows for the administrator too",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no sandbox start panel",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "there is no button to start sandbox books",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    },
+    {
+      "id": 5,
+      "name": "On a phone the statement has no sideways scroll of the page",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the page is no wider than the screen",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the statement shows",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    }
+  ]
+}

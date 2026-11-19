@@ -282,6 +282,15 @@ export default function HelpAccordion({
         </Box>
       </Box>
 
+      {/* A chapter about design samples says so before anything else (Phase 12, AA-006). */}
+      {(module.sample || module.sampleRoutes?.length > 0) && (
+        <Alert severity="warning" sx={{ mb: 2 }} data-testid="manual-sample-notice">
+          {module.sample
+            ? 'The screens in this chapter are design samples. They open and show example data, but nothing you enter is saved and none of the figures are your company\'s. Do not use them for real work.'
+            : `Some screens in this chapter are design samples with example data, not your company's records: ${module.sampleRoutes.join(', ')}. Nothing entered on them is saved.`}
+        </Alert>
+      )}
+
       <Divider sx={{ mb: 2 }} />
 
       {/* Section accordions */}

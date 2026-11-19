@@ -1,0 +1,145 @@
+{
+ "ranAt": "2026-11-19T00:41:39.398Z",
+ "checks": 23,
+ "failed": 0,
+ "results": [
+  {
+   "finding": "M-013",
+   "what": "/api/jobs with no database does not answer 200",
+   "ok": true,
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"3068677c-29e5-4f68-a89a-aeec454c563b\"}"
+  },
+  {
+   "finding": "M-013",
+   "what": "/api/jobs with no database carries no invented record",
+   "ok": true,
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"3068677c-29e5-4f68-a89a-aeec454c563b\"}"
+  },
+  {
+   "finding": "M-013",
+   "what": "/api/jobs with no database answers 503 (or 401 where sign-in itself needs the database)",
+   "ok": true,
+   "detail": "503"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard with no database does not answer 200",
+   "ok": true,
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"185334b9-279e-4b2d-b6a1-72bef9c7761a\"}"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard with no database carries no invented record",
+   "ok": true,
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"185334b9-279e-4b2d-b6a1-72bef9c7761a\"}"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard with no database answers 503 (or 401 where sign-in itself needs the database)",
+   "ok": true,
+   "detail": "503"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard/kpis with no database does not answer 200",
+   "ok": true,
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"350f7f70-3f88-4734-8ef6-1ab981233dc6\"}"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard/kpis with no database carries no invented record",
+   "ok": true,
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"350f7f70-3f88-4734-8ef6-1ab981233dc6\"}"
+  },
+  {
+   "finding": "AA-001",
+   "what": "/api/dashboard/kpis with no database answers 503 (or 401 where sign-in itself needs the database)",
+   "ok": true,
+   "detail": "503"
+  },
+  {
+   "finding": "M-013",
+   "what": "the readiness check says the server is not ready",
+   "ok": true,
+   "detail": "503"
+  },
+  {
+   "finding": "E-010",
+   "what": "the server starts on the QA database",
+   "ok": true,
+   "detail": "⚠️  No AI providers configured. Add DEEPSEEK_API_KEY to .env or Supabase secrets\n⚠️  No AI providers configured. Add DEEPSEEK_API_KEY to .env or Supabase secrets\n🚀 SteelWise API running on port 3392\n"
+  },
+  {
+   "finding": "E-010",
+   "what": "it holds database connections while it runs",
+   "ok": true,
+   "detail": "1"
+  },
+  {
+   "finding": "E-010",
+   "what": "requests in flight when the stop arrived were answered, not cut off",
+   "ok": true,
+   "detail": "401,401,401,401"
+  },
+  {
+   "finding": "E-010",
+   "what": "a request that arrives after the stop is not accepted",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "finding": "E-010",
+   "what": "it exits by itself with code 0",
+   "ok": true,
+   "detail": "code 0 signal null"
+  },
+  {
+   "finding": "E-010",
+   "what": "within 5 seconds",
+   "ok": true,
+   "detail": "692 ms"
+  },
+  {
+   "finding": "E-010",
+   "what": "it says so in its log",
+   "ok": true,
+   "detail": "\":\"warn\",\"msg\":\"request\",\"id\":\"7ace620b-3d61-41df-8725-b34995fd97d9\",\"method\":\"POST\",\"path\":\"/api/auth/login\",\"status\":401,\"ms\":1068,\"slow\":true}\nServer closed\n"
+  },
+  {
+   "finding": "E-010",
+   "what": "its database connections are closed",
+   "ok": true,
+   "detail": "1 before, 0 after"
+  },
+  {
+   "finding": "E-010",
+   "what": "it no longer accepts requests",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "finding": "SC-07",
+   "what": "a production server starts on the QA database",
+   "ok": true,
+   "detail": "⚠️  No AI providers configured. Add DEEPSEEK_API_KEY to .env or Supabase secrets\n⚠️  No AI providers configured. Add DEEPSEEK_API_KEY to .env or Supabase secrets\n🚀 SteelWise API running on port 3393\n"
+  },
+  {
+   "finding": "SC-07",
+   "what": "in production, with no list of allowed websites, another website is given no permission to read answers",
+   "ok": true,
+   "detail": "null"
+  },
+  {
+   "finding": "SC-07",
+   "what": "with a list, a website not on it is given no permission",
+   "ok": true,
+   "detail": "null"
+  },
+  {
+   "finding": "SC-07",
+   "what": "and the listed website is",
+   "ok": true,
+   "detail": "https://app.example"
+  }
+ ]
+}

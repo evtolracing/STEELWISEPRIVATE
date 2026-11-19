@@ -1,0 +1,138 @@
+{
+ "ranAt": "2026-11-19T00:49:06.318Z",
+ "mutations": 12,
+ "held": 12,
+ "results": [
+  {
+   "id": "AA-001",
+   "what": "with no database a signed-in request is answered 503, not a server error or invented figures",
+   "kind": "process",
+   "held": true,
+   "check": "/api/dashboard with no database answers 503",
+   "failed": [
+    "✗ M-013: /api/jobs with no database answers 503 (or 401 where sign-in itself needs the database) (500)",
+    "✗ AA-001: /api/dashboard with no database answers 503 (or 401 where sign-in itself needs the database) (500)",
+    "✗ AA-001: /api/dashboard/kpis with no database answers 503 (or 401 where sign-in itself needs the database) (500)"
+   ]
+  },
+  {
+   "id": "AA-002a",
+   "what": "the executive question route gives no invented analysis",
+   "kind": "sim",
+   "held": true,
+   "check": "no figure is invented by the server",
+   "failed": [
+    "✗ [AI assistants] AI 5: no figure is invented by the server",
+    "✗ Phase 12 certification: 0 of 1 pass, 5 checks; AI assistants 0/1"
+   ]
+  },
+  {
+   "id": "AA-002b",
+   "what": "every answer of the sample cockpit says it is sample data",
+   "kind": "sim",
+   "held": true,
+   "check": "sample screen's data is labelled as sample",
+   "failed": [
+    "✗ [Dashboards and reports agree with the records] Dashboard 7: a sample screen's data is labelled as sample, and no real screen is fed invented figures",
+    "✗ Phase 12 certification: 0 of 1 pass, 2 checks; Dashboards and reports agree with the records 0/1"
+   ]
+  },
+  {
+   "id": "AA-003u",
+   "what": "a message that claims to be the system or a tool is refused",
+   "kind": "unit",
+   "held": true,
+   "check": "AA-003: a message that claims to be the system",
+   "failed": [
+    "not ok 2 - AA-003: a message that claims to be the system, a developer or a tool is refused"
+   ]
+  },
+  {
+   "id": "AA-003s",
+   "what": "a forged system or tool message never reaches the model",
+   "kind": "sim",
+   "held": true,
+   "check": "makes the assistant change a record",
+   "failed": [
+    "✗ [AI assistants] AI 4: no message, however it is written, makes the assistant change a record",
+    "✗ Phase 12 certification: 0 of 1 pass, 6 checks; AI assistants 0/1"
+   ]
+  },
+  {
+   "id": "AA-003c",
+   "what": "the length of a message is capped",
+   "kind": "unit",
+   "held": true,
+   "check": "AA-003",
+   "failed": [
+    "not ok 4 - AA-003: length and count are capped"
+   ]
+  },
+  {
+   "id": "AA-004",
+   "what": "a question to the assistant leaves a line in the audit trail",
+   "kind": "sim",
+   "held": true,
+   "check": "use of the assistant is in the audit trail",
+   "failed": [
+    "✗ [AI assistants] AI 6: use of the assistant is in the audit trail, without the text of the question",
+    "✗ Phase 12 certification: 0 of 1 pass, 2 checks; AI assistants 0/1"
+   ]
+  },
+  {
+   "id": "AA-004s",
+   "what": "a failed stream tells the person it failed without the outside service's own message",
+   "kind": "sim",
+   "held": true,
+   "check": "the streaming assistant obeys the same rules",
+   "failed": [
+    "✗ [AI assistants] AI 8: the streaming assistant obeys the same rules",
+    "✗ Phase 12 certification: 0 of 1 pass, 5 checks; AI assistants 0/1"
+   ]
+  },
+  {
+   "id": "AA-005",
+   "what": "a zero byte in an address is the caller's error, not a server error",
+   "kind": "sim",
+   "held": true,
+   "check": "Bad input is the caller's error",
+   "failed": [
+    "✗ [Security and access revalidation] Security 7: API. Bad input is the caller's error and carries no internals",
+    "✗ Phase 12 certification: 0 of 1 pass, 11 checks; Security and access revalidation 0/1"
+   ]
+  },
+  {
+   "id": "AA-006a",
+   "what": "a chapter of sample screens is flagged as a sample",
+   "kind": "manual",
+   "held": true,
+   "check": "safety-ehs: all its screens are samples",
+   "failed": [
+    "✗ safety-ehs: all its screens are samples, so the chapter is flagged as a sample: 9 sample screens"
+   ]
+  },
+  {
+   "id": "AA-006b",
+   "what": "the manual page shows the notice",
+   "kind": "manual",
+   "held": true,
+   "check": "the manual page shows a notice",
+   "failed": [
+    "✗ the manual page shows a notice above a sample chapter: "
+   ]
+  },
+  {
+   "id": "AA-006c",
+   "what": "the real screens have chapters",
+   "kind": "manual",
+   "held": true,
+   "check": "every real screen on the menu has a chapter",
+   "failed": [
+    "✗ every real screen on the menu has a chapter: work-orders, qc, finance, transfers, purchase-orders, material-tracking, material-tracking/packaging, material-tracking/packages, material-tracking/tags, material-tracking/s",
+    "✗ required chapter present: finance-ledger: ",
+    "✗ required chapter present: purchasing: ",
+    "✗ required chapter present: transfers: "
+   ]
+  }
+ ]
+}

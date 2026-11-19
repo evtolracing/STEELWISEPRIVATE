@@ -1,0 +1,4806 @@
+{
+ "at": "2026-11-19T00:52:02.828Z",
+ "base": "http://localhost:3110",
+ "scenarios": 68,
+ "passed": 68,
+ "checks": 600,
+ "groups": {
+  "Cross-module workflows end to end": {
+   "scenarios": 10,
+   "passed": 10,
+   "checks": 234
+  },
+  "Financial ledger certification": {
+   "scenarios": 16,
+   "passed": 16,
+   "checks": 97
+  },
+  "Financial and inventory reconciliation": {
+   "scenarios": 6,
+   "passed": 6,
+   "checks": 27
+  },
+  "Dashboards and reports agree with the records": {
+   "scenarios": 7,
+   "passed": 7,
+   "checks": 28
+  },
+  "AI assistants": {
+   "scenarios": 9,
+   "passed": 9,
+   "checks": 57
+  },
+  "Security and access revalidation": {
+   "scenarios": 11,
+   "passed": 11,
+   "checks": 112
+  },
+  "Multi-location readiness": {
+   "scenarios": 6,
+   "passed": 6,
+   "checks": 33
+  },
+  "Evidence gaps closed": {
+   "scenarios": 3,
+   "passed": 3,
+   "checks": 12
+  }
+ },
+ "results": [
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 1: a new customer is quoted, orders, is shipped, invoiced and pays, and the books agree",
+   "asserts": [
+    {
+     "what": "the customer account is created",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the request for quote is saved for the customer",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the quote is priced from the request",
+     "ok": true,
+     "measured": "201 2400 vs 2400 "
+    },
+    {
+     "what": "an operator cannot accept a quote",
+     "ok": true,
+     "measured": "403 Orders, quotes, customers and invoices can only be changed by sales staff or a manager. Your role (OPERATOR_SAW) can view them."
+    },
+    {
+     "what": "the quote is sent",
+     "ok": true,
+     "measured": "200 Quote marked as sent. Nothing is emailed from here: send the customer the quote yourself."
+    },
+    {
+     "what": "accepting the quote makes one order",
+     "ok": true,
+     "measured": "201 Quote accepted and order created"
+    },
+    {
+     "what": "accepting it a second time makes no second order",
+     "ok": true,
+     "measured": "409"
+    },
+    {
+     "what": "one order for the quote in the database",
+     "ok": true
+    },
+    {
+     "what": "the order carries the quote's price and the branch",
+     "ok": true,
+     "measured": "2400 vs 2400; branch true"
+    },
+    {
+     "what": "stock is reserved for the line",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the reservation holds the pounds and leaves the stock on hand",
+     "ok": true,
+     "measured": "allocated 0→1200, available 4000→2800"
+    },
+    {
+     "what": "the shipment is put together",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the shipment is dispatched and names its invoice",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the stock on hand fell by the pounds shipped and the reservation was used up",
+     "ok": true,
+     "measured": "on hand 4000→2800, allocated 0"
+    },
+    {
+     "what": "one SHIP movement records it",
+     "ok": true,
+     "measured": "{\"q\":\"1200\"}"
+    },
+    {
+     "what": "the invoice is posted once and its entry balances",
+     "ok": true,
+     "measured": "POSTED {\"1100\":2400,\"4000\":-2400}"
+    },
+    {
+     "what": "receivables rise by the invoice total and revenue by its subtotal",
+     "ok": true,
+     "measured": "1100 2400 vs 2400; 4000 -2400 vs 2400"
+    },
+    {
+     "what": "cost of goods at the item's cost: an entry was posted",
+     "ok": true,
+     "measured": "POSTED"
+    },
+    {
+     "what": "cost of goods at the item's cost: debits equal credits",
+     "ok": true,
+     "measured": "1140 vs 1140, header 1140"
+    },
+    {
+     "what": "cost of goods at the item's cost: account 1200 moves by -1140",
+     "ok": true,
+     "measured": "got -1140; entry {\"1200\":-1140,\"5000\":1140}"
+    },
+    {
+     "what": "cost of goods at the item's cost: account 5000 moves by 1140",
+     "ok": true,
+     "measured": "got 1140; entry {\"1200\":-1140,\"5000\":1140}"
+    },
+    {
+     "what": "cost of goods at the item's cost: no other account is touched",
+     "ok": true,
+     "measured": "also "
+    },
+    {
+     "what": "the invoice is for the order and the customer, at the quoted price",
+     "ok": true,
+     "measured": "2400 vs 2400"
+    },
+    {
+     "what": "the delivery is confirmed with a proof of delivery",
+     "ok": true,
+     "measured": "200 DELIVERED"
+    },
+    {
+     "what": "a payment larger than the invoice is refused",
+     "ok": true,
+     "measured": "409 Only 2400.00 is still owed on this invoice"
+    },
+    {
+     "what": "the payment is taken",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the invoice shows it",
+     "ok": true,
+     "measured": "PAID 2400/2400"
+    },
+    {
+     "what": "the payment is posted once: receivables down by the amount, the entry balances",
+     "ok": true,
+     "measured": "POSTED {\"1000\":2400,\"1100\":-2400}"
+    },
+    {
+     "what": "the order is complete",
+     "ok": true,
+     "measured": "COMPLETE"
+    },
+    {
+     "what": "the customer owes nothing on the receivables report",
+     "ok": true,
+     "measured": "\"not listed\""
+    },
+    {
+     "what": "the trail is in the audit log",
+     "ok": true,
+     "measured": "6"
+    },
+    {
+     "what": "after the sale: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the sale: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the sale: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the sale: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the sale: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 834,
+   "record": {
+    "workflowId": "WF-01",
+    "purpose": "Sell stock material to a new account from request to cash",
+    "startingEvent": "A new customer asks for a price",
+    "responsibleRole": "CSR, estimator, inventory manager, shipping coordinator",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Customers; Sales and Quoting; Orders; Shipping; Invoices",
+    "apiPath": "POST /api/customers, /api/rfqs, /api/rfqs/:id/quotes, /api/quotes/:id/send, /api/quotes/:id/accept, /api/orders/:id/allocate, /api/shipments, PUT /api/shipments/:id/dispatch and /deliver, POST /api/invoices/:id/payments",
+    "databaseChanges": "Organization, RFQ, Quote, Order, OrderLine, Inventory, Shipment, MaterialMovement, Invoice, Payment, LedgerEvent, JournalEntry",
+    "eventsAndIntegrations": "INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECEIVED ledger events",
+    "financialConsequences": "receivables and revenue at dispatch; cost of goods at the item's cost; cash at payment",
+    "expectedFinalState": "order shipped, shipment delivered, invoice paid, receivable zero, books reconciled",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 36 checks",
+    "actual": "as expected (36 checks)",
+    "observations": [
+     "final order status COMPLETE"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 2: a quoted job is made on the floor, inspected, shipped and invoiced; it cannot leave before it passes",
+   "asserts": [
+    {
+     "what": "the request for quote is saved for the customer",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the quote is priced from the request",
+     "ok": true,
+     "measured": "201 1162.5 vs 1162.5 "
+    },
+    {
+     "what": "an operator cannot accept a quote",
+     "ok": true,
+     "measured": "403 Orders, quotes, customers and invoices can only be changed by sales staff or a manager. Your role (OPERATOR_SAW) can view them."
+    },
+    {
+     "what": "the quote is sent",
+     "ok": true,
+     "measured": "200 Quote marked as sent. Nothing is emailed from here: send the customer the quote yourself."
+    },
+    {
+     "what": "accepting the quote makes one order",
+     "ok": true,
+     "measured": "201 Quote accepted and order created"
+    },
+    {
+     "what": "accepting it a second time makes no second order",
+     "ok": true,
+     "measured": "409"
+    },
+    {
+     "what": "one order for the quote in the database",
+     "ok": true
+    },
+    {
+     "what": "the order carries the quote's price and the branch",
+     "ok": true,
+     "measured": "1162.5 vs 1162.5; branch true"
+    },
+    {
+     "what": "the material is reserved for the order",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the job is opened for the order line",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the job is routed in two steps",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "step \"Saw to length\" is started and finished by the operator",
+     "ok": true,
+     "measured": "200 200  "
+    },
+    {
+     "what": "step \"Deburr and stack\" is started and finished by the operator",
+     "ok": true,
+     "measured": "200 200  "
+    },
+    {
+     "what": "time on each step is recorded against a person",
+     "ok": true,
+     "measured": "2"
+    },
+    {
+     "what": "the dock cannot mark the job ready to ship before inspection",
+     "ok": true,
+     "measured": "409 This job is waiting for inspection. Record the inspection result in Quality; a pass moves it to packaging."
+    },
+    {
+     "what": "a shipment of the uninspected job cannot be dispatched",
+     "ok": true,
+     "measured": "shipment 201, dispatch 409 This shipment cannot go out yet: JOB-00631 (waiting qc) is not finished. Finish or cancel the job first."
+    },
+    {
+     "what": "nothing left the building",
+     "ok": true
+    },
+    {
+     "what": "the inspection is opened",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "a failed inspection is recorded",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a job that failed inspection cannot be staged",
+     "ok": true,
+     "measured": "409 Inspection INS-00353 failed. This job needs a passed inspection before it can move on: send it to inspection again once the work is corrected."
+    },
+    {
+     "what": "the rework step \"Rework (INS-00353)\" is run",
+     "ok": true,
+     "measured": "200 200  "
+    },
+    {
+     "what": "a new inspection is opened after the rework",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the new inspection passes",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "both inspections are kept: the failure is not overwritten",
+     "ok": true,
+     "measured": "2"
+    },
+    {
+     "what": "now the dock stages it",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the shipment made earlier is still waiting on the dock",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "the inspected job is dispatched and billed",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the stock fell once by the pounds shipped",
+     "ok": true,
+     "measured": "6000→4500"
+    },
+    {
+     "what": "the delivery is confirmed with a proof of delivery",
+     "ok": true,
+     "measured": "200 DELIVERED"
+    },
+    {
+     "what": "a payment larger than the invoice is refused",
+     "ok": true,
+     "measured": "409 Only 1162.50 is still owed on this invoice"
+    },
+    {
+     "what": "the payment is taken",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the invoice shows it",
+     "ok": true,
+     "measured": "PAID 1162.5/1162.5"
+    },
+    {
+     "what": "the payment is posted once: receivables down by the amount, the entry balances",
+     "ok": true,
+     "measured": "POSTED {\"1000\":1162.5,\"1100\":-1162.5}"
+    },
+    {
+     "what": "the manager reads the job cost: material at the item's actual cost, and nothing assumed",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a sales representative is not shown cost",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "the job is closed",
+     "ok": true,
+     "measured": "SHIPPED"
+    },
+    {
+     "what": "after the processed sale: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the processed sale: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the processed sale: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the processed sale: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the processed sale: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 1489,
+   "record": {
+    "workflowId": "WF-02",
+    "purpose": "Sell processed material: quote, production, quality release, shipment, invoice",
+    "startingEvent": "A customer accepts a quote for cut-to-size material",
+    "responsibleRole": "Estimator, CSR, scheduler, operator, QC inspector, shipping coordinator, branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Sales and Quoting; Scheduling; Shop Floor; QC Inspections; Shipping",
+    "apiPath": "POST /api/jobs, /api/jobs/:id/plan, /api/v1/operations/:id/start and /complete, /api/qc/inspections, /api/qc/inspections/:id/pass, POST /api/jobs/:id/status, shipments and invoices as flow 1, GET /api/orders/:id/cost",
+    "databaseChanges": "Job, DispatchJob, DispatchOperation, DispatchTimeLog, JobInspection and the flow 1 records",
+    "eventsAndIntegrations": "INVOICE_ISSUED, STOCK_SHIPPED",
+    "financialConsequences": "as flow 1; the job cost shows material at actual cost",
+    "expectedFinalState": "job complete and inspected, shipment delivered, invoice paid",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 41 checks",
+    "actual": "as expected (41 checks)",
+    "observations": [
+     "starting the second step before the first answered 409: Step 1 (Saw to length) is not finished. Steps are worked in their planned order.",
+     "job status after the last step: WAITING_QC",
+     "job status after the failed inspection: ON_HOLD",
+     "sending the job for rework answered 200; job now SCHEDULED",
+     "job cost answer: {\"orderId\":\"f609448d-3ea1-4d81-9983-9e8fc96cca2c\",\"orderNumber\":\"SO-02668\",\"status\":\"COMPLETE\",\"revenue\":{\"invoiced\":1162.5,\"credited\":0,\"net\":1162.5,\"note\":\"Goods only: tax and freight billed are not revenue here.\"},\"material\":{\"shippedCost\":570,\"returnedToStockCost\":0,\"cost\":570,\"quantityCosted\":1500,\"quantityWithNoCost\":0},\"lines\":[{\"lineNumber\":1,\"description\":\"P12 A36 cut to size\",\"unit\":\"LB\""
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 3: a purchase order is approved, received in two parts, costed from its line and posted",
+   "asserts": [
+    {
+     "what": "the purchase order is written",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "goods cannot be received against a purchase order that is not placed",
+     "ok": true,
+     "measured": "409 Purchase order PO-02005 is still a draft: it has not been placed with the supplier"
+    },
+    {
+     "what": "the purchase order is placed",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a sales representative cannot receive goods",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "the first part is received",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the rest is received",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "500 lb more than was ordered is received on hold, not into free stock",
+     "ok": true,
+     "measured": "201 hold 500 available 0 "
+    },
+    {
+     "what": "with a hold that says why",
+     "ok": true,
+     "measured": "[[\"DISPUTE\",\"Received against PO PO-02005 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.\"]]"
+    },
+    {
+     "what": "and it cannot be reserved for a customer while held",
+     "ok": true,
+     "measured": "409 This stock is on hold and cannot be reserved"
+    },
+    {
+     "what": "the 2500 lb item is in stock at the branch at the line's price",
+     "ok": true,
+     "measured": "true cost 0.38 on hand 2500"
+    },
+    {
+     "what": "the 2500 lb receipt: an entry was posted",
+     "ok": true,
+     "measured": "POSTED"
+    },
+    {
+     "what": "the 2500 lb receipt: debits equal credits",
+     "ok": true,
+     "measured": "950 vs 950, header 950"
+    },
+    {
+     "what": "the 2500 lb receipt: account 1200 moves by 950",
+     "ok": true,
+     "measured": "got 950; entry {\"1200\":950,\"2000\":-950}"
+    },
+    {
+     "what": "the 2500 lb receipt: account 2000 moves by -950",
+     "ok": true,
+     "measured": "got -950; entry {\"1200\":950,\"2000\":-950}"
+    },
+    {
+     "what": "the 2500 lb receipt: no other account is touched",
+     "ok": true,
+     "measured": "also "
+    },
+    {
+     "what": "the 2500 lb item carries its heat",
+     "ok": true,
+     "measured": "83f5e26f-41fa-403d-a088-c06de504c7ab"
+    },
+    {
+     "what": "the 1500 lb item is in stock at the branch at the line's price",
+     "ok": true,
+     "measured": "true cost 0.38 on hand 1500"
+    },
+    {
+     "what": "the 1500 lb receipt: an entry was posted",
+     "ok": true,
+     "measured": "POSTED"
+    },
+    {
+     "what": "the 1500 lb receipt: debits equal credits",
+     "ok": true,
+     "measured": "570 vs 570, header 570"
+    },
+    {
+     "what": "the 1500 lb receipt: account 1200 moves by 570",
+     "ok": true,
+     "measured": "got 570; entry {\"1200\":570,\"2000\":-570}"
+    },
+    {
+     "what": "the 1500 lb receipt: account 2000 moves by -570",
+     "ok": true,
+     "measured": "got -570; entry {\"1200\":570,\"2000\":-570}"
+    },
+    {
+     "what": "the 1500 lb receipt: no other account is touched",
+     "ok": true,
+     "measured": "also "
+    },
+    {
+     "what": "the 1500 lb item carries its heat",
+     "ok": true,
+     "measured": "83f5e26f-41fa-403d-a088-c06de504c7ab"
+    },
+    {
+     "what": "the purchase order line shows what arrived, including the part on hold",
+     "ok": true,
+     "measured": "4500"
+    },
+    {
+     "what": "the buyer closes it, and nothing more can be received against it",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "after receiving: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after receiving: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receiving: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receiving: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receiving: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 539,
+   "record": {
+    "workflowId": "WF-03",
+    "purpose": "Buy material and bring it into stock at its actual cost",
+    "startingEvent": "A buyer raises a purchase order",
+    "responsibleRole": "Buyer, receiving clerk",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Purchasing; Receiving",
+    "apiPath": "POST /api/purchase-orders, PUT /api/purchase-orders/:id, POST /api/inventory/receipts",
+    "databaseChanges": "Order (PO), OrderLine, Coil, Inventory, MaterialMovement, LedgerEvent, JournalEntry",
+    "eventsAndIntegrations": "STOCK_RECEIVED per receipt",
+    "financialConsequences": "raw inventory up and received-not-invoiced up by pounds times the line price, per receipt",
+    "expectedFinalState": "purchase order fully received; two stock items at the branch at cost",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 30 checks",
+    "actual": "as expected (30 checks)",
+    "observations": [
+     "after 2,500 of 4,000 lb the purchase order is CONFIRMED; line received 2500",
+     "the over-receipt says: Received on hold: Received against PO PO-02005 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.",
+     "purchase order status with everything received: CONFIRMED"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 4: stock is transferred, is in transit, is received at the other branch, and the books agree at each moment",
+   "asserts": [
+    {
+     "what": "another branch cannot send this branch's stock",
+     "ok": true,
+     "measured": "404 Stock item not found"
+    },
+    {
+     "what": "the transfer is sent",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "in transit, none of it is available to either branch",
+     "ok": true,
+     "measured": "available 0, in transit 2200, IN_TRANSIT"
+    },
+    {
+     "what": "stock in transit cannot be reserved for an order",
+     "ok": true,
+     "measured": "409 Stock item P11-MWMU3MUB-35 is on its way to another branch. Reserve it after the receiving branch has received it."
+    },
+    {
+     "what": "while in transit: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "while in transit: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "while in transit: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "while in transit: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "while in transit: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "the in-transit figure carries the item's value",
+     "ok": true,
+     "measured": "1536.00 vs 836"
+    },
+    {
+     "what": "the sending branch cannot receive its own transfer",
+     "ok": true,
+     "measured": "403 Only the branch the material was sent to can receive it."
+    },
+    {
+     "what": "the receiving branch receives it",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "receiving it twice changes nothing",
+     "ok": true,
+     "measured": "409"
+    },
+    {
+     "what": "the item is at the receiving branch, whole and at the same cost",
+     "ok": true,
+     "measured": "true 2200 0.38"
+    },
+    {
+     "what": "the transfer is closed",
+     "ok": true,
+     "measured": "RECEIVED"
+    },
+    {
+     "what": "every movement of the item is posted once",
+     "ok": true,
+     "measured": "TRANSFER_RECEIVED:POSTED, STOCK_RECEIVED:POSTED"
+    },
+    {
+     "what": "after receipt: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after receipt: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receipt: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receipt: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after receipt: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 701,
+   "record": {
+    "workflowId": "WF-04",
+    "purpose": "Move stock between two branches without losing it from the books",
+    "startingEvent": "The sending branch ships a transfer",
+    "responsibleRole": "Inventory manager (sending), receiving clerk (receiving)",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Inventory: Transfers",
+    "apiPath": "POST /api/inventory/transfers, POST /api/inventory/transfers/:id/receive",
+    "databaseChanges": "StockTransfer, StockTransferLine, Coil, Inventory, MaterialMovement",
+    "eventsAndIntegrations": "TRANSFER_SHIPPED and TRANSFER_RECEIVED ledger events",
+    "financialConsequences": "inventory moves to in transit at cost, then to the receiving branch; no revenue",
+    "expectedFinalState": "the item is at the receiving branch at the same cost; nothing in transit",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks",
+    "actual": "as expected (21 checks)",
+    "observations": [
+     "while in transit the item is AVAILABLE at the sending branch",
+     "movements of the item: RECEIVE, TRANSFER",
+     "in transit after receipt: records 700.00, books undefined"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 5: a work order consumes an item, makes two pieces and scrap, and the stock value follows",
+   "asserts": [
+    {
+     "what": "the work order is written",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the operator starts it",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "it cannot be started twice",
+     "ok": true,
+     "measured": "409 This work order is already in progress"
+    },
+    {
+     "what": "100 lb of the item are reserved for a customer",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the work order cannot use the pounds promised to the customer",
+     "ok": true,
+     "measured": "409 Stock item P11-MWMU3MUB-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output and scrap reported. The rest is reserved for other orders, on hold, or already used. Correct the weights or the item's balance."
+    },
+    {
+     "what": "and the refusal changed nothing",
+     "ok": true
+    },
+    {
+     "what": "completed with two pieces and 30 lb of scrap",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the source keeps exactly the 100 lb promised to the customer",
+     "ok": true,
+     "measured": "ALLOCATED: on hand 100, reserved 100"
+    },
+    {
+     "what": "two pieces came out, each 1,435 lb, at the source's cost per pound, on the source's heat",
+     "ok": true,
+     "measured": "[[\"0.38\",true],[\"0.38\",true]]"
+    },
+    {
+     "what": "the pieces are in stock",
+     "ok": true,
+     "measured": "1435,1435"
+    },
+    {
+     "what": "weight is conserved: pieces plus scrap equal the source",
+     "ok": true
+    },
+    {
+     "what": "the work order records the scrap and is complete",
+     "ok": true,
+     "measured": "COMPLETE 30"
+    },
+    {
+     "what": "the work order's postings are all posted",
+     "ok": true,
+     "measured": "WORK_ORDER_COMPLETED:POSTED, STOCK_RECEIVED:POSTED"
+    },
+    {
+     "what": "together they balance, and scrap is expensed at 30 lb times cost",
+     "ok": true,
+     "measured": "{\"1200\":38,\"1210\":1090.6,\"2000\":-1140,\"5300\":11.4}"
+    },
+    {
+     "what": "the scrap report answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "after the work order: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the work order: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the work order: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the work order: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the work order: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 540,
+   "record": {
+    "workflowId": "WF-05",
+    "purpose": "Process material and keep weight, cost and traceability through the cut",
+    "startingEvent": "A scheduler writes a work order against a stock item",
+    "responsibleRole": "Scheduler, operator",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Work Orders",
+    "apiPath": "POST /api/work-orders, PUT /api/work-orders/:id/release, /start, /complete",
+    "databaseChanges": "WorkOrder, Coil (source and outputs), Inventory, MaterialMovement",
+    "eventsAndIntegrations": "material issued, production completed, scrap written off",
+    "financialConsequences": "the source leaves raw stock at cost; outputs enter at the same cost per pound; scrap is expensed at cost",
+    "expectedFinalState": "source consumed; two outputs in stock tracing to the source heat; scrap recorded",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 20 checks",
+    "actual": "as expected (20 checks)",
+    "observations": [
+     "by the permissions matrix, sales, warehouse, quality and production staff may all move a work order (lib/roleAccess.js, Jobs)",
+     "ledger events of the work order: WORK_ORDER_COMPLETED:POSTED, STOCK_RECEIVED:POSTED",
+     "net effect of the work order on the books: {\"1200\":38,\"1210\":1090.6,\"2000\":-1140,\"5300\":11.4}",
+     "remnant list answered 200 with 10 rows"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 6: a web order is placed once, accepted, fulfilled, paid, and shown to the buyer",
+   "asserts": [
+    {
+     "what": "the checkout pressed twice makes one web order",
+     "ok": true,
+     "measured": "200 409  The same request is still being processed. Wait a moment before trying again."
+    },
+    {
+     "what": "the branch accepts it into an order",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "accepting it again makes no second order",
+     "ok": true,
+     "measured": "409"
+    },
+    {
+     "what": "the order is the buyer's company's, at the branch, for three pieces",
+     "ok": true,
+     "measured": "1 lines, qty 3"
+    },
+    {
+     "what": "the buyer sees the order in the portal",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "a buyer of another company does not",
+     "ok": true
+    },
+    {
+     "what": "three pieces are reserved",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the pickup is put together",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "it is handed over and billed",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the invoice total is the order total",
+     "ok": true,
+     "measured": "19.47 vs 19.47"
+    },
+    {
+     "what": "the shelf fell by three",
+     "ok": true,
+     "measured": "7"
+    },
+    {
+     "what": "the delivery is confirmed with a proof of delivery",
+     "ok": true,
+     "measured": "200 DELIVERED"
+    },
+    {
+     "what": "a payment larger than the invoice is refused",
+     "ok": true,
+     "measured": "409 Only 19.47 is still owed on this invoice"
+    },
+    {
+     "what": "the payment is taken",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the invoice shows it",
+     "ok": true,
+     "measured": "PAID 19.47/19.47"
+    },
+    {
+     "what": "the payment is posted once: receivables down by the amount, the entry balances",
+     "ok": true,
+     "measured": "POSTED {\"1000\":19.47,\"1100\":-19.47}"
+    },
+    {
+     "what": "after the web order: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the web order: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the web order: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the web order: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the web order: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 2011,
+   "record": {
+    "workflowId": "WF-06",
+    "purpose": "Take an order from the web store through to cash",
+    "startingEvent": "A customer buyer checks out on the web store",
+    "responsibleRole": "Customer buyer; CSR; inventory manager; shipping coordinator",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Shop (customer); Online Order Inbox; Shipping",
+    "apiPath": "POST /api/ecom/checkout/submit, POST /api/orders/online/:id/accept, GET /api/ecom/my-orders, then shipments and payments",
+    "databaseChanges": "OnlineOrder, Order, Inventory, Shipment, Invoice, Payment",
+    "eventsAndIntegrations": "INVOICE_ISSUED, STOCK_SHIPPED, PAYMENT_RECEIVED",
+    "financialConsequences": "as a sale; nothing is charged to a card by the product",
+    "expectedFinalState": "one internal order for the web order; shipped, invoiced, paid; visible to its buyer only",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks",
+    "actual": "as expected (21 checks)",
+    "observations": [
+     "order was PENDING; confirm answered 200",
+     "shelf stock for the web product: {\"coilId\":\"5e938bca-82b5-4da5-b7fe-38c524ac19e1\",\"product\":{\"id\":\"8ce04ea5-9a88-43a7-9b3a-55522c977aad\",\"sku\":\"CUT-DISC-9\",\"name\":\"Cut-Off Disc 9\\\"\",\"description\":null,\"category\":\"Abrasives\",\"productT",
+     "the portal now shows the order as: COMPLETED"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 7: a counter sale takes stock, gives a receipt and posts once, however often the button is pressed",
+   "asserts": [
+    {
+     "what": "pressed three times at once, the sale is taken once",
+     "ok": true,
+     "measured": "200  | 201  | 200 "
+    },
+    {
+     "what": "one order for the sale",
+     "ok": true
+    },
+    {
+     "what": "one invoice, paid in full",
+     "ok": true,
+     "measured": "1 PAID"
+    },
+    {
+     "what": "the receipt total is the invoice total",
+     "ok": true,
+     "measured": "13.89 vs 13.89"
+    },
+    {
+     "what": "the shelf fell by two, once",
+     "ok": true,
+     "measured": "390→388"
+    },
+    {
+     "what": "the sale is posted once and balances",
+     "ok": true,
+     "measured": "{\"1100\":13.89,\"2100\":-0.91,\"4000\":-12.98}"
+    },
+    {
+     "what": "one payment, posted once",
+     "ok": true,
+     "measured": "1"
+    },
+    {
+     "what": "more than the shelf holds cannot be sold",
+     "ok": true,
+     "measured": "400 Item 1: quantity must be a whole number more than zero"
+    },
+    {
+     "what": "after the counter sale: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the counter sale: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the counter sale: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the counter sale: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the counter sale: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 311,
+   "record": {
+    "workflowId": "WF-07",
+    "purpose": "Sell shelf goods over the counter for immediate payment",
+    "startingEvent": "A walk-in customer pays at the counter",
+    "responsibleRole": "CSR at the counter",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Quick Sale (counter)",
+    "apiPath": "POST /api/pos/quick-sale/process-payment",
+    "databaseChanges": "Order, Invoice, Payment, Inventory, MaterialMovement",
+    "eventsAndIntegrations": "INVOICE_ISSUED, PAYMENT_RECEIVED, STOCK_SHIPPED",
+    "financialConsequences": "cash and revenue at once; sales tax where the branch state has a rate; cost of goods at the item's cost",
+    "expectedFinalState": "one order, one paid invoice, shelf reduced once",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 13 checks",
+    "actual": "as expected (13 checks)",
+    "observations": [
+     "shelf before: 390",
+     "receipt: subtotal 12.98, tax 0.91, total 13.89, change undefined"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 8: goods come back, are checked in with a decision, credited once, refunded, and the books reverse",
+   "asserts": [
+    {
+     "what": "more than was shipped cannot be returned",
+     "ok": true,
+     "measured": "409 Line 1: only 800 can be returned (shipped 800, already on returns 0)"
+    },
+    {
+     "what": "the return is opened",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "nothing is credited before the goods are checked in",
+     "ok": true
+    },
+    {
+     "what": "checked in twice at once, it is received once",
+     "ok": true,
+     "measured": "200,409"
+    },
+    {
+     "what": "200 lb are back in stock, once",
+     "ok": true,
+     "measured": "2200→2400"
+    },
+    {
+     "what": "one credit memo for a quarter of the invoice",
+     "ok": true,
+     "measured": "1 -124 vs 124"
+    },
+    {
+     "what": "the credit is posted once: revenue and receivables reversed, the entry balances",
+     "ok": true,
+     "measured": "CREDIT_ISSUED:POSTED {\"1100\":-124,\"4300\":124}"
+    },
+    {
+     "what": "the stock comes back at cost: an entry was posted",
+     "ok": true,
+     "measured": "POSTED"
+    },
+    {
+     "what": "the stock comes back at cost: debits equal credits",
+     "ok": true,
+     "measured": "76 vs 76, header 76"
+    },
+    {
+     "what": "the stock comes back at cost: account 1200 moves by 76",
+     "ok": true,
+     "measured": "got 76; entry {\"1200\":76,\"5000\":-76}"
+    },
+    {
+     "what": "the stock comes back at cost: account 5000 moves by -76",
+     "ok": true,
+     "measured": "got -76; entry {\"1200\":76,\"5000\":-76}"
+    },
+    {
+     "what": "the stock comes back at cost: no other account is touched",
+     "ok": true,
+     "measured": "also "
+    },
+    {
+     "what": "the original invoice is untouched",
+     "ok": true,
+     "measured": "PAID 496"
+    },
+    {
+     "what": "a clerk cannot pay the refund",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "the manager pays the refund",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "it cannot be refunded twice",
+     "ok": true,
+     "measured": "409 Only 0.00 is still owed back on this credit memo"
+    },
+    {
+     "what": "after the return: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the return: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the return: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the return: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the return: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 786,
+   "record": {
+    "workflowId": "WF-08",
+    "purpose": "Take material back and return the customer's money",
+    "startingEvent": "A customer returns part of a paid shipment",
+    "responsibleRole": "CSR, receiving clerk, branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Returns",
+    "apiPath": "POST /api/returns, POST /api/returns/:id/receive, POST /api/invoices/:id/refund",
+    "databaseChanges": "Return, ReturnLine, Inventory, MaterialMovement, Invoice (CREDIT), Payment (refund)",
+    "eventsAndIntegrations": "CREDIT_MEMO_ISSUED, STOCK_RETURNED, REFUND_PAID",
+    "financialConsequences": "revenue and receivables reversed by the credit; stock back at cost when restocked; cash out at refund",
+    "expectedFinalState": "return received; one credit memo; refund paid; the invoice history intact",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 21 checks",
+    "actual": "as expected (21 checks)",
+    "observations": [
+     "a return is an order of type RETURN with status COMPLETE; there is no separate inspection record: the decision to restock or scrap, made at check-in, is the inspection",
+     "return movement: RECEIVE"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 9: an order ships in two parts, each billed for what left, and closes when the rest has gone",
+   "asserts": [
+    {
+     "what": "the whole line is reserved",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the first 1,200 lb leave and are billed",
+     "ok": true,
+     "measured": "201 200 "
+    },
+    {
+     "what": "the first invoice is for 1,200 lb only",
+     "ok": true,
+     "measured": "744 vs 744"
+    },
+    {
+     "what": "the order stays open with 800 lb still reserved",
+     "ok": true,
+     "measured": "PARTIAL; allocated 800; on hand 3800"
+    },
+    {
+     "what": "more than the 800 lb left cannot be shipped",
+     "ok": true,
+     "measured": "409 Line 1: only 800 is left to ship (ordered 2000, shipped 1200, on other open shipments 0)"
+    },
+    {
+     "what": "the remaining 800 lb leave and are billed",
+     "ok": true,
+     "measured": "201 200 "
+    },
+    {
+     "what": "two invoices that add up to the order",
+     "ok": true,
+     "measured": "2: 744,496"
+    },
+    {
+     "what": "their numbers differ",
+     "ok": true
+    },
+    {
+     "what": "the order is closed as shipped and nothing is left reserved",
+     "ok": true,
+     "measured": "COMPLETE shipped 2000"
+    },
+    {
+     "what": "each invoice is posted once",
+     "ok": true
+    },
+    {
+     "what": "after both parts: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after both parts: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after both parts: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after both parts: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after both parts: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 574,
+   "record": {
+    "workflowId": "WF-09",
+    "purpose": "Ship what is ready and bill only that; keep the rest reserved",
+    "startingEvent": "Part of an order is ready before the rest",
+    "responsibleRole": "Inventory manager, shipping coordinator, CSR",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Orders; Shipping; Invoices",
+    "apiPath": "as flow 1, with two shipments",
+    "databaseChanges": "Order, Shipment (2), Invoice (2)",
+    "eventsAndIntegrations": "two INVOICE_ISSUED, two STOCK_SHIPPED",
+    "financialConsequences": "receivables rise by each part as it leaves; never by the whole order early",
+    "expectedFinalState": "two shipments, two invoices adding up to the order, order closed",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 15 checks",
+    "actual": "as expected (15 checks)",
+    "observations": [
+     "order status after the first part: PARTIAL; line shipped 1200"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Cross-module workflows end to end",
+   "name": "Flow 10: every branch's figures add up to the enterprise's, and a branch manager reads only the branch",
+   "asserts": [
+    {
+     "what": "the trial balance answers",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "total debits equal total credits",
+     "ok": true,
+     "measured": "15201317.98 vs 15201317.98"
+    },
+    {
+     "what": "and both equal the journal lines summed in the database",
+     "ok": true,
+     "measured": "15201317.98 vs 15201317.98"
+    },
+    {
+     "what": "revenue by branch and by customer have one total",
+     "ok": true,
+     "measured": "1172636.71 vs 1172636.71"
+    },
+    {
+     "what": "and it is revenue less returns in the journal",
+     "ok": true,
+     "measured": "1172636.71 vs 1172636.71"
+    },
+    {
+     "what": "the branch rows add up to the total",
+     "ok": true
+    },
+    {
+     "what": "the gross margin report's net sales are the same revenue",
+     "ok": true,
+     "measured": "200 1172636.7099999997 vs 1172636.71"
+    },
+    {
+     "what": "and it says it is not a profit and loss statement",
+     "ok": true
+    },
+    {
+     "what": "a branch manager's revenue report holds only the branch",
+     "ok": true,
+     "measured": "200 1 rows"
+    },
+    {
+     "what": "and its total is that branch's row in the enterprise report",
+     "ok": true,
+     "measured": "46040.00 vs 46040.00"
+    },
+    {
+     "what": "the report reads are in the audit log",
+     "ok": true,
+     "measured": "8"
+    },
+    {
+     "what": "at the end of the flows: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "at the end of the flows: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "at the end of the flows: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "at the end of the flows: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "at the end of the flows: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 305,
+   "record": {
+    "workflowId": "WF-10",
+    "purpose": "Consolidate the branches into one set of books",
+    "startingEvent": "Finance reads the reports after the day's work",
+    "responsibleRole": "CFO, auditor, branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance: Reports",
+    "apiPath": "GET /api/ledger/reports/trial-balance, revenue, gross-margin, inventory, receivables",
+    "databaseChanges": "read only",
+    "eventsAndIntegrations": "each report read is recorded",
+    "financialConsequences": "total debits equal total credits; branch revenue adds to enterprise revenue",
+    "expectedFinalState": "one total whichever way it is cut",
+    "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 16 checks",
+    "actual": "as expected (16 checks)",
+    "observations": [
+     "journal: debits 15201317.98, credits 15201317.98; trial balance debit 15201317.98, credit 15201317.98",
+     "a branch manager asking for the trial balance is answered 200"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 1: the chart of accounts is complete, typed and approved before anything posts to it",
+   "asserts": [
+    {
+     "what": "the chart and the status answer",
+     "ok": true,
+     "measured": "200 200"
+    },
+    {
+     "what": "every account has a code, a name and a type",
+     "ok": true,
+     "measured": "22"
+    },
+    {
+     "what": "codes are not repeated",
+     "ok": true
+    },
+    {
+     "what": "every posting rule points at an account that exists",
+     "ok": true,
+     "measured": "17"
+    },
+    {
+     "what": "no line is posted to an account that is not approved",
+     "ok": true
+    },
+    {
+     "what": "the type of an account with postings cannot be changed",
+     "ok": true,
+     "measured": "409 This account has entries. Its type cannot change; open a new account instead."
+    }
+   ],
+   "pass": true,
+   "ms": 59,
+   "record": {
+    "workflowId": "LC-01",
+    "purpose": "Chart of accounts",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "GET /api/ledger/chart, GET /api/ledger/status",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "22 accounts, 17 posting rules; ledger state {\"active\":true,\"effectiveDate\":\"2026-09-05\",\"timeZone\":\"America/Detroit\",\"stopped\":false,\"policiesApprovedBy\":\"QA Synthe; approved by \"QA Synthetic Accountant (test data only)\" (a QA test approval, not an accountant)"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 2: each business event posts by its rule, and an event with no approved rule is held by name",
+   "asserts": [
+    {
+     "what": "a sale follows the invoice rule",
+     "ok": true
+    },
+    {
+     "what": "the exceptions report lists what is held, with the reason",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "everything held carries a reason in words",
+     "ok": true,
+     "measured": "No cost is on file for item UI6-MWMRLYL6-4VLWR. It is not valued at zero: enter the cost and post it again. | No cost is on file for item RC-MWMRCZ6H-435. It is not valued at zero: enter the cost and "
+    }
+   ],
+   "pass": true,
+   "ms": 284,
+   "record": {
+    "workflowId": "LC-02",
+    "purpose": "Posting rules",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "the business routes; GET /api/ledger/reports/exceptions",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "events on file by kind and state: STOCK_RECEIVED POSTED 1261; TRANSFER_SHIPPED RECONCILIATION_REQUIRED 2; TRANSFER_SHIPPED POSTED 151; PAYMENT_RECORDED POSTED 917; STOCK_SHIPPED POSTED 1281; COST_CHANGED NOT_POSTED 2; CREDIT_ISSUED POSTED 72; REFUND_RECORDED POSTED 71; STOCK_ADJUSTED POSTED 128; INVOICE_ISSUED POSTED 1281; RETURN_RESTOCKED POSTED 69; WORK_ORDER_COMPLETED POSTED 56; TRANSFER_RECEIVED POSTED 150; STOCK_RECEIVED RECONCILIATION_REQUIRED 1; STOCK_SCRAPPED POSTED 20",
+     "No rule exists for freight income, carrier freight cost, labor or work in progress; the product posts none of them (accountant decision)."
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 3: no entry posts unless its debits equal its credits",
+   "asserts": [
+    {
+     "what": "an entry out by one cent is refused through the server",
+     "ok": true,
+     "measured": "draft 400, post 400 The entry does not balance: debits 100.00 do not equal credits 99.99"
+    },
+    {
+     "what": "no posted entry in the database is out of balance",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "the database itself refuses to unbalance a posted entry",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: the lines of a posted journal entry cannot be added, changed or removed"
+    }
+   ],
+   "pass": true,
+   "ms": 120,
+   "record": {
+    "workflowId": "LC-03",
+    "purpose": "Balanced journal entries",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "POST /api/ledger/entries, /post; the database trigger",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 4: posted history cannot be changed or deleted, by the server or by SQL as the application",
+   "asserts": [
+    {
+     "what": "a posted entry cannot be changed through the server",
+     "ok": true,
+     "measured": "405"
+    },
+    {
+     "what": "a posted entry cannot be patched through the server",
+     "ok": true,
+     "measured": "405"
+    },
+    {
+     "what": "a posted entry cannot be deleted through the server",
+     "ok": true,
+     "measured": "409"
+    },
+    {
+     "what": "SQL as the application cannot update a posted line",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: the lines of a posted journal entry cannot be added, changed or removed"
+    },
+    {
+     "what": "SQL as the application cannot delete a posted line",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: the lines of a posted journal entry cannot be added, changed or removed"
+    },
+    {
+     "what": "SQL as the application cannot delete a posted entry",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00008095 cannot be deleted"
+    },
+    {
+     "what": "SQL as the application cannot re-date a posted entry",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00008095 cannot be changed"
+    },
+    {
+     "what": "the application cannot switch the guards off",
+     "ok": true,
+     "measured": "must be owner of table JournalLine"
+    },
+    {
+     "what": "the entry is as it was posted",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 73,
+   "record": {
+    "workflowId": "LC-04",
+    "purpose": "Immutable posted history",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "PUT, PATCH, DELETE /api/ledger/entries/:id; SQL as steelwise_runtime",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 9 checks",
+    "actual": "as expected (9 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 5: a reversal is a new entry by an authorized person, once, with its reason",
+   "asserts": [
+    {
+     "what": "an auditor cannot reverse",
+     "ok": true
+    },
+    {
+     "what": "an executive cannot reverse",
+     "ok": true
+    },
+    {
+     "what": "a reason is required",
+     "ok": true
+    },
+    {
+     "what": "pressed three times at once it is reversed once",
+     "ok": true,
+     "measured": "409,409,201"
+    },
+    {
+     "what": "the reversal mirrors the original and both stay on file",
+     "ok": true,
+     "measured": "POSTED {\"2200\":73.25,\"5200\":-73.25}"
+    },
+    {
+     "what": "the reversal names who and why",
+     "ok": true,
+     "measured": "Reversal of JE-00008096: P12: entered in error"
+    }
+   ],
+   "pass": true,
+   "ms": 95,
+   "record": {
+    "workflowId": "LC-05",
+    "purpose": "Authorized reversals",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "POST /api/ledger/entries/:id/reverse",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 6: a closed month takes no entry, and closing and reopening are controlled",
+   "asserts": [
+    {
+     "what": "the periods are listed",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "an old month is closed",
+     "ok": true,
+     "measured": "CLOSED"
+    },
+    {
+     "what": "an entry dated in the closed month cannot post",
+     "ok": true,
+     "measured": "draft 409, post 409 The books began on 2026-09-05. An entry cannot be dated before that."
+    },
+    {
+     "what": "an auditor cannot close or reopen",
+     "ok": true
+    },
+    {
+     "what": "SQL as the application cannot put a posted entry into the closed month",
+     "ok": true,
+     "measured": "column \"updatedAt\" of relation \"JournalEntry\" does not exist"
+    }
+   ],
+   "pass": true,
+   "ms": 33,
+   "record": {
+    "workflowId": "LC-06",
+    "purpose": "Accounting periods",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "GET /api/ledger/periods, POST /api/ledger/periods/:y/:m/close and /reopen",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "3 periods on file, 2 closed"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 7: the same event posts once however many times it is sent",
+   "asserts": [
+    {
+     "what": "four dispatches at once: no server error",
+     "ok": true,
+     "measured": "409,409,200,409"
+    },
+    {
+     "what": "one invoice and one invoice posting",
+     "ok": true
+    },
+    {
+     "what": "recording missing events again adds nothing for what is already posted",
+     "ok": true,
+     "measured": "200 8000→8000"
+    },
+    {
+     "what": "no business record has two events of one kind anywhere in the database",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "and none has two entries of one kind",
+     "ok": true,
+     "measured": "[]"
+    }
+   ],
+   "pass": true,
+   "ms": 342,
+   "record": {
+    "workflowId": "LC-07",
+    "purpose": "Posting idempotency",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "PUT /api/shipments/:id/dispatch, POST /api/ledger/events/record-missing",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 8 to 10: an invoice, its payments, a credit and a refund each post once to the right accounts",
+   "asserts": [
+    {
+     "what": "two part payments are taken",
+     "ok": true,
+     "measured": "201 201"
+    },
+    {
+     "what": "payment of 186 is posted and balances",
+     "ok": true,
+     "measured": "{\"1000\":186,\"1100\":-186}"
+    },
+    {
+     "what": "payment of 186 is posted and balances",
+     "ok": true,
+     "measured": "{\"1000\":186,\"1100\":-186}"
+    },
+    {
+     "what": "cash rose by the invoice total",
+     "ok": true,
+     "measured": "372 vs 372"
+    },
+    {
+     "what": "a credit of 50.00 is issued by the manager",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the credit is posted once and lowers receivables by 50.00",
+     "ok": true,
+     "measured": "POSTED {\"1100\":-50,\"4300\":50}"
+    },
+    {
+     "what": "the overpaid amount is refunded",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the refund is posted",
+     "ok": true,
+     "measured": "REFUND_RECORDED:POSTED"
+    },
+    {
+     "what": "after invoice, payments, credit and refund: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after invoice, payments, credit and refund: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after invoice, payments, credit and refund: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after invoice, payments, credit and refund: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after invoice, payments, credit and refund: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 638,
+   "record": {
+    "workflowId": "LC-08",
+    "purpose": "Invoice, payment, credit and refund posting",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "dispatch; POST /api/invoices/:id/payments, /credit, /refund",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 13 checks",
+    "actual": "as expected (13 checks)",
+    "observations": [
+     "credit event CREDIT_ISSUED; refund event REFUND_RECORDED"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 11: stock value on the books equals pounds times actual cost, item by item",
+   "asserts": [
+    {
+     "what": "the report answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "the books agree with the records",
+     "ok": true,
+     "measured": "MATCH 0.00"
+    },
+    {
+     "what": "the report's record figure is the pounds times cost in the database, less what is in transit separately or within a cent a row",
+     "ok": true,
+     "measured": "10018133.20 vs 10018133.191 (in transit 700.00)"
+    },
+    {
+     "what": "a count adjustment is taken",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "and written off at cost, once",
+     "ok": true,
+     "measured": "ADJUST STOCK_ADJUSTED:POSTED"
+    },
+    {
+     "what": "inventory falls by 40 lb times cost",
+     "ok": true,
+     "measured": "{\"1200\":-15.2,\"5300\":15.2}"
+    }
+   ],
+   "pass": true,
+   "ms": 358,
+   "record": {
+    "workflowId": "LC-11",
+    "purpose": "Inventory valuation",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "GET /api/ledger/reports/inventory; POST /api/ledger/reconciliations",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "records by direct SQL: 10018133.191; report records: 10018133.20; report books: undefined; items on hand with no cost: 946"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 12 and 13: production keeps cost through the cut, and scrap is written off at cost",
+   "asserts": [
+    {
+     "what": "the work order completes",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the pieces carry the source's cost per pound",
+     "ok": true
+    },
+    {
+     "what": "the scrap report answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "stock value still agrees after the cut",
+     "ok": true,
+     "measured": "0.00"
+    }
+   ],
+   "pass": true,
+   "ms": 435,
+   "record": {
+    "workflowId": "LC-12",
+    "purpose": "Manufacturing costing, scrap and write-offs",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "work orders; GET /api/ledger/reports/scrap; GET /api/orders/:id/cost",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "scrap report: \"8519.55\"",
+     "Labor, machine time, overhead and work in progress are not posted: no approved rule exists (K-007, L-026, W-001). Job cost is shown to managers from the records, not from the books."
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 14: freight charged on an invoice is in the invoice total; no freight income or cost account is posted without a rule",
+   "asserts": [
+    {
+     "what": "an order with 75.00 of freight is written",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "shipped and billed",
+     "ok": true,
+     "measured": "201 200 "
+    },
+    {
+     "what": "the invoice with freight is either posted in balance for its whole total or held by name; it is never posted short",
+     "ok": true,
+     "measured": "POSTED {\"1100\":385,\"4000\":-310,\"4200\":-75}"
+    }
+   ],
+   "pass": true,
+   "ms": 286,
+   "record": {
+    "workflowId": "LC-14",
+    "purpose": "Freight income and expense",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "orders with freightAmount; the invoice posting",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "invoice subtotal 310, freight 75, tax 0, total 385",
+     "posting: POSTED {\"1100\":385,\"4000\":-310,\"4200\":-75} "
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 15 and 16: every line carries its branch; the product has no division on the books",
+   "asserts": [
+    {
+     "what": "lines posted from business events carry a branch",
+     "ok": true,
+     "measured": "0 of 11115"
+    },
+    {
+     "what": "a sale at another branch is tagged with that branch, not the first",
+     "ok": true,
+     "measured": "true,true"
+    },
+    {
+     "what": "division attribution: recorded as it is",
+     "ok": true,
+     "measured": "a division column exists"
+    }
+   ],
+   "pass": true,
+   "ms": 342,
+   "record": {
+    "workflowId": "LC-15",
+    "purpose": "Branch and division attribution",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "the journal; GET /api/ledger/reports/revenue?by=branch",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "0 of 11115 lines posted from business events carry no branch",
+     "JournalLine columns: id, entryId, lineNumber, accountId, debit, credit, locationId, division, customerId, supplierId, productId, coilId, jurisdiction, memo"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 17: the export to an outside accounting system holds each entry once and sends nothing by itself",
+   "asserts": [
+    {
+     "what": "the mapping list answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "an export batch is made or there is nothing new to send",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "no entry is in two live batches",
+     "ok": true,
+     "measured": "{\"error\":\"\\nInvalid `prisma.$queryRawUnsafe()` invocation:\\n\\n\\nRaw query failed. Code: `42P01`. Message: `relation \\\"LedgerExportEntry\\\" does not exist`\"}"
+    },
+    {
+     "what": "an auditor cannot export",
+     "ok": true
+    },
+    {
+     "what": "a provider with no mapping is refused, not guessed",
+     "ok": true,
+     "measured": "409 MAPPING_MISSING"
+    }
+   ],
+   "pass": true,
+   "ms": 1375,
+   "record": {
+    "workflowId": "LC-17",
+    "purpose": "External accounting mappings",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "GET /api/ledger/external-accounts/:provider, POST /api/ledger/exports",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "export answered 201: {\"id\":\"0771ca15-a2cc-4cbe-979a-7f73615699bf\",\"batchNumber\":\"EXP-GE-00008\",\"provider\":\"GENERIC\",\"from\":\"2026-11-01\",\"to\":\"2026-11-19\",\"status\":\"GENERATED\",\"entryCount\":147,\"totalDebit\":\"71814.01\",\"checksum\":\"47b9603d8f5c6",
+     "the two-batch check could not read the tables by those names: \nInvalid `prisma.$queryRawUnsafe()` invocation:\n\n\nRaw query failed. Code: `42P01`. Message: `relation \"LedgerExportEntry\" does not exist`",
+     "GENERIC is a file. No outside accounting system is connected, and none received anything: NOT VERIFIED against a real system."
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 18: the financial reports answer for finance, add up, and are refused to people outside finance",
+   "asserts": [
+    {
+     "what": "trial-balance answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "revenue answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "gross-margin answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "receivables answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "sales-tax answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "inventory answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "scrap answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "monthly answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "exceptions answers for the CFO",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a sales representative and an operator are refused",
+     "ok": true,
+     "measured": "403 403"
+    },
+    {
+     "what": "a report that does not exist is 404, not an error",
+     "ok": true
+    },
+    {
+     "what": "receivables on the report equal receivables in the reconciliation",
+     "ok": true,
+     "measured": "{\"owed\":\"245557.65\",\"creditOwedBack\":\"4340.00\",\"records\":\"241217.65\",\"ledger\":\"241217.65\",\"difference\":\"0.00\"} vs 241217.65"
+    }
+   ],
+   "pass": true,
+   "ms": 404,
+   "record": {
+    "workflowId": "LC-18",
+    "purpose": "Financial reporting",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "GET /api/ledger/reports/*",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 12 checks",
+    "actual": "as expected (12 checks)",
+    "observations": [
+     "receivables totals: {\"owed\":\"245557.65\",\"creditOwedBack\":\"4340.00\",\"records\":\"241217.65\",\"ledger\":\"241217.65\",\"difference\":\"0.00\"}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 19: every entry, reversal, close and report read leaves a line in the audit trail that cannot be changed",
+   "asserts": [
+    {
+     "what": "the work of this group is in the audit trail",
+     "ok": true,
+     "measured": "8"
+    },
+    {
+     "what": "the application cannot change or delete an audit line",
+     "ok": true,
+     "measured": "permission denied for table AuditLog | permission denied for table AuditLog"
+    },
+    {
+     "what": "every posted entry names who posted it",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 13,
+   "record": {
+    "workflowId": "LC-19",
+    "purpose": "Audit trails",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "AuditLog; SQL as the application",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "ledger audit lines in the last fifteen minutes: LEDGER_AI_READ 23; LEDGER_ENTRY_DRAFTED 6; LEDGER_ENTRY_POSTED 6; LEDGER_ENTRY_REVERSED 1; LEDGER_EVENT_RETRIED 1; LEDGER_EXPORT_CREATED 1; LEDGER_MISSING_RECORDED 1; LEDGER_REPORT_READ 29"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial ledger certification",
+   "name": "Ledger 20: a posting that fails is kept, named, and posted later without losing or doubling it",
+   "asserts": [
+    {
+     "what": "goods with no purchase order are received into stock",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "its posting is held with the reason, not dropped and not guessed",
+     "ok": true,
+     "measured": "RECONCILIATION_REQUIRED Item P12H-MWMU3MUB-69 was received with no purchase order. There is no approved rule for what it is owed to. An accountant can post it again, naming the account for the other side."
+    },
+    {
+     "what": "the reconciliation says an event is open",
+     "ok": true,
+     "measured": "EXCEPTIONS"
+    },
+    {
+     "what": "it is on the exceptions report",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "finance posts it by naming the account, once",
+     "ok": true,
+     "measured": "200 409 POSTED "
+    },
+    {
+     "what": "a clerk cannot retry a posting",
+     "ok": true
+    },
+    {
+     "what": "after the recovery: the reconciliation ran",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "after the recovery: BOOKS_BALANCE agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the recovery: INVENTORY agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the recovery: RECEIVABLES agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    },
+    {
+     "what": "after the recovery: IN_TRANSIT agrees",
+     "ok": true,
+     "measured": "MATCH 0.00 "
+    }
+   ],
+   "pass": true,
+   "ms": 468,
+   "record": {
+    "workflowId": "LC-20",
+    "purpose": "Recovery from failed posting",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO, second finance approver, auditor",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance",
+    "apiPath": "POST /api/ledger/events/:id/retry, /resolve; GET /api/ledger/reports/exceptions",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "Test entries on the QA ledger only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 11 checks",
+    "actual": "as expected (11 checks)",
+    "observations": [
+     "retry before a cost is on file answered 200: {\"id\":\"2f7fc83c-6bdf-4efe-af54-142bff197311\",\"eventKind\":\"STOCK_RECEIVED\",\"sourceType\":\"MaterialMovement\",\"sourceId\":\"89",
+     "setting the item's cost answered 200"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 1: the books balance, by SQL and by the product",
+   "asserts": [
+    {
+     "what": "total debits equal total credits to the cent",
+     "ok": true,
+     "measured": "15215471.35 / 15215471.35"
+    },
+    {
+     "what": "no single posted entry is out of balance",
+     "ok": true
+    },
+    {
+     "what": "the trial balance says the same",
+     "ok": true,
+     "measured": "{\"debit\":\"15215471.35\",\"credit\":\"15215471.35\"}"
+    },
+    {
+     "what": "the product's own check agrees",
+     "ok": true,
+     "measured": "{\"key\":\"BOOKS_BALANCE\",\"title\":\"Debits equal credits, in total and in every entry\",\"status\":\"MATCH\",\"ledger\":\"15215471.35\",\"records\":\"15215471.35\",\"difference\":"
+    }
+   ],
+   "pass": true,
+   "ms": 63,
+   "record": {
+    "workflowId": "RC-01",
+    "purpose": "Debits equal credits in every posted entry and in total",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "one reconciliation run saved; nothing else changes",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "8025 posted entries; debits 15215471.35, credits 15215471.35"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 2: receivables in the ledger equal the open invoices, customer by customer",
+   "asserts": [
+    {
+     "what": "the report's ledger figure is the account balance",
+     "ok": true,
+     "measured": "242385.65 / 242385.65"
+    },
+    {
+     "what": "the report shows no difference between ledger and records",
+     "ok": true,
+     "measured": "{\"owed\":\"246725.65\",\"creditOwedBack\":\"4340.00\",\"records\":\"242385.65\",\"ledger\":\"242385.65\",\"difference\":\"0.00\"}"
+    },
+    {
+     "what": "the reconciliation says the same",
+     "ok": true,
+     "measured": "{\"key\":\"RECEIVABLES\",\"title\":\"Accounts receivable: the books beside the open invoices and credits\",\"status\":\"MATCH\",\"ledger\":\"242385.65\",\"records\":\"242385.65\",\"difference\":\"0.00\",\"note\":null,\"detail\":"
+    },
+    {
+     "what": "the customers add up to the total",
+     "ok": true,
+     "measured": "101 customers"
+    }
+   ],
+   "pass": true,
+   "ms": 36,
+   "record": {
+    "workflowId": "RC-02",
+    "purpose": "Accounts receivable",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "one reconciliation run saved; nothing else changes",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "ledger 1100 = 242385.65; invoices less payments by SQL = 251065.65; report: {\"owed\":\"246725.65\",\"creditOwedBack\":\"4340.00\",\"records\":\"242385.65\",\"ledger\":\"242385.65\",\"difference\":\"0.00\"}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 3: inventory in the ledger equals stock on hand at cost, branch by branch",
+   "asserts": [
+    {
+     "what": "the report answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "the reconciliation finds no inventory difference",
+     "ok": true,
+     "measured": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"MATCH\",\"ledger\":\"10022197.40\",\"records\":\"10022197.40\",\"difference\":\"0.00\",\"note\":\"0 items disagree by more than "
+    },
+    {
+     "what": "goods on the road agree",
+     "ok": true,
+     "measured": "{\"key\":\"IN_TRANSIT\",\"title\":\"Stock in transit between branches\",\"status\":\"MATCH\",\"ledger\":\"700.00\",\"records\":\"700.00\",\"difference\":\"0.00\",\"note\":\"Transfers between branches of the same owner, at cost."
+    },
+    {
+     "what": "the branches add up to the total",
+     "ok": true,
+     "measured": "163 branches"
+    },
+    {
+     "what": "no stock figure is below zero",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "on hand equals available plus reserved plus held plus in transit on every item",
+     "ok": true,
+     "measured": "0"
+    }
+   ],
+   "pass": true,
+   "ms": 58,
+   "record": {
+    "workflowId": "RC-03",
+    "purpose": "Inventory valuation",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "one reconciliation run saved; nothing else changes",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "1658 stock items with a cost; on hand at cost by SQL = 10022197.40; report totals {\"rawMaterial\":\"9942117.11\",\"finishedGoods\":\"79380.29\",\"inTransit\":\"700.00\",\"ledger\":\"10022197.40\",\"records\":\"10022197.40\",\"difference\":\"0.00\",\"uncostedItems\":946}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 4: revenue in the ledger equals the invoices issued",
+   "asserts": [
+    {
+     "what": "no revenue difference",
+     "ok": true,
+     "measured": "0.00"
+    },
+    {
+     "what": "revenue by branch, by customer and by product give one total",
+     "ok": true,
+     "measured": "1175767.71 1175767.71 1175767.71"
+    },
+    {
+     "what": "cost of sales in the margin report is the cost-of-sales account",
+     "ok": true,
+     "measured": "677776.23"
+    }
+   ],
+   "pass": true,
+   "ms": 87,
+   "record": {
+    "workflowId": "RC-04",
+    "purpose": "Revenue",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "one reconciliation run saved; nothing else changes",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "{\"key\":\"REVENUE\",\"title\":\"Sales and freight billed, less credits, since the books began\",\"status\":\"MATCH\",\"ledger\":\"1175767.71\",\"records\":\"1175767.71\",\"difference\":\"0.00\",\"note\":null,\"detail\":[]}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 5: every business event since the ledger began is in the books or held by name",
+   "asserts": [
+    {
+     "what": "no event of this run is failed, pending or held",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "the exceptions report answers and counts the same open events as the table",
+     "ok": true,
+     "measured": "3"
+    },
+    {
+     "what": "no business event has two entries",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "every posted event points at an entry that exists",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "invoice INV-001773 of this run is posted once",
+     "ok": true
+    },
+    {
+     "what": "invoice INV-001774 of this run is posted once",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 26,
+   "record": {
+    "workflowId": "RC-05",
+    "purpose": "Completeness of posting",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "one reconciliation run saved; nothing else changes",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "ledger events by state: NOT_POSTED 3, POSTED 5488, RECONCILIATION_REQUIRED 3; held before this run began: 3"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Financial and inventory reconciliation",
+   "name": "Reconciliation 6: the reconciliation itself is honest: it reports a planted difference and corrects nothing",
+   "asserts": [
+    {
+     "what": "with 100 lb added behind the ledger's back, the inventory check fails",
+     "ok": true,
+     "measured": "[\"INVENTORY\",\"EVENTS\"]"
+    },
+    {
+     "what": "and names the size of the difference",
+     "ok": true,
+     "measured": "-95.00"
+    },
+    {
+     "what": "it changed nothing: the planted figure is still there",
+     "ok": true
+    },
+    {
+     "what": "put back, the inventory check is as it was",
+     "ok": true,
+     "measured": "0.00 / 0.00"
+    }
+   ],
+   "pass": true,
+   "ms": 451,
+   "record": {
+    "workflowId": "RC-06",
+    "purpose": "The reconciliation detects a real difference",
+    "startingEvent": "as the name states",
+    "responsibleRole": "CFO",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reconciliation",
+    "apiPath": "POST /api/ledger/reconciliations; GET /api/ledger/reports/:name",
+    "databaseChanges": "a stock figure is changed by SQL inside the test and put back",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none: a reconciliation reads",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 1: the home dashboard for head office equals the records",
+   "asserts": [
+    {
+     "what": "pounds on hand, available and reserved",
+     "ok": true,
+     "measured": "{\"totalOnHand\":\"19499428.8078\",\"available\":\"19362111.8078\",\"allocated\":\"90851\",\"onHold\":\"40966\"} / {\"h\":19499428.8078,\"a\":19362111.8078,\"r\":90851}"
+    },
+    {
+     "what": "orders by status",
+     "ok": true,
+     "measured": "{\"CANCELLED\":55,\"COMPLETE\":1821,\"CONFIRMED\":2123,\"PENDING\":80,\"HOLD\":2,\"PARTIAL\":13,\"DRAFT\":151} / {\"PARTIAL\":13,\"DRAFT\":151,\"COMPLETE\":1821,\"CANCELLED\":55,\"HOLD\":2,\"PENDING\":80,\"CONFIRMED\":2123}"
+    },
+    {
+     "what": "stock items by status",
+     "ok": true
+    },
+    {
+     "what": "the monthly pounds figure equals the same sum",
+     "ok": true,
+     "measured": "19499428.8078"
+    },
+    {
+     "what": "orders this month",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 42,
+   "record": {
+    "workflowId": "DB-01",
+    "purpose": "Home dashboard",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Home",
+    "apiPath": "GET /api/dashboard, /api/dashboard/kpis",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "orders this month 2603, deliveries this month 654"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 2: the home dashboard for a branch manager holds only that branch",
+   "asserts": [
+    {
+     "what": "pounds on hand are the branch's own",
+     "ok": true,
+     "measured": "402176 / 402176"
+    },
+    {
+     "what": "the order counts add up to the branch's orders",
+     "ok": true,
+     "measured": "217"
+    },
+    {
+     "what": "recent orders are all the branch's own",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "another branch sees a different figure of its own",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 41,
+   "record": {
+    "workflowId": "DB-02",
+    "purpose": "Home dashboard at a branch",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Home",
+    "apiPath": "GET /api/dashboard",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 3: the operations cockpit counts what is in the tables",
+   "asserts": [
+    {
+     "what": "it answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "jobs",
+     "ok": true,
+     "measured": "629 / 629"
+    },
+    {
+     "what": "orders",
+     "ok": true,
+     "measured": "4245 / 4245"
+    },
+    {
+     "what": "stock items",
+     "ok": true,
+     "measured": "2703 / 2703"
+    },
+    {
+     "what": "shipments",
+     "ok": true,
+     "measured": "1854 / 1854"
+    },
+    {
+     "what": "at a branch the same counts are the branch's own",
+     "ok": true,
+     "measured": "{\"totalJobs\":5,\"activeJobs\":0,\"totalOrders\":217,\"totalCoils\":117,\"totalWorkCenters\":4,\"totalShipments\":102}"
+    }
+   ],
+   "pass": true,
+   "ms": 132,
+   "record": {
+    "workflowId": "DB-03",
+    "purpose": "Operations cockpit",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Operations > Cockpit",
+    "apiPath": "GET /api/ops-cockpit",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "summary: {\"totalJobs\":629,\"activeJobs\":285,\"totalOrders\":4245,\"totalCoils\":2703,\"totalWorkCenters\":404,\"totalShipments\":1854}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 4: the sales dashboard equals the quotes on file",
+   "asserts": [
+    {
+     "what": "open quote value",
+     "ok": true,
+     "measured": "10335 / 10335"
+    },
+    {
+     "what": "quotes being written plus quotes with the customer equal the open quotes",
+     "ok": true,
+     "measured": "3+3 / 6"
+    },
+    {
+     "what": "margin is shown as not measured, not as a number",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 34,
+   "record": {
+    "workflowId": "DB-04",
+    "purpose": "Sales dashboard",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Sales > Dashboard",
+    "apiPath": "GET /api/sales-dashboard",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 5: material tracking counts equal the tables",
+   "asserts": [
+    {
+     "what": "packages",
+     "ok": true,
+     "measured": "17"
+    },
+    {
+     "what": "tags",
+     "ok": true,
+     "measured": "11"
+    },
+    {
+     "what": "jobs past the saw",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 18,
+   "record": {
+    "workflowId": "DB-05",
+    "purpose": "Material tracking",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Shipping > Material tracking",
+    "apiPath": "GET /api/material-tracking/stats",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 6: the finance reports agree with each other and with the ledger tables",
+   "asserts": [
+    {
+     "what": "receivables on the trial balance equal the receivables report",
+     "ok": true,
+     "measured": "242522.05 / 242522.05"
+    },
+    {
+     "what": "inventory on the report equals the ledger figure it names",
+     "ok": true,
+     "measured": "{\"rawMaterial\":\"9942497.11\",\"finishedGoods\":\"79380.29\",\"inTransit\":\"700.00\",\"ledger\":\"10022577.40\",\"records\":\"10022577.40\",\"difference\":\"0.00\",\"uncostedItems\":946}"
+    },
+    {
+     "what": "revenue on the trial balance equals the revenue lines by SQL",
+     "ok": true,
+     "measured": "1211935.11 / 1211935.11"
+    },
+    {
+     "what": "a branch manager's revenue report holds only that branch",
+     "ok": true,
+     "measured": "200 1 rows"
+    },
+    {
+     "what": "and head office's total is at least the branch's",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 140,
+   "record": {
+    "workflowId": "DB-06",
+    "purpose": "Finance reports",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Finance > Ledger > Reports",
+    "apiPath": "GET /api/ledger/reports/*",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Dashboards and reports agree with the records",
+   "name": "Dashboard 7: a sample screen's data is labelled as sample, and no real screen is fed invented figures",
+   "asserts": [
+    {
+     "what": "the executive cockpit answer says it is sample data, or is not served",
+     "ok": true,
+     "measured": "{\"sample\":true,\"sampleNotice\":\"Sample data. These figures are examples from the design of this screen, not your company's records.\",\"timestamp\":\"2026-11-19T00:5"
+    },
+    {
+     "what": "the executive question box does not answer with invented figures",
+     "ok": true,
+     "measured": "501 {\"error\":\"The executive question box is not built. It gives no analysis and no figures.\",\"sample\":true,\"useInstead\":\"Ask the assistant in the top bar: it answers from your company's records and says w"
+    }
+   ],
+   "pass": true,
+   "ms": 19,
+   "record": {
+    "workflowId": "DB-07",
+    "purpose": "Sample data stays labelled",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and one branch manager",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Executive > Cockpit and other sample screens",
+    "apiPath": "GET /api/executive/*",
+    "databaseChanges": "none: reads only",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 2 checks",
+    "actual": "as expected (2 checks)",
+    "observations": [
+     "/api/executive/cockpit answered 200"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 1: only signed-in employees can reach an assistant; customer and partner logins cannot",
+   "asserts": [
+    {
+     "what": "/api/ai/assistant: no sign-in, no answer",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "/api/ai/assistant: a customer login is refused",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "/api/ai/chat: no sign-in, no answer",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "/api/ai/chat: a customer login is refused",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "/api/executive/ai/query: no sign-in, no answer",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "/api/executive/ai/query: a customer login is refused",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "/api/ai/quote-assistant: no sign-in, no answer",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "/api/ai/quote-assistant: a customer login is refused",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "the executive assistant route is refused to an operator",
+     "ok": true,
+     "measured": "403"
+    }
+   ],
+   "pass": true,
+   "ms": 40,
+   "record": {
+    "workflowId": "AI-01",
+    "purpose": "Who may ask",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 9 checks",
+    "actual": "as expected (9 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 2: ledger figures go to the model only for finance, leadership and the auditor; a branch manager gets the branch; nobody else gets any",
+   "asserts": [
+    {
+     "what": "a sales representative is answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a sales representative: ledger figures are not handed to the model",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant f"
+    },
+    {
+     "what": "an operator is answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "an operator: ledger figures are not handed to the model",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant f"
+    },
+    {
+     "what": "a warehouse clerk is answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "a warehouse clerk: ledger figures are not handed to the model",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant f"
+    },
+    {
+     "what": "the CFO is answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the CFO: ledger figures are handed to the model",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant f"
+    },
+    {
+     "what": "the auditor is answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "the auditor: ledger figures are handed to the model",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant f"
+    },
+    {
+     "what": "the receivables figure given for the CFO is the figure on the report",
+     "ok": true,
+     "measured": "242770.05"
+    },
+    {
+     "what": "a branch manager gets own-branch figures and is told so",
+     "ok": true,
+     "measured": "{\"model\":\"deepseek-chat\",\"messages\":[{\"role\":\"system\",\"content\":\"You are SteelWise AI, the intelligent voice assistant for a steel manufacturing & distribution "
+    },
+    {
+     "what": "and no other branch's sales are in it",
+     "ok": true,
+     "measured": "QA Branch 40 (MIXED)"
+    },
+    {
+     "what": "each of these reads and refusals is in the audit log",
+     "ok": true,
+     "measured": "7"
+    }
+   ],
+   "pass": true,
+   "ms": 410,
+   "record": {
+    "workflowId": "AI-02",
+    "purpose": "Read-only financial access by role",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "the figures are the report's figures; nothing is posted",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 14 checks",
+    "actual": "as expected (14 checks)",
+    "observations": [
+     "7 LEDGER_AI_READ lines in the last minute"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 3: the assistant hands the model nothing the person could not read on a screen",
+   "asserts": [
+    {
+     "what": "answered",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "nothing of the other branch's sale is in the context",
+     "ok": true
+    },
+    {
+     "what": "nor its stock item",
+     "ok": true,
+     "measured": "P11-MWMU3MUB-76"
+    },
+    {
+     "what": "the assistant gives an operator no staff directory the API refuses them",
+     "ok": true,
+     "measured": "API 200; 0 addresses handed over"
+    },
+    {
+     "what": "no password or token field is ever in the context",
+     "ok": true
+    },
+    {
+     "what": "a sales representative is not handed item cost",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 107,
+   "record": {
+    "workflowId": "AI-03",
+    "purpose": "Role-based and branch-limited data",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the same branch boundary and role rules as the API",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "an operator listing users through the API is answered 200; the assistant handed the model 0 e-mail addresses for the same person"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 4: no message, however it is written, makes the assistant change a record",
+   "asserts": [
+    {
+     "what": "every message is answered without a server error",
+     "ok": true,
+     "measured": "200,200,200,200,200,200,200,200"
+    },
+    {
+     "what": "the forged conversation is answered or refused, not a server error",
+     "ok": true,
+     "measured": "400"
+    },
+    {
+     "what": "a message from the browser is never forwarded to the model as a system or tool message",
+     "ok": true,
+     "measured": "0 system, 0 tool"
+    },
+    {
+     "what": "and the forged claim to be the CFO brings no ledger figures",
+     "ok": true
+    },
+    {
+     "what": "nothing in the database changed",
+     "ok": true,
+     "measured": "[8031,1330,55,136,\"19500428.8078\",4967,1043] -> [8031,1330,55,136,\"19500428.8078\",4967,1043]"
+    },
+    {
+     "what": "the model is given no tool it could call",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 143,
+   "record": {
+    "workflowId": "AI-04",
+    "purpose": "Prompt injection and permission bypass",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "JournalEntry, Payment, Order, Inventory, User and AppSetting unchanged",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "roles forwarded to the model for the forged conversation: "
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 5: no figure is invented by the server",
+   "asserts": [
+    {
+     "what": "when the AI service fails the assistant says it could not answer",
+     "ok": true,
+     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"4a72326d-93ed-4e9f-bd19-f3dc25083091\"}"
+    },
+    {
+     "what": "the failure carries the request id and no internals",
+     "ok": true,
+     "measured": "{\"error\":\"The assistant could not answer.\",\"requestId\":\"4a72326d-93ed-4e9f-bd19-f3dc25083091\"}"
+    },
+    {
+     "what": "when the AI service does not answer in time the assistant says so",
+     "ok": true,
+     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"d075f372-0fbc-49f7-884a-c51f17d36de5\"}"
+    },
+    {
+     "what": "the executive question route gives no invented analysis",
+     "ok": true,
+     "measured": "501 {\"error\":\"The executive question box is not built. It gives no analysis and no figures.\",\"sample\":true,\"useInstead\":\"Ask the assistant in the top bar: it answer"
+    },
+    {
+     "what": "a question about something that does not exist is still only given what is on file",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 3991,
+   "record": {
+    "workflowId": "AI-05",
+    "purpose": "No fabricated figures",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant with the AI service failing; POST /api/executive/ai/query",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "POST /api/executive/ai/query answered 501: {\"error\":\"The executive question box is not built. It gives no analysis and no figures.\",\"sample\":true,\"useInstead\":\"Ask the assistant in the top bar: it answers from your company's records and says w"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 6: use of the assistant is in the audit trail, without the text of the question",
+   "asserts": [
+    {
+     "what": "the question is recorded with who asked and what kinds of records were read",
+     "ok": true,
+     "measured": "1"
+    },
+    {
+     "what": "the words of the question are not stored",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 326,
+   "record": {
+    "workflowId": "AI-06",
+    "purpose": "Audit logging",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "AuditLog",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 2 checks",
+    "actual": "as expected (2 checks)",
+    "observations": [
+     "audit lines for the question: AI_ASSISTANT_ASKED {\"role\":\"BRANCH_MANAGER\",\"outcome\":\"ANSWERED\",\"recordKinds\":[\"orders\",\"shipments\"]}"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 7: bad requests to the assistant are refused cleanly",
+   "asserts": [
+    {
+     "what": "no message: 400",
+     "ok": true
+    },
+    {
+     "what": "no body: 400",
+     "ok": true
+    },
+    {
+     "what": "a body of the wrong shape is the caller's error, not a server error",
+     "ok": true,
+     "measured": "400"
+    },
+    {
+     "what": "messages with nothing usable in them are refused, not a server error",
+     "ok": true,
+     "measured": "400"
+    },
+    {
+     "what": "a very long message is refused or cut, never an error or a hang",
+     "ok": true,
+     "measured": "400"
+    },
+    {
+     "what": "the model is not sent an unbounded message",
+     "ok": true,
+     "measured": "0"
+    }
+   ],
+   "pass": true,
+   "ms": 63,
+   "record": {
+    "workflowId": "AI-07",
+    "purpose": "Error handling",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 8: the streaming assistant obeys the same rules",
+   "asserts": [
+    {
+     "what": "the stream answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "a sales representative's stream is given no ledger figures",
+     "ok": true
+    },
+    {
+     "what": "a customer login is refused the stream",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a forged system message is not forwarded on the stream either",
+     "ok": true
+    },
+    {
+     "what": "when the AI service fails mid-stream the person is told it failed, without the service's own message",
+     "ok": true,
+     "measured": "event: meta\ndata: {\"queryTypes\":[\"orders\"],\"hasDbData\":true}\n\nevent: error\ndata: {\"error\":\"The assistant could not answer.\",\"requestId\":\"ae8f245e-7533-488e-bd83-3d4be368e832\"}\n\n"
+    }
+   ],
+   "pass": true,
+   "ms": 48,
+   "record": {
+    "workflowId": "AI-08",
+    "purpose": "Streaming variant",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/assistant, /api/ai/assistant/stream",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "AI assistants",
+   "name": "AI 9: the other AI helpers change nothing and invent no record",
+   "asserts": [
+    {
+     "what": "/api/ai/quote-assistant is not a server error",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "/api/ai/analyze-product is not a server error",
+     "ok": true,
+     "measured": "400 Product specs are required"
+    },
+    {
+     "what": "/api/v1/ai/work-order-optimize is not a server error",
+     "ok": true,
+     "measured": "404 "
+    },
+    {
+     "what": "no quote, order, work order or job was made by them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 47,
+   "record": {
+    "workflowId": "AI-09",
+    "purpose": "Quote helper, product analysis and work order optimizer",
+    "startingEvent": "as the name states",
+    "responsibleRole": "any signed-in employee",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Assistant in the top bar",
+    "apiPath": "POST /api/ai/quote-assistant, /api/ai/analyze-product, /api/v1/ai/work-order-optimize",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "read only",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, AI assistants; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "/api/ai/quote-assistant answered 200",
+     "/api/ai/analyze-product answered 400",
+     "/api/v1/ai/work-order-optimize answered 404"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 1: authentication. No token, a forged token, an expired token and a token signed another way are all refused",
+   "asserts": [
+    {
+     "what": "no token: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "no token: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "no token: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed with another secret: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed with another secret: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed with another secret: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "an expired token: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "an expired token: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "an expired token: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with algorithm none: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with algorithm none: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with algorithm none: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed HS512: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed HS512: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token signed HS512: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token naming a user that does not exist: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token naming a user that does not exist: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token naming a user that does not exist: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with no user id: /api/orders is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with no user id: /api/ledger/reports/trial-balance is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a token with no user id: /api/users is refused",
+     "ok": true,
+     "measured": "401"
+    },
+    {
+     "what": "a wrong password and an unknown address read the same",
+     "ok": true,
+     "measured": "401 401"
+    }
+   ],
+   "pass": true,
+   "ms": 295,
+   "record": {
+    "workflowId": "SC-01",
+    "purpose": "Authentication",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 22 checks",
+    "actual": "as expected (22 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 2: sessions. A role claimed in the token is ignored and a switched-off login stops at once",
+   "asserts": [
+    {
+     "what": "a token that claims SUPER_ADMIN for a sales representative is still a sales representative",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "the new login works",
+     "ok": true
+    },
+    {
+     "what": "switched off, the same token is refused on the next request",
+     "ok": true
+    },
+    {
+     "what": "and it cannot sign in again",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 351,
+   "record": {
+    "workflowId": "SC-02",
+    "purpose": "Sessions",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 3: roles. Each department is refused the changes that belong to another",
+   "asserts": [
+    {
+     "what": "an operator takes a payment: refused",
+     "ok": true,
+     "measured": "403 Orders, quotes, customers and invoices can only be changed by sales staff or a manager. Your role (OPERATOR_SAW) can view them."
+    },
+    {
+     "what": "an operator writes an order: refused",
+     "ok": true,
+     "measured": "403 Orders, quotes, customers and invoices can only be changed by sales staff or a manager. Your role (OPERATOR_SAW) can view them."
+    },
+    {
+     "what": "a sales representative adjusts stock: refused",
+     "ok": true,
+     "measured": "403 Stock records can only be changed by warehouse, production, quality staff or a manager. Your role (SALES_REP) can view them."
+    },
+    {
+     "what": "an operator dispatches a shipment: refused",
+     "ok": true,
+     "measured": "403 Shipments can only be changed by warehouse, sales staff or a manager. Your role (OPERATOR_SAW) can view them."
+    },
+    {
+     "what": "a receiving clerk issues a credit: refused",
+     "ok": true,
+     "measured": "403 Credits, refunds, cancelling an invoice, voiding a sale, recording a lost load and changing tax rates need a manager."
+    },
+    {
+     "what": "a CSR writes a journal entry: refused",
+     "ok": true,
+     "measured": "403 The financial ledger can only be changed by the CFO or a manager. Your role (CSR) can view them."
+    },
+    {
+     "what": "a branch manager closes a month: refused",
+     "ok": true,
+     "measured": "403 This needs the CFO or an administrator."
+    },
+    {
+     "what": "a branch manager makes an administrator: refused",
+     "ok": true,
+     "measured": "403 A branch manager cannot grant that role."
+    },
+    {
+     "what": "an auditor changes an order: refused",
+     "ok": true,
+     "measured": "403 Your role (AUDITOR) can view records and cannot change them."
+    },
+    {
+     "what": "a scheduler changes a price: refused",
+     "ok": true,
+     "measured": "403 Changing a product needs a manager, the inventory manager or a buyer."
+    },
+    {
+     "what": "nothing was changed by any of them",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 649,
+   "record": {
+    "workflowId": "SC-03",
+    "purpose": "Role-based access",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 11 checks",
+    "actual": "as expected (11 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 4 and 5: customer accounts and branches. Nobody reads or changes another account's or another branch's records",
+   "asserts": [
+    {
+     "what": "SALES_REP of the other branch cannot open orders",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SALES_REP of the other branch cannot open shipments",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SALES_REP of the other branch cannot open invoices",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SALES_REP of the other branch cannot open coils",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "BRANCH_MANAGER of the other branch cannot open orders",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "BRANCH_MANAGER of the other branch cannot open shipments",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "BRANCH_MANAGER of the other branch cannot open invoices",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "BRANCH_MANAGER of the other branch cannot open coils",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "INVENTORY_MANAGER of the other branch cannot open orders",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "INVENTORY_MANAGER of the other branch cannot open shipments",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "INVENTORY_MANAGER of the other branch cannot open invoices",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "INVENTORY_MANAGER of the other branch cannot open coils",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SHIPPING_COORDINATOR of the other branch cannot open orders",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SHIPPING_COORDINATOR of the other branch cannot open shipments",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "SHIPPING_COORDINATOR of the other branch cannot open invoices",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "SHIPPING_COORDINATOR of the other branch cannot open coils",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "and cannot change them",
+     "ok": true,
+     "measured": "404,404,400,404"
+    },
+    {
+     "what": "the other branch's lists do not carry them",
+     "ok": true
+    },
+    {
+     "what": "a customer login reads its own orders",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "a customer login is refused /api/orders",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/customers",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/invoices",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/users",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/ledger/status",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/orders/:id",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "a customer login is refused /api/customers/:id",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "and cannot read another account's saved preferences",
+     "ok": true,
+     "measured": "403"
+    }
+   ],
+   "pass": true,
+   "ms": 841,
+   "record": {
+    "workflowId": "SC-04",
+    "purpose": "Tenant (customer account) and branch isolation",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 27 checks",
+    "actual": "as expected (27 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 6: the dispatch board lists stop at the branch (V-028)",
+   "asserts": [
+    {
+     "what": "asking for another branch's work centers returns none of them",
+     "ok": true,
+     "measured": "200; 0 of 7 of the other branch's work centers returned"
+    },
+    {
+     "what": "the list with no branch named holds only the person's own",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "queue: nothing of the other branch's floor",
+     "ok": true,
+     "measured": "400"
+    },
+    {
+     "what": "stats: nothing of the other branch's floor",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "operators: nothing of the other branch's floor",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "a work center cannot be made at another branch",
+     "ok": true,
+     "measured": "403 That record belongs to another branch."
+    }
+   ],
+   "pass": true,
+   "ms": 82,
+   "record": {
+    "workflowId": "SC-06",
+    "purpose": "Branch boundary on the dispatch board",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "GET /api/v1/dispatch/work-centers, /queue, /stats, /operators",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "/api/v1/dispatch/queue for the other branch answered 400, 52 bytes",
+     "/api/v1/dispatch/stats for the other branch answered 200, 185 bytes",
+     "/api/v1/dispatch/operators for the other branch answered 200, 26 bytes",
+     "the list of branch names is shared by design (86 branches)"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 7: API. Bad input is the caller's error and carries no internals",
+   "asserts": [
+    {
+     "what": "GET /api/orders/not-a-uuid: not a server error and no internals",
+     "ok": true,
+     "measured": "404 {\"error\":\"Order not found\"}"
+    },
+    {
+     "what": "GET /api/orders?status=CONFIRMED'%20OR%201=1--: not a server error and no internals",
+     "ok": true,
+     "measured": "400 {\"error\":\"Invalid orderType or status filter\"}"
+    },
+    {
+     "what": "GET /api/orders?limit=999999999: not a server error and no internals",
+     "ok": true,
+     "measured": "200 [{\"id\":\"3a291b32-58f5-4f7c-930e-c1752789954e\",\"orderNumber\":\"SO-02690\",\"orderType\":\"SO\",\"buyerId\":\"8"
+    },
+    {
+     "what": "GET /api/orders?limit=-5&offset=abc: not a server error and no internals",
+     "ok": true,
+     "measured": "400 {\"error\":\"limit must be a whole number, zero or more\"}"
+    },
+    {
+     "what": "GET /api/coils/%00: not a server error and no internals",
+     "ok": true,
+     "measured": "400 {\"error\":\"That address is not valid.\"}"
+    },
+    {
+     "what": "GET /api/ledger/entries/%%%: not a server error and no internals",
+     "ok": true,
+     "measured": "400 {\"error\":\"The address is not valid: it has a % that is not followed by two hexadecimal digits.\",\"cod"
+    },
+    {
+     "what": "POST /api/orders: not a server error and no internals",
+     "ok": true,
+     "measured": "400 {\"error\":\"lines must be a list\"}"
+    },
+    {
+     "what": "POST /api/customers: not a server error and no internals",
+     "ok": true,
+     "measured": "409 {\"error\":\"Customer code [object Object] is already in use\"}"
+    },
+    {
+     "what": "PUT /api/orders/99999999999999999999999999999999: not a server error and no internals",
+     "ok": true,
+     "measured": "404 {\"error\":\"Order not found\"}"
+    },
+    {
+     "what": "a six-megabyte body is refused",
+     "ok": true,
+     "measured": "413"
+    },
+    {
+     "what": "answers carry a request id and the safety headers",
+     "ok": true,
+     "measured": "b66538ab-19d8-4082-bdc7-3beacef9265c nosniff"
+    }
+   ],
+   "pass": true,
+   "ms": 156,
+   "record": {
+    "workflowId": "SC-07",
+    "purpose": "API security",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 11 checks",
+    "actual": "as expected (11 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 8: the database. The application's own connection cannot change history, the guards or the schema",
+   "asserts": [
+    {
+     "what": "cannot change a posted journal line",
+     "ok": true,
+     "measured": "LEDGER_IMMUTABLE: the lines of a posted journal entry cannot be added, changed or removed"
+    },
+    {
+     "what": "cannot delete audit history",
+     "ok": true,
+     "measured": "permission denied for table AuditLog"
+    },
+    {
+     "what": "cannot empty the audit log",
+     "ok": true,
+     "measured": "permission denied for table AuditLog"
+    },
+    {
+     "what": "cannot rewrite the record of applied updates",
+     "ok": true,
+     "measured": "permission denied for table _prisma_migrations"
+    },
+    {
+     "what": "cannot make a table",
+     "ok": true,
+     "measured": "permission denied for schema public"
+    },
+    {
+     "what": "cannot drop a guard",
+     "ok": true,
+     "measured": "must be owner of relation JournalLine"
+    },
+    {
+     "what": "cannot switch triggers off for the session",
+     "ok": true,
+     "measured": "permission denied to set parameter \"session_replication_role\""
+    },
+    {
+     "what": "cannot make itself a superuser",
+     "ok": true,
+     "measured": "permission denied to alter role"
+    },
+    {
+     "what": "cannot read password hashes of the database roles",
+     "ok": true,
+     "measured": "permission denied for table pg_authid"
+    },
+    {
+     "what": "the role has no superuser, create-database, create-role or bypass rights",
+     "ok": true,
+     "measured": "[{\"rolsuper\":false,\"rolcreatedb\":false,\"rolcreaterole\":false,\"rolbypassrls\":false}]"
+    }
+   ],
+   "pass": true,
+   "ms": 18,
+   "record": {
+    "workflowId": "SC-08",
+    "purpose": "Database security",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "SQL as steelwise_runtime",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 10 checks",
+    "actual": "as expected (10 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 9: files. A document is read only through the signed-in download, by people of its branch",
+   "asserts": [
+    {
+     "what": "a PDF is uploaded against the order",
+     "ok": true,
+     "measured": "201"
+    },
+    {
+     "what": "no sign-in, no download",
+     "ok": true
+    },
+    {
+     "what": "a customer login of another account cannot download it",
+     "ok": true,
+     "measured": "403"
+    },
+    {
+     "what": "its own branch downloads it as an attachment",
+     "ok": true,
+     "measured": "200 attachment; filename=\"p12-cert.pdf\""
+    },
+    {
+     "what": "the stored file is not served at its own address",
+     "ok": true,
+     "measured": "404"
+    },
+    {
+     "what": "a script dressed as a PDF with a path in its name is refused",
+     "ok": true,
+     "measured": "400"
+    }
+   ],
+   "pass": true,
+   "ms": 366,
+   "record": {
+    "workflowId": "SC-09",
+    "purpose": "File security",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "POST /api/documents/upload, GET /api/documents/:id/download",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "upload answered 201: {\"id\":\"7ad0de6f-1bf3-434a-93dd-31265bec5c9e\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-cert.pdf\",\"fileType\":\"application/pdf\",\"fil"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 10: secrets. No secret is in an answer, in the page bundle, or in the repository",
+   "asserts": [
+    {
+     "what": "no answer carries a secret",
+     "ok": true
+    },
+    {
+     "what": "the built pages hold no server secret",
+     "ok": true,
+     "measured": "4.5 MB read"
+    },
+    {
+     "what": "no .env file with values is tracked",
+     "ok": true,
+     "measured": ".env.example,src/backend/.env.example,src/frontend/.env.example"
+    },
+    {
+     "what": "no connection string with a password to a remote host, API key or long-lived token is in the repository",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 107,
+   "record": {
+    "workflowId": "SC-10",
+    "purpose": "Secrets",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 11: webhooks and partner keys. A partner needs its key, stays in its scope, and a forged delivery signature does not verify",
+   "asserts": [
+    {
+     "what": "with its token the partner reads its own orders",
+     "ok": true
+    },
+    {
+     "what": "without a token it is refused",
+     "ok": true
+    },
+    {
+     "what": "it is refused a scope it was not given",
+     "ok": true
+    },
+    {
+     "what": "a partner token is not a staff token",
+     "ok": true
+    },
+    {
+     "what": "a staff token is not a partner token",
+     "ok": true
+    },
+    {
+     "what": "the scheduled address refuses a wrong secret",
+     "ok": true,
+     "measured": "401"
+    }
+   ],
+   "pass": true,
+   "ms": 252,
+   "record": {
+    "workflowId": "SC-11",
+    "purpose": "Webhooks and partner API",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks",
+    "actual": "as expected (6 checks)",
+    "observations": [
+     "partner made: yes"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Security and access revalidation",
+   "name": "Security 12: financial permissions and the audit trail hold together",
+   "asserts": [
+    {
+     "what": "finance writes an entry",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the person who wrote it cannot post it",
+     "ok": true,
+     "measured": "403 An entry is posted by someone other than the person who wrote it."
+    },
+    {
+     "what": "a second finance person posts it",
+     "ok": true,
+     "measured": "200 "
+    },
+    {
+     "what": "both acts are in the audit trail under their own names",
+     "ok": true,
+     "measured": "2 lines, 2 people"
+    },
+    {
+     "what": "an administrator who is not the owner or CFO cannot stop the ledger",
+     "ok": true,
+     "measured": "403"
+    }
+   ],
+   "pass": true,
+   "ms": 58,
+   "record": {
+    "workflowId": "SC-12",
+    "purpose": "Financial permissions and audit",
+    "startingEvent": "as the name states",
+    "responsibleRole": "attacker or the wrong person",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: the API is called directly",
+    "apiPath": "as the checks state",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 1: all 80 branches exist, each with a time zone, an address state and its own people",
+   "asserts": [
+    {
+     "what": "80 branches",
+     "ok": true,
+     "measured": "80"
+    },
+    {
+     "what": "every branch is active and has a code that is its own",
+     "ok": true
+    },
+    {
+     "what": "the branches span more than one state",
+     "ok": true,
+     "measured": "16 states"
+    },
+    {
+     "what": "every branch has people whose home it is",
+     "ok": true,
+     "measured": "80"
+    }
+   ],
+   "pass": true,
+   "ms": 7,
+   "record": {
+    "workflowId": "ML-01",
+    "purpose": "Branch set-up is complete",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "as named in the checks",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "80 branches of 80; kinds: Medium service center 20, Small distribution branch 24, Warehouse-heavy branch 12, Sales-focused branch 10, Large processing branch 8, Outlet store 6",
+     "a branch record holds no time zone (fields: none); the ledger's business day is one zone for the company"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 2: each kind of branch sees only itself, and head office sees all 80",
+   "asserts": [
+    {
+     "what": "Large processing branch QA-L70: every order listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 100"
+    },
+    {
+     "what": "Large processing branch QA-L70: every stock item listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 100"
+    },
+    {
+     "what": "Medium service center QA-L33: every order listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 58"
+    },
+    {
+     "what": "Medium service center QA-L33: every stock item listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 47"
+    },
+    {
+     "what": "Small distribution branch QA-L26: every order listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 9"
+    },
+    {
+     "what": "Small distribution branch QA-L26: every stock item listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 10"
+    },
+    {
+     "what": "Warehouse-heavy branch QA-L67: every order listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 13"
+    },
+    {
+     "what": "Warehouse-heavy branch QA-L67: every stock item listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 11"
+    },
+    {
+     "what": "Sales-focused branch QA-L28: every order listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 40"
+    },
+    {
+     "what": "Sales-focused branch QA-L28: every stock item listed is its own",
+     "ok": true,
+     "measured": "200 0 foreign of 14"
+    },
+    {
+     "what": "head office reads orders of many branches in one list",
+     "ok": true,
+     "measured": "78 branches in the pages read; 161 branches have orders"
+    }
+   ],
+   "pass": true,
+   "ms": 3337,
+   "record": {
+    "workflowId": "ML-02",
+    "purpose": "Location-specific permissions",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "GET /api/orders, /api/coils, /api/shipments",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 11 checks",
+    "actual": "as expected (11 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 3: stock moves between branches only by a transfer, and both ends agree",
+   "asserts": [
+    {
+     "what": "a stock item cannot simply be edited to another branch",
+     "ok": true,
+     "measured": "400; now at the first branch"
+    },
+    {
+     "what": "the sending branch cannot receive its own transfer",
+     "ok": true,
+     "measured": "403 Only the branch the material was sent to can receive it."
+    },
+    {
+     "what": "a transfer is sent and received",
+     "ok": true,
+     "measured": "201 200  "
+    },
+    {
+     "what": "the stock is now at the receiving branch with the same pounds",
+     "ok": true,
+     "measured": "true 2400"
+    },
+    {
+     "what": "the sending branch no longer lists it and the receiving branch does",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 252,
+   "record": {
+    "workflowId": "ML-03",
+    "purpose": "Inter-location transfers and inventory visibility",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "POST /api/inventory/transfers, /:id/receive",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "inventory leaves one branch and arrives at the other at the same cost; total unchanged",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 4: numbers that must be unique stay unique across all branches",
+   "asserts": [
+    {
+     "what": "no two orders share a number",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "no two invoices share a number",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "no two shipments share a number",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "no two quotes share a number",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "no two stock items share a number",
+     "ok": true,
+     "measured": "0"
+    }
+   ],
+   "pass": true,
+   "ms": 11,
+   "record": {
+    "workflowId": "ML-04",
+    "purpose": "Document numbering across branches",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "as named in the checks",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 5: a branch's tax and financial reporting follow the branch",
+   "asserts": [
+    {
+     "what": "every line of the invoice entry carries the selling branch",
+     "ok": true,
+     "measured": "0"
+    },
+    {
+     "what": "the branch has its own line in revenue by branch",
+     "ok": true
+    },
+    {
+     "what": "the tax charged is the rate on file for the place of delivery, or none where none is on file",
+     "ok": true,
+     "measured": "0; rate on file: none"
+    }
+   ],
+   "pass": true,
+   "ms": 1190,
+   "record": {
+    "workflowId": "ML-05",
+    "purpose": "Location-specific tax and reporting",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "as named in the checks",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "revenue and tax are attributed to the selling branch",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "invoice tax 0 on subtotal 192.2 at branch state GA"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Multi-location readiness",
+   "name": "Locations 6: a new branch can be added and is at once separate from the rest",
+   "asserts": [
+    {
+     "what": "no route pretends to add a branch",
+     "ok": true,
+     "measured": "/api/admin/locations 404, /api/locations 404, /api/v1/locations 404"
+    },
+    {
+     "what": "its first manager signs in and sees no other branch's orders or stock",
+     "ok": true,
+     "measured": "200 0 orders, 200 0 stock items"
+    },
+    {
+     "what": "and cannot open another branch's order",
+     "ok": true
+    },
+    {
+     "what": "head office sees the new branch",
+     "ok": true
+    },
+    {
+     "what": "the new branch starts with no orders and no stock",
+     "ok": true
+    }
+   ],
+   "pass": true,
+   "ms": 1327,
+   "record": {
+    "workflowId": "ML-06",
+    "purpose": "New location onboarding",
+    "startingEvent": "as the name states",
+    "responsibleRole": "head office and branch staff",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "the branch chooser and every list",
+    "apiPath": "POST /api/admin/locations or the locations screen",
+    "databaseChanges": "one Location, one user",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Multi-location readiness; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "the product has no path that adds a branch: /api/admin/locations 404, /api/locations 404, /api/v1/locations 404; the branch below is added the way cutover adds one, by script"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Evidence gaps closed",
+   "name": "Gap B-007: an executive decision is recorded under the signed-in person, whatever the request claims",
+   "asserts": [
+    {
+     "what": "it is recorded",
+     "ok": true,
+     "measured": "201 "
+    },
+    {
+     "what": "the maker is the signed-in person",
+     "ok": true,
+     "measured": "P11 COO HQ"
+    },
+    {
+     "what": "the role is the signed-in person's role",
+     "ok": true,
+     "measured": "COO"
+    },
+    {
+     "what": "the id and the date are the server's, not the request's",
+     "ok": true,
+     "measured": "DEC-2026-0049 2026-11-19T00:51:59.410Z"
+    },
+    {
+     "what": "a sales representative cannot record one",
+     "ok": true,
+     "measured": "403"
+    }
+   ],
+   "pass": true,
+   "ms": 1346,
+   "record": {
+    "workflowId": "GP-01",
+    "purpose": "Executive decision create reads no identity from the request",
+    "startingEvent": "as the name states",
+    "responsibleRole": "as named",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: API",
+    "apiPath": "POST /api/executive/decisions",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Evidence gaps closed; 5 checks",
+    "actual": "as expected (5 checks)",
+    "observations": [
+     "answered 201: {\"id\":\"DEC-2026-0049\",\"timestamp\":\"2026-11-19T00:51:59.410Z\",\"type\":\"PRICING\",\"title\":\"P12 decision\",\"description\":\"synthetic\",\"decisionMaker\":\"P11 COO HQ\",\"role\":\"COO\",\"status\":\"PENDING\",\"scenarioId\":null,\"predictedOutcome\":null,\"actualOut"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Evidence gaps closed",
+   "name": "Gap E-023: the operations cockpit answers within the proposed limit with 80 branches of data",
+   "asserts": [
+    {
+     "what": "it answers",
+     "ok": true,
+     "measured": "200"
+    },
+    {
+     "what": "the median read is under 2 seconds (proposed limit for a dashboard; not approved)",
+     "ok": true,
+     "measured": "59 ms"
+    },
+    {
+     "what": "the slowest read is under 5 seconds",
+     "ok": true,
+     "measured": "75 ms"
+    },
+    {
+     "what": "the answer is a summary, not every record: under 1 MB",
+     "ok": true,
+     "measured": "77 KB"
+    }
+   ],
+   "pass": true,
+   "ms": 433,
+   "record": {
+    "workflowId": "GP-02",
+    "purpose": "Operations cockpit at volume",
+    "startingEvent": "as the name states",
+    "responsibleRole": "as named",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "Operations > Cockpit",
+    "apiPath": "GET /api/ops-cockpit",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Evidence gaps closed; 4 checks",
+    "actual": "as expected (4 checks)",
+    "observations": [
+     "records: {\"orders\":4262,\"jobs\":629,\"coils\":2712,\"shipments\":1862}; seven reads took 53, 55, 56, 59, 63, 66, 75 ms; answer 77 KB"
+    ],
+    "result": "PASS"
+   }
+  },
+  {
+   "group": "Evidence gaps closed",
+   "name": "Gap: a document over the upload size limit is refused cleanly, and a stored one downloads byte for byte",
+   "asserts": [
+    {
+     "what": "a 200 KB PDF is accepted",
+     "ok": true,
+     "measured": "201 {\"id\":\"9ba8e69a-8b95-4a59-aa18-aa20a91f0415\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-siz"
+    },
+    {
+     "what": "a 26 MB PDF, over the 25 MB limit of a self-hosted server, is refused as too large and not as a server error",
+     "ok": true,
+     "measured": "413"
+    },
+    {
+     "what": "the stored file downloads byte for byte on this server",
+     "ok": true,
+     "measured": "200 204816 of 204816 bytes"
+    }
+   ],
+   "pass": true,
+   "ms": 1646,
+   "record": {
+    "workflowId": "GP-03",
+    "purpose": "Upload size limit",
+    "startingEvent": "as the name states",
+    "responsibleRole": "as named",
+    "requiredPermissions": "the role's department rule and its own branch",
+    "uiEntryPoint": "none: API",
+    "apiPath": "POST /api/documents/upload",
+    "databaseChanges": "none outside the scenario",
+    "eventsAndIntegrations": "none",
+    "financialConsequences": "none",
+    "expectedFinalState": "as the checks state",
+    "evidence": "qa/sim/phase12-certification.mjs, Evidence gaps closed; 3 checks",
+    "actual": "as expected (3 checks)",
+    "observations": [
+     "200 KB answered 201; 26 MB answered 413 {\"error\":\"That file is larger than the 25 MB limit\"}",
+     "the hosted site has a lower limit (4 MB) and its own file store: D-011b, a hosted upload downloading byte for byte, can only be checked on the host and stays NOT VERIFIED"
+    ],
+    "result": "PASS"
+   }
+  }
+ ],
+ "serverCopies": 3,
+ "ledgerEventsHeldBeforeTheRun": 3
+}

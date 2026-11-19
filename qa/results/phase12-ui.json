@@ -1,0 +1,145 @@
+{
+  "ranAt": "2026-11-19T00:46:12.633Z",
+  "app": "http://localhost:5199",
+  "api": "http://localhost:3001",
+  "passed": 5,
+  "total": 5,
+  "checks": 18,
+  "results": [
+    {
+      "id": 1,
+      "name": "The manual says a sample chapter is a sample before anything else",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the chapter on safety opens with a notice",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the notice says the screens are design samples and nothing is saved",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 5301
+    },
+    {
+      "id": 2,
+      "name": "A chapter with some sample screens names them, and a chapter of real screens has no notice",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the executive chapter names its sample screens",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the finance chapter has no sample notice",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 7025
+    },
+    {
+      "id": 3,
+      "name": "The manual has the chapters the real screens lacked, and they open",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "\"Finance (the Ledger)\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "\"Purchasing\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "\"Transfers Between Branches\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "\"Work Orders (Processing a Stock Item)\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "\"Invoices, Payments, Returns and Closing Orders\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "\"When Something Goes Wrong\" is listed",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the purchasing chapter says an over-receipt is received on hold",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no page error",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 6154
+    },
+    {
+      "id": 4,
+      "name": "The executive cockpit question box gives no invented answer",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "it says the box is not built",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it gives no percentage, no money and no \"confidence\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "it points to the assistant in the top bar",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 4620
+    },
+    {
+      "id": 5,
+      "name": "When time records cannot be loaded the screen says so and shows no hours",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "it says the time records could not be loaded",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no \"demo data\" and no hours are shown",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": "",
+      "ms": 2223
+    }
+  ]
+}

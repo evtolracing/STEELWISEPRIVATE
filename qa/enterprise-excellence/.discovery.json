@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-18T19:27:45.828Z",
+ "generated": "2026-11-19T00:25:59.351Z",
  "commit": "ref: refs/heads/claude/project-thread-25z3jd",
  "schema": {
   "models": [
@@ -26252,7 +26252,7 @@
     "file": "src/backend/src/routes/heats.js",
     "mount": "/api/heats",
     "exercised": {
-     "ok": 38,
+     "ok": 37,
      "refused": 5,
      "error": 0
     }
@@ -26457,7 +26457,7 @@
     "file": "src/backend/src/routes/coils.js",
     "mount": "/api/coils",
     "exercised": {
-     "ok": 81,
+     "ok": 82,
      "refused": 6,
      "error": 0
     }
@@ -27112,8 +27112,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 146,
-     "refused": 62,
+     "ok": 147,
+     "refused": 61,
      "error": 0
     }
    },
@@ -27178,8 +27178,8 @@
     "file": "src/backend/src/routes/inventory.js",
     "mount": "/api/inventory",
     "exercised": {
-     "ok": 1041,
-     "refused": 71,
+     "ok": 1038,
+     "refused": 74,
      "error": 0
     }
    },
@@ -27343,7 +27343,7 @@
     "file": "src/backend/src/routes/intakeOrders.js",
     "mount": "/api/orders/intake",
     "exercised": {
-     "ok": 117,
+     "ok": 115,
      "refused": 4,
      "error": 0
     }
@@ -29954,8 +29954,8 @@
     "file": "src/backend/src/routes/orders.js",
     "mount": "/api/orders",
     "exercised": {
-     "ok": 1135,
-     "refused": 31,
+     "ok": 1134,
+     "refused": 32,
      "error": 0
     }
    },
@@ -30338,8 +30338,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 69,
-     "refused": 49,
+     "ok": 71,
+     "refused": 47,
      "error": 0
     }
    },
@@ -30436,8 +30436,8 @@
     "file": "src/backend/src/routes/workOrders.js",
     "mount": "/api/work-orders",
     "exercised": {
-     "ok": 7,
-     "refused": 5,
+     "ok": 5,
+     "refused": 7,
      "error": 0
     }
    },
@@ -30755,8 +30755,8 @@
     "file": "src/backend/src/routes/shipments.js",
     "mount": "/api/shipments",
     "exercised": {
-     "ok": 686,
-     "refused": 71,
+     "ok": 687,
+     "refused": 70,
      "error": 0
     }
    },
@@ -30915,7 +30915,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 125,
+     "ok": 126,
      "refused": 22,
      "error": 0
     }
@@ -31011,7 +31011,7 @@
     "file": "src/backend/src/routes/invoices.js",
     "mount": "/api/invoices",
     "exercised": {
-     "ok": 29,
+     "ok": 21,
      "refused": 88,
      "error": 1
     }
@@ -31363,7 +31363,7 @@
     "file": "src/backend/src/routes/ledger.js",
     "mount": "/api/ledger",
     "exercised": {
-     "ok": 404,
+     "ok": 406,
      "refused": 55,
      "error": 0
     }
@@ -32954,7 +32954,7 @@
     "file": "src/backend/src/routes/customers.js",
     "mount": "/api/customers",
     "exercised": {
-     "ok": 126,
+     "ok": 124,
      "refused": 5,
      "error": 0
     }
@@ -34056,8 +34056,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 530,
-     "refused": 199,
+     "ok": 531,
+     "refused": 198,
      "error": 0
     }
    },
@@ -34122,8 +34122,8 @@
     "file": "src/backend/src/routes/jobs.js",
     "mount": "/api/jobs",
     "exercised": {
-     "ok": 2,
-     "refused": 14,
+     "ok": 1,
+     "refused": 15,
      "error": 0
     }
    },
@@ -40188,8 +40188,8 @@
     "file": "src/backend/src/routes/operationsRoutes.js",
     "mount": "/api/v1/operations",
     "exercised": {
-     "ok": 4,
-     "refused": 8,
+     "ok": 5,
+     "refused": 7,
      "error": 0
     }
    },
@@ -46287,7 +46287,7 @@
     "file": "src/backend/src/routes/printQueue.js",
     "mount": "/api/print-queue",
     "exercised": {
-     "ok": 2237,
+     "ok": 2239,
      "refused": 21,
      "error": 0
     }
@@ -46781,8 +46781,8 @@
     "file": "src/backend/src/routes/partner/customerRoutes.js",
     "mount": "/api/v1/partner/customer",
     "exercised": {
-     "ok": 15,
-     "refused": 34,
+     "ok": 19,
+     "refused": 30,
      "error": 0
     }
    },
@@ -57623,17 +57623,17 @@
    },
    {
     "file": "qa/sim/phase11/s7-fail.mjs",
-    "lines": 544,
+    "lines": 552,
     "checks": 0
    },
    {
     "file": "qa/sim/phase11/s8-report.mjs",
-    "lines": 164,
+    "lines": 165,
     "checks": 0
    },
    {
     "file": "qa/sim/phase11/sctx.mjs",
-    "lines": 111,
+    "lines": 123,
     "checks": 0
    },
    {
@@ -57648,12 +57648,62 @@
    },
    {
     "file": "qa/sim/phase11-enterprise.mjs",
-    "lines": 282,
+    "lines": 281,
     "checks": 0
    },
    {
     "file": "qa/sim/phase11-scenarios.mjs",
-    "lines": 30,
+    "lines": 31,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/ctx.mjs",
+    "lines": 63,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f1-flows.mjs",
+    "lines": 452,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f2-finance.mjs",
+    "lines": 264,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f3-ai.mjs",
+    "lines": 165,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f4-recon.mjs",
+    "lines": 88,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f5-dash.mjs",
+    "lines": 84,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f6-sec.mjs",
+    "lines": 172,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f7-multi.mjs",
+    "lines": 75,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12/f8-gaps.mjs",
+    "lines": 43,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/phase12-certification.mjs",
+    "lines": 28,
     "checks": 0
    },
    {
@@ -59181,15 +59231,15 @@
   ]
  },
  "exercised": {
-  "at": "2026-11-18T19:26:48.621Z",
+  "at": "2026-11-19T00:24:58.255Z",
   "sources": [
    {
     "file": "server-3011.log",
-    "requests": 21845
+    "requests": 21839
    },
    {
     "file": "server-3001.log",
-    "requests": 8419
+    "requests": 8418
    }
   ],
   "distinct": 2845

@@ -51,7 +51,13 @@ echo "== phase 10 security scenarios"; [ -f qa/sim/phase10-security.mjs ] && nod
 echo "== phase 9.5 load, 80 branches"; node qa/sim/phase95-load.mjs --base http://localhost:3011 2>&1 | grep "✗\|stage 1\|Phase 9.5 load"
 # Phase 11: three server copies behind one front door on the same QA database; the enterprise day, then the 320 scenarios.
 echo "== phase 11 enterprise run, three server copies"; P11_DB="$(basename "${DATABASE_URL%%\?*}")" qa/tools/phase11-cluster.sh 3 | tail -1; node qa/sim/phase11-enterprise.mjs --base http://localhost:3110 --cycle gate --label "Gate" --out qa/results/phase11-gate-enterprise.json 2>&1 | grep -E "customer jobs|transactions:|books:|^✗|^✓ Phase|slower"
-echo "== phase 11 scenarios"; node qa/sim/phase11-scenarios.mjs --base http://localhost:3110 --stub-port 3166 --app http://localhost:5199 --out qa/results/phase11-gate-scenarios.json 2>&1 | grep -v "^\s*at " | tail -16; pkill -f "qa-cluster.mjs --workers"
+echo "== phase 11 scenarios"; node qa/sim/phase11-scenarios.mjs --base http://localhost:3110 --stub-port 3166 --app http://localhost:5199 --out qa/results/phase11-gate-scenarios.json 2>&1 | grep -v "^\s*at " | tail -16
+# Phase 12: the certification suite on the same three server copies (ten cross-module flows, the ledger, reconciliation,
+# dashboards, the assistant, security, multi-location), then the browser checks, the process checks and the manual check.
+echo "== phase 12 certification"; node qa/sim/phase12-certification.mjs --base http://localhost:3110 --stub-port 3166 --out qa/results/phase12-certification.json 2>&1 | grep -v "^\s*at " | tail -14; pkill -f "qa-cluster.mjs --workers"
+echo "== phase 12 UI scenarios"; node qa/sim/phase12-ui.cjs 2>&1 | grep "✗\|Phase 12 UI"
+echo "== phase 12 process checks"; node qa/tools/phase12-process.mjs 2>&1 | grep "✗\|checks,"
+echo "== phase 12 manual check"; node qa/tools/phase12-manual.mjs | tail -3
 echo "== calls the tests made"; node qa/tools/exercised.mjs "$LOGS/server-3011.log" "$LOGS/server-3001.log" | sed -n '/"distinct"/,$p'
 echo "== baseline probe"; node qa/tools/discover.mjs > /dev/null; node qa/sim/baseline-probe.mjs --base http://localhost:3011 --max-crash 0 2>&1 | tail -12
 echo "== department rule coverage"; node qa/tools/access-coverage.mjs

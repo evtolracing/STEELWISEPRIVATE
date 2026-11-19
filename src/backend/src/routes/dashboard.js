@@ -5,49 +5,8 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    // Return mock data if database is not configured
-    if (!prisma) {
-      return res.json({
-        inventory: {
-          totalOnHand: 125000,
-          available: 85000,
-          allocated: 35000,
-          onHold: 5000
-        },
-        orders: {
-          byStatus: {
-            PENDING: 5,
-            CONFIRMED: 8,
-            IN_PRODUCTION: 12,
-            SHIPPED: 15,
-            DELIVERED: 20
-          }
-        },
-        recentOrders: [
-          {
-            id: '1',
-            orderNumber: 'SO-1001',
-            status: 'CONFIRMED',
-            createdAt: new Date('2026-02-08T10:00:00Z'),
-            buyer: { name: 'ABC Manufacturing' }
-          },
-          {
-            id: '2',
-            orderNumber: 'SO-1002',
-            status: 'PENDING',
-            createdAt: new Date('2026-02-07T14:30:00Z'),
-            buyer: { name: 'XYZ Industries' }
-          }
-        ],
-        qcHolds: [],
-        coilsByStatus: {
-          AVAILABLE: 45,
-          ALLOCATED: 23,
-          ON_HOLD: 3,
-          SHIPPED: 12
-        }
-      });
-    }
+    // With no database there is nothing true to show: say so, never invented figures (Phase 12, AA-001).
+    if (!prisma) return res.status(503).json({ error: 'The database is not available, so the dashboard has nothing to show.' });
 
     const [
       inventorySummary,
@@ -111,6 +70,7 @@ router.get('/', async (req, res) => {
 
 router.get('/kpis', async (req, res) => {
   try {
+    if (!prisma) return res.status(503).json({ error: 'The database is not available, so the dashboard has nothing to show.' });
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 

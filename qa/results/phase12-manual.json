@@ -1,0 +1,804 @@
+{
+ "ranAt": "2026-11-19T00:42:25.681Z",
+ "chapters": 48,
+ "sampleChapters": [
+  "quality-compliance",
+  "supplier-quality",
+  "customer-quality",
+  "contractor-portal",
+  "training-engine",
+  "production-quality",
+  "freight-delivery",
+  "safety-ehs"
+ ],
+ "partSampleChapters": [
+  "executive",
+  "logistics",
+  "maintenance"
+ ],
+ "realScreensOnMenu": 49,
+ "checks": 156,
+ "failed": 0,
+ "results": [
+  {
+   "what": "order-intake: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "order-intake: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "order-intake: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "pos-retail: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "pos-retail: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "pos-retail: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "ecommerce-shop: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "ecommerce-shop: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "ecommerce-shop: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "online-inbox: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "online-inbox: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "online-inbox: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "scheduling-capacity: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "scheduling-capacity: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "scheduling-capacity: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "shop-floor: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "shop-floor: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "shop-floor: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "packaging-drop-tags: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "packaging-drop-tags: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "packaging-drop-tags: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "shipping: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "shipping: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "shipping: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "inventory: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "inventory: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "inventory: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "credit-holds: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "credit-holds: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "credit-holds: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "pricing: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "pricing: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "pricing: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "overrides: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "overrides: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "overrides: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "admin-settings: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "admin-settings: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "admin-settings: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "command-center: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "command-center: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "command-center: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "executive: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "executive: its sample screens are named so the page can say which",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "executive: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "order-board: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "order-board: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "order-board: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "receiving: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "receiving: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "receiving: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "time-tracking: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "time-tracking: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "time-tracking: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "materials: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "materials: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "materials: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "logistics: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "logistics: its sample screens are named so the page can say which",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "logistics: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "commercial: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "commercial: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "commercial: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "customers: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "customers: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "customers: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "sales-quoting: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "sales-quoting: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "sales-quoting: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "mobile-rep: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "mobile-rep: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "mobile-rep: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "quality-compliance: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "quality-compliance: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "2 sample screens"
+  },
+  {
+   "what": "quality-compliance: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "supplier-quality: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "supplier-quality: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "6 sample screens"
+  },
+  {
+   "what": "supplier-quality: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "customer-quality: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "customer-quality: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "4 sample screens"
+  },
+  {
+   "what": "customer-quality: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "contractor-portal: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "contractor-portal: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "4 sample screens"
+  },
+  {
+   "what": "contractor-portal: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "training-engine: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "training-engine: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "4 sample screens"
+  },
+  {
+   "what": "training-engine: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "production-quality: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "production-quality: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "5 sample screens"
+  },
+  {
+   "what": "production-quality: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "maintenance: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "maintenance: its sample screens are named so the page can say which",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "maintenance: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "packaging-custody: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "packaging-custody: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "packaging-custody: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "drop-tag-engine: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "drop-tag-engine: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "drop-tag-engine: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "freight-delivery: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "freight-delivery: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "4 sample screens"
+  },
+  {
+   "what": "freight-delivery: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "safety-ehs: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "safety-ehs: all its screens are samples, so the chapter is flagged as a sample",
+   "ok": true,
+   "detail": "9 sample screens"
+  },
+  {
+   "what": "safety-ehs: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "enterprise-account: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "enterprise-account: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "enterprise-account: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "ecommerce-admin: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "ecommerce-admin: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "ecommerce-admin: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "planning: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "planning: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "planning: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "customer-shop-guide: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "customer-shop-guide: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "customer-shop-guide: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "finance-ledger: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "finance-ledger: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "finance-ledger: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "purchasing: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "purchasing: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "purchasing: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "transfers: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "transfers: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "transfers: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "work-orders: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "work-orders: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "work-orders: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "invoices-returns: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "invoices-returns: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "invoices-returns: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "admin-checks: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "admin-checks: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "admin-checks: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "material-tracking: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "material-tracking: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "material-tracking: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "quality-station: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "quality-station: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "quality-station: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "when-something-goes-wrong: every route named exists",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "when-something-goes-wrong: not flagged as a sample when none of its screens is",
+   "ok": true,
+   "detail": "flagged"
+  },
+  {
+   "what": "when-something-goes-wrong: has sections with content",
+   "ok": true,
+   "detail": "an empty section"
+  },
+  {
+   "what": "chapter ids are unique",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "every real screen on the menu has a chapter",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: finance-ledger",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: purchasing",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: transfers",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: work-orders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: invoices-returns",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "required chapter present: when-something-goes-wrong",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "no another company's name in the manual",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "no placeholder text in the manual",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "no unfinished text in the manual",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "the manual page shows a notice above a sample chapter",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

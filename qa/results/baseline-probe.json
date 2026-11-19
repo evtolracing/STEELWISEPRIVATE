@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-18T19:26:49.526Z",
+ "at": "2026-11-19T00:24:59.235Z",
  "sections": {
   "Read-only roles cannot change anything": {
    "pass": true,

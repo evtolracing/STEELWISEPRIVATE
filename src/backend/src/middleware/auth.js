@@ -54,6 +54,10 @@ export async function authenticate(req, res, next) {
   // A signed token that names no login is refused here, not passed to the database (Y-018).
   if (typeof decoded?.userId !== 'string' || !decoded.userId) return res.status(401).json({ error: 'Invalid token' });
 
+  // With no database there is nobody to check the token against: say the service is unavailable,
+  // not that the server failed (Phase 12, AA-001; M-013).
+  if (!prisma) return res.status(503).json({ error: 'The database is not available. Try again shortly.' });
+
   try {
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },

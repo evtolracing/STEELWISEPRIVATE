@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T07:48:47.752Z",
+ "at": "2026-11-20T09:03:48.786Z",
  "base": "http://localhost:3011",
  "scenarios": 158,
  "passed": 157,
@@ -92,7 +92,7 @@
     }
    ],
    "pass": true,
-   "ms": 56
+   "ms": 51
   },
   {
    "group": "Periods, cutover and reporting",
@@ -120,7 +120,7 @@
     }
    ],
    "pass": true,
-   "ms": 395
+   "ms": 405
   },
   {
    "group": "Periods, cutover and reporting",
@@ -144,7 +144,7 @@
     }
    ],
    "pass": true,
-   "ms": 65
+   "ms": 89
   },
   {
    "group": "Periods, cutover and reporting",
@@ -180,7 +180,7 @@
     }
    ],
    "pass": true,
-   "ms": 80
+   "ms": 93
   },
   {
    "group": "Periods, cutover and reporting",
@@ -232,7 +232,7 @@
     }
    ],
    "pass": true,
-   "ms": 78
+   "ms": 100
   },
   {
    "group": "Periods, cutover and reporting",
@@ -272,7 +272,7 @@
     }
    ],
    "pass": true,
-   "ms": 40
+   "ms": 46
   },
   {
    "group": "Periods, cutover and reporting",
@@ -320,7 +320,7 @@
     }
    ],
    "pass": true,
-   "ms": 188
+   "ms": 222
   },
   {
    "group": "Periods, cutover and reporting",
@@ -372,7 +372,7 @@
     }
    ],
    "pass": true,
-   "ms": 48
+   "ms": 53
   },
   {
    "group": "Sales, invoices and revenue",
@@ -416,7 +416,7 @@
     }
    ],
    "pass": true,
-   "ms": 331
+   "ms": 348
   },
   {
    "group": "Sales, invoices and revenue",
@@ -452,7 +452,7 @@
     }
    ],
    "pass": true,
-   "ms": 341
+   "ms": 322
   },
   {
    "group": "Sales, invoices and revenue",
@@ -488,7 +488,7 @@
     }
    ],
    "pass": true,
-   "ms": 327
+   "ms": 342
   },
   {
    "group": "Sales, invoices and revenue",
@@ -532,7 +532,7 @@
     }
    ],
    "pass": true,
-   "ms": 381
+   "ms": 331
   },
   {
    "group": "Sales, invoices and revenue",
@@ -551,16 +551,16 @@
      "ok": true
     },
     {
-     "what": "invoice INV-000386 has its own posted entry",
+     "what": "invoice INV-000387 has its own posted entry",
      "ok": true
     },
     {
-     "what": "invoice INV-000387 has its own posted entry",
+     "what": "invoice INV-000388 has its own posted entry",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 513
+   "ms": 481
   },
   {
    "group": "Sales, invoices and revenue",
@@ -580,7 +580,7 @@
     }
    ],
    "pass": true,
-   "ms": 473
+   "ms": 514
   },
   {
    "group": "Sales, invoices and revenue",
@@ -632,7 +632,7 @@
     }
    ],
    "pass": true,
-   "ms": 520
+   "ms": 486
   },
   {
    "group": "Sales, invoices and revenue",
@@ -652,7 +652,7 @@
     }
    ],
    "pass": true,
-   "ms": 387
+   "ms": 356
   },
   {
    "group": "Sales, invoices and revenue",
@@ -708,7 +708,7 @@
     }
    ],
    "pass": true,
-   "ms": 399
+   "ms": 420
   },
   {
    "group": "Sales, invoices and revenue",
@@ -728,7 +728,7 @@
     }
    ],
    "pass": true,
-   "ms": 368
+   "ms": 417
   },
   {
    "group": "Sales, invoices and revenue",
@@ -764,7 +764,7 @@
     }
    ],
    "pass": true,
-   "ms": 402
+   "ms": 449
   },
   {
    "group": "Sales, invoices and revenue",
@@ -800,7 +800,7 @@
     }
    ],
    "pass": true,
-   "ms": 245
+   "ms": 284
   },
   {
    "group": "Sales, invoices and revenue",
@@ -824,7 +824,7 @@
     }
    ],
    "pass": true,
-   "ms": 230
+   "ms": 228
   },
   {
    "group": "Sales, invoices and revenue",
@@ -856,7 +856,7 @@
     }
    ],
    "pass": true,
-   "ms": 332
+   "ms": 368
   },
   {
    "group": "Sales, invoices and revenue",
@@ -868,7 +868,7 @@
     }
    ],
    "pass": true,
-   "ms": 350
+   "ms": 365
   },
   {
    "group": "Sales, invoices and revenue",
@@ -888,7 +888,7 @@
     }
    ],
    "pass": true,
-   "ms": 349
+   "ms": 407
   },
   {
    "group": "Sales, invoices and revenue",
@@ -908,7 +908,7 @@
     }
    ],
    "pass": true,
-   "ms": 312
+   "ms": 371
   },
   {
    "group": "Sales, invoices and revenue",
@@ -920,7 +920,7 @@
     }
    ],
    "pass": true,
-   "ms": 323
+   "ms": 316
   },
   {
    "group": "Sales, invoices and revenue",
@@ -968,7 +968,7 @@
     }
    ],
    "pass": true,
-   "ms": 310
+   "ms": 349
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1024,7 +1024,7 @@
     }
    ],
    "pass": true,
-   "ms": 436
+   "ms": 474
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1044,7 +1044,7 @@
     }
    ],
    "pass": true,
-   "ms": 405
+   "ms": 431
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1088,7 +1088,7 @@
     }
    ],
    "pass": true,
-   "ms": 594
+   "ms": 641
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1104,7 +1104,7 @@
     }
    ],
    "pass": true,
-   "ms": 330
+   "ms": 383
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1124,7 +1124,7 @@
     }
    ],
    "pass": true,
-   "ms": 305
+   "ms": 356
   },
   {
    "group": "Sales, invoices and revenue",
@@ -1144,7 +1144,7 @@
     }
    ],
    "pass": true,
-   "ms": 379
+   "ms": 403
   },
   {
    "group": "Payments, credits and refunds",
@@ -1188,7 +1188,7 @@
     }
    ],
    "pass": true,
-   "ms": 352
+   "ms": 363
   },
   {
    "group": "Payments, credits and refunds",
@@ -1208,7 +1208,7 @@
     }
    ],
    "pass": true,
-   "ms": 368
+   "ms": 398
   },
   {
    "group": "Payments, credits and refunds",
@@ -1228,7 +1228,7 @@
     }
    ],
    "pass": true,
-   "ms": 322
+   "ms": 377
   },
   {
    "group": "Payments, credits and refunds",
@@ -1248,7 +1248,7 @@
     }
    ],
    "pass": true,
-   "ms": 355
+   "ms": 400
   },
   {
    "group": "Payments, credits and refunds",
@@ -1272,7 +1272,7 @@
     }
    ],
    "pass": true,
-   "ms": 347
+   "ms": 382
   },
   {
    "group": "Payments, credits and refunds",
@@ -1296,7 +1296,7 @@
     }
    ],
    "pass": true,
-   "ms": 54
+   "ms": 76
   },
   {
    "group": "Payments, credits and refunds",
@@ -1320,7 +1320,7 @@
     }
    ],
    "pass": true,
-   "ms": 405
+   "ms": 470
   },
   {
    "group": "Payments, credits and refunds",
@@ -1368,7 +1368,7 @@
     }
    ],
    "pass": true,
-   "ms": 404
+   "ms": 438
   },
   {
    "group": "Payments, credits and refunds",
@@ -1392,7 +1392,7 @@
     }
    ],
    "pass": true,
-   "ms": 406
+   "ms": 515
   },
   {
    "group": "Payments, credits and refunds",
@@ -1432,7 +1432,7 @@
     }
    ],
    "pass": true,
-   "ms": 54
+   "ms": 62
   },
   {
    "group": "Payments, credits and refunds",
@@ -1448,7 +1448,7 @@
     }
    ],
    "pass": true,
-   "ms": 400
+   "ms": 403
   },
   {
    "group": "Payments, credits and refunds",
@@ -1468,7 +1468,7 @@
     }
    ],
    "pass": true,
-   "ms": 471
+   "ms": 497
   },
   {
    "group": "Payments, credits and refunds",
@@ -1484,7 +1484,7 @@
     }
    ],
    "pass": true,
-   "ms": 52
+   "ms": 60
   },
   {
    "group": "Payments, credits and refunds",
@@ -1504,7 +1504,7 @@
     }
    ],
    "pass": true,
-   "ms": 513
+   "ms": 532
   },
   {
    "group": "Payments, credits and refunds",
@@ -1520,7 +1520,7 @@
     }
    ],
    "pass": true,
-   "ms": 390
+   "ms": 369
   },
   {
    "group": "Payments, credits and refunds",
@@ -1536,7 +1536,7 @@
     }
    ],
    "pass": true,
-   "ms": 303
+   "ms": 338
   },
   {
    "group": "Payments, credits and refunds",
@@ -1560,7 +1560,7 @@
     }
    ],
    "pass": true,
-   "ms": 465
+   "ms": 501
   },
   {
    "group": "Payments, credits and refunds",
@@ -1584,7 +1584,7 @@
     }
    ],
    "pass": true,
-   "ms": 524
+   "ms": 534
   },
   {
    "group": "Payments, credits and refunds",
@@ -1600,7 +1600,7 @@
     }
    ],
    "pass": true,
-   "ms": 382
+   "ms": 347
   },
   {
    "group": "Payments, credits and refunds",
@@ -1620,7 +1620,7 @@
     }
    ],
    "pass": true,
-   "ms": 377
+   "ms": 389
   },
   {
    "group": "Payments, credits and refunds",
@@ -1640,7 +1640,7 @@
     }
    ],
    "pass": true,
-   "ms": 15
+   "ms": 17
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1684,7 +1684,7 @@
     }
    ],
    "pass": true,
-   "ms": 107
+   "ms": 127
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1699,16 +1699,16 @@
      "ok": true
     },
     {
-     "what": "item RC-MWOOFRKU-135 is booked at its own weight",
+     "what": "item RC-MWOR4575-135 is booked at its own weight",
      "ok": true
     },
     {
-     "what": "item RC-MWOOFRKU-136 is booked at its own weight",
+     "what": "item RC-MWOR4575-136 is booked at its own weight",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 151
+   "ms": 167
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1732,7 +1732,7 @@
     }
    ],
    "pass": true,
-   "ms": 63
+   "ms": 68
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1764,7 +1764,7 @@
     }
    ],
    "pass": true,
-   "ms": 132
+   "ms": 119
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1784,7 +1784,7 @@
     }
    ],
    "pass": true,
-   "ms": 158
+   "ms": 167
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1820,7 +1820,7 @@
     }
    ],
    "pass": true,
-   "ms": 140
+   "ms": 156
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1852,7 +1852,7 @@
     }
    ],
    "pass": true,
-   "ms": 142
+   "ms": 137
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1868,7 +1868,7 @@
     }
    ],
    "pass": true,
-   "ms": 138
+   "ms": 135
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1900,7 +1900,7 @@
     }
    ],
    "pass": true,
-   "ms": 140
+   "ms": 184
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1916,7 +1916,7 @@
     }
    ],
    "pass": true,
-   "ms": 162
+   "ms": 204
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1936,7 +1936,7 @@
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 86
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1952,7 +1952,7 @@
     }
    ],
    "pass": true,
-   "ms": 119
+   "ms": 123
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1976,7 +1976,7 @@
     }
    ],
    "pass": true,
-   "ms": 143
+   "ms": 146
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -1992,7 +1992,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 178
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2016,7 +2016,7 @@
     }
    ],
    "pass": true,
-   "ms": 71
+   "ms": 80
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2032,7 +2032,7 @@
     }
    ],
    "pass": true,
-   "ms": 104
+   "ms": 120
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2056,7 +2056,7 @@
     }
    ],
    "pass": true,
-   "ms": 161
+   "ms": 181
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2080,7 +2080,7 @@
     }
    ],
    "pass": true,
-   "ms": 212
+   "ms": 258
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2112,7 +2112,7 @@
     }
    ],
    "pass": true,
-   "ms": 221
+   "ms": 250
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2132,7 +2132,7 @@
     }
    ],
    "pass": true,
-   "ms": 110
+   "ms": 122
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2148,7 +2148,7 @@
     }
    ],
    "pass": true,
-   "ms": 106
+   "ms": 107
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2164,7 +2164,7 @@
     }
    ],
    "pass": true,
-   "ms": 154
+   "ms": 133
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2176,7 +2176,7 @@
     }
    ],
    "pass": true,
-   "ms": 134
+   "ms": 175
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2208,7 +2208,7 @@
     }
    ],
    "pass": true,
-   "ms": 325
+   "ms": 424
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2228,7 +2228,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 253
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2252,7 +2252,7 @@
     }
    ],
    "pass": true,
-   "ms": 191
+   "ms": 227
   },
   {
    "group": "Inventory valuation and adjustments",
@@ -2272,7 +2272,7 @@
     }
    ],
    "pass": true,
-   "ms": 20
+   "ms": 33
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2320,7 +2320,7 @@
     }
    ],
    "pass": true,
-   "ms": 242
+   "ms": 236
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2352,7 +2352,7 @@
     }
    ],
    "pass": true,
-   "ms": 229
+   "ms": 227
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2376,7 +2376,7 @@
     }
    ],
    "pass": true,
-   "ms": 206
+   "ms": 245
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2412,7 +2412,7 @@
     }
    ],
    "pass": true,
-   "ms": 244
+   "ms": 310
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2464,7 +2464,7 @@
     }
    ],
    "pass": true,
-   "ms": 348
+   "ms": 396
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2488,7 +2488,7 @@
     }
    ],
    "pass": true,
-   "ms": 214
+   "ms": 231
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2508,7 +2508,7 @@
     }
    ],
    "pass": true,
-   "ms": 218
+   "ms": 202
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2524,7 +2524,7 @@
     }
    ],
    "pass": true,
-   "ms": 202
+   "ms": 196
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2556,7 +2556,7 @@
     }
    ],
    "pass": true,
-   "ms": 421
+   "ms": 423
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2580,7 +2580,7 @@
     }
    ],
    "pass": true,
-   "ms": 320
+   "ms": 311
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2596,7 +2596,7 @@
     }
    ],
    "pass": true,
-   "ms": 368
+   "ms": 348
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2616,7 +2616,7 @@
     }
    ],
    "pass": true,
-   "ms": 210
+   "ms": 244
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2660,7 +2660,7 @@
     }
    ],
    "pass": true,
-   "ms": 283
+   "ms": 288
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2672,7 +2672,7 @@
     }
    ],
    "pass": true,
-   "ms": 199
+   "ms": 240
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2704,7 +2704,7 @@
     }
    ],
    "pass": true,
-   "ms": 238
+   "ms": 250
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2720,7 +2720,7 @@
     }
    ],
    "pass": true,
-   "ms": 266
+   "ms": 296
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2740,7 +2740,7 @@
     }
    ],
    "pass": true,
-   "ms": 249
+   "ms": 296
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2756,7 +2756,7 @@
     }
    ],
    "pass": true,
-   "ms": 148
+   "ms": 176
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2784,7 +2784,7 @@
     }
    ],
    "pass": true,
-   "ms": 285
+   "ms": 340
   },
   {
    "group": "Manufacturing, work in progress and costing",
@@ -2800,7 +2800,7 @@
     }
    ],
    "pass": true,
-   "ms": 194
+   "ms": 188
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -2844,7 +2844,7 @@
     }
    ],
    "pass": true,
-   "ms": 173
+   "ms": 170
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -2892,7 +2892,7 @@
     }
    ],
    "pass": true,
-   "ms": 82
+   "ms": 85
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -2908,7 +2908,7 @@
     }
    ],
    "pass": true,
-   "ms": 234
+   "ms": 239
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -2952,7 +2952,7 @@
     }
    ],
    "pass": true,
-   "ms": 195
+   "ms": 189
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -2984,7 +2984,7 @@
     }
    ],
    "pass": true,
-   "ms": 253
+   "ms": 264
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3004,7 +3004,7 @@
     }
    ],
    "pass": true,
-   "ms": 234
+   "ms": 241
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3028,7 +3028,7 @@
     }
    ],
    "pass": true,
-   "ms": 221
+   "ms": 267
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3052,7 +3052,7 @@
     }
    ],
    "pass": true,
-   "ms": 191
+   "ms": 180
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3068,7 +3068,7 @@
     }
    ],
    "pass": true,
-   "ms": 451
+   "ms": 541
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3084,7 +3084,7 @@
     }
    ],
    "pass": true,
-   "ms": 169
+   "ms": 210
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3104,7 +3104,7 @@
     }
    ],
    "pass": true,
-   "ms": 178
+   "ms": 211
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3120,7 +3120,7 @@
     }
    ],
    "pass": true,
-   "ms": 277
+   "ms": 311
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3140,7 +3140,7 @@
     }
    ],
    "pass": true,
-   "ms": 62
+   "ms": 74
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3156,7 +3156,7 @@
     }
    ],
    "pass": true,
-   "ms": 283
+   "ms": 328
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3208,7 +3208,7 @@
     }
    ],
    "pass": true,
-   "ms": 292
+   "ms": 336
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3240,7 +3240,7 @@
     }
    ],
    "pass": true,
-   "ms": 59
+   "ms": 77
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3260,7 +3260,7 @@
     }
    ],
    "pass": true,
-   "ms": 11
+   "ms": 13
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3276,7 +3276,7 @@
     }
    ],
    "pass": true,
-   "ms": 3
+   "ms": 4
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3316,7 +3316,7 @@
     }
    ],
    "pass": true,
-   "ms": 377
+   "ms": 396
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3332,7 +3332,7 @@
     }
    ],
    "pass": true,
-   "ms": 206
+   "ms": 238
   },
   {
    "group": "Freight, transfers and location accounting",
@@ -3352,7 +3352,7 @@
     }
    ],
    "pass": true,
-   "ms": 18
+   "ms": 20
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3412,7 +3412,7 @@
     }
    ],
    "pass": true,
-   "ms": 214
+   "ms": 244
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3464,7 +3464,7 @@
     }
    ],
    "pass": true,
-   "ms": 129
+   "ms": 164
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3508,7 +3508,7 @@
     }
    ],
    "pass": true,
-   "ms": 520
+   "ms": 580
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3548,7 +3548,7 @@
     }
    ],
    "pass": true,
-   "ms": 60
+   "ms": 58
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3596,7 +3596,7 @@
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 108
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3644,7 +3644,7 @@
     }
    ],
    "pass": true,
-   "ms": 83
+   "ms": 84
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3680,7 +3680,7 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 39
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3724,7 +3724,7 @@
     }
    ],
    "pass": true,
-   "ms": 77
+   "ms": 74
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3760,7 +3760,7 @@
     }
    ],
    "pass": true,
-   "ms": 59
+   "ms": 45
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3796,7 +3796,7 @@
     }
    ],
    "pass": true,
-   "ms": 853
+   "ms": 906
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3824,7 +3824,7 @@
     }
    ],
    "pass": true,
-   "ms": 475
+   "ms": 593
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3880,7 +3880,7 @@
     }
    ],
    "pass": true,
-   "ms": 83
+   "ms": 97
   },
   {
    "group": "Periods, cutover and reporting",
@@ -3944,7 +3944,7 @@
     }
    ],
    "pass": true,
-   "ms": 1601
+   "ms": 1901
   },
   {
    "group": "Periods, cutover and reporting",
@@ -4000,7 +4000,7 @@
     }
    ],
    "pass": true,
-   "ms": 281
+   "ms": 314
   },
   {
    "group": "Periods, cutover and reporting",
@@ -4036,7 +4036,7 @@
     }
    ],
    "pass": true,
-   "ms": 58
+   "ms": 62
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4112,7 +4112,7 @@
     }
    ],
    "pass": true,
-   "ms": 1307
+   "ms": 1441
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4148,7 +4148,7 @@
     }
    ],
    "pass": true,
-   "ms": 410
+   "ms": 507
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4180,7 +4180,7 @@
     }
    ],
    "pass": true,
-   "ms": 254
+   "ms": 267
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4212,7 +4212,7 @@
     }
    ],
    "pass": true,
-   "ms": 77
+   "ms": 82
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4240,7 +4240,7 @@
     }
    ],
    "pass": true,
-   "ms": 71
+   "ms": 105
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4304,7 +4304,7 @@
     }
    ],
    "pass": true,
-   "ms": 56
+   "ms": 66
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4464,7 +4464,7 @@
     }
    ],
    "pass": true,
-   "ms": 173
+   "ms": 185
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4500,7 +4500,7 @@
     }
    ],
    "pass": true,
-   "ms": 466
+   "ms": 487
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4524,7 +4524,7 @@
     }
    ],
    "pass": true,
-   "ms": 510
+   "ms": 603
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4552,7 +4552,7 @@
     }
    ],
    "pass": true,
-   "ms": 111
+   "ms": 121
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4588,7 +4588,7 @@
     }
    ],
    "pass": true,
-   "ms": 2804
+   "ms": 3135
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4636,7 +4636,7 @@
     }
    ],
    "pass": true,
-   "ms": 525
+   "ms": 579
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4664,7 +4664,7 @@
     }
    ],
    "pass": true,
-   "ms": 359
+   "ms": 459
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4728,7 +4728,7 @@
     }
    ],
    "pass": true,
-   "ms": 543
+   "ms": 598
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4760,7 +4760,7 @@
     }
    ],
    "pass": true,
-   "ms": 340
+   "ms": 351
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4788,7 +4788,7 @@
     }
    ],
    "pass": true,
-   "ms": 231
+   "ms": 254
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4917,7 +4917,7 @@
     }
    ],
    "pass": true,
-   "ms": 114
+   "ms": 135
   },
   {
    "group": "Concurrency, authorization and failure recovery",
@@ -4965,7 +4965,7 @@
     }
    ],
    "pass": true,
-   "ms": 68
+   "ms": 85
   }
  ]
 }

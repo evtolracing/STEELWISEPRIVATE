@@ -228,6 +228,8 @@ router.get('/me', authenticate, async (req, res, next) => {
       branchId: view.branchId || null,
       // What this login may do (the previewed role's permissions while previewing), and which permission
       // opens each menu area. The screens go by these, not by the role's name (role matrix, phase 3).
+      // The name of the person's main role: a custom role's name when they have one (phase 4).
+      mainRole: req.realAccess?.primary?.displayName || null,
       audience: req.access.audience,
       permissions: grantList(req.access),
       pagePermissions: PAGE_PERMISSION,

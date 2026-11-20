@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -9,15 +9,15 @@ Every figure here is counted from the code or measured in a test run. The module
 | Item | Count |
 |---|---:|
 | Modules | 51 |
-| Server route files | 77 |
-| API routes (each address counted; two route files are mounted twice) | 691 |
-| API routes that change data | 366 |
-| Database tables in the schema | 173 |
+| Server route files | 78 |
+| API routes (each address counted; two route files are mounted twice) | 694 |
+| API routes that change data | 367 |
+| Database tables in the schema | 174 |
 | Enumerations | 96 |
-| Migrations | 37 |
+| Migrations | 38 |
 | Screens (routes in the browser) | 147 |
-| Frontend source files | 412 (122,037 lines) |
-| Server route code | 25,711 lines |
+| Frontend source files | 413 (122,322 lines) |
+| Server route code | 25,912 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -58,9 +58,9 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Basis:** Sweep proves who may not change users. No test creates, edits and removes a user and checks the result. Branch and division assignments are saved and read by nothing
 - **Purpose:** Create and edit users, assign role, home branch, divisions
 - **Screens:** 2 (2 real): /admin/users, /admin/roles
-- **Server:** `src/backend/src/routes/users.js`, `src/backend/src/routes/roles.js`; served at /api/users/roles, /api/users
-- **Routes:** 17, of which 8 change data. Returned a success in a test this session: 8 of 17; of the changing routes, 4 of 8
-- **Tables:** Role, User, UserRoleAssignment, AuditLog, UserLocation, UserDivision, Location, Division
+- **Server:** `src/backend/src/routes/users.js`, `src/backend/src/routes/roles.js`, `src/backend/src/routes/userAccess.js`; served at /api/users/roles, /api/users
+- **Routes:** 20, of which 9 change data. Returned a success in a test this session: 18 of 20; of the changing routes, 9 of 9
+- **Tables:** Role, User, UserRoleAssignment, UserPrimaryRole, AuditLog, UserPermissionOverride, UserLocation, UserDivision, Location, Division
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Access control
@@ -944,7 +944,7 @@ Finding B-014.
 | src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
 | src/backend/src/routes/intakeOrders.js | 651 | |
-| src/backend/src/routes/shipments.js | 619 | |
+| src/backend/src/routes/users.js | 638 | |
 
 ## Other counts from the frontend
 
@@ -953,12 +953,12 @@ Finding B-014.
 | Files over 600 lines | 66 |
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
-| Icon-only buttons | 301 |
-| aria-label attributes | 266 |
+| Icon-only buttons | 303 |
+| aria-label attributes | 268 |
 | Browser alert or confirm calls | 0 in 0 files |
 | Timers started (setInterval, setTimeout) | 69 |
 | Timers cleared | 41 |
 | console.log calls | 17 |
-| Dialogs | 144 |
+| Dialogs | 145 |
 | Frontend unit test files | 0 |
 

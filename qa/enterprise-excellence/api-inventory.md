@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
 
-691 routes in 77 route files, served at 78 mount points. 366 change data.
+694 routes in 78 route files, served at 79 mount points. 367 change data.
 
 ## What the columns mean
 
@@ -15,10 +15,10 @@ Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 461 of 691 |
-| Changing routes that returned a success in a test | 204 of 366 |
+| Routes that returned a success in a test | 471 of 694 |
+| Changing routes that returned a success in a test | 209 of 367 |
 | Changing handlers with two or more database writes and no transaction | 4 |
-| Read routes with a list query that has no row limit | 56 |
+| Read routes with a list query that has no row limit | 57 |
 | Handlers with no try/catch of their own | 233 (many use a shared wrapper) |
 | Routes that use raw SQL | 8 |
 | Calls the screens make that have no server route | 67 |
@@ -41,9 +41,10 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | Route | File |
 |---|---|
 | `GET /api/auth/me` | auth.js:199 |
-| `GET /api/users/roles/list` | roles.js:76 |
-| `GET /api/users/locations` | users.js:529 |
-| `GET /api/users/divisions` | users.js:546 |
+| `GET /api/users/roles/list` | roles.js:70 |
+| `GET /api/users/:id/access` | userAccess.js:40 |
+| `GET /api/users/locations` | users.js:555 |
+| `GET /api/users/divisions` | users.js:572 |
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
@@ -99,7 +100,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (5 routes, 246 lines)
+### auth.js (5 routes, 248 lines)
 
 Mounted at /api/auth. Tables: User, AuditLog, Location.
 
@@ -111,31 +112,41 @@ Mounted at /api/auth. Tables: User, AuditLog, Location.
 | `POST /api/auth/logout-all` | yes | 2 | yes |  | yes |  |
 | `GET /api/auth/me` | yes |  |  | yes |  |  |
 
-### roles.js (8 routes, 206 lines)
+### roles.js (8 routes, 205 lines)
 
-Mounted at /api/users/roles. Tables: Role, User, UserRoleAssignment, AuditLog.
+Mounted at /api/users/roles. Tables: Role, User, UserRoleAssignment, UserPrimaryRole, AuditLog.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
-| `GET /api/users/roles/catalog` |  |  |  |  |  |  |
+| `GET /api/users/roles/catalog` | yes |  |  |  |  |  |
 | `GET /api/users/roles/list` | yes |  |  | yes |  |  |
-| `GET /api/users/roles/:id` |  |  |  |  |  |  |
-| `GET /api/users/roles/:id/history` |  |  |  |  |  | requireRole() |
-| `POST /api/users/roles` |  | 2 | yes | yes |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
-| `PUT /api/users/roles/:id` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
-| `POST /api/users/roles/:id/reset` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
-| `DELETE /api/users/roles/:id` |  | 1 | yes |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `GET /api/users/roles/:id` | yes |  |  |  |  |  |
+| `GET /api/users/roles/:id/history` | yes |  |  |  |  | requireRole() |
+| `POST /api/users/roles` | yes | 2 | yes | yes |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `PUT /api/users/roles/:id` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `POST /api/users/roles/:id/reset` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `DELETE /api/users/roles/:id` | yes | 1 | yes |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
 
-### users.js (9 routes, 608 lines)
+### userAccess.js (3 routes, 170 lines)
 
-Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Location, Division.
+Mounted at /api/users. Tables: User, UserPrimaryRole, UserRoleAssignment, UserPermissionOverride, AuditLog.
+
+| Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
+|---|:-:|---:|:-:|:-:|:-:|---|
+| `GET /api/users/:id/access` | yes |  |  | yes |  |  |
+| `PUT /api/users/:id/access` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
+| `GET /api/users/:id/access/history` | yes |  |  |  |  |  |
+
+### users.js (9 routes, 638 lines)
+
+Mounted at /api/users. Tables: User, AuditLog, UserRoleAssignment, UserLocation, UserDivision, UserPrimaryRole, Location, Division.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/users` | yes |  |  |  |  |  |
 | `GET /api/users/:id` | yes |  |  |  |  |  |
 | `POST /api/users` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
-| `PUT /api/users/:id` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
+| `PUT /api/users/:id` | yes | 9 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `DELETE /api/users/:id` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `POST /api/users/:id/reset-password` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `GET /api/users/enums/roles` | yes |  |  |  |  |  |

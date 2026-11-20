@@ -45,6 +45,7 @@ import {
 import { getUsers, getRoleEnums, deleteUser, getRoleDisplayName, getRoleCategory } from '../../api/users';
 import UserFormDialog from './UserFormDialog';
 import ResetPasswordDialog from './ResetPasswordDialog';
+import UserAccessDialog from './UserAccessDialog';
 import RetentionNotice from '../../components/common/RetentionNotice';
 import { ask } from '../../utils/ask'
 
@@ -145,6 +146,12 @@ export default function UserManagementPage() {
   const handleEditUser = () => {
     setSelectedUser(menuUser);
     setFormDialogOpen(true);
+    handleMenuClose();
+  };
+
+  const [accessUserId, setAccessUserId] = useState(null);
+  const handleAccess = () => {
+    setAccessUserId(menuUser.id);
     handleMenuClose();
   };
 
@@ -434,7 +441,7 @@ export default function UserManagementPage() {
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <IconButton aria-label="More actions" size="small" onClick={(e) => handleMenuOpen(e, user)}>
+                        <IconButton aria-label="More actions" size="small" data-testid={`user-menu-${user.email}`} onClick={(e) => handleMenuOpen(e, user)}>
                           <MoreVertIcon />
                         </IconButton>
                       </TableCell>
@@ -469,6 +476,10 @@ export default function UserManagementPage() {
           <EditIcon fontSize="small" sx={{ mr: 1 }} />
           Edit User
         </MenuItem>
+        <MenuItem onClick={handleAccess} data-testid="open-access">
+          <ShieldIcon fontSize="small" sx={{ mr: 1 }} />
+          Roles &amp; access
+        </MenuItem>
         <MenuItem onClick={handleResetPassword}>
           <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
           Reset Password
@@ -488,6 +499,7 @@ export default function UserManagementPage() {
         roleEnums={roleEnums}
       />
 
+      <UserAccessDialog open={Boolean(accessUserId)} userId={accessUserId} onClose={() => { setAccessUserId(null); loadUsers(); }} />
       <ResetPasswordDialog
         open={resetPasswordDialogOpen}
         onClose={handleResetPasswordDialogClose}

@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -102,18 +102,18 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | File | Imported by (route files) | Count |
 |---|---|---:|
-| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 61 |
+| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 62 |
 | lib/numbering.js | intakeOrders.js, inventory.js, invoices.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, … | 15 |
-| lib/roleStore.js | auth.js, coils.js, dispatchRoutes.js, heats.js, integrations.js, inventory.js, jobs.js, ledger.js, … | 11 |
+| lib/roleStore.js | auth.js, coils.js, dispatchRoutes.js, heats.js, integrations.js, inventory.js, jobs.js, ledger.js, … | 13 |
 | lib/roleAccess.js | auth.js, customers.js, grades.js, intakeOrders.js, intakePricing.js, orders.js, overrides.js, pos.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/branchScope.js | auth.js, dispatchRoutes.js, documents.js, intakeOrders.js, inventory.js, ledger.js, purchaseOrders.js, shipments.js | 8 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
+| middleware/auth.js | admin.js, auth.js, adminRoutes.js, roles.js, userAccess.js, users.js | 6 |
 | services/ledger.js | coils.js, inventory.js, ledger.js, quickSale.js, returns.js, shipments.js | 6 |
 | services/webhookService.js | integrations.js, orders.js, carrierRoutes.js, customerRoutes.js, webhookRoutes.js, shipments.js | 6 |
 | middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, common.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js | 6 |
-| middleware/auth.js | admin.js, auth.js, adminRoutes.js, roles.js, users.js | 5 |
 | lib/customerScope.js | auth.js, ecom.js, portal.js, users.js | 4 |
 | lib/permissionCatalog.js | auth.js, integrations.js, ledger.js, roles.js | 4 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
@@ -128,9 +128,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/outbound.js | ai.js, aiAssistant.js, tts.js | 3 |
 | services/ai/AIProviderService.js | ai.js, aiAssistant.js, opsCockpit.js | 3 |
 | lib/passwords.js | auth.js, adminRoutes.js, users.js | 3 |
+| lib/userAdminRules.js | auth.js, userAccess.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
 | lib/lineSpecs.js | intakeOrders.js, quotes.js, rfqs.js | 3 |
-| lib/userAdminRules.js | auth.js, users.js | 2 |
 | lib/holds.js | coils.js, returns.js | 2 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
 | lib/workCenterKindRules.js | dispatchRoutes.js, qcRoutes.js | 2 |
@@ -142,6 +142,10 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/productionRules.js | operationsRoutes.js, qcRoutes.js | 2 |
 | lib/reservationRules.js | orders.js, returns.js | 2 |
 | lib/orderCloseout.js | orders.js, returns.js | 2 |
+| lib/accessFacts.js | roles.js, userAccess.js | 2 |
+| lib/userAccess.js | roles.js, userAccess.js | 2 |
+| lib/roleEditRules.js | roles.js, userAccess.js | 2 |
+| lib/userAccessRules.js | userAccess.js, users.js | 2 |
 | services/ledgerAssistant.js | aiAssistant.js | 1 |
 | lib/assistantInput.js | aiAssistant.js | 1 |
 | lib/alerts.js | auth.js | 1 |
@@ -170,11 +174,10 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/zip.js | portal.js | 1 |
 | services/tagRenderer.js | printQueue.js | 1 |
 | services/remnantService.js | remnants.js | 1 |
-| lib/permissions.js | roles.js | 1 |
 | lib/builtinRoleDefaults.js | roles.js | 1 |
-| lib/roleEditRules.js | roles.js | 1 |
 | services/pricingIntelligenceService.js | salesRoutes.js | 1 |
 | lib/shippingDocuments.js | shipments.js | 1 |
+| lib/permissions.js | userAccess.js | 1 |
 | lib/workOrderRules.js | workOrders.js | 1 |
 
 ## Highest-risk dependencies

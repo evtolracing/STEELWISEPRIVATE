@@ -1384,7 +1384,7 @@ const manualModules = [
     icon: 'Settings',
     roles: ['ADMIN', 'BRANCH_MANAGER'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
-    routes: ['/admin/users', '/admin/partners', '/admin/audit-log', '/admin/processing-recipes'],
+    routes: ['/admin/users', '/admin/roles', '/admin/partners', '/admin/audit-log', '/admin/processing-recipes'],
     sections: [
       {
         id: 'what-it-does',
@@ -1419,6 +1419,38 @@ const manualModules = [
             'To deactivate a user (e.g., when they leave the company), toggle "Active" to off. Do not delete users — deactivate them to preserve audit history.',
           ]},
           { type: 'warning', value: 'Never share admin passwords. Each person should have their own account. This is critical for audit trails and accountability.' },
+        ],
+      },
+      {
+        id: 'roles-and-permissions',
+        title: 'How to Change What a Role Can Do',
+        blocks: [
+          { type: 'steps', items: [
+            'Go to "Roles & Permissions" under Administration in the sidebar. Only a super admin, tenant owner or admin can change roles.',
+            'Click a role to open its grid. Each row is an area of the system; the boxes are View, Create, Edit and Delete. Other rights, such as issuing credits, are listed beside the row.',
+            'Tick or clear boxes. The panel on the right previews the menu the role will see.',
+            'Click "Save". A summary lists what is added and removed; confirm it.',
+            'The change applies within a minute for everyone who holds the role. Their menu follows the next time they open or refresh the app.',
+            'To undo your changes to a built-in role, open it and click "Reset to default".',
+            'To make a new role, click "New role", name it, optionally start from an existing role, then choose its permissions.',
+          ]},
+          { type: 'warning', value: 'The Super Admin and Tenant Owner roles always hold everything and cannot be changed. You can never tick a permission you do not hold yourself.' },
+        ],
+      },
+      {
+        id: 'roles-and-access-for-one-person',
+        title: 'How to Give One Person Extra Roles or Exceptions',
+        blocks: [
+          { type: 'steps', items: [
+            'Go to "User Management", open the three-dot menu on the person\'s row and choose "Roles & access".',
+            'Roles tab: "Add a role" gives the person another role on top of their main role. Its permissions are added. Set "Until" to take it away by itself on a date.',
+            'Roles tab: "Use a custom role as the main role" replaces the built-in role\'s permissions with a role you made. To go back, pick a built-in role in the Role box under "Edit User".',
+            'Exceptions tab: give or take away a single permission for this one person. A reason is required. Taking away always wins over any role.',
+            '"What they can do" shows the result. Hover a tick to see which role or exception it comes from.',
+            'History shows who changed this person\'s access and what they gained or lost.',
+            'Click "Save changes". It applies within a minute.',
+          ]},
+          { type: 'warning', value: 'You cannot change your own roles or exceptions, and you cannot give a role that holds more than you do.' },
         ],
       },
       {

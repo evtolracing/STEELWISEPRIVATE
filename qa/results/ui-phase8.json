@@ -1,8 +1,8 @@
 {
  "app": "http://localhost:5199",
- "at": "2026-11-20T07:18:41.001Z",
+ "at": "2026-11-20T08:32:15.094Z",
  "checks": 56,
- "failed": 1,
+ "failed": 0,
  "results": [
   {
    "name": "shipment on the dock: the stock to pick is listed with its tag and heat",
@@ -210,8 +210,8 @@
    "detail": ""
   },
   {
-   "name": "shipping desk: the invoices screen says who may read invoices and lists none",
-   "ok": false,
+   "name": "shipping desk: the invoices screen is closed to them and lists none",
+   "ok": true,
    "detail": ""
   },
   {

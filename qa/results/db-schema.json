@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T07:13:20.359Z",
+ "at": "2026-11-20T08:27:05.724Z",
  "identity": {
   "db": "steelwise_qa",
   "usr": "postgres",
@@ -9,13 +9,13 @@
   "max_connections": "100"
  },
  "counts": {
-  "tables": 174,
-  "columns": 2636,
-  "primaryKeys": 174,
-  "foreignKeys": 202,
+  "tables": 175,
+  "columns": 2640,
+  "primaryKeys": 175,
+  "foreignKeys": 204,
   "uniqueIndexes": 96,
   "checks": 47,
-  "indexes": 637,
+  "indexes": 639,
   "schemas": 1,
   "views": 0,
   "materializedViews": 0,
@@ -25,7 +25,7 @@
   "partitionedTables": 0,
   "policies": 0,
   "enums": 96,
-  "migrationsApplied": 37,
+  "migrationsApplied": 38,
   "migrationsFailed": 0
  },
  "other": {
@@ -52,7 +52,7 @@
   "partitionedTables": [],
   "policies": [],
   "enums": 96,
-  "migrationsApplied": 37,
+  "migrationsApplied": 38,
   "migrationsFailed": 0
  },
  "tables": [
@@ -101,8 +101,8 @@
   {
    "name": "AuditLog",
    "rls": false,
-   "bytes": 2965504,
-   "rows": 4644
+   "bytes": 3014656,
+   "rows": 4642
   },
   {
    "name": "BomOperation",
@@ -119,8 +119,8 @@
   {
    "name": "Coil",
    "rls": false,
-   "bytes": 729088,
-   "rows": 942
+   "bytes": 778240,
+   "rows": 937
   },
   {
    "name": "CommodityPrice",
@@ -161,19 +161,19 @@
   {
    "name": "DispatchJob",
    "rls": false,
-   "bytes": 245760,
+   "bytes": 253952,
    "rows": 181
   },
   {
    "name": "DispatchOperation",
    "rls": false,
-   "bytes": 286720,
+   "bytes": 311296,
    "rows": 221
   },
   {
    "name": "DispatchTimeLog",
    "rls": false,
-   "bytes": 204800,
+   "bytes": 196608,
    "rows": 151
   },
   {
@@ -287,8 +287,8 @@
   {
    "name": "Inventory",
    "rls": false,
-   "bytes": 475136,
-   "rows": 942
+   "bytes": 548864,
+   "rows": 937
   },
   {
    "name": "InventoryAdjustment",
@@ -323,25 +323,25 @@
   {
    "name": "Invoice",
    "rls": false,
-   "bytes": 417792,
-   "rows": 409
+   "bytes": 458752,
+   "rows": 410
   },
   {
    "name": "InvoiceLine",
    "rls": false,
-   "bytes": 376832,
-   "rows": 421
+   "bytes": 425984,
+   "rows": 422
   },
   {
    "name": "Job",
    "rls": false,
-   "bytes": 491520,
+   "bytes": 483328,
    "rows": 468
   },
   {
    "name": "JobInspection",
    "rls": false,
-   "bytes": 335872,
+   "bytes": 344064,
    "rows": 214
   },
   {
@@ -455,8 +455,8 @@
   {
    "name": "MaterialMovement",
    "rls": false,
-   "bytes": 1015808,
-   "rows": 1222
+   "bytes": 1007616,
+   "rows": 1211
   },
   {
    "name": "MeterReading",
@@ -473,31 +473,31 @@
   {
    "name": "Operator",
    "rls": false,
-   "bytes": 155648,
+   "bytes": 172032,
    "rows": 55
   },
   {
    "name": "OperatorSkill",
    "rls": false,
-   "bytes": 106496,
+   "bytes": 122880,
    "rows": 58
   },
   {
    "name": "Order",
    "rls": false,
-   "bytes": 761856,
-   "rows": 1038
+   "bytes": 745472,
+   "rows": 1037
   },
   {
    "name": "OrderLine",
    "rls": false,
-   "bytes": 679936,
-   "rows": 1062
+   "bytes": 671744,
+   "rows": 1061
   },
   {
    "name": "OrderLineAllocation",
    "rls": false,
-   "bytes": 237568,
+   "bytes": 253952,
    "rows": 111
   },
   {
@@ -557,7 +557,7 @@
   {
    "name": "Payment",
    "rls": false,
-   "bytes": 180224,
+   "bytes": 237568,
    "rows": 216
   },
   {
@@ -599,7 +599,7 @@
   {
    "name": "PrintQueueJob",
    "rls": false,
-   "bytes": 131072,
+   "bytes": 139264,
    "rows": 14
   },
   {
@@ -629,13 +629,13 @@
   {
    "name": "QCHold",
    "rls": false,
-   "bytes": 155648,
+   "bytes": 172032,
    "rows": 58
   },
   {
    "name": "Quote",
    "rls": false,
-   "bytes": 172032,
+   "bytes": 163840,
    "rows": 57
   },
   {
@@ -647,19 +647,19 @@
   {
    "name": "QuoteLine",
    "rls": false,
-   "bytes": 131072,
+   "bytes": 122880,
    "rows": 41
   },
   {
    "name": "RFQ",
    "rls": false,
-   "bytes": 114688,
+   "bytes": 122880,
    "rows": 61
   },
   {
    "name": "RFQLine",
    "rls": false,
-   "bytes": 90112,
+   "bytes": 106496,
    "rows": 46
   },
   {
@@ -671,8 +671,8 @@
   {
    "name": "RateWindow",
    "rls": false,
-   "bytes": 90112,
-   "rows": 91
+   "bytes": 81920,
+   "rows": 86
   },
   {
    "name": "RecipeRoutingTemplate",
@@ -689,7 +689,7 @@
   {
    "name": "RequestKey",
    "rls": false,
-   "bytes": 188416,
+   "bytes": 172032,
    "rows": 24
   },
   {
@@ -941,13 +941,13 @@
   {
    "name": "Shipment",
    "rls": false,
-   "bytes": 409600,
+   "bytes": 393216,
    "rows": 454
   },
   {
    "name": "ShipmentItem",
    "rls": false,
-   "bytes": 409600,
+   "bytes": 434176,
    "rows": 423
   },
   {
@@ -977,7 +977,7 @@
   {
    "name": "StockTransfer",
    "rls": false,
-   "bytes": 180224,
+   "bytes": 163840,
    "rows": 63
   },
   {
@@ -1031,7 +1031,7 @@
   {
    "name": "TraceEvent",
    "rls": false,
-   "bytes": 253952,
+   "bytes": 245760,
    "rows": 83
   },
   {
@@ -1059,6 +1059,12 @@
    "rows": 0
   },
   {
+   "name": "UserPrimaryRole",
+   "rls": false,
+   "bytes": 24576,
+   "rows": 0
+  },
+  {
    "name": "UserRoleAssignment",
    "rls": false,
    "bytes": 40960,
@@ -1067,8 +1073,8 @@
   {
    "name": "WebhookDelivery",
    "rls": false,
-   "bytes": 2433024,
-   "rows": 1198
+   "bytes": 2277376,
+   "rows": 1206
   },
   {
    "name": "WorkCenter",
@@ -1085,20 +1091,20 @@
   {
    "name": "WorkOrder",
    "rls": false,
-   "bytes": 172032,
+   "bytes": 155648,
    "rows": 70
   },
   {
    "name": "WorkOrderOutput",
    "rls": false,
    "bytes": 106496,
-   "rows": 57
+   "rows": 54
   },
   {
    "name": "_prisma_migrations",
    "rls": false,
    "bytes": 32768,
-   "rows": 37
+   "rows": 38
   }
  ],
  "columns": [
@@ -26653,6 +26659,46 @@
    "s": null
   },
   {
+   "t": "UserPrimaryRole",
+   "c": "userId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "UserPrimaryRole",
+   "c": "roleId",
+   "type": "text",
+   "udt": "text",
+   "nullable": false,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "UserPrimaryRole",
+   "c": "setById",
+   "type": "text",
+   "udt": "text",
+   "nullable": true,
+   "def": null,
+   "p": null,
+   "s": null
+  },
+  {
+   "t": "UserPrimaryRole",
+   "c": "setAt",
+   "type": "timestamp without time zone",
+   "udt": "timestamp",
+   "nullable": false,
+   "def": "CURRENT_TIMESTAMP",
+   "p": null,
+   "s": null
+  },
+  {
    "t": "UserRoleAssignment",
    "c": "id",
    "type": "text",
@@ -32339,6 +32385,42 @@
    ]
   },
   {
+   "t": "UserPrimaryRole",
+   "name": "UserPrimaryRole_pkey",
+   "kind": "p",
+   "ref": null,
+   "ondelete": " ",
+   "valid": true,
+   "def": "PRIMARY KEY (\"userId\")",
+   "cols": [
+    "userId"
+   ]
+  },
+  {
+   "t": "UserPrimaryRole",
+   "name": "UserPrimaryRole_roleId_fkey",
+   "kind": "f",
+   "ref": "Role",
+   "ondelete": "r",
+   "valid": true,
+   "def": "FOREIGN KEY (\"roleId\") REFERENCES \"Role\"(id) ON UPDATE CASCADE ON DELETE RESTRICT",
+   "cols": [
+    "roleId"
+   ]
+  },
+  {
+   "t": "UserPrimaryRole",
+   "name": "UserPrimaryRole_userId_fkey",
+   "kind": "f",
+   "ref": "User",
+   "ondelete": "c",
+   "valid": true,
+   "def": "FOREIGN KEY (\"userId\") REFERENCES \"User\"(id) ON UPDATE CASCADE ON DELETE CASCADE",
+   "cols": [
+    "userId"
+   ]
+  },
+  {
    "t": "UserRoleAssignment",
    "name": "UserRoleAssignment_pkey",
    "kind": "p",
@@ -32855,7 +32937,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"AuditLog_pkey\" ON public.\"AuditLog\" USING btree (id)",
-   "bytes": 352256,
+   "bytes": 335872,
    "cols": [
     "id"
    ],
@@ -32893,7 +32975,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"AuditLog_userId_timestamp_idx\" ON public.\"AuditLog\" USING btree (\"userId\", \"timestamp\")",
-   "bytes": 507904,
+   "bytes": 565248,
    "cols": [
     "userId",
     "timestamp"
@@ -34492,7 +34574,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Job_orderId_idx\" ON public.\"Job\" USING btree (\"orderId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderId"
    ],
@@ -34504,7 +34586,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Job_orderLineId_idx\" ON public.\"Job\" USING btree (\"orderLineId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderLineId"
    ],
@@ -34516,7 +34598,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Job_pkey\" ON public.\"Job\" USING btree (id)",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "id"
    ],
@@ -35785,7 +35867,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"Order_pkey\" ON public.\"Order\" USING btree (id)",
-   "bytes": 98304,
+   "bytes": 90112,
    "cols": [
     "id"
    ],
@@ -35893,7 +35975,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"OrderLineAllocation_orderLineId_idx\" ON public.\"OrderLineAllocation\" USING btree (\"orderLineId\")",
-   "bytes": 16384,
+   "bytes": 40960,
    "cols": [
     "orderLineId"
    ],
@@ -39185,7 +39267,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"Shipment_orderId_idx\" ON public.\"Shipment\" USING btree (\"orderId\")",
-   "bytes": 49152,
+   "bytes": 57344,
    "cols": [
     "orderId"
    ],
@@ -39209,7 +39291,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"Shipment_shipmentNumber_key\" ON public.\"Shipment\" USING btree (\"shipmentNumber\")",
-   "bytes": 49152,
+   "bytes": 40960,
    "cols": [
     "shipmentNumber"
    ],
@@ -40029,6 +40111,30 @@
    "partial": false
   },
   {
+   "t": "UserPrimaryRole",
+   "name": "UserPrimaryRole_pkey",
+   "uniq": true,
+   "pk": true,
+   "def": "CREATE UNIQUE INDEX \"UserPrimaryRole_pkey\" ON public.\"UserPrimaryRole\" USING btree (\"userId\")",
+   "bytes": 8192,
+   "cols": [
+    "userId"
+   ],
+   "partial": false
+  },
+  {
+   "t": "UserPrimaryRole",
+   "name": "UserPrimaryRole_roleId_idx",
+   "uniq": false,
+   "pk": false,
+   "def": "CREATE INDEX \"UserPrimaryRole_roleId_idx\" ON public.\"UserPrimaryRole\" USING btree (\"roleId\")",
+   "bytes": 8192,
+   "cols": [
+    "roleId"
+   ],
+   "partial": false
+  },
+  {
    "t": "UserRoleAssignment",
    "name": "UserRoleAssignment_pkey",
    "uniq": true,
@@ -40095,7 +40201,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (\"nextRetryAt\")",
-   "bytes": 114688,
+   "bytes": 98304,
    "cols": [
     "nextRetryAt"
    ],
@@ -40107,7 +40213,7 @@
    "uniq": true,
    "pk": true,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_pkey\" ON public.\"WebhookDelivery\" USING btree (id)",
-   "bytes": 155648,
+   "bytes": 163840,
    "cols": [
     "id"
    ],
@@ -40119,7 +40225,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_idx\" ON public.\"WebhookDelivery\" USING btree (status)",
-   "bytes": 49152,
+   "bytes": 40960,
    "cols": [
     "status"
    ],
@@ -40131,7 +40237,7 @@
    "uniq": false,
    "pk": false,
    "def": "CREATE INDEX \"WebhookDelivery_status_nextRetryAt_idx\" ON public.\"WebhookDelivery\" USING btree (status, \"nextRetryAt\")",
-   "bytes": 122880,
+   "bytes": 114688,
    "cols": [
     "status",
     "nextRetryAt"
@@ -40144,7 +40250,7 @@
    "uniq": true,
    "pk": false,
    "def": "CREATE UNIQUE INDEX \"WebhookDelivery_webhookId_eventId_key\" ON public.\"WebhookDelivery\" USING btree (\"webhookId\", \"eventId\")",
-   "bytes": 360448,
+   "bytes": 319488,
    "cols": [
     "webhookId",
     "eventId"
@@ -40365,7 +40471,7 @@
    "column": "tenantId",
    "nullable": true,
    "target": null,
-   "rows": 4644,
+   "rows": 4642,
    "set": 2,
    "orphans": null
   },
@@ -40374,7 +40480,7 @@
    "column": "targetUserId",
    "nullable": true,
    "target": "User",
-   "rows": 4644,
+   "rows": 4642,
    "set": 0,
    "orphans": null
   },
@@ -40383,8 +40489,8 @@
    "column": "resourceId",
    "nullable": true,
    "target": null,
-   "rows": 4644,
-   "set": 4644,
+   "rows": 4642,
+   "set": 4642,
    "orphans": null
   },
   {
@@ -40392,7 +40498,7 @@
    "column": "sessionId",
    "nullable": true,
    "target": null,
-   "rows": 4644,
+   "rows": 4642,
    "set": 0,
    "orphans": null
   },
@@ -40401,7 +40507,7 @@
    "column": "correlationId",
    "nullable": true,
    "target": null,
-   "rows": 4644,
+   "rows": 4642,
    "set": 0,
    "orphans": null
   },
@@ -42512,17 +42618,26 @@
    "orphans": null
   },
   {
+   "table": "UserPrimaryRole",
+   "column": "setById",
+   "nullable": true,
+   "target": null,
+   "rows": 0,
+   "set": null,
+   "orphans": null
+  },
+  {
    "table": "WebhookDelivery",
    "column": "eventId",
    "nullable": false,
    "target": null,
-   "rows": 1198,
-   "set": 1198,
+   "rows": 1206,
+   "set": 1206,
    "orphans": null
   }
  ],
  "audit": {
-  "referenceColumnsWithNoForeignKey": 243,
+  "referenceColumnsWithNoForeignKey": 244,
   "ofWhichTargetKnown": 93,
   "ofWhichHaveOrphans": [
    "DispatchTimeLog.jobId → Job: 151 of 151",
@@ -42708,8 +42823,8 @@
   ],
   "foreignKeysNotValidated": [],
   "foreignKeyDeleteRules": {
-   "cascade": 42,
-   "restrict": 86,
+   "cascade": 43,
+   "restrict": 87,
    "set null": 74
   },
   "cascadesIntoMoneyOrStock": [
@@ -42801,6 +42916,7 @@
    "TestResult",
    "UserDivision",
    "UserPermissionOverride",
+   "UserPrimaryRole",
    "UserRoleAssignment"
   ],
   "tablesWithLocationColumnButNoForeignKey": [

@@ -1,8 +1,8 @@
 {
- "at": "2026-11-20T07:54:14.355Z",
+ "at": "2026-11-20T09:09:26.769Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 174,
- "totalRows": 74394,
+ "tables": 175,
+ "totalRows": 74472,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -80,6 +80,7 @@
   "TestResult",
   "UserDivision",
   "UserPermissionOverride",
+  "UserPrimaryRole",
   "UserRoleAssignment"
  ],
  "rows": [
@@ -113,7 +114,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 18477
+   "rows": 18539
   },
   {
    "table": "BomOperation",
@@ -125,7 +126,7 @@
   },
   {
    "table": "Coil",
-   "rows": 2014
+   "rows": 2015
   },
   {
    "table": "CommodityPrice",
@@ -237,7 +238,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 2014
+   "rows": 2015
   },
   {
    "table": "InventoryAdjustment",
@@ -261,11 +262,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 1412
+   "rows": 1410
   },
   {
    "table": "InvoiceLine",
-   "rows": 1426
+   "rows": 1424
   },
   {
    "table": "Job",
@@ -277,11 +278,11 @@
   },
   {
    "table": "JournalEntry",
-   "rows": 5889
+   "rows": 5895
   },
   {
    "table": "JournalLine",
-   "rows": 12174
+   "rows": 12186
   },
   {
    "table": "LabelTemplate",
@@ -293,7 +294,7 @@
   },
   {
    "table": "LedgerEvent",
-   "rows": 3605
+   "rows": 3611
   },
   {
    "table": "LedgerExportBatch",
@@ -349,7 +350,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 3714
+   "rows": 3706
   },
   {
    "table": "MeterReading",
@@ -369,15 +370,15 @@
   },
   {
    "table": "Order",
-   "rows": 2893
+   "rows": 2898
   },
   {
    "table": "OrderLine",
-   "rows": 2919
+   "rows": 2924
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 143
+   "rows": 146
   },
   {
    "table": "Organization",
@@ -417,7 +418,7 @@
   },
   {
    "table": "Payment",
-   "rows": 1188
+   "rows": 1187
   },
   {
    "table": "PipelineRun",
@@ -493,7 +494,7 @@
   },
   {
    "table": "RateWindow",
-   "rows": 1099
+   "rows": 1101
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -737,7 +738,7 @@
   },
   {
    "table": "User",
-   "rows": 1000
+   "rows": 1006
   },
   {
    "table": "UserDivision",
@@ -752,12 +753,16 @@
    "rows": 0
   },
   {
+   "table": "UserPrimaryRole",
+   "rows": 0
+  },
+  {
    "table": "UserRoleAssignment",
    "rows": 0
   },
   {
    "table": "WebhookDelivery",
-   "rows": 4015
+   "rows": 3999
   },
   {
    "table": "WorkCenter",
@@ -773,14 +778,14 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 166
+   "rows": 163
   },
   {
    "table": "_prisma_migrations",
-   "rows": 37
+   "rows": 38
   }
  ],
- "indexes": 637,
+ "indexes": 639,
  "views": [],
  "triggers": [
   "\"JournalEntry\".JournalEntry_guard",
@@ -956,8 +961,8 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 202,
-  "primary key": 174,
+  "foreign key": 204,
+  "primary key": 175,
   "check": 47
  },
  "checkConstraints": [
@@ -1311,7 +1316,7 @@
   "stock items (coils) with no heat": 10,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 52,
-  "users with no home branch": 14,
+  "users with no home branch": 16,
   "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
   "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 48,
   "dispatched shipments whose stock movements add up to more than the shipment carries": 0,

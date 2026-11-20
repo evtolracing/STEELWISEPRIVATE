@@ -53,6 +53,18 @@
    "file": "src/backend/src/routes/roles.js"
   },
   {
+   "ep": "GET /api/users/:id/access",
+   "file": "src/backend/src/routes/userAccess.js"
+  },
+  {
+   "ep": "PUT /api/users/:id/access",
+   "file": "src/backend/src/routes/userAccess.js"
+  },
+  {
+   "ep": "GET /api/users/:id/access/history",
+   "file": "src/backend/src/routes/userAccess.js"
+  },
+  {
    "ep": "GET /api/users",
    "file": "src/backend/src/routes/users.js"
   },
@@ -2684,13 +2696,13 @@
   },
   {
    "name": "User",
-   "fields": 43,
+   "fields": 44,
    "fks": 3,
    "status": null
   },
   {
    "name": "Role",
-   "fields": 15,
+   "fields": 16,
    "fks": 0,
    "status": null
   },
@@ -2698,6 +2710,12 @@
    "name": "UserPermissionOverride",
    "fields": 9,
    "fks": 1,
+   "status": null
+  },
+  {
+   "name": "UserPrimaryRole",
+   "fields": 6,
+   "fks": 2,
    "status": null
   },
   {

@@ -19,6 +19,9 @@ async function resolveLoginCustomer(role, customerId) {
   return org ? { customerId: org.id } : { error: 'Customer account not found' };
 }
 
+// What a login's screen needs of a role. Named columns, so a login still loads while a database update that adds role columns is waiting.
+const ROLE_BRIEF = { id: true, name: true, displayName: true, description: true, isSystem: true, isActive: true };
+
 const router = Router();
 
 /**
@@ -133,9 +136,7 @@ router.get('/:id', authenticate, async (req, res, next) => {
       include: {
         organization: true,
         homeLocation: true,
-        userRoles: {
-          include: { role: true }
-        },
+        userRoles: { include: { role: { select: ROLE_BRIEF } } },
         userLocations: {
           include: { location: true }
         },
@@ -227,7 +228,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },
-        userRoles: { include: { role: true } }
+        userRoles: { include: { role: { select: ROLE_BRIEF } } }
       }
     });
 
@@ -373,7 +374,7 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },
-        userRoles: { include: { role: true } }
+        userRoles: { include: { role: { select: ROLE_BRIEF } } }
       }
     });
     });
@@ -387,7 +388,7 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
         homeLocation: true,
         userLocations: { include: { location: true } },
         userDivisions: { include: { division: true } },
-        userRoles: { include: { role: true } }
+        userRoles: { include: { role: { select: ROLE_BRIEF } } }
       }
     });
 
@@ -497,106 +498,7 @@ router.post('/:id/reset-password', authenticate, requireRole('SUPER_ADMIN', 'TEN
   }
 });
 
-// ==================== ROLES CRUD ====================
-
-// GET /api/users/roles/list - List all roles
-router.get('/roles/list', authenticate, async (req, res) => {
-  try {
-    const roles = await prisma.role.findMany({
-      where: { isActive: true },
-      orderBy: { name: 'asc' }
-    });
-    res.json(roles);
-  } catch (error) {
-    console.error('Error fetching roles:', error);
-    res.status(500).json({ error: 'Failed to fetch roles' });
-  }
-});
-
-// GET /api/users/roles/:id - Get single role
-router.get('/roles/:id', authenticate, async (req, res) => {
-  try {
-    const role = await prisma.role.findUnique({
-      where: { id: req.params.id },
-      include: {
-        userRoles: {
-          include: {
-            user: {
-              select: { id: true, firstName: true, lastName: true, email: true }
-            }
-          }
-        }
-      }
-    });
-
-    if (!role) {
-      return res.status(404).json({ error: 'Role not found' });
-    }
-
-    res.json(role);
-  } catch (error) {
-    console.error('Error fetching role:', error);
-    res.status(500).json({ error: 'Failed to fetch role' });
-  }
-});
-
-// POST /api/users/roles - Create new role
-router.post('/roles', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async (req, res) => {
-  try {
-    const { name, displayName, description, permissions } = req.body;
-
-    if (!name || !displayName || !permissions) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const role = await prisma.role.create({
-      data: {
-        name: name.toUpperCase().replace(/\s+/g, '_'),
-        displayName,
-        description,
-        permissions,
-        isSystem: false
-      }
-    });
-
-    res.status(201).json(role);
-  } catch (error) {
-    console.error('Error creating role:', error);
-    res.status(500).json({ error: 'Failed to create role' });
-  }
-});
-
-// PUT /api/users/roles/:id - Update role
-router.put('/roles/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { displayName, description, permissions, isActive } = req.body;
-
-    const existingRole = await prisma.role.findUnique({ where: { id } });
-    if (!existingRole) {
-      return res.status(404).json({ error: 'Role not found' });
-    }
-
-    if (existingRole.isSystem) {
-      return res.status(400).json({ error: 'Cannot modify system roles' });
-    }
-
-    const role = await prisma.role.update({
-      where: { id },
-      data: {
-        displayName,
-        description,
-        permissions,
-        isActive
-      }
-    });
-
-    res.json(role);
-  } catch (error) {
-    console.error('Error updating role:', error);
-    res.status(500).json({ error: 'Failed to update role' });
-  }
-});
+// Roles and their permissions: routes/roles.js (mounted at /api/users/roles).
 
 // ==================== ENUMS & OPTIONS ====================
 

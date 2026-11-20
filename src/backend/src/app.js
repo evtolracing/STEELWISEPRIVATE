@@ -15,6 +15,7 @@ import dotenv from 'dotenv';
 // Routes
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
+import roleRoutes from './routes/roles.js';
 import gradeRoutes from './routes/grades.js';
 import productRoutes from './routes/products.js';
 import heatRoutes from './routes/heats.js';
@@ -228,6 +229,7 @@ app.use('/api', invoiceDetailGuard);
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users/roles', roleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/grades', gradeRoutes);
 app.use('/api/products', productRoutes);

@@ -204,7 +204,23 @@ export function seedSql() {
   ].join('\n');
 }
 
+/** src/lib/builtinRoleDefaults.js: what "Reset to default" returns a built-in role to. */
+export function defaultsModule() {
+  const rows = BUILTIN_ROLES.map((r) => `  ${r.name}: { displayName: ${JSON.stringify(r.displayName)}, audience: '${r.audience}', branchScope: '${r.branchScope}', grants: ${JSON.stringify(r.grants)} },`);
+  return [
+    '/**',
+    ' * The starting grid of each built-in role: what today\'s access rules give it.',
+    ' * Written by scripts/permission-defaults.js (node scripts/permission-defaults.js --module). Do not edit by hand;',
+    ' * test/roleEditRules.test.js fails when it no longer matches the rules.',
+    ' */',
+    'export const BUILTIN_DEFAULTS = {',
+    ...rows,
+    '};',
+    '',
+  ].join('\n');
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   if (conflicts.length) { console.error(conflicts.join('\n')); process.exit(1); }
-  console.log(process.argv.includes('--json') ? JSON.stringify(BUILTIN_ROLES.map(({ ruled, ...r }) => r), null, 1) : seedSql());
+  console.log(process.argv.includes('--json') ? JSON.stringify(BUILTIN_ROLES.map(({ ruled, ...r }) => r), null, 1) : process.argv.includes('--module') ? defaultsModule() : seedSql());
 }

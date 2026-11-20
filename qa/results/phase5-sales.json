@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T07:11:25.350Z",
+ "at": "2026-11-20T08:25:10.522Z",
  "base": "http://localhost:3011",
  "scenarios": 76,
  "passed": 76,
@@ -80,7 +80,7 @@
     }
    ],
    "pass": true,
-   "ms": 49
+   "ms": 54
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -108,7 +108,7 @@
     }
    ],
    "pass": true,
-   "ms": 56
+   "ms": 58
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -156,7 +156,7 @@
     }
    ],
    "pass": true,
-   "ms": 410
+   "ms": 459
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -188,7 +188,7 @@
     }
    ],
    "pass": true,
-   "ms": 60
+   "ms": 75
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -232,7 +232,7 @@
     }
    ],
    "pass": true,
-   "ms": 27
+   "ms": 31
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -264,7 +264,7 @@
     }
    ],
    "pass": true,
-   "ms": 57
+   "ms": 53
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -336,7 +336,7 @@
     }
    ],
    "pass": true,
-   "ms": 105
+   "ms": 107
   },
   {
    "group": "CRM, customers and requests for quote",
@@ -360,14 +360,14 @@
     }
    ],
    "pass": true,
-   "ms": 35
+   "ms": 38
   },
   {
    "group": "CRM, customers and requests for quote",
    "name": "merging two accounts is not offered, so no history can be merged away",
    "asserts": [
     {
-     "what": "/api/customers/3bc8c462-6e91-4bbc-a0f8-3793e5bda405/merge: no such route (404)",
+     "what": "/api/customers/05a6af5c-aaed-454d-b22f-c8854d32ecf1/merge: no such route (404)",
      "ok": true
     },
     {
@@ -380,7 +380,7 @@
     }
    ],
    "pass": true,
-   "ms": 13,
+   "ms": 17,
    "status": "NOT APPLICABLE: no merge function exists; duplicates are refused by code at creation"
   },
   {
@@ -405,7 +405,7 @@
     }
    ],
    "pass": true,
-   "ms": 12
+   "ms": 13
   },
   {
    "group": "Product configuration and pricing",
@@ -437,7 +437,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 74
   },
   {
    "group": "Product configuration and pricing",
@@ -457,7 +457,7 @@
     }
    ],
    "pass": true,
-   "ms": 28
+   "ms": 33
   },
   {
    "group": "Product configuration and pricing",
@@ -477,7 +477,7 @@
     }
    ],
    "pass": true,
-   "ms": 14
+   "ms": 16
   },
   {
    "group": "Product configuration and pricing",
@@ -525,7 +525,7 @@
     }
    ],
    "pass": true,
-   "ms": 47
+   "ms": 44
   },
   {
    "group": "Product configuration and pricing",
@@ -569,7 +569,7 @@
     }
    ],
    "pass": true,
-   "ms": 42
+   "ms": 44
   },
   {
    "group": "Product configuration and pricing",
@@ -601,7 +601,7 @@
     }
    ],
    "pass": true,
-   "ms": 69
+   "ms": 77
   },
   {
    "group": "Product configuration and pricing",
@@ -633,7 +633,7 @@
     }
    ],
    "pass": true,
-   "ms": 32
+   "ms": 31
   },
   {
    "group": "Product configuration and pricing",
@@ -669,7 +669,7 @@
     }
    ],
    "pass": true,
-   "ms": 48
+   "ms": 45
   },
   {
    "group": "Product configuration and pricing",
@@ -717,7 +717,7 @@
     }
    ],
    "pass": true,
-   "ms": 58
+   "ms": 49
   },
   {
    "group": "Product configuration and pricing",
@@ -737,7 +737,7 @@
     }
    ],
    "pass": true,
-   "ms": 47
+   "ms": 45
   },
   {
    "group": "Product configuration and pricing",
@@ -765,7 +765,7 @@
     }
    ],
    "pass": true,
-   "ms": 24
+   "ms": 21
   },
   {
    "group": "Product configuration and pricing",
@@ -785,7 +785,7 @@
     }
    ],
    "pass": true,
-   "ms": 23
+   "ms": 20
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -833,7 +833,7 @@
     }
    ],
    "pass": true,
-   "ms": 114
+   "ms": 91
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -849,7 +849,7 @@
     }
    ],
    "pass": true,
-   "ms": 104
+   "ms": 89
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -865,7 +865,7 @@
     }
    ],
    "pass": true,
-   "ms": 102
+   "ms": 94
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -901,7 +901,7 @@
     }
    ],
    "pass": true,
-   "ms": 224
+   "ms": 176
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -921,7 +921,7 @@
     }
    ],
    "pass": true,
-   "ms": 155
+   "ms": 140
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -941,7 +941,7 @@
     }
    ],
    "pass": true,
-   "ms": 111
+   "ms": 104
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -969,7 +969,7 @@
     }
    ],
    "pass": true,
-   "ms": 189
+   "ms": 176
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -993,7 +993,7 @@
     }
    ],
    "pass": true,
-   "ms": 105
+   "ms": 106
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1029,7 +1029,7 @@
     }
    ],
    "pass": true,
-   "ms": 169
+   "ms": 163
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1081,7 +1081,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 56
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1101,7 +1101,7 @@
     }
    ],
    "pass": true,
-   "ms": 79
+   "ms": 74
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1133,7 +1133,7 @@
     }
    ],
    "pass": true,
-   "ms": 125
+   "ms": 120
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1153,7 +1153,7 @@
     }
    ],
    "pass": true,
-   "ms": 567
+   "ms": 552
   },
   {
    "group": "Quoting, approvals and conversion",
@@ -1169,7 +1169,7 @@
     }
    ],
    "pass": true,
-   "ms": 81,
+   "ms": 82,
    "status": "NOT APPLICABLE beyond credit: no quote approval rule exists; none was invented"
   },
   {
@@ -1202,7 +1202,7 @@
     }
    ],
    "pass": true,
-   "ms": 70
+   "ms": 83
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1234,7 +1234,7 @@
     }
    ],
    "pass": true,
-   "ms": 248
+   "ms": 227
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1258,7 +1258,7 @@
     }
    ],
    "pass": true,
-   "ms": 364
+   "ms": 336
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1278,7 +1278,7 @@
     }
    ],
    "pass": true,
-   "ms": 48
+   "ms": 51
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1302,7 +1302,7 @@
     }
    ],
    "pass": true,
-   "ms": 141
+   "ms": 140
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1346,7 +1346,7 @@
     }
    ],
    "pass": true,
-   "ms": 115
+   "ms": 113
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1370,7 +1370,7 @@
     }
    ],
    "pass": true,
-   "ms": 87
+   "ms": 80
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1390,7 +1390,7 @@
     }
    ],
    "pass": true,
-   "ms": 213
+   "ms": 197
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1418,7 +1418,7 @@
     }
    ],
    "pass": true,
-   "ms": 336
+   "ms": 271
   },
   {
    "group": "Sales orders and fulfilment hand-off",
@@ -1442,7 +1442,7 @@
     }
    ],
    "pass": true,
-   "ms": 134
+   "ms": 137
   },
   {
    "group": "Counter sales (POS)",
@@ -1474,7 +1474,7 @@
     }
    ],
    "pass": true,
-   "ms": 88
+   "ms": 80
   },
   {
    "group": "Counter sales (POS)",
@@ -1498,7 +1498,7 @@
     }
    ],
    "pass": true,
-   "ms": 65
+   "ms": 61
   },
   {
    "group": "Counter sales (POS)",
@@ -1518,7 +1518,7 @@
     }
    ],
    "pass": true,
-   "ms": 134
+   "ms": 126
   },
   {
    "group": "Counter sales (POS)",
@@ -1550,7 +1550,7 @@
     }
    ],
    "pass": true,
-   "ms": 64
+   "ms": 66
   },
   {
    "group": "Counter sales (POS)",
@@ -1618,7 +1618,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 170
   },
   {
    "group": "Counter sales (POS)",
@@ -1638,7 +1638,7 @@
     }
    ],
    "pass": true,
-   "ms": 537
+   "ms": 543
   },
   {
    "group": "Counter sales (POS)",
@@ -1662,7 +1662,7 @@
     }
    ],
    "pass": true,
-   "ms": 115
+   "ms": 132
   },
   {
    "group": "Counter sales (POS)",
@@ -1686,7 +1686,7 @@
     }
    ],
    "pass": true,
-   "ms": 105
+   "ms": 110
   },
   {
    "group": "Counter sales (POS)",
@@ -1714,7 +1714,7 @@
     }
    ],
    "pass": true,
-   "ms": 34
+   "ms": 39
   },
   {
    "group": "Counter sales (POS)",
@@ -1746,7 +1746,7 @@
     }
    ],
    "pass": true,
-   "ms": 370
+   "ms": 383
   },
   {
    "group": "Web shop and customer portal",
@@ -1778,7 +1778,7 @@
     }
    ],
    "pass": true,
-   "ms": 248
+   "ms": 218
   },
   {
    "group": "Web shop and customer portal",
@@ -1794,7 +1794,7 @@
     }
    ],
    "pass": true,
-   "ms": 256
+   "ms": 229
   },
   {
    "group": "Web shop and customer portal",
@@ -1814,7 +1814,7 @@
     }
    ],
    "pass": true,
-   "ms": 205
+   "ms": 218
   },
   {
    "group": "Web shop and customer portal",
@@ -1850,7 +1850,7 @@
     }
    ],
    "pass": true,
-   "ms": 294
+   "ms": 283
   },
   {
    "group": "Web shop and customer portal",
@@ -1878,7 +1878,7 @@
     }
    ],
    "pass": true,
-   "ms": 227
+   "ms": 230
   },
   {
    "group": "Web shop and customer portal",
@@ -1898,7 +1898,7 @@
     }
    ],
    "pass": true,
-   "ms": 228
+   "ms": 234
   },
   {
    "group": "Web shop and customer portal",
@@ -1930,7 +1930,7 @@
     }
    ],
    "pass": true,
-   "ms": 128
+   "ms": 134
   },
   {
    "group": "Web shop and customer portal",
@@ -1954,7 +1954,7 @@
     }
    ],
    "pass": true,
-   "ms": 31,
+   "ms": 35,
    "status": "Guest checkout NOT APPLICABLE: off by the setting allowGuestCheckout"
   },
   {
@@ -1979,7 +1979,7 @@
     }
    ],
    "pass": true,
-   "ms": 216
+   "ms": 206
   },
   {
    "group": "Web shop and customer portal",
@@ -1999,7 +1999,7 @@
     }
    ],
    "pass": true,
-   "ms": 240
+   "ms": 202
   },
   {
    "group": "Exceptions, security and recovery",
@@ -2022,7 +2022,7 @@
      "ok": true
     },
     {
-     "what": "PUT /api/pricing/list-price/5a6b5d93-3cb4-446c-a560-9aacc4670ea3: refused",
+     "what": "PUT /api/pricing/list-price/5d5278e7-bcc5-479c-a968-13fd138e66da: refused",
      "ok": true
     },
     {
@@ -2034,7 +2034,7 @@
      "ok": true
     },
     {
-     "what": "PATCH /api/customers/fc00f864-3459-4ceb-bbb9-9ca0fc662f4b: refused",
+     "what": "PATCH /api/customers/e42627c9-490e-4806-b255-4ca06877a23f: refused",
      "ok": true
     },
     {
@@ -2047,7 +2047,7 @@
     }
    ],
    "pass": true,
-   "ms": 59
+   "ms": 61
   },
   {
    "group": "Exceptions, security and recovery",
@@ -2071,7 +2071,7 @@
     }
    ],
    "pass": true,
-   "ms": 160
+   "ms": 129
   },
   {
    "group": "Exceptions, security and recovery",
@@ -2095,18 +2095,18 @@
     }
    ],
    "pass": true,
-   "ms": 275
+   "ms": 237
   },
   {
    "group": "Exceptions, security and recovery",
    "name": "bad input to the sales routes is answered with a 4xx, never a server error",
    "asserts": [
     {
-     "what": "POST /api/rfqs {\"customerId\":\"8f2d1597-8b59-48b5-a4b0-2: 400",
+     "what": "POST /api/rfqs {\"customerId\":\"af321f69-53b3-47d3-8814-4: 400",
      "ok": true
     },
     {
-     "what": "POST /api/rfqs {\"customerId\":\"8f2d1597-8b59-48b5-a4b0-2: 400",
+     "what": "POST /api/rfqs {\"customerId\":\"af321f69-53b3-47d3-8814-4: 400",
      "ok": true
     },
     {
@@ -2146,12 +2146,12 @@
      "ok": true
     },
     {
-     "what": "PATCH /api/customers/8f2d1597-8b59-48b5-a4b0-265839825519 {\"parentId\":\"nope\"}: 400",
+     "what": "PATCH /api/customers/af321f69-53b3-47d3-8814-4ee62832aa7e {\"parentId\":\"nope\"}: 400",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 81
+   "ms": 73
   },
   {
    "group": "Exceptions, security and recovery",
@@ -2199,7 +2199,7 @@
     }
    ],
    "pass": true,
-   "ms": 18
+   "ms": 14
   }
  ]
 }

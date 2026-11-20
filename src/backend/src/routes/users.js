@@ -5,6 +5,25 @@ import { hashPassword } from '../lib/passwords.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ci } from '../lib/dbText.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
+import { allRoles, forgetUser } from '../lib/roleStore.js';
+import { roleGiftDenial } from '../lib/userAccessRules.js';
+
+/**
+ * Extra roles count since the role matrix (phase 4): a role being added must be one the giver may give
+ * (lib/userAccessRules.js). Roles the person already holds may stay. Returns a sentence, or null.
+ */
+async function extraRolesDenial(req, roleIds, heldIds = []) {
+  if (!Array.isArray(roleIds) || !roleIds.length) return null;
+  const { byId } = await allRoles();
+  // With the matrix switched off or unreadable no extra role counts, so there is nothing to judge.
+  if (!Object.keys(byId).length) return null;
+  for (const id of roleIds) {
+    if (heldIds.includes(id)) continue;
+    const no = roleGiftDenial({ id: req.user.id, grants: req.access.grants }, byId[id]);
+    if (no) return no;
+  }
+  return null;
+}
 
 /**
  * The customer account for a login: required for customer roles (an
@@ -181,6 +200,8 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
     }
     const denial = userChangeDenial(req.user, null, { role, homeLocationId, locationIds, roleIds });
     if (denial) return res.status(403).json({ error: denial });
+    const giftDenial = await extraRolesDenial(req, roleIds);
+    if (giftDenial) return res.status(400).json({ error: giftDenial });
     const link = await resolveLoginCustomer(role, customerId);
     if (link.error) return res.status(400).json({ error: link.error });
 
@@ -285,6 +306,11 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
     }
     const denial = userChangeDenial(req.user, existingUser, { role, homeLocationId, locationIds, roleIds });
     if (denial) return res.status(403).json({ error: denial });
+    if (roleIds !== undefined) {
+      const held = await prisma.userRoleAssignment.findMany({ where: { userId: id }, select: { roleId: true } });
+      const giftDenial = await extraRolesDenial(req, roleIds, held.map((h) => h.roleId));
+      if (giftDenial) return res.status(400).json({ error: giftDenial });
+    }
 
     // Build update data
     const updateData = {};
@@ -378,6 +404,10 @@ router.put('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER', 'ADM
       }
     });
     });
+
+    // A custom main role stands on the built-in role the login carried: a new role here ends it.
+    if (role !== undefined && role !== existingUser.role) await prisma.userPrimaryRole.deleteMany({ where: { userId: id } }).catch(() => {});
+    forgetUser(id);
 
     // Re-fetch with all relations
     const updatedUser = await prisma.user.findUnique({

@@ -165,6 +165,7 @@ model User {
   homeLocation        Location?                @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
   userRoles           UserRoleAssignment[]
   permissionOverrides UserPermissionOverride[]
+  primaryRole         UserPrimaryRole?
   userLocations       UserLocation[]
   userDivisions       UserDivision[]
   auditLogs           AuditLog[]               @relation("AuditActor")
@@ -201,6 +202,7 @@ model Role {
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   userRoles   UserRoleAssignment[]
+  primaryOf   UserPrimaryRole[]
 }
 
 /// One permission granted to, or taken from, one person, on top of their roles. A denial always wins.
@@ -218,6 +220,20 @@ model UserPermissionOverride {
 
   @@unique([userId, permission])
   @@index([userId])
+}
+
+/// The custom role a login has as its main role (role matrix, phase 4). A login with no row here
+/// has the built-in role named in User.role. With a row, the custom role's permissions replace the
+/// built-in ones, and User.role holds the built-in role the custom one stands on (Role.baseRole).
+model UserPrimaryRole {
+  userId  String   @id
+  roleId  String
+  setById String?
+  setAt   DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@index([roleId])
 }
 
 // Many-to-many: User <-> Role

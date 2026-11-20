@@ -6,16 +6,17 @@
  * change is written to the audit log with the role before and after.
  *
  * Since phase 3 what is saved here decides access: lib/roleStore.js reads it, at once on this server
- * copy and within a minute on the others. Custom roles decide nothing until they can be given to
- * people (phase 4).
+ * copy and within a minute on the others. A custom role decides for the people it is given
+ * to on the user screen (phase 4, routes/userAccess.js).
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ACTION_LABELS, AREAS } from '../lib/permissionCatalog.js';
-import { ALL } from '../lib/permissions.js';
 import { BUILTIN_DEFAULTS } from '../lib/builtinRoleDefaults.js';
 import { forgetRoles, matrixOff } from '../lib/roleStore.js';
+import { editorsAfter } from '../lib/accessFacts.js';
+import { baseOf } from '../lib/userAccess.js';
 import { cleanGrants, grantsDiff, isLocked, roleChangeDenial, roleDeleteDenial, roleName, SENSITIVE } from '../lib/roleEditRules.js';
 
 const router = Router();
@@ -36,12 +37,15 @@ const isBuiltin = (role) => Boolean(role.isSystem) && Object.hasOwn(BUILTIN_DEFA
 
 /** How many logins of this company hold each role: by their login's role, plus roles given on top. */
 async function holderCounts(organizationId) {
-  const [primary, extra] = await Promise.all([
+  const [primary, extra, main] = await Promise.all([
     prisma.user.groupBy({ by: ['role'], where: { organizationId }, _count: { _all: true } }),
     prisma.userRoleAssignment.groupBy({ by: ['roleId'], where: { user: { organizationId } }, _count: { _all: true } }),
+    // People with a custom role as their main role (none until database update 20 is applied).
+    prisma.userPrimaryRole.groupBy({ by: ['roleId'], where: { user: { organizationId } }, _count: { _all: true } }).catch(() => []),
   ]);
   const byName = Object.fromEntries(primary.map((r) => [r.role, r._count._all]));
   const byId = Object.fromEntries(extra.map((r) => [r.roleId, r._count._all]));
+  for (const r of main) byId[r.roleId] = (byId[r.roleId] || 0) + r._count._all;
   return (role) => (isBuiltin(role) ? byName[role.name] || 0 : 0) + (byId[role.id] || 0);
 }
 
@@ -49,22 +53,12 @@ const shown = (role, holders) => ({
   id: role.id, name: role.name, displayName: role.displayName, description: role.description,
   grants: role.grants, audience: role.audience, branchScope: role.branchScope,
   builtIn: isBuiltin(role), locked: isLocked(role), isSystem: role.isSystem, isActive: role.isActive,
-  holders, updatedAt: role.updatedAt,
+  holders, updatedAt: role.updatedAt, baseRole: role.isSystem ? role.name : baseOf(role),
 });
 
-/** What the signed-in login holds: its built-in role's permissions as saved. */
+/** What the signed-in login holds now: its roles and personal exceptions together (lib/userAccess.js). */
 async function actorOf(req) {
-  const own = await prisma.role.findUnique({ where: { name: req.user.role }, select: { grants: true } });
-  return { id: req.user.id, role: req.user.role, grants: Array.isArray(own?.grants) ? own.grants : [] };
-}
-
-/** Active logins that could still edit roles if `changed` were saved. */
-async function editorsAfter(organizationId, changed) {
-  const roles = await prisma.role.findMany({ where: { isSystem: true, isActive: true }, select: { id: true, name: true, grants: true } });
-  const names = roles.filter((r) => Object.hasOwn(BUILTIN_DEFAULTS, r.name))
-    .filter((r) => { const g = r.id === changed.id ? changed.grants : r.grants; return Array.isArray(g) && (g.includes(ALL) || g.includes('roles:edit')); })
-    .map((r) => r.name);
-  return names.length ? prisma.user.count({ where: { organizationId, isActive: true, role: { in: names } } }) : 0;
+  return { id: req.user.id, role: req.user.role, mainRoleId: req.realAccess?.primary?.id || null, grants: [...req.access.grants] };
 }
 
 const audit = (tx, req, eventType, role, before, after) => {
@@ -102,15 +96,16 @@ router.get('/:id', authenticate, async (req, res) => {
     const role = await prisma.role.findUnique({ where: { id: req.params.id } });
     if (!role) return res.status(404).json({ error: 'Role not found' });
     const builtIn = isBuiltin(role);
-    const [count, primary, extra, actor] = await Promise.all([
+    const [count, primary, extra, actor, main] = await Promise.all([
       holderCounts(req.user.organizationId),
       builtIn ? prisma.user.findMany({ where: { organizationId: req.user.organizationId, role: role.name }, select: { id: true, firstName: true, lastName: true, email: true, isActive: true }, orderBy: { lastName: 'asc' }, take: 200 }) : [],
       prisma.userRoleAssignment.findMany({ where: { roleId: role.id, user: { organizationId: req.user.organizationId } }, select: { user: { select: { id: true, firstName: true, lastName: true, email: true, isActive: true } } }, take: 200 }),
       actorOf(req),
+      prisma.userPrimaryRole.findMany({ where: { roleId: role.id, user: { organizationId: req.user.organizationId } }, select: { user: { select: { id: true, firstName: true, lastName: true, email: true, isActive: true } } }, take: 200 }).catch(() => []),
     ]);
     res.json({
       ...shown(role, count(role)),
-      users: [...primary, ...extra.map((x) => x.user)],
+      users: [...new Map([...primary, ...main.map((x) => x.user), ...extra.map((x) => x.user)].map((u) => [u.id, u])).values()],
       defaults: builtIn ? BUILTIN_DEFAULTS[role.name] : null,
       // What the person looking may tick: their own permissions.
       myGrants: actor.grants,
@@ -132,16 +127,19 @@ router.get('/:id/history', authenticate, requireRole(), async (req, res) => {
 router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async (req, res) => {
   try {
     const { displayName, description, grants = [], branchScope = 'ASSIGNED' } = req.body || {};
+    // The built-in role the new one stands on: the role it was copied from, or the plainest one.
+    const baseRole = Object.hasOwn(BUILTIN_DEFAULTS, req.body?.baseRole) && BUILTIN_DEFAULTS[req.body.baseRole].audience === 'STAFF' && !isLocked({ isSystem: true, name: req.body.baseRole }) ? req.body.baseRole : baseOf(null);
     const name = roleName(req.body?.name || displayName);
     const [actor, existing] = await Promise.all([actorOf(req), prisma.role.findMany({ select: { name: true } })]);
     const change = { name, displayName, grants, branchScope };
     const denial = roleChangeDenial(actor, null, change, { takenNames: [...Object.keys(BUILTIN_DEFAULTS), ...existing.map((r) => r.name)] });
     if (denial) return res.status(400).json({ error: denial });
     const role = await prisma.$transaction(async (tx) => {
-      const made = await tx.role.create({ data: { name, displayName: String(displayName).trim(), description: description ? String(description).slice(0, 300) : null, permissions: [], grants: cleanGrants(grants), audience: 'STAFF', branchScope, isSystem: false, updatedById: req.user.id } });
+      const made = await tx.role.create({ data: { name, displayName: String(displayName).trim(), description: description ? String(description).slice(0, 300) : null, permissions: [], grants: cleanGrants(grants), audience: 'STAFF', branchScope, baseRole, isSystem: false, updatedById: req.user.id } });
       await audit(tx, req, 'ROLE_CREATED', made, null, snapshot(made));
       return made;
     });
+    forgetRoles();
     res.status(201).json(shown(role, 0));
   } catch (error) { fail(res, 'create the role', error, req); }
 });
@@ -153,7 +151,7 @@ async function change(req, res, eventType, build) {
   if (sent.error) return res.status(400).json({ error: sent.error });
   const [actor, count] = await Promise.all([actorOf(req), holderCounts(req.user.organizationId)]);
   const facts = { holders: count(role) };
-  if (sent.grants !== undefined && role.grants.includes('roles:edit') && !sent.grants.includes('roles:edit')) facts.editorsAfter = await editorsAfter(req.user.organizationId, { id: role.id, grants: sent.grants });
+  if (sent.grants !== undefined && role.grants.includes('roles:edit') && !sent.grants.includes('roles:edit')) facts.editorsAfter = await editorsAfter(req.user.organizationId, { role: { id: role.id, grants: cleanGrants(sent.grants) } });
   const denial = roleChangeDenial(actor, role, sent, facts);
   if (denial) return res.status(400).json({ error: denial });
   const data = {
@@ -198,6 +196,7 @@ router.delete('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), 
       await audit(tx, req, 'ROLE_DELETED', role, snapshot(role), null);
       await tx.role.delete({ where: { id: role.id } });
     });
+    forgetRoles();
     res.json({ success: true });
   } catch (error) { fail(res, 'delete the role', error, req); }
 });

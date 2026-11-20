@@ -6,7 +6,8 @@ import prisma from '../lib/db.js';
 import config from '../config/index.js';
 import { setBranchScope } from '../lib/branchScope.js';
 import { requestView, SYSTEM_ADMIN_ROLES } from '../lib/viewScope.js';
-import { accessOf, savedRoles } from '../lib/roleStore.js';
+import { accessOf, allRoles, userFacts } from '../lib/roleStore.js';
+import { effectiveAccess } from '../lib/userAccess.js';
 import { permissionFor } from '../lib/permissionCatalog.js';
 import { has } from '../lib/permissions.js';
 
@@ -78,12 +79,14 @@ export async function authenticate(req, res, next) {
     // The branch picked in the top bar and an administrator's role preview (lib/viewScope.js). Both can
     // only narrow what the login may see. req.realUser is the login itself.
     // What each role may do and which branches it sees: the saved roles (lib/roleStore.js).
-    const roles = await savedRoles();
-    const own = accessOf(user.role, roles);
+    // The person's own access adds their extra roles and personal exceptions (lib/userAccess.js).
+    const [every, facts] = await Promise.all([allRoles(), userFacts(user.id)]);
+    const roles = every.byName;
+    const own = effectiveAccess(user.role, every, facts);
     user.branchScope = own.branchScope;
     const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] }, { seesEveryBranch: (role) => accessOf(role, roles).branchScope === 'ALL', mayPreview: has(own.grants, 'admin:preview') });
     // req.access is what this request may do: the previewed role's permissions while previewing.
-    const access = accessOf(view.user.role, roles);
+    const access = view.previewRole ? accessOf(view.user.role, roles) : own;
     if (view.previewRole) view.user.branchScope = access.branchScope;
     req.realUser = user;
     req.view = view;

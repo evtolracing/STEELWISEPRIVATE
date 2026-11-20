@@ -56,7 +56,7 @@ export default function RolesPage() {
   const startNew = ({ displayName, description, from }) => {
     const source = roles.find((r) => r.id === from)
     setCreating(false)
-    setOpen({ id: null, name: '', displayName, description, grants: source && !source.locked ? source.grants : [], branchScope: source?.branchScope || 'ASSIGNED', audience: 'STAFF', builtIn: false, locked: false, isActive: true, holders: 0, users: [], defaults: null, myGrants: null })
+    setOpen({ id: null, name: '', displayName, description, grants: source && !source.locked ? source.grants : [], branchScope: source?.branchScope || 'ASSIGNED', audience: 'STAFF', baseRole: source && !source.locked && source.audience === 'STAFF' ? source.baseRole : undefined, builtIn: false, locked: false, isActive: true, holders: 0, users: [], defaults: null, myGrants: null })
   }
   const remove = async (role) => {
     setError(null); setNotice(null)
@@ -123,7 +123,7 @@ function WhenItApplies({ catalog, role }) {
     return <Alert severity="warning" sx={{ mb: 2 }} data-testid="not-enforced">The role matrix is switched off on the server (ROLE_MATRIX=off). Changes here are saved and recorded, but every role keeps its built-in default until it is switched on again.</Alert>
   }
   if (role && !role.builtIn && !role.isSystem) {
-    return <Alert severity="info" sx={{ mb: 2 }} data-testid="custom-not-assignable">A custom role can be prepared here, but it cannot be given to people yet (phase 4 of the role matrix). Until then it changes nothing for anyone.</Alert>
+    return <Alert severity="info" sx={{ mb: 2 }} data-testid="custom-assignable">Give this role to a person on Administration, Users: open the person&apos;s menu and choose Roles &amp; access. Changes here reach the people who hold it within a minute.</Alert>
   }
   return <Alert severity="info" sx={{ mb: 2 }} data-testid="applies-now">Changes take effect within a minute of saving, for everyone who holds the role. They do not need to sign out; their menu follows the next time they open or refresh the app.</Alert>
 }
@@ -197,7 +197,7 @@ function RoleEditor({ catalog, role, roles, notice, onBack, onSaved }) {
 
   const save = async () => {
     setBusy(true); setError(null)
-    const body = { displayName: displayName.trim(), description, grants: catalog.areas.flatMap((a) => [...a.actions, ...a.special.map((s) => s.action)].map((x) => `${a.id}:${x}`)).filter((k) => grants.has(k)), branchScope }
+    const body = { displayName: displayName.trim(), description, grants: catalog.areas.flatMap((a) => [...a.actions, ...a.special.map((s) => s.action)].map((x) => `${a.id}:${x}`)).filter((k) => grants.has(k)), branchScope, ...(!role.id && role.baseRole && { baseRole: role.baseRole }) }
     try {
       const saved = role.id ? (await client.put(`${R}/${role.id}`, body)).data : (await client.post(R, body)).data
       setConfirm(false)

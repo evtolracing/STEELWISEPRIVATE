@@ -20,3 +20,14 @@ export function unpricedLines(lines) {
     .filter(({ line }) => String(line?.description || '').trim() && !(Number(line?.unitPrice) > 0) && !(Number(line?.extPrice) > 0))
     .map(({ n }) => n)
 }
+
+/**
+ * What the Orders list offers for an order, by its status. A submitted order has no work orders yet
+ * (making them is what confirms it), so that is the step offered; a confirmed one is on the Order Board.
+ */
+export function nextStepFor(status) {
+  if (status === 'DRAFT') return 'OPEN'
+  if (status === 'SUBMITTED' || status === 'PENDING') return 'CREATE_WORK_ORDERS'
+  if (['CONFIRMED', 'IN_PRODUCTION', 'READY', 'PARTIAL'].includes(status)) return 'SEE_ON_BOARD'
+  return 'OPEN'
+}

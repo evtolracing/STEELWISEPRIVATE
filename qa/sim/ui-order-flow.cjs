@@ -157,6 +157,27 @@ const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push
   await page.waitForTimeout(3000);
   text = (await page.locator('.MuiSnackbar-root').allInnerTexts()).join(' | ');
   check('a second run with nothing new says nothing was waiting, not "Assigned 0"', /Nothing was waiting|could not be placed/.test(text), text);
+
+  // ── 6. An order submitted the old way (no work orders) can be finished from the Orders list ──
+  const old = await api('/api/orders/intake', 'POST', { source: 'PHONE', division: saved.division || 'METALS', location: saved.location, priority: 'STANDARD', customerId: saved.customerId, customerName: saved.customerName, poNumber: `OLD-${stamp}`, lines: [{ description: `QA old way ${stamp}`, qty: 1, uom: 'EA', unitPrice: 5, extPrice: 5 }] });
+  const oldId = old.body?.data?.id;
+  const oldNumber = old.body?.data?.orderNumber;
+  const sub = await api(`/api/orders/intake/${oldId}/submit`, 'POST', {});
+  const oldBefore = (await api(`/api/jobs?orderId=${oldId}`)).body || [];
+  check('an order submitted without work orders has none', sub.status === 200 && oldBefore.length === 0, `submit ${sub.status}, ${oldBefore.length} jobs, create ${old.status}`);
+  await page.goto(`${APP}/orders`);
+  await page.getByText(oldNumber, { exact: true }).first().click();
+  await page.locator('[data-testid="needs-work-orders"]').waitFor({ timeout: 8000 }).catch(() => {});
+  check('the Orders list says the order is not on the board yet', await page.locator('[data-testid="needs-work-orders"]').isVisible());
+  check('the Orders list can open the order', await page.getByRole('button', { name: 'Open Order' }).isVisible());
+  await shot('7-orders-list');
+  await page.getByRole('button', { name: 'Create Work Orders' }).click();
+  await page.locator('[data-testid="orders-notice"]').waitFor({ timeout: 10000 }).catch(() => {});
+  text = await page.locator('[data-testid="orders-notice"]').innerText().catch(() => '');
+  const oldJobs = (await api(`/api/jobs?orderId=${oldId}`)).body || [];
+  check('Create Work Orders on the Orders list makes the job and says where it is', oldJobs.length === 1 && oldJobs[0].status === 'ORDERED' && /1 work order is now under New Orders/.test(text), `${oldJobs.length} jobs | ${text}`);
+  check('the order then offers the board, not the button again', await page.getByRole('button', { name: 'See on Order Board' }).first().isVisible() && !(await page.getByRole('button', { name: 'Create Work Orders' }).count()));
+  await shot('8-orders-list-done');
   check('no script error on the way', errors.length === 0, errors.join(' | ').slice(0, 300));
 
   await browser.close();

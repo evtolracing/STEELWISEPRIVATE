@@ -97,3 +97,11 @@ Fix (`src/frontend/src/apps/orders/OrdersPage.jsx`, `nextStepFor` in `pages/Orde
 Evidence (this session, local QA database): unit tests in `test/orderFlow.test.js` 7 of 7; `qa/sim/ui-order-flow.cjs` 28 of 28 (5 new checks: an order submitted with no work orders, the note, Open Order, the button makes the job, the button is then replaced by the board link); `ui-sales` 24, `ui-phase5` 14; the Orders screen at three sizes: no hard to read text, no overflow; lint 0 errors; build succeeds; effect ratchet 38 of 38. The full gate suite was not rerun for this addition (NOT VERIFIED as a whole).
 
 Also seen on the live site, not changed: orders are taken for branches that have no machines (for example Detroit Service Center), while the saws are under Detroit Branch - Bay A and Jackson. A job planned at a branch with no machines is not placed by Run Dispatch. While the Plan Job box loads, it briefly says no template fits.
+
+## Addendum 2, 2026-11-20: clicking an order in the list did nothing
+
+Pull request 44 was merged on the owner's word and seen on the live site. The owner then reported that clicking an order under All Orders does nothing. Cause: below 900 px wide the details panel sits under the full-height list, out of sight, so a click changed something nobody could see.
+
+Fix (`OrdersPage.jsx`): in a narrow window a click opens the order's own page, and the hidden panel is not drawn. In a wide window a click still shows the details beside the list, and a double click opens the order's page.
+
+Evidence (this session, local QA database): `qa/sim/ui-order-flow.cjs` 31 of 31 (3 new checks: narrow click opens the order, the order shows its work order, wide double click opens it); the Orders screen at three sizes: no findings; lint 0 errors; build succeeds; effect ratchet 38 of 38. NOT VERIFIED: the full gate suite; `ui-shipping` could not start on the used QA database ("no test customer or branch") and was not rerun on a fresh one.

@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit bc1e330. Do not edit by hand: change the source and rerun.
 
 694 routes in 78 route files, served at 79 mount points. 367 change data.
 
@@ -40,12 +40,12 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 | Route | File |
 |---|---|
-| `GET /api/auth/me` | auth.js:199 |
+| `GET /api/auth/me` | auth.js:200 |
 | `GET /api/users/roles/list` | roles.js:70 |
 | `GET /api/users/:id/access` | userAccess.js:40 |
 | `GET /api/users/locations` | users.js:555 |
 | `GET /api/users/divisions` | users.js:572 |
-| `GET /api/grades` | grades.js:25 |
+| `GET /api/grades` | grades.js:24 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
 | `GET /api/coils/:id/history` | coils.js:114 |
@@ -81,10 +81,10 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/v1/operations/long-running` | operationsRoutes.js:120 |
 | `GET /api/v1/operations/:id/time-logs` | operationsRoutes.js:499 |
 | `GET /api/sales/dashboard/leaderboard` | salesRoutes.js:228 |
-| `GET /api/staff/operators` | staff.js:49 |
-| `GET /api/staff/operators/:id/skills` | staff.js:348 |
-| `GET /api/staff/shifts` | staff.js:471 |
-| `GET /api/staff/available` | staff.js:653 |
+| `GET /api/staff/operators` | staff.js:48 |
+| `GET /api/staff/operators/:id/skills` | staff.js:347 |
+| `GET /api/staff/shifts` | staff.js:470 |
+| `GET /api/staff/available` | staff.js:652 |
 | `GET /api/qc/inspectors` | qcRoutes.js:449 |
 | `GET /api/material-tracking/custody-log` | materialTrackingRoutes.js:78 |
 | `GET /api/material-tracking/jobs/:jobId/tags` | materialTrackingRoutes.js:178 |
@@ -100,7 +100,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (5 routes, 248 lines)
+### auth.js (5 routes, 254 lines)
 
 Mounted at /api/auth. Tables: User, AuditLog, Location.
 
@@ -112,7 +112,7 @@ Mounted at /api/auth. Tables: User, AuditLog, Location.
 | `POST /api/auth/logout-all` | yes | 2 | yes |  | yes |  |
 | `GET /api/auth/me` | yes |  |  | yes |  |  |
 
-### roles.js (8 routes, 205 lines)
+### roles.js (8 routes, 206 lines)
 
 Mounted at /api/users/roles. Tables: Role, User, UserRoleAssignment, UserPrimaryRole, AuditLog.
 
@@ -153,7 +153,7 @@ Mounted at /api/users. Tables: User, AuditLog, UserRoleAssignment, UserLocation,
 | `GET /api/users/locations` |  |  |  | yes |  |  |
 | `GET /api/users/divisions` |  |  |  | yes |  |  |
 
-### grades.js (4 routes, 94 lines)
+### grades.js (4 routes, 93 lines)
 
 Mounted at /api/grades. Tables: Grade.
 
@@ -374,7 +374,7 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (10 routes, 514 lines)
+### orders.js (10 routes, 513 lines)
 
 Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User.
 
@@ -402,7 +402,7 @@ Mounted at /api/purchase-orders. Tables: Organization, Location, Order, OrderLin
 | `GET /api/purchase-orders/:id` | yes |  |  |  |  |  |
 | `PUT /api/purchase-orders/:id` | yes | 3 | yes |  | yes |  |
 
-### workOrders.js (9 routes, 244 lines)
+### workOrders.js (9 routes, 245 lines)
 
 Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, Inventory.
 
@@ -1059,7 +1059,7 @@ Mounted at /api/admin. Tables: through a service or none.
 | `POST /api/admin/seed-demo` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
 | `GET /api/admin/retention` | yes |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 
-### dropTagRoutes.js (33 routes, 555 lines)
+### dropTagRoutes.js (33 routes, 557 lines)
 
 Mounted at /api/drop-tags. Tables: through a service or none.
 
@@ -1099,7 +1099,7 @@ Mounted at /api/drop-tags. Tables: through a service or none.
 | `POST /api/drop-tags/listings/:id/close` |  |  |  |  |  |  |
 | `POST /api/drop-tags/scans` |  |  |  |  |  |  |
 
-### staff.js (15 routes, 788 lines)
+### staff.js (15 routes, 787 lines)
 
 Mounted at /api/staff. Tables: Operator, WorkCenterType, Location, WorkCenter, DispatchTimeLog, OperatorSkill, Shift.
 

@@ -1,8 +1,8 @@
 {
- "at": "2026-11-20T09:09:26.769Z",
+ "at": "2026-11-20T10:33:36.448Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 175,
- "totalRows": 74472,
+ "totalRows": 74495,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -114,7 +114,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 18539
+   "rows": 18570
   },
   {
    "table": "BomOperation",
@@ -126,7 +126,7 @@
   },
   {
    "table": "Coil",
-   "rows": 2015
+   "rows": 2014
   },
   {
    "table": "CommodityPrice",
@@ -134,11 +134,11 @@
   },
   {
    "table": "CustomerPreference",
-   "rows": 2
+   "rows": 3
   },
   {
    "table": "CustomerPricingTier",
-   "rows": 70
+   "rows": 71
   },
   {
    "table": "CustomerTagRequirement",
@@ -238,7 +238,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 2015
+   "rows": 2014
   },
   {
    "table": "InventoryAdjustment",
@@ -262,11 +262,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 1410
+   "rows": 1409
   },
   {
    "table": "InvoiceLine",
-   "rows": 1424
+   "rows": 1423
   },
   {
    "table": "Job",
@@ -278,11 +278,11 @@
   },
   {
    "table": "JournalEntry",
-   "rows": 5895
+   "rows": 5892
   },
   {
    "table": "JournalLine",
-   "rows": 12186
+   "rows": 12180
   },
   {
    "table": "LabelTemplate",
@@ -294,7 +294,7 @@
   },
   {
    "table": "LedgerEvent",
-   "rows": 3611
+   "rows": 3608
   },
   {
    "table": "LedgerExportBatch",
@@ -350,7 +350,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 3706
+   "rows": 3708
   },
   {
    "table": "MeterReading",
@@ -370,19 +370,19 @@
   },
   {
    "table": "Order",
-   "rows": 2898
+   "rows": 2895
   },
   {
    "table": "OrderLine",
-   "rows": 2924
+   "rows": 2921
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 146
+   "rows": 145
   },
   {
    "table": "Organization",
-   "rows": 401
+   "rows": 402
   },
   {
    "table": "PMSchedule",
@@ -418,7 +418,7 @@
   },
   {
    "table": "Payment",
-   "rows": 1187
+   "rows": 1188
   },
   {
    "table": "PipelineRun",
@@ -466,7 +466,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 60
+   "rows": 61
   },
   {
    "table": "Quote",
@@ -494,7 +494,7 @@
   },
   {
    "table": "RateWindow",
-   "rows": 1101
+   "rows": 1112
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -738,7 +738,7 @@
   },
   {
    "table": "User",
-   "rows": 1006
+   "rows": 1011
   },
   {
    "table": "UserDivision",
@@ -762,7 +762,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 3999
+   "rows": 3991
   },
   {
    "table": "WorkCenter",
@@ -1316,7 +1316,7 @@
   "stock items (coils) with no heat": 10,
   "stock items with no location": 0,
   "shipments delivered with no proof of delivery name": 52,
-  "users with no home branch": 16,
+  "users with no home branch": 17,
   "invoices and credit memos with no record of who raised them, outside the demo seed": 0,
   "shipments delivered with neither a name nor a reason for none (allowed only for deliveries recorded before Phase 8)": 48,
   "dispatched shipments whose stock movements add up to more than the shipment carries": 0,

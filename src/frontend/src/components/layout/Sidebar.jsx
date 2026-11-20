@@ -30,14 +30,15 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   const { isActive, startDemo, stopDemo } = useDemo()
   const { user } = useAuth()
   const role = user?.role
+  const permissions = user?.permissions
 
   // Only show the pages this user's role can open.
   const visibleSections = useMemo(
     () => navSections
       .map((section) => ({ ...section, items: section.items.filter((item) => canAccessPath(role, item.path)) }))
-      .filter((section) => section.items.length > 0),
+      .filter((section) => section.items.length > 0 && permissions !== null),
     // The permissions too: two custom roles can stand on the same built-in role and open different pages.
-    [role, user?.permissions],
+    [role, permissions],
   )
   const activePath = navItemFor(location.pathname)?.path
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || 'Signed in'

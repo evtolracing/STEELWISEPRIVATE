@@ -72,8 +72,21 @@ A read-only query that lists everyone who holds an extra role is in the project 
 | Fails without the change | With the stock-correction check put back to role names, 9 of 137 fail |
 | The screens in a browser (`qa/sim/ui-role-rights.cjs`) | 19 of 19: boxes ticked per role, sensitive warning on save, reset, Switch off and on, View as a custom role with its banner and menu, the Change button on the price list |
 | Roles API, one person's access API, their screens (phases 2 to 4) | 43 of 43, 48 of 48, 24 of 24, 17 of 17 |
-| Full gate suite on a rebuilt QA database | GATE_RESULTS |
-| Backend and frontend lint | 0 errors |
+| Full gate suite on a rebuilt QA database | See below |
+| Backend and frontend lint, frontend build | 0 errors; build succeeds |
+
+### Full gate suite
+
+Pass: three simulation cycles (0 reconciliation problems), security sweep (20 sections), branch boundary 39, phase 2 integrity 82, phases 3 to 8 (74, 66, 76, 106, 141, 155), ten browser suites, the six role matrix suites (the two new ones are now in the gate script), phase 9 screens 232, 156 screens at three sizes, ledger sandbox, phase 9.5 screens and load, phase 11 scenarios 320, phase 12 certification 68, phase 12 manual 156, baseline probe, 0 of 367 changing routes without an access rule, lint, build.
+
+Not passing:
+
+| Item | Why |
+|---|---|
+| Screen ratchet: effects that read a value they do not list, 39 against a ceiling of 38 | Caused by this work (the menu's dependency list in `Sidebar.jsx`). Fixed; the check rerun alone gives 38, and the two role browser suites were rerun after the fix (19 of 19, 24 of 24). Not rerun inside the full suite |
+| Phase 9.5 ledger, 157 of 158 | `LEDGER_ACCOUNT_ADDED` has no audit row. Same before this work |
+| Phase 10 backup and restore group, 6 of 20 | Needs a second PostgreSQL server on port 5433, not present here |
+| Phase 11 enterprise run: two response times over the proposed limits | Same flag before this work. 545 of 545 jobs, 5,187 of 5,187 transactions, books agree |
 
 NOT VERIFIED: anything on the hosted site. Whether live logins hold extra roles. The screens on a phone. Drop tag reprint and void with a custom role (the defaults and the passing of the right are tested; no live reprint past the limit was run as a custom role). The transfer shortage settle door (same check as stock correction, not probed separately).
 
@@ -97,7 +110,7 @@ NOT VERIFIED: anything on the hosted site. Whether live logins hold extra roles.
 | F Reliability | PASS | Defaults decide when the role table cannot be read |
 | G Performance | NOT ASSESSED | No new queries per request; `/auth/me` reads the cached roles once more |
 | H User experience | CONDITIONAL | One browser at 1440 wide |
-| I Regression | GATE_I |
+| I Regression | CONDITIONAL | Full suite run; four items not passing, one from this work and fixed |
 | J Documentation | PASS | This report, manual section, inventories regenerated |
 
 Readiness: CONDITIONAL.

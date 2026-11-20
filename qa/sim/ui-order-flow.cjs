@@ -178,6 +178,19 @@ const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push
   check('Create Work Orders on the Orders list makes the job and says where it is', oldJobs.length === 1 && oldJobs[0].status === 'ORDERED' && /1 work order is now under New Orders/.test(text), `${oldJobs.length} jobs | ${text}`);
   check('the order then offers the board, not the button again', await page.getByRole('button', { name: 'See on Order Board' }).first().isVisible() && !(await page.getByRole('button', { name: 'Create Work Orders' }).count()));
   await shot('8-orders-list-done');
+  // ── 7. In a narrow window the details are out of sight, so a click on an order opens its page ──
+  await page.setViewportSize({ width: 800, height: 720 });
+  await page.goto(`${APP}/orders`);
+  await page.getByText(oldNumber, { exact: true }).first().click();
+  await page.waitForURL(new RegExp(`/orders/${oldId}`), { timeout: 8000 }).catch(() => {});
+  check('in a narrow window, clicking an order in the list opens the order', page.url().includes(`/orders/${oldId}`), page.url());
+  await page.locator('[data-testid="order-work-orders"]').waitFor({ timeout: 8000 }).catch(() => {});
+  check('and the order shows its work order', (await page.locator('[data-testid="order-work-orders"]').innerText().catch(() => '')).includes(oldJobs[0]?.jobNumber || 'none'));
+  await page.setViewportSize({ width: 1280, height: 860 });
+  await page.goto(`${APP}/orders`);
+  await page.getByText(oldNumber, { exact: true }).first().dblclick();
+  await page.waitForURL(new RegExp(`/orders/${oldId}`), { timeout: 8000 }).catch(() => {});
+  check('in a wide window, a double click opens the order', page.url().includes(`/orders/${oldId}`), page.url());
   check('no script error on the way', errors.length === 0, errors.join(' | ').slice(0, 300));
 
   await browser.close();

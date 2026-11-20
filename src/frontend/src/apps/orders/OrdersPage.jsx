@@ -21,7 +21,9 @@ import {
   TableRow,
   CircularProgress,
   Alert,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   Refresh as RefreshIcon,
   Phone as PhoneIcon,
@@ -61,6 +63,9 @@ function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notice, setNotice] = useState(null);
+  // On a narrow window the details sit below the whole list, out of sight, so a click there opens the order's own page.
+  const theme = useTheme();
+  const stacked = useMediaQuery(theme.breakpoints.down('md'));
   const [working, setWorking] = useState(false);
 
   useEffect(() => {
@@ -189,7 +194,8 @@ function OrdersPage() {
                   {index > 0 && <Divider />}
                   <ListItemButton
                     selected={selectedOrder?.id === order.id}
-                    onClick={() => setSelectedOrder(order)}
+                    onClick={() => (stacked ? navigate(`/orders/${order.id}`) : setSelectedOrder(order))}
+                    onDoubleClick={() => navigate(`/orders/${order.id}`)}
                   >
                     <ListItemText
                       primary={
@@ -223,7 +229,7 @@ function OrdersPage() {
         </Grid>
 
         {/* Right: Order Detail */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} sx={{ display: { xs: 'none', md: 'block' } }}>
           {selectedOrder ? (
             <Paper sx={{ height: '100%', overflow: 'auto', p: 3 }}>
               <Stack spacing={3}>

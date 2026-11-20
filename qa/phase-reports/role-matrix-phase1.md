@@ -10,7 +10,7 @@ The running server does not read any of this yet. It still decides from its code
 
 | Piece | Where |
 |---|---|
-| Permission catalog: 43 areas, 144 permissions, and the permission each request needs | `src/backend/src/lib/permissionCatalog.js` |
+| Permission catalog: 41 areas, 144 permissions, and the permission each request needs | `src/backend/src/lib/permissionCatalog.js` |
 | Deciding from permissions: a request, a page, a person's roles plus exceptions, branch reach | `src/backend/src/lib/permissions.js` |
 | The built-in roles, worked out from today's rules (48 roles) | `src/backend/scripts/permission-defaults.js` |
 | Database update 19 | `src/backend/prisma/migrations/20261120090000_role_permission_matrix/` |

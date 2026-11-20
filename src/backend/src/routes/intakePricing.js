@@ -8,12 +8,12 @@
  *   GET  /api/pricing/contracts?customerId=
  */
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
 import { customerPriceLevel } from '../lib/customerPricing.js';
 import { TIER_TO_LEVEL, levelForTier, levelPrice } from '../lib/priceRules.js';
 import { ci } from '../lib/dbText.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { orderTax, branchStateFor } from '../lib/orderTax.js';
 
 const router = Router();
@@ -168,7 +168,7 @@ router.get('/price-list', async (req, res) => {
 // it is written to the audit log with the old and new price.
 router.put('/list-price/:productId', async (req, res) => {
   try {
-    if (!MONEY_MANAGERS.has(req.user?.role)) return res.status(403).json({ error: 'Changing a list price needs a manager.' });
+    if (!can(req, 'sales:setListPrice')) return res.status(403).json({ error: 'Changing a list price needs a manager.' });
     const listPrice = Number(req.body?.listPrice);
     if (!Number.isFinite(listPrice) || listPrice <= 0 || listPrice > 1000000) return res.status(400).json({ error: 'List price must be more than zero' });
     const before = await prisma.product.findUnique({ where: { id: String(req.params.productId) }, select: { id: true, sku: true, name: true, basePriceCwt: true, priceUnit: true } });

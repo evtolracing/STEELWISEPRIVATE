@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { readFields } from '../lib/fieldRules.js';
-import { workOrderMoveError, gradeFitError, HOLD_RELEASERS, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
+import { workOrderMoveError, gradeFitError, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
 import { completeWorkOrder, readPieces } from '../lib/stockChanges.js';
 import { retryOverlap } from '../lib/numbering.js';
 
@@ -232,7 +233,7 @@ router.put('/:id/hold', guard((req, res) => {
 }));
 
 router.put('/:id/release-hold', guard(async (req, res) => {
-  if (!HOLD_RELEASERS.has(req.user?.role)) return res.status(403).json({ error: 'A quality hold is released by quality staff or the production manager' });
+  if (!can(req, 'jobs:releaseQualityHold')) return res.status(403).json({ error: 'A quality hold is released by quality staff or the production manager' });
   const wo = await prisma.workOrder.findUnique({ where: { id: req.params.id }, select: { status: true } });
   if (wo && wo.status !== 'QC_HOLD') return res.status(409).json({ error: 'This work order is not on quality hold' });
   return move(req, res, 'IN_PROGRESS');

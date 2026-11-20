@@ -4,6 +4,7 @@
  */
 
 import express from 'express';
+import { can } from '../lib/roleStore.js';
 import dropTagService, { TagRefusal } from '../services/dropTagService.js';
 import dropTagListingService from '../services/dropTagListingService.js';
 import scanService from '../services/scanService.js';
@@ -237,7 +238,8 @@ router.post('/validate', async (req, res) => {
 // PACKAGES AND TAGS: every step that changes one (Phase 8, N-008 to N-013)
 // ============================================================================
 // The person is the one signed in, and the custody record carries the role they really have.
-const who = (req) => ({ userId: req.user.id, role: req.user.role });
+// mayOverride: the person may print a tag again past the limit and void a tag that left the dock.
+const who = (req) => ({ userId: req.user.id, role: req.user.role, mayOverride: can(req, 'dropTags:override') });
 const step = (label, fn) => async (req, res) => {
   try {
     const out = await fn(req);

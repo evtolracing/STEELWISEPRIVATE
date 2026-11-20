@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from '@mui/material'
+import { FormControl, InputLabel, ListSubheader, MenuItem, Select, Stack, Tooltip } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { roleLabel } from '../../config/roleAccess'
 
@@ -18,6 +18,7 @@ export default function ViewControls() {
   const branches = user?.branches || []
   const allBranches = Boolean(user?.allBranches)
   const previewable = user?.previewableRoles || []
+  const custom = user?.previewableCustomRoles || []
 
   const showBranch = branches.length > 0 || allBranches
   const branchValue = branchId || (allBranches || branches.length !== 1 ? ALL : branches[0].id)
@@ -60,6 +61,10 @@ export default function ViewControls() {
               <MenuItem value={OWN}>{roleLabel(realRole)} (me)</MenuItem>
               {previewable.map((r) => (
                 <MenuItem key={r} value={r}>{roleLabel(r)}</MenuItem>
+              ))}
+              {custom.length > 0 && <ListSubheader>Custom roles</ListSubheader>}
+              {custom.map((r) => (
+                <MenuItem key={r.name} value={r.name} data-testid={`view-as-${r.name}`}>{r.displayName}</MenuItem>
               ))}
             </Select>
           </FormControl>

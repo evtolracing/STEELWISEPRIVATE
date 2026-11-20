@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../lib/db.js';
 import config from '../config/index.js';
 import { setBranchScope } from '../lib/branchScope.js';
-import { requestView, SYSTEM_ADMIN_ROLES } from '../lib/viewScope.js';
+import { customPreview, requestView, SYSTEM_ADMIN_ROLES } from '../lib/viewScope.js';
 import { accessOf, allRoles, userFacts } from '../lib/roleStore.js';
 import { effectiveAccess } from '../lib/userAccess.js';
 import { permissionFor } from '../lib/permissionCatalog.js';
@@ -84,9 +84,14 @@ export async function authenticate(req, res, next) {
     const roles = every.byName;
     const own = effectiveAccess(user.role, every, facts);
     user.branchScope = own.branchScope;
-    const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] }, { seesEveryBranch: (role) => accessOf(role, roles).branchScope === 'ALL', mayPreview: has(own.grants, 'admin:preview') });
-    // req.access is what this request may do: the previewed role's permissions while previewing.
-    const access = view.previewRole ? accessOf(view.user.role, roles) : own;
+    const mayPreview = has(own.grants, 'admin:preview');
+    // A custom role is previewed by its name; only one that holds nothing this login lacks.
+    const customRole = mayPreview && req.headers['x-view-as-role'] ? customPreview(Object.values(every.byId), (p) => has(own.grants, p), req.headers['x-view-as-role']) : null;
+    const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] }, { seesEveryBranch: (role) => accessOf(role, roles).branchScope === 'ALL', mayPreview, customRole });
+    // req.access is what this request may do: the previewed role's permissions while previewing
+    // (a custom role: what a person with it as their main role holds).
+    const access = !view.previewRole ? own : customRole ? effectiveAccess(customRole.baseRole, every, { primaryRoleId: customRole.id, extras: [], overrides: [] }) : accessOf(view.user.role, roles);
+    if (customRole) view.previewLabel = customRole.displayName;
     if (view.previewRole) view.user.branchScope = access.branchScope;
     req.realUser = user;
     req.view = view;

@@ -208,6 +208,11 @@ function RoleEditor({ catalog, role, roles, notice, onBack, onSaved }) {
     setBusy(true); setError(null)
     try { const saved = (await client.post(`${R}/${role.id}/reset`)).data; onSaved(saved, `${saved.displayName} is back to its default.`) } catch (e) { setError(errorText(e, 'The role was not reset')) } finally { setBusy(false) }
   }
+  // A custom role nobody holds can be switched off: it stays in the list, greyed, and can no longer be given.
+  const switchRole = async (on) => {
+    setBusy(true); setError(null)
+    try { const saved = (await client.put(`${R}/${role.id}`, { isActive: on })).data; onSaved(saved, `${saved.displayName} is switched ${on ? 'on' : 'off'}.`) } catch (e) { setError(errorText(e, 'The role was not changed')) } finally { setBusy(false) }
+  }
   const showHistory = async () => {
     setError(null)
     try { setHistory((await client.get(`${R}/${role.id}/history`)).data) } catch (e) { setError(errorText(e, 'Could not load the history')) }
@@ -236,6 +241,7 @@ function RoleEditor({ catalog, role, roles, notice, onBack, onSaved }) {
         <Typography component="h1" variant="h5" fontWeight={700}>{role.id ? role.displayName : `New role: ${displayName}`}</Typography>
         {role.builtIn && <Chip size="small" label="Built-in" variant="outlined" />}
         {role.locked && <Chip size="small" icon={<LockIcon />} label="Always holds everything" />}
+        {role.id && role.isActive === false && <Chip size="small" color="warning" label="Switched off" data-testid="role-off" />}
       </Stack>
       <WhenItApplies catalog={catalog} role={role} />
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)} data-testid="role-error">{error}</Alert>}
@@ -336,6 +342,11 @@ function RoleEditor({ catalog, role, roles, notice, onBack, onSaved }) {
               {changed ? `${added.length} added, ${removed.length} removed${added.length + removed.length === 0 ? ' (details changed)' : ''}` : 'No changes'}
             </Typography>
             {role.id && <Button onClick={showHistory} data-testid="show-history">History</Button>}
+            {role.id && !role.builtIn && !role.isSystem && (
+              <Tooltip title={role.isActive ? (role.holders > 0 ? 'Move the people who hold this role to another role first' : 'Nobody can be given this role while it is off. Nothing is deleted.') : 'The role can be given to people again'}>
+                <span><Button disabled={busy || changed || (role.isActive && role.holders > 0)} onClick={() => switchRole(!role.isActive)} data-testid="switch-role">{role.isActive ? 'Switch off' : 'Switch on'}</Button></span>
+              </Tooltip>
+            )}
             {role.builtIn && <Tooltip title={atDefault ? 'This role is at its default' : 'Back to what the built-in rules give this role'}><span><Button disabled={busy || atDefault} onClick={reset} data-testid="reset-role">Reset to default</Button></span></Tooltip>}
             <Button disabled={!changed} onClick={() => { setGrants(new Set(role.grants)); setDisplayName(role.displayName || ''); setDescription(role.description || ''); setBranchScope(role.branchScope) }}>Undo changes</Button>
             <Button variant="contained" disabled={!changed || busy || displayName.trim().length < 3} onClick={() => setConfirm(true)} data-testid="save-role">Save</Button>

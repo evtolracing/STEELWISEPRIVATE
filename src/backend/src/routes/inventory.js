@@ -8,7 +8,7 @@ import { searchStock } from '../services/intakeCatalogService.js';
 import { can } from '../lib/roleStore.js';
 import { receiveStock, recentReceipts } from '../lib/receiving.js';
 import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
-import { adjustStock, ADJUST_REASONS, STOCK_ADJUSTERS } from '../lib/stockChanges.js';
+import { adjustStock, ADJUST_REASONS } from '../lib/stockChanges.js';
 import { retryOverlap, createNumbered, padded } from '../lib/numbering.js';
 import { readShipment, shipTransfer, receiveTransfer, cancelTransfer, settleShortage, TRANSFER_INCLUDE } from '../lib/transfers.js';
 import { recordMovement } from '../services/ledger.js';
@@ -229,7 +229,7 @@ router.post('/transfers/:id/receive', async (req, res) => {
 // POST /api/inventory/transfers/:id/settle { coilId, decision: CONFIRM_SHORT | FOUND, notes }: managers and the inventory manager.
 router.post('/transfers/:id/settle', async (req, res) => {
   try {
-    if (!STOCK_ADJUSTERS.has(req.user?.role)) return res.status(403).json({ error: 'Settling a shortage is for a manager or the inventory manager' });
+    if (!can(req, 'inventory:adjust')) return res.status(403).json({ error: 'Settling a shortage is for a manager or the inventory manager' });
     const { coilId, decision, notes } = req.body || {};
     if (!coilId || typeof coilId !== 'string') return res.status(400).json({ error: 'coilId is required' });
     const out = await retryOverlap(() => prisma.$transaction((tx) => settleShortage(tx, { transferId: req.params.id, coilId, decision: String(decision || '').toUpperCase(), notes, userId: req.user.id })));
@@ -257,7 +257,7 @@ router.post('/transfers/:id/cancel', async (req, res) => {
  */
 router.post('/adjust', async (req, res) => {
   try {
-    if (!STOCK_ADJUSTERS.has(req.user?.role)) return res.status(403).json({ error: 'Correcting a stock balance is for a manager or the inventory manager' });
+    if (!can(req, 'inventory:adjust')) return res.status(403).json({ error: 'Correcting a stock balance is for a manager or the inventory manager' });
     const { coilId } = req.body || {};
     if (!coilId || typeof coilId !== 'string') return res.status(400).json({ error: 'coilId is required' });
     const reason = String(req.body.reason || req.body.reasonCode || '').toUpperCase();

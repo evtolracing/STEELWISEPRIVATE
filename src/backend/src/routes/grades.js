@@ -1,13 +1,12 @@
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
 import { readFields, rangeError } from '../lib/fieldRules.js';
-import { COST_VIEWERS } from '../lib/roleAccess.js';
 
 const router = Router();
 
 // A grade is the specification stock is certified against. Managers, the inventory manager,
 // buyers and the quality manager keep the list.
-const EDITORS = new Set([...COST_VIEWERS, 'QC_MANAGER']);
 const strength = { type: 'number', min: 0, max: 1000000 };
 const FIELDS = {
   code: { type: 'string', required: true, maxLength: 40 },
@@ -56,7 +55,7 @@ router.get('/:id', async (req, res) => {
 // Create grade
 router.post('/', async (req, res) => {
   try {
-    if (!EDITORS.has(req.user?.role)) return res.status(403).json({ error: 'Adding a grade needs a manager, the inventory manager, a buyer or the quality manager.' });
+    if (!can(req, 'sales:editGrades')) return res.status(403).json({ error: 'Adding a grade needs a manager, the inventory manager, a buyer or the quality manager.' });
     const { data, error } = readFields(req.body, FIELDS, { creating: true });
     if (error) return res.status(400).json({ error });
     const range = rangeError(data, RANGES);
@@ -73,7 +72,7 @@ router.post('/', async (req, res) => {
 // Update grade
 router.put('/:id', async (req, res) => {
   try {
-    if (!EDITORS.has(req.user?.role)) return res.status(403).json({ error: 'Changing a grade needs a manager, the inventory manager, a buyer or the quality manager.' });
+    if (!can(req, 'sales:editGrades')) return res.status(403).json({ error: 'Changing a grade needs a manager, the inventory manager, a buyer or the quality manager.' });
     const before = await prisma.grade.findUnique({ where: { id: req.params.id } });
     if (!before) return res.status(404).json({ error: 'Grade not found' });
     const { data, error } = readFields(req.body, FIELDS);

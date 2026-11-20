@@ -11,7 +11,6 @@
 import { listWindow, sendWindow } from '../lib/listing.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { COMMITTED_STATUSES, HOLD_PLACED, statusAfterCreditCheck, recordCreditHold, openCreditHold, releaseCreditHold, creditHoldMessage } from '../lib/creditControl.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { can } from '../lib/roleStore.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -202,7 +201,7 @@ router.get('/credit-holds', async (req, res) => {
         heldAt: hold.timestamp, limit: hold.details?.limit ?? null, exposure: hold.details?.exposure ?? null, overBy: hold.details?.overBy ?? null,
       });
     }
-    res.json({ data: rows, canRelease: MONEY_MANAGERS.has(req.user?.role) });
+    res.json({ data: rows, canRelease: can(req, 'orders:releaseCreditHold') });
   } catch (error) {
     console.error('Orders: credit holds failed:', error);
     res.status(500).json({ error: 'The credit holds could not be loaded' });
@@ -212,7 +211,7 @@ router.get('/credit-holds', async (req, res) => {
 // POST /api/orders/:id/credit-release { note? }: a manager lets a held order go ahead.
 router.post('/:id/credit-release', async (req, res) => {
   try {
-    if (!MONEY_MANAGERS.has(req.user?.role)) return res.status(403).json({ error: 'Releasing a credit hold needs a manager.' });
+    if (!can(req, 'orders:releaseCreditHold')) return res.status(403).json({ error: 'Releasing a credit hold needs a manager.' });
     const note = req.body?.note ? String(req.body.note).trim().slice(0, 500) : null;
     const order = await releaseCreditHold({ orderId: req.params.id, user: req.user, note });
     res.json(order);

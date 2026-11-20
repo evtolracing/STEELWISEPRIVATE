@@ -168,13 +168,13 @@ export async function printDropTag(dropTagId, { stationId, userId, role, templat
   });
 }
 
-export async function reprintDropTag(dropTagId, { reason, stationId, userId, role, copies = 1 }) {
+export async function reprintDropTag(dropTagId, { reason, stationId, userId, role, copies = 1, mayOverride = isManager(role) }) {
   if (!REPRINT_REASONS.includes(reason)) refuse(400, `Invalid reprint reason. Must be one of: ${REPRINT_REASONS.join(', ')}`);
   return prisma.$transaction(async (tx) => {
     const dropTag = await tx.dropTag.findUnique({ where: { id: dropTagId } });
     if (!dropTag) refuse(404, 'Drop tag not found');
     if (!PRINTED_STATES.includes(dropTag.status)) refuse(409, `A tag that is ${dropTag.status} has not been printed, so there is nothing to print again.`);
-    if (dropTag.reprintCount >= REPRINTS_WITHOUT_MANAGER && !isManager(role)) refuse(403, `This tag has been printed again ${dropTag.reprintCount} times. A further copy needs a manager.`);
+    if (dropTag.reprintCount >= REPRINTS_WITHOUT_MANAGER && !mayOverride) refuse(403, `This tag has been printed again ${dropTag.reprintCount} times. A further copy needs a manager.`);
     const moved = await tx.dropTag.updateMany({ where: { id: dropTagId, reprintCount: dropTag.reprintCount, status: dropTag.status }, data: { reprintCount: { increment: 1 }, lastReprintReason: reason, printedBy: userId, printedAt: new Date() } });
     if (!moved.count) refuse(409, 'This tag was just changed by someone else. Reload and try again.');
     const updated = await tx.dropTag.findUnique({ where: { id: dropTagId } });
@@ -217,7 +217,7 @@ export async function sealPackage(packageId, { sealId, userId, role }) {
   });
 }
 
-export async function voidDropTag(dropTagId, { reason, claimId, userId, role }) {
+export async function voidDropTag(dropTagId, { reason, claimId, userId, role, mayOverride = isManager(role) }) {
   const why = String(reason || '').trim();
   if (!why) refuse(400, 'reason is required for void');
   return prisma.$transaction(async (tx) => {
@@ -228,7 +228,7 @@ export async function voidDropTag(dropTagId, { reason, claimId, userId, role }) 
     const left = LEFT_THE_DOCK.includes(dropTag.status);
     if (left) {
       if (!String(claimId || '').trim()) refuse(400, 'VOID_REQUIRES_CLAIM: Post-shipment void requires a claim ID');
-      if (!isManager(role)) refuse(403, 'This material has left the dock. Voiding its tag needs a manager.');
+      if (!mayOverride) refuse(403, 'This material has left the dock. Voiding its tag needs a manager.');
     }
     await moveTag(tx, dropTag, dropTag.status, { status: 'VOID', voidedBy: userId, voidedAt: new Date(), voidReason: why });
     await createTraceEvent(tx, { eventType: 'DROP_TAG_VOIDED', eventCategory: 'DROP_TAG', actorUserId: userId, actorRole: role, resourceType: 'DropTag', resourceId: dropTagId, previousState: dropTag.status, newState: 'VOID', dropTagId, metadata: { reason: why, claimId: claimId || null } });

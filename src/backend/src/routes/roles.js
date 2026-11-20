@@ -14,7 +14,7 @@ import prisma from '../lib/db.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ACTION_LABELS, AREAS } from '../lib/permissionCatalog.js';
 import { BUILTIN_DEFAULTS } from '../lib/builtinRoleDefaults.js';
-import { forgetRoles, matrixOff } from '../lib/roleStore.js';
+import { forgetRoles, matrixOff, storedRole, toStore } from '../lib/roleStore.js';
 import { editorsAfter } from '../lib/accessFacts.js';
 import { baseOf } from '../lib/userAccess.js';
 import { cleanGrants, grantsDiff, isLocked, roleChangeDenial, roleDeleteDenial, roleName, SENSITIVE } from '../lib/roleEditRules.js';
@@ -83,7 +83,7 @@ router.get('/list', authenticate, async (req, res) => {
   const where = req.query.all ? {} : { isActive: true };
   try {
     const [roles, count] = await Promise.all([prisma.role.findMany({ where, orderBy: { name: 'asc' } }), holderCounts(req.user.organizationId)]);
-    res.json(roles.map((r) => shown(r, count(r))));
+    res.json(roles.map(storedRole).map((r) => shown(r, count(r))));
   } catch (error) {
     if (!update19Missing(error)) return fail(res, 'list the roles', error, req);
     // The user form still gets its list of roles while update 19 is waiting.
@@ -93,7 +93,7 @@ router.get('/list', authenticate, async (req, res) => {
 
 router.get('/:id', authenticate, async (req, res) => {
   try {
-    const role = await prisma.role.findUnique({ where: { id: req.params.id } });
+    const role = storedRole(await prisma.role.findUnique({ where: { id: req.params.id } }));
     if (!role) return res.status(404).json({ error: 'Role not found' });
     const builtIn = isBuiltin(role);
     const [count, primary, extra, actor, main] = await Promise.all([
@@ -135,9 +135,9 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async
     const denial = roleChangeDenial(actor, null, change, { takenNames: [...Object.keys(BUILTIN_DEFAULTS), ...existing.map((r) => r.name)] });
     if (denial) return res.status(400).json({ error: denial });
     const role = await prisma.$transaction(async (tx) => {
-      const made = await tx.role.create({ data: { name, displayName: String(displayName).trim(), description: description ? String(description).slice(0, 300) : null, permissions: [], grants: cleanGrants(grants), audience: 'STAFF', branchScope, baseRole, isSystem: false, updatedById: req.user.id } });
-      await audit(tx, req, 'ROLE_CREATED', made, null, snapshot(made));
-      return made;
+      const made = await tx.role.create({ data: { name, displayName: String(displayName).trim(), description: description ? String(description).slice(0, 300) : null, permissions: [], grants: toStore(cleanGrants(grants)), audience: 'STAFF', branchScope, baseRole, isSystem: false, updatedById: req.user.id } });
+      await audit(tx, req, 'ROLE_CREATED', made, null, snapshot(storedRole(made)));
+      return storedRole(made);
     });
     forgetRoles();
     res.status(201).json(shown(role, 0));
@@ -145,7 +145,7 @@ router.post('/', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async
 });
 
 async function change(req, res, eventType, build) {
-  const role = await prisma.role.findUnique({ where: { id: req.params.id } });
+  const role = storedRole(await prisma.role.findUnique({ where: { id: req.params.id } }));
   if (!role) return res.status(404).json({ error: 'Role not found' });
   const sent = build(role);
   if (sent.error) return res.status(400).json({ error: sent.error });
@@ -157,13 +157,14 @@ async function change(req, res, eventType, build) {
   const data = {
     ...(sent.displayName !== undefined && { displayName: String(sent.displayName).trim() }),
     ...(sent.description !== undefined && { description: sent.description ? String(sent.description).slice(0, 300) : null }),
-    ...(sent.grants !== undefined && { grants: cleanGrants(sent.grants) }),
+    // Saved with the catalog's mark: the person saving has seen every box of this catalog.
+    ...(sent.grants !== undefined && { grants: toStore(cleanGrants(sent.grants)) }),
     ...(sent.branchScope !== undefined && { branchScope: sent.branchScope }),
     ...(sent.isActive !== undefined && { isActive: Boolean(sent.isActive) }),
     updatedById: req.user.id,
   };
   const saved = await prisma.$transaction(async (tx) => {
-    const next = await tx.role.update({ where: { id: role.id }, data });
+    const next = storedRole(await tx.role.update({ where: { id: role.id }, data }));
     await audit(tx, req, eventType, next, snapshot(role), snapshot(next));
     return next;
   });
@@ -187,7 +188,7 @@ router.post('/:id/reset', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER
 
 router.delete('/:id', authenticate, requireRole('SUPER_ADMIN', 'TENANT_OWNER'), async (req, res) => {
   try {
-    const role = await prisma.role.findUnique({ where: { id: req.params.id } });
+    const role = storedRole(await prisma.role.findUnique({ where: { id: req.params.id } }));
     if (!role) return res.status(404).json({ error: 'Role not found' });
     const [actor, count] = await Promise.all([actorOf(req), holderCounts(req.user.organizationId)]);
     const denial = roleDeleteDenial(actor, role, { holders: count(role) });

@@ -42,7 +42,7 @@ echo "== unit"; (cd src/backend && npm test 2>&1 | grep -E "^not ok|^# (tests|pa
 curl -s -m2 -o /dev/null http://localhost:5199 || { (cd src/frontend && nohup npx vite --port 5199 --strictPort > "$LOGS/vite.log" 2>&1 &); wait_for http://localhost:5199; }
 for t in ui-experience ui-shipping ui-shop ui-sales ui-inventory ui-integration ui-phase5 ui-phase6 ui-phase7 ui-phase8; do echo "== $t"; node qa/sim/$t.cjs 2>&1 | grep "✗\|checks,"; done
 # Role matrix: the roles API and screens, and one person's roles and exceptions (phases 2 to 4).
-echo "== role matrix"; node qa/sim/roles.mjs --base http://localhost:3011 | tail -4; node qa/sim/user-access.mjs --base http://localhost:3011 | tail -4; node qa/sim/ui-roles.cjs 2>&1 | tail -4; node qa/sim/ui-user-access.cjs 2>&1 | tail -4
+echo "== role matrix"; node qa/sim/roles.mjs --base http://localhost:3011 | tail -4; node qa/sim/user-access.mjs --base http://localhost:3011 | tail -4; node qa/sim/role-rights.mjs --base http://localhost:3011 | tail -4; node qa/sim/ui-roles.cjs 2>&1 | tail -4; node qa/sim/ui-user-access.cjs 2>&1 | tail -4; node qa/sim/ui-role-rights.cjs 2>&1 | tail -4
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
 echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out qa/results/ui-audit.json > "$LOGS/ui-audit.log" 2>&1; node qa/tools/ui-audit-gate.cjs qa/results/ui-audit.json

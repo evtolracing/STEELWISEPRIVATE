@@ -27,7 +27,7 @@ import ViewControls from './ViewControls'
 export default function TopBar({ drawerWidth, onMenuClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
-  const { user, realRole, previewRole, logout } = useAuth()
+  const { user, realRole, previewRole, previewLabel, logout } = useAuth()
   const navigate = useNavigate()
 
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || ''
@@ -113,7 +113,7 @@ export default function TopBar({ drawerWidth, onMenuClick }) {
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <MenuItem disabled sx={{ opacity: '1 !important' }}>
-            <ListItemText primary={displayName} secondary={`${(realRole || '').replace(/_/g, ' ')}${previewRole ? ` (viewing as ${previewRole.replace(/_/g, ' ')})` : ''}`} />
+            <ListItemText primary={displayName} secondary={`${(realRole || '').replace(/_/g, ' ')}${previewRole ? ` (viewing as ${previewLabel || previewRole.replace(/_/g, ' ')})` : ''}`} />
           </MenuItem>
           <Divider />
           <MenuItem onClick={handleChangePassword}>Change password</MenuItem>

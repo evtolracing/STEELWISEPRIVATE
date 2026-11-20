@@ -16,9 +16,6 @@ import { Search as SearchIcon, Refresh as RefreshIcon } from '@mui/icons-materia
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
-// The roles the server lets change a list price.
-const PRICE_MANAGERS = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER', 'OPS_MANAGER', 'EXECUTIVE', 'CFO', 'COO', 'CIO', 'DIVISION_DIRECTOR', 'SERVICE_CENTER', 'CREDIT_MANAGER', 'SALES_DIRECTOR']
-
 const PAGE = 25
 const price = (n, unit) => (n == null ? 'No list price' : `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} / ${String(unit).toLowerCase()}`)
 const against = (m) => {
@@ -44,7 +41,8 @@ export default function PricingDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const { user } = useAuth()
-  const canEdit = PRICE_MANAGERS.includes(user?.role)
+  // The server lets a login change a list price when its roles hold this permission.
+  const canEdit = (user?.permissions || []).includes('sales:setListPrice')
   const [editing, setEditing] = useState(null)
   const [newPrice, setNewPrice] = useState('')
   const [saveError, setSaveError] = useState('')

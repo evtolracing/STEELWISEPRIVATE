@@ -5,6 +5,7 @@
 import prisma from './db.js';
 import { has } from './permissions.js';
 import { effectiveAccess } from './userAccess.js';
+import { storedRole } from './roleStore.js';
 
 const quiet = async (query) => { try { return await query(); } catch { return []; } };
 
@@ -22,7 +23,7 @@ export async function editorsAfter(organizationId, change = {}) {
     quiet(() => prisma.userRoleAssignment.findMany({ where, select: { userId: true, roleId: true, expiresAt: true } })),
     quiet(() => prisma.userPermissionOverride.findMany({ where, select: { userId: true, permission: true, effect: true, expiresAt: true } })),
   ]);
-  const rows = roles.map((r) => (change.role && r.id === change.role.id ? { ...r, grants: change.role.grants } : r));
+  const rows = roles.map(storedRole).map((r) => (change.role && r.id === change.role.id ? { ...r, grants: change.role.grants } : r));
   const every = { byName: Object.fromEntries(rows.filter((r) => r.isSystem).map((r) => [r.name, r])), byId: Object.fromEntries(rows.map((r) => [r.id, r])) };
   const facts = new Map(users.map((u) => [u.id, { primaryRoleId: null, extras: [], overrides: [] }]));
   for (const p of primaries) if (facts.has(p.userId)) facts.get(p.userId).primaryRoleId = p.roleId;

@@ -36,12 +36,14 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
     () => navSections
       .map((section) => ({ ...section, items: section.items.filter((item) => canAccessPath(role, item.path)) }))
       .filter((section) => section.items.length > 0),
-    [role],
+    // The permissions too: two custom roles can stand on the same built-in role and open different pages.
+    [role, user?.permissions],
   )
   const activePath = navItemFor(location.pathname)?.path
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || user?.email || 'Signed in'
   const initials = displayName.split(/[\s@.]+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
-  const roleLabel = String(role || '').toLowerCase().split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  // A previewed custom role goes by its own name.
+  const roleLabel = user?.previewLabel || String(role || '').toLowerCase().split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
   
   // Initialize all sections as expanded
   const [openSections, setOpenSections] = useState(() => {

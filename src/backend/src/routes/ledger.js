@@ -33,6 +33,8 @@ import * as ledger from '../services/ledger.js';
 import * as reports from '../services/ledgerReports.js';
 import * as cutover from '../services/ledgerCutover.js';
 import { tablesMissing } from '../lib/ledgerRules.js';
+import { can } from '../lib/roleStore.js';
+import { permissionFor } from '../lib/permissionCatalog.js';
 
 const router = Router();
 
@@ -44,16 +46,21 @@ export const BRANCH_READERS = ['BRANCH_MANAGER'];
 const BRANCH_REPORTS = new Set(['trial-balance', 'account', 'revenue', 'gross-margin', 'inventory', 'scrap', 'monthly']);
 
 const deny = (res, message) => res.status(403).json({ error: message });
-const only = (roles, message) => (req, res, next) => (roles.includes(req.user?.role) ? next() : deny(res, message));
+// Since the role matrix switchover the role's permissions decide (lib/roleStore.js). The lists above are
+// the built-in default of each permission: finance:create/edit/delete, finance:activate, finance:company.
+const only = (roles, message) => (req, res, next) => {
+  const needed = req.access ? permissionFor(req.originalUrl.split('?')[0].replace(/\/+$/, ''), req.method) : null;
+  return (needed ? can(req, needed) : roles.includes(req.user?.role)) ? next() : deny(res, message);
+};
 const finance = only(FINANCE_ROLES, 'This needs the CFO or an administrator.');
 const activator = only(ACTIVATION_ROLES, 'Starting or stopping the books needs the owner, a super administrator or the CFO.');
 const reader = only(LEDGER_READERS, 'The ledger can be read by finance, the executive role and the auditor.');
 
 /** null for a company-wide reader, a list of branch ids for a branch manager, or a refusal. */
 function readScope(req, res, report = null) {
-  const role = req.user?.role;
-  if (LEDGER_READERS.includes(role)) return { branches: null };
-  if (BRANCH_READERS.includes(role) && (report === null || BRANCH_REPORTS.has(report))) {
+  // The whole company's books: "finance:company". Own-branch reports: "finance:view" without it.
+  if (can(req, 'finance:company')) return { branches: null };
+  if (can(req, 'finance:view') && (report === null || BRANCH_REPORTS.has(report))) {
     const scope = currentScope();
     return { branches: scope?.branches ?? [] };
   }
@@ -78,13 +85,13 @@ const logRead = (req, what, details = {}) => prisma.auditLog.create({ data: { ca
 router.get('/status', handle('read the ledger status', async (req, res) => {
   if (!readScope(req, res)) return;
   const act = await ledger.activation();
-  const finance = LEDGER_READERS.includes(req.user.role);
+  const finance = can(req, 'finance:company');
   res.json({
     active: act.active, effectiveDate: act.effectiveDate, timeZone: act.timeZone, stopped: Boolean(act.effectiveDate) && !act.active,
     // Books started as a demonstration say so to every reader, on every finance screen.
     sandbox: act.sandbox === true, ...(act.sandbox === true && { sandboxNotice: 'SANDBOX: demonstration books. Not approved by an accountant. Not for tax, lending or any real decision.' }),
     ...(finance && { policiesApprovedBy: act.policiesApprovedBy || null, policiesApprovedOn: act.policiesApprovedOn || null, activatedAt: act.activatedAt || null, blockers: act.active ? [] : await ledger.activationBlockers(), openExceptions: (await reports.exceptions({ limit: 1 })).open }),
-    can: { read: true, company: finance, change: FINANCE_ROLES.includes(req.user.role), activate: ACTIVATION_ROLES.includes(req.user.role) },
+    can: { read: true, company: finance, change: can(req, 'finance:create'), activate: can(req, 'finance:activate') },
     message: act.active ? `Posting since ${act.effectiveDate}.` : act.effectiveDate ? 'Posting is stopped. What is posted stays.' : 'Not active. Nothing posts until an accountant has approved the chart of accounts and the accounting policies, and the books are started.',
   });
 }));
@@ -142,7 +149,7 @@ router.get('/entries/:id', handle('read the entry', async (req, res) => {
 router.post('/entries', finance, handle('save the draft entry', async (req, res) => {
   const b = req.body || {};
   // Adjusting a control account by hand is a second, named permission: the owner, a super administrator or the CFO.
-  const allowControl = b.adjustControlAccount === true && ACTIVATION_ROLES.includes(req.user.role);
+  const allowControl = b.adjustControlAccount === true && can(req, 'finance:activate');
   if (b.adjustControlAccount === true && !allowControl) return deny(res, 'Adjusting a control account by hand needs the owner, a super administrator or the CFO.');
   const entry = await ledger.draftEntry({ entryDate: b.entryDate, memo: b.memo, lines: b.lines, locationId: b.locationId || null, allowControl }, req.user.id);
   res.status(201).json(await reports.getEntry(entry.id));

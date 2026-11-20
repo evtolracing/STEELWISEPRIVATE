@@ -1,8 +1,8 @@
 # API inventory
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
 
-686 routes in 76 route files, served at 77 mount points. 363 change data.
+691 routes in 77 route files, served at 78 mount points. 366 change data.
 
 ## What the columns mean
 
@@ -15,11 +15,11 @@ Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 460 of 686 |
-| Changing routes that returned a success in a test | 203 of 363 |
+| Routes that returned a success in a test | 461 of 691 |
+| Changing routes that returned a success in a test | 204 of 366 |
 | Changing handlers with two or more database writes and no transaction | 4 |
-| Read routes with a list query that has no row limit | 55 |
-| Handlers with no try/catch of their own | 232 (many use a shared wrapper) |
+| Read routes with a list query that has no row limit | 56 |
+| Handlers with no try/catch of their own | 233 (many use a shared wrapper) |
 | Routes that use raw SQL | 8 |
 | Calls the screens make that have no server route | 67 |
 
@@ -40,9 +40,10 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 | Route | File |
 |---|---|
-| `GET /api/users/roles/list` | users.js:469 |
-| `GET /api/users/locations` | users.js:624 |
-| `GET /api/users/divisions` | users.js:641 |
+| `GET /api/auth/me` | auth.js:199 |
+| `GET /api/users/roles/list` | roles.js:76 |
+| `GET /api/users/locations` | users.js:529 |
+| `GET /api/users/divisions` | users.js:546 |
 | `GET /api/grades` | grades.js:25 |
 | `GET /api/products` | products.js:40 |
 | `GET /api/heats/:heatNumber/trace` | heats.js:131 |
@@ -53,8 +54,8 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/demand-shaping/analytics` | demandShaping.js:166 |
 | `GET /api/processing/operations` | intakeProcessing.js:20 |
 | `GET /api/processing/templates` | intakeProcessing.js:43 |
-| `GET /api/shipments/shippable` | shipments.js:155 |
-| `GET /api/shipments/:id/items` | shipments.js:258 |
+| `GET /api/shipments/shippable` | shipments.js:156 |
+| `GET /api/shipments/:id/items` | shipments.js:259 |
 | `GET /api/tax-rates` | taxRates.js:8 |
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
@@ -98,9 +99,9 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 
 ## Every route, by route file
 
-### auth.js (5 routes, 204 lines)
+### auth.js (5 routes, 246 lines)
 
-Mounted at /api/auth. Tables: User, AuditLog.
+Mounted at /api/auth. Tables: User, AuditLog, Location.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -108,11 +109,26 @@ Mounted at /api/auth. Tables: User, AuditLog.
 | `POST /api/auth/register` | yes |  |  |  |  |  |
 | `PUT /api/auth/password` | yes | 2 | yes |  | yes |  |
 | `POST /api/auth/logout-all` | yes | 2 | yes |  | yes |  |
-| `GET /api/auth/me` | yes |  |  |  |  |  |
+| `GET /api/auth/me` | yes |  |  | yes |  |  |
 
-### users.js (13 routes, 706 lines)
+### roles.js (8 routes, 206 lines)
 
-Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division.
+Mounted at /api/users/roles. Tables: Role, User, UserRoleAssignment, AuditLog.
+
+| Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
+|---|:-:|---:|:-:|:-:|:-:|---|
+| `GET /api/users/roles/catalog` |  |  |  |  |  |  |
+| `GET /api/users/roles/list` | yes |  |  | yes |  |  |
+| `GET /api/users/roles/:id` |  |  |  |  |  |  |
+| `GET /api/users/roles/:id/history` |  |  |  |  |  | requireRole() |
+| `POST /api/users/roles` |  | 2 | yes | yes |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `PUT /api/users/roles/:id` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `POST /api/users/roles/:id/reset` |  |  |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+| `DELETE /api/users/roles/:id` |  | 1 | yes |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
+
+### users.js (9 routes, 608 lines)
+
+Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Location, Division.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
@@ -122,10 +138,6 @@ Mounted at /api/users. Tables: User, AuditLog, UserLocation, UserDivision, UserR
 | `PUT /api/users/:id` | yes | 8 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN','BRANCH_MAN |
 | `DELETE /api/users/:id` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
 | `POST /api/users/:id/reset-password` | yes | 2 | yes |  | yes | requireRole('SUPER_ADMIN','TENANT_OWNER','ADMIN') |
-| `GET /api/users/roles/list` | yes |  |  | yes |  |  |
-| `GET /api/users/roles/:id` |  |  |  |  |  |  |
-| `POST /api/users/roles` |  | 1 |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
-| `PUT /api/users/roles/:id` |  | 1 |  |  |  | requireRole('SUPER_ADMIN','TENANT_OWNER') |
 | `GET /api/users/enums/roles` | yes |  |  |  |  |  |
 | `GET /api/users/locations` |  |  |  | yes |  |  |
 | `GET /api/users/divisions` |  |  |  | yes |  |  |
@@ -351,7 +363,7 @@ Mounted at /api/processing. Tables: ProcessingOperation, ProcessingTemplate.
 | `GET /api/processing/operations/:id` |  |  |  |  |  |  |
 | `GET /api/processing/templates` | yes |  |  | yes |  |  |
 
-### orders.js (10 routes, 513 lines)
+### orders.js (10 routes, 514 lines)
 
 Mounted at /api/orders. Tables: Order, OrderLine, OrderLineAllocation, Inventory, Coil, AuditLog, Shipment, User.
 
@@ -395,7 +407,7 @@ Mounted at /api/work-orders. Tables: WorkOrder, AuditLog, Coil, Job, OrderLine, 
 | `PUT /api/work-orders/:id/release-hold` | yes |  |  |  |  |  |
 | `PUT /api/work-orders/:id/cancel` | yes |  |  |  |  |  |
 
-### shipments.js (13 routes, 618 lines)
+### shipments.js (13 routes, 619 lines)
 
 Mounted at /api/shipments. Tables: Shipment, Job, Invoice, AuditLog, Location, ShipmentItem, OrderLineAllocation, Coil, Inventory, MaterialMovement, OrderLine, Order, WorkCenter.
 
@@ -430,7 +442,7 @@ Mounted at /api/invoices. Tables: through a service or none.
 | `POST /api/invoices/:id/refund` | yes |  |  |  |  |  |
 | `POST /api/invoices/:id/cancel` | yes |  |  |  |  |  |
 
-### ledger.js (35 routes, 194 lines)
+### ledger.js (36 routes, 208 lines)
 
 Mounted at /api/ledger. Tables: LedgerPeriod, JournalEntry.
 
@@ -462,6 +474,7 @@ Mounted at /api/ledger. Tables: LedgerPeriod, JournalEntry.
 | `GET /api/ledger/reconciliations/:id` | yes |  |  |  |  |  |
 | `POST /api/ledger/cutover/dry-run` | yes |  |  |  |  |  |
 | `POST /api/ledger/activate` | yes |  |  |  |  |  |
+| `POST /api/ledger/sandbox/start` | yes |  |  |  |  |  |
 | `PUT /api/ledger/settings` | yes |  |  |  |  |  |
 | `POST /api/ledger/deactivate` | yes |  |  |  |  |  |
 | `POST /api/ledger/resume` | yes |  |  |  |  |  |
@@ -1013,7 +1026,7 @@ Mounted at /api/admin/online-settings. Tables: through a service or none.
 | `GET /api/admin/online-settings/processes` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/processes` |  |  |  |  |  |  |
 
-### integrations.js (5 routes, 91 lines)
+### integrations.js (5 routes, 97 lines)
 
 Mounted at /api/admin/integrations. Tables: WebhookDelivery.
 

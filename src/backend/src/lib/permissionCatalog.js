@@ -207,6 +207,7 @@ const READS = [
   [(p) => under(p, '/api/v1/admin/partners'), 'adminIntegrations:view'],
   [(p) => under(p, '/api/admin/retention'), 'admin:retention'],
   [(p) => under(p, '/api/admin/seed-demo'), 'admin:view'],
+  [(p) => /^\/api\/users\/roles\/[^/]+\/history$/.test(p), 'roles:edit'],
 ];
 
 /**

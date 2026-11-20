@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -9,15 +9,15 @@ Every figure here is counted from the code or measured in a test run. The module
 | Item | Count |
 |---|---:|
 | Modules | 51 |
-| Server route files | 76 |
-| API routes (each address counted; two route files are mounted twice) | 686 |
-| API routes that change data | 363 |
-| Database tables in the schema | 172 |
+| Server route files | 77 |
+| API routes (each address counted; two route files are mounted twice) | 691 |
+| API routes that change data | 366 |
+| Database tables in the schema | 173 |
 | Enumerations | 96 |
-| Migrations | 36 |
-| Screens (routes in the browser) | 146 |
-| Frontend source files | 410 (121,492 lines) |
-| Server route code | 25,539 lines |
+| Migrations | 37 |
+| Screens (routes in the browser) | 147 |
+| Frontend source files | 412 (122,037 lines) |
+| Server route code | 25,711 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -45,7 +45,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Screens:** 1 (1 static): /login
 - **Server:** `src/backend/src/routes/auth.js`; served at /api/auth
 - **Routes:** 5, of which 4 change data. Returned a success in a test this session: 5 of 5; of the changing routes, 4 of 4
-- **Tables:** User, AuditLog
+- **Tables:** User, AuditLog, Location
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Users
 - **Feeds:** Every module
@@ -57,10 +57,10 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** IMPLEMENTED BUT NOT VERIFIED
 - **Basis:** Sweep proves who may not change users. No test creates, edits and removes a user and checks the result. Branch and division assignments are saved and read by nothing
 - **Purpose:** Create and edit users, assign role, home branch, divisions
-- **Screens:** 1 (1 real): /admin/users
-- **Server:** `src/backend/src/routes/users.js`; served at /api/users
-- **Routes:** 13, of which 6 change data. Returned a success in a test this session: 8 of 13; of the changing routes, 4 of 6
-- **Tables:** User, AuditLog, UserLocation, UserDivision, UserRoleAssignment, Role, Location, Division
+- **Screens:** 2 (2 real): /admin/users, /admin/roles
+- **Server:** `src/backend/src/routes/users.js`, `src/backend/src/routes/roles.js`; served at /api/users/roles, /api/users
+- **Routes:** 17, of which 8 change data. Returned a success in a test this session: 8 of 17; of the changing routes, 4 of 8
+- **Tables:** Role, User, UserRoleAssignment, AuditLog, UserLocation, UserDivision, Location, Division
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Access control
@@ -102,7 +102,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** PARTIALLY IMPLEMENTED
 - **Basis:** Tax rates verified (sweep, browser). Online cut-off settings are lost on reload (X-007)
 - **Purpose:** Sales tax by state, store rules, catalogue visibility, demo seed switch
-- **Screens:** 9 (8 real, 1 mixed): /admin/integrations, /admin/users, /admin/partners, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, /admin/online-settings
+- **Screens:** 10 (9 real, 1 mixed): /admin/integrations, /admin/users, /admin/partners, /admin/roles, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, /admin/online-settings
 - **Server:** `src/backend/src/routes/taxRates.js`, `src/backend/src/routes/onlineSettings.js`, `src/backend/src/routes/admin.js`; served at /api/tax-rates, /api/admin/online-settings, /api/admin
 - **Routes:** 12, of which 6 change data. Returned a success in a test this session: 6 of 12; of the changing routes, 0 of 6
 - **Tables:** SalesTaxRate, Location
@@ -665,7 +665,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Double-entry books behind sales, payments, stock, work orders and transfers: chart of accounts, approved posting rules, immutable journal, periods, cutover, reconciliation, reports and export. Switched off until an accountant approves
 - **Screens:** 1 (1 real): /finance
 - **Server:** `src/backend/src/routes/ledger.js`, `src/backend/src/services/ledger.js`, `src/backend/src/services/ledgerCutover.js`, `src/backend/src/services/ledgerReports.js`, `src/backend/src/services/ledgerAssistant.js`, `src/backend/src/lib/ledgerRules.js`; served at /api/ledger
-- **Routes:** 35, of which 24 change data. Returned a success in a test this session: 33 of 35; of the changing routes, 22 of 24
+- **Routes:** 36, of which 25 change data. Returned a success in a test this session: 34 of 36; of the changing routes, 23 of 25
 - **Tables:** LedgerPeriod, JournalEntry
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Invoices and payments, stock, receiving, transfers, work orders, shipping
@@ -841,7 +841,7 @@ These are not modules. Nothing was built for them in Phase 1; each is a decision
 
 ## Code nothing uses
 
-Found by following imports from the application entry points. 54 frontend files (9,362 lines) and 5 server files. Finding B-013.
+Found by following imports from the application entry points. 54 frontend files (9,367 lines) and 5 server files. Finding B-013.
 
 | File | Lines |
 |---|---:|
@@ -870,7 +870,7 @@ Found by following imports from the application entry points. 54 frontend files 
 | src/frontend/src/services/aiService.js | 124 |
 | src/frontend/src/apps/shopfloor/ShopFloorApp.jsx | 121 |
 | src/frontend/src/components/help/HelpDrawer.jsx | 98 |
-| src/frontend/src/api/authFetch.js | 82 |
+| src/frontend/src/api/authFetch.js | 87 |
 | src/frontend/src/components/production/ProductionLayout.jsx | 76 |
 | src/frontend/src/services/orderApi.js | 74 |
 | src/frontend/src/services/quoteApi.js | 53 |
@@ -914,7 +914,7 @@ Finding B-014.
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
 | src/frontend/src/help/manualContent.js | 3570 | 0 |
-| src/frontend/src/router/AppRouter.jsx | 1581 | 0 |
+| src/frontend/src/router/AppRouter.jsx | 1591 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1337 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
 | src/frontend/src/components/pos/POSContext.jsx | 1032 | 0 |
@@ -941,10 +941,10 @@ Finding B-014.
 | src/backend/src/routes/opsCockpit.js | 873 | |
 | src/backend/src/routes/staff.js | 788 | |
 | src/backend/src/routes/bomV1.js | 734 | |
-| src/backend/src/routes/users.js | 706 | |
 | src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |
 | src/backend/src/routes/intakeOrders.js | 651 | |
+| src/backend/src/routes/shipments.js | 619 | |
 
 ## Other counts from the frontend
 
@@ -954,11 +954,11 @@ Finding B-014.
 | Files over 1,000 lines | 5 |
 | TypeScript files | 0 |
 | Icon-only buttons | 301 |
-| aria-label attributes | 265 |
+| aria-label attributes | 266 |
 | Browser alert or confirm calls | 0 in 0 files |
 | Timers started (setInterval, setTimeout) | 69 |
 | Timers cleared | 41 |
 | console.log calls | 17 |
-| Dialogs | 141 |
+| Dialogs | 144 |
 | Frontend unit test files | 0 |
 

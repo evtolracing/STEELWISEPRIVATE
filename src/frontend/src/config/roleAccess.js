@@ -1,10 +1,11 @@
 /**
- * Which parts of the app each role can open. The sidebar hides sections a
- * role can't use, and the layout shows a "no access" page for their URLs.
- * The backend applies the same rules to the sensitive APIs (see
- * src/backend/src/lib/roleAccess.js), so keep the two in step.
+ * Which parts of the app a login can open. The sidebar hides areas it
+ * can't use, and the layout shows a "no access" page for their URLs.
  *
- * To change what a role sees, edit ROLE_GROUPS / GROUP_SECTIONS below.
+ * Since the role matrix switchover the server sends each login its permissions and these pages go
+ * by them (setCurrentAccess below). To change what a role sees, use Administration, Roles and
+ * permissions. The tables here are the built-in default of each role: the server's built-in roles
+ * are made from them (src/backend/scripts/permission-defaults.js) and a test holds the two together.
  */
 
 // App areas, by the first part of the page URL (two parts where noted).
@@ -134,8 +135,25 @@ export function sectionForPath(pathname) {
   return null
 }
 
+// What the signed-in login may open, as the server sent it with /auth/me (role matrix, phase 3): its
+// permissions and the permission that opens each menu area. hooks/useAuth.jsx keeps this current.
+// While it is set, the login's own role is judged by it; the tables above are the built-in default
+// and decide only for a login the server has not described yet.
+let current = null
+export function setCurrentAccess(user) {
+  current = user && Array.isArray(user.permissions) && user.pagePermissions
+    ? { role: user.role, audience: user.audience || 'STAFF', permissions: new Set(user.permissions), pages: user.pagePermissions, open: user.openPagesPermission || 'general:view' }
+    : null
+}
+
 export function canAccessPath(role, pathname) {
   if (!role) return false
+  if (current && current.role === role) {
+    const area = sectionForPath(pathname)
+    if (area) return current.permissions.has(current.pages[area])
+    if (current.audience === 'STAFF') return current.permissions.has(current.open)
+    return String(pathname || '').replace(/^\/+/, '').split('/')[0] === 'help'
+  }
   const allowed = sectionsFor(role)
   const section = sectionForPath(pathname)
   if (section && ROLE_ONLY_SECTIONS[section]) return ROLE_ONLY_SECTIONS[section].includes(role)

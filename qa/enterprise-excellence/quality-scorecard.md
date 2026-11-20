@@ -1,6 +1,6 @@
 # Quality scorecard
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
 
 The scores are a judgement from the evidence named beside them, not a measurement. They are carried from `qa/module-quality-scorecard.md` (each was set when its workstream audited the group) and changed in Phase 1 only where Phase 1 produced new evidence. A category with no evidence is NOT VERIFIED and is left out of the weighted figure, which is why no weighted figure here should be read as "out of 100 across everything". A score never overrides an open P0 or P1: the last column is the gate.
 
@@ -28,8 +28,8 @@ The scores are a judgement from the evidence named beside them, not a measuremen
 | Sales and customer operations | 80 | 100% | 4 | 37 of 97 | No |
 | Inventory and purchasing | 77 | 100% | 3 | 47 of 62 | No |
 | Manufacturing and processing | 82 | 100% | 1 | 63 of 95 | No |
-| Logistics and financial operations | 86 | 100% | 2 | 58 of 66 | No |
-| Enterprise experience | 60 | 92% | 5 | 14 of 51 | No |
+| Logistics and financial operations | 86 | 100% | 2 | 59 of 67 | No |
+| Enterprise experience | 60 | 92% | 5 | 14 of 53 | No |
 
 No group meets the target of 95, and every group has at least one open P0 or P1 finding. Lowest: enterprise experience, then manufacturing.
 
@@ -40,7 +40,7 @@ The groups hide large differences. Classification and test reach per module:
 | Module | Classification | Changing routes with a success-path test | Open findings |
 |---|---|---|---|
 | Sign-in and sessions | IMPLEMENTED AND VERIFIED | 4 of 4 |  |
-| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 4 of 6 |  |
+| Users, roles and branches | IMPLEMENTED BUT NOT VERIFIED | 4 of 8 |  |
 | Access control | IMPLEMENTED AND VERIFIED | n/a |  |
 | Staff and operators | PARTIALLY IMPLEMENTED | 4 of 9 | B-012, B-014 |
 | Settings, tax rates and online settings | PARTIALLY IMPLEMENTED | 0 of 6 | X-007, D-035 |
@@ -80,7 +80,7 @@ The groups hide large differences. Classification and test reach per module:
 | Integrations and scheduled work | IMPLEMENTED AND VERIFIED | 2 of 2 | B-019, E-017 |
 | Freight and logistics planning | PLACEHOLDER OR MOCK | n/a | X-009 |
 | Invoices, payments, credits and refunds | IMPLEMENTED AND VERIFIED | 5 of 5 | B-019 |
-| Financial ledger | IMPLEMENTED AND VERIFIED | 22 of 24 | W-001 to W-027 |
+| Financial ledger | IMPLEMENTED AND VERIFIED | 23 of 25 | W-001 to W-027 |
 | Sales tax | IMPLEMENTED AND VERIFIED | n/a | F-008, D-035 |
 | Request safeguards | IMPLEMENTED AND VERIFIED | n/a | E-017 |
 | AI assistant and voice | IMPLEMENTED BUT NOT VERIFIED | 2 of 10 | H-012 |
@@ -196,7 +196,7 @@ Modules: Shipping; Returns; Documents; Partner API; Integrations and scheduled w
 | Accessibility | 3% | 68 | Phase 9, measured by tool on every screen of the group: 0 controls with no name, 0 fields with no label, one main heading, text contrast corrected in the theme, rows open from the keyboard, forms say what is required and what is wrong. Held at 68: not a WCAG certificate; no screen reader, switch or voice user; no real device. Was null (New screens use labelled tables and controls. No keyboard or contrast audit was run) |
 | **Weighted over the 100% that has evidence** | | **86** | Target 95 |
 
-Changing routes with a success-path test: 58 of 66. Open findings against these modules: 6, of which P0 or P1: 2 (B-019, X-009).
+Changing routes with a success-path test: 59 of 67. Open findings against these modules: 6, of which P0 or P1: 2 (B-019, X-009).
 
 ### Enterprise experience
 
@@ -217,5 +217,5 @@ Modules: Sign-in and sessions; Users, roles and branches; Access control; Staff 
 | Accessibility | 3% | 60 | Phase 9, measured by tool: 0 controls with no name and 0 fields with no label on the sample screens too. Held at 60: the hard-to-read texts that remain are on these screens (V-011); they are to be rebuilt (owner decision 4); no assistive technology user. Was null (No evidence gathered) |
 | **Weighted over the 92% that has evidence** | | **60** | Target 95 |
 
-Changing routes with a success-path test: 14 of 51. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
+Changing routes with a success-path test: 14 of 53. Open findings against these modules: 9, of which P0 or P1: 5 (B-009, X-001, X-002, X-007, X-009).
 

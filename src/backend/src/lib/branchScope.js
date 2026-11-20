@@ -44,7 +44,11 @@ export const ALL_BRANCH_ROLES = new Set([
 
 /** null = every branch. Otherwise the list of branch ids this user is held to (possibly empty). */
 export function branchesOf(user) {
-  if (!user || EXTERNAL_ROLES.has(user.role) || ALL_BRANCH_ROLES.has(user.role)) return null;
+  if (!user || EXTERNAL_ROLES.has(user.role)) return null;
+  // Since the role matrix switchover the login carries its role's branch reach (middleware/auth.js);
+  // ALL_BRANCH_ROLES is the built-in default and decides only where no reach was attached.
+  if (user.branchScope ? user.branchScope === 'ALL' : ALL_BRANCH_ROLES.has(user.role)) return null;
+  if (user.branchScope === 'OWN') return user.homeLocationId ? [user.homeLocationId] : [];
   const ids = new Set((user.userLocations || []).map((l) => l.locationId));
   if (user.homeLocationId) ids.add(user.homeLocationId);
   return [...ids];

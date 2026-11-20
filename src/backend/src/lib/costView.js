@@ -8,7 +8,7 @@
  * movement in the answer, wherever it sits. Nothing else is touched (a purchase order line's price, a
  * product's list price and an invoice stay as their own routes decide).
  */
-import { COST_VIEWERS } from './roleAccess.js';
+import { can } from './roleStore.js';
 
 const COST_KEYS = ['unitCost', 'landedCost', 'avgCost'];
 const plain = (v) => v && typeof v === 'object' && (Array.isArray(v) || Object.getPrototypeOf(v) === Object.prototype || Object.getPrototypeOf(v) === null);
@@ -30,6 +30,6 @@ export function withoutStockCost(value, depth = 0) {
 /** Express guard: every answer leaves without stock cost unless the reader is a signed-in cost viewer. */
 export function stockCostGuard(req, res, next) {
   const send = res.json.bind(res);
-  res.json = (body) => send(COST_VIEWERS.has(req.user?.role) ? body : withoutStockCost(body));
+  res.json = (body) => send(req.user && can(req, 'inventory:viewCost') ? body : withoutStockCost(body));
   next();
 }

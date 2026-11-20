@@ -3,10 +3,10 @@
   "program": "Enterprise Excellence Program",
   "currentPhase": 12,
   "phaseStatus": "IMPLEMENTED — VERIFICATION INCOMPLETE",
-  "updated": "2026-11-19T02:58:13.757Z",
+  "updated": "2026-11-20T08:07:17.573Z",
   "repository": {
-    "branch": "claude/project-thread-25z3jd",
-    "commit": "7fddc98e6b6be679c492f1c2ea7d6c0760e02537",
+    "branch": "claude/project-thread-1fcpg9",
+    "commit": "77af9b43013f9ce2b64aff7a611bbcc4036dad7c",
     "baselineCommit": "2d801ff05d561a65ea029c5d4d5d1a32f3a36d55",
     "pullRequest": 36,
     "merged": false,
@@ -29,14 +29,14 @@
     "DISCONNECTED": 3
   },
   "discovered": {
-    "apiRoutes": 686,
-    "apiRoutesThatChangeData": 363,
-    "routeFiles": 76,
-    "databaseTables": 172,
+    "apiRoutes": 691,
+    "apiRoutesThatChangeData": 366,
+    "routeFiles": 77,
+    "databaseTables": 173,
     "enumerations": 96,
-    "migrations": 36,
-    "screens": 146,
-    "frontendFiles": 410,
+    "migrations": 37,
+    "screens": 147,
+    "frontendFiles": 412,
     "roles": 48
   },
   "workflowsMapped": 17,
@@ -288,10 +288,10 @@
     }
   ],
   "testReach": {
-    "routesWithSuccess": 460,
-    "routes": 686,
-    "changingRoutesWithSuccess": 203,
-    "changingRoutes": 363
+    "routesWithSuccess": 461,
+    "routes": 691,
+    "changingRoutesWithSuccess": 204,
+    "changingRoutes": 366
   },
   "correctionsCompleted": [
     "B-001",
@@ -466,6 +466,8 @@
     "Owner: say when to merge the Phase 12 pull request. It changes no database table",
     "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
     "Owner: decide AA-007 (branch time zones), AA-008 (adding a branch) and AA-010 (sales staff may dispatch and move work orders)",
+    "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
+    "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
     "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",
     "Owner: the six steps to a one-branch pilot with the ledger off are listed at the end of phase-12-final-report.md",
     "Owner: read phase-12-final-report.md and phase-12-release-blockers.md. The recommendation is NO-GO",

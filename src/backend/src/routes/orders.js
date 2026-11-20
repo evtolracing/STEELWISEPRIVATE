@@ -11,7 +11,8 @@
 import { listWindow, sendWindow } from '../lib/listing.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { COMMITTED_STATUSES, HOLD_PLACED, statusAfterCreditCheck, recordCreditHold, openCreditHold, releaseCreditHold, creditHoldMessage } from '../lib/creditControl.js';
-import { MONEY_MANAGERS, COST_VIEWERS } from '../lib/roleAccess.js';
+import { MONEY_MANAGERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded, retryOverlap } from '../lib/numbering.js';
@@ -248,7 +249,7 @@ router.get('/:id/closeout', async (req, res) => {
 // What the order brought in and what it cost (N-017). Cost is for the people who may see cost.
 router.get('/:id/cost', async (req, res) => {
   try {
-    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Cost and margin are shown to managers, the inventory manager and buyers.' });
+    if (!can(req, 'inventory:viewCost')) return res.status(403).json({ error: 'Cost and margin are shown to managers, the inventory manager and buyers.' });
     const cost = await orderCost(req.params.id);
     if (!cost) return res.status(404).json({ error: 'Order not found' });
     res.json(cost);

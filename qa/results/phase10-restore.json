@@ -1,52 +1,29 @@
 {
- "at": "2026-11-19T02:13:41.865Z",
+ "at": "2026-11-20T07:51:10.444Z",
  "source": "local QA database steelwise_qa",
  "target": "separate PostgreSQL 16 server on port 5433, database steelwise_qa_restore",
  "backup": {
-  "startedAt": "2026-11-19T02:13:42.484Z",
+  "startedAt": "2026-11-20T07:51:11.108Z",
   "seconds": 0.4,
-  "bytes": 2488973,
+  "bytes": 2331833,
   "format": "pg_dump custom format, compression 6"
  },
- "restore": {
-  "seconds": 1.4,
-  "exitCode": 0,
-  "errors": 0
- },
- "recoveryPoint": {
-  "definition": "the start of pg_dump (one consistent snapshot)",
-  "writtenAfterStartAndLost": 1,
-  "seconds": 0.4
- },
  "freshMigrations": {
-  "seconds": 1.7
+  "seconds": 0.7
  },
  "before": {
-  "tables": 173,
-  "journal": "1482:277168.34:277168.34",
-  "entries": "678",
-  "invoices": "544:88967.380000000000000000000000000000",
-  "stock": "1307:5881605.807800000000000000000000000000",
-  "audit": "6601",
-  "users": "139",
-  "migrations": "0_init,20261110221503_customer_addresses_and_executive,20261111010902_orderhub_intake,20261111012618_pos_sessions,20261111021952_stop_work_events,20261111022456_dispatch_divisions,20261111022628_pipeline_runs,20261111030601_exception_events,20261111031628_inventory_v1,20261111032142_print_queue,20261111032749_product_divisions,20261111040434_intake_pricing_processing,20261111041827_online_orders,20261111043052_remnants,20261111043718_store_listings,20261111052353_processing_recipes,20261111053542_analytics_settings,20261112053256_customer_logins,20261113031734_document_links_any_record,20261113052550_billing_returns_file_store,20261113062621_fk_indexes_and_stock_checks,20261113150000_stock_balance_identity,20261113190000_order_branch,20261113210000_reference_integrity,20261113211000_request_keys,20261113212000_quote_branch,20261113220000_document_counters,20261113230000_webhook_delivery_once,20261115090000_voided_counter_sales_cancelled,20261115200000_stock_transfers_po_receipts_piece_stock,20261116090000_production_decisions,20261116200000_fulfilment_costing,20261116230000_shipment_lost,20261117090000_financial_ledger,20261118090000_security_hardening,20261118150000_shared_rate_limits",
-  "seq": 703,
+  "tables": 174,
+  "journal": "785:641850.33:641850.33",
+  "entries": "280",
+  "invoices": "545:90421.880000000000000000000000000000",
+  "stock": "1312:5881790.807800000000000000000000000000",
+  "audit": "6806",
+  "users": "154",
+  "migrations": "0_init,20261110221503_customer_addresses_and_executive,20261111010902_orderhub_intake,20261111012618_pos_sessions,20261111021952_stop_work_events,20261111022456_dispatch_divisions,20261111022628_pipeline_runs,20261111030601_exception_events,20261111031628_inventory_v1,20261111032142_print_queue,20261111032749_product_divisions,20261111040434_intake_pricing_processing,20261111041827_online_orders,20261111043052_remnants,20261111043718_store_listings,20261111052353_processing_recipes,20261111053542_analytics_settings,20261112053256_customer_logins,20261113031734_document_links_any_record,20261113052550_billing_returns_file_store,20261113062621_fk_indexes_and_stock_checks,20261113150000_stock_balance_identity,20261113190000_order_branch,20261113210000_reference_integrity,20261113211000_request_keys,20261113212000_quote_branch,20261113220000_document_counters,20261113230000_webhook_delivery_once,20261115090000_voided_counter_sales_cancelled,20261115200000_stock_transfers_po_receipts_piece_stock,20261116090000_production_decisions,20261116200000_fulfilment_costing,20261116230000_shipment_lost,20261117090000_financial_ledger,20261118090000_security_hardening,20261118150000_shared_rate_limits,20261120090000_role_permission_matrix",
+  "seq": 293,
   "triggers": 4,
-  "constraints": 416,
+  "constraints": 423,
   "blobs": "1:7"
  },
- "after": {
-  "tables": 173,
-  "journal": "1482:277168.34:277168.34",
-  "entries": "678",
-  "invoices": "544:88967.380000000000000000000000000000",
-  "stock": "1307:5881605.807800000000000000000000000000",
-  "audit": "6601",
-  "users": "139",
-  "migrations": "0_init,20261110221503_customer_addresses_and_executive,20261111010902_orderhub_intake,20261111012618_pos_sessions,20261111021952_stop_work_events,20261111022456_dispatch_divisions,20261111022628_pipeline_runs,20261111030601_exception_events,20261111031628_inventory_v1,20261111032142_print_queue,20261111032749_product_divisions,20261111040434_intake_pricing_processing,20261111041827_online_orders,20261111043052_remnants,20261111043718_store_listings,20261111052353_processing_recipes,20261111053542_analytics_settings,20261112053256_customer_logins,20261113031734_document_links_any_record,20261113052550_billing_returns_file_store,20261113062621_fk_indexes_and_stock_checks,20261113150000_stock_balance_identity,20261113190000_order_branch,20261113210000_reference_integrity,20261113211000_request_keys,20261113212000_quote_branch,20261113220000_document_counters,20261113230000_webhook_delivery_once,20261115090000_voided_counter_sales_cancelled,20261115200000_stock_transfers_po_receipts_piece_stock,20261116090000_production_decisions,20261116200000_fulfilment_costing,20261116230000_shipment_lost,20261117090000_financial_ledger,20261118090000_security_hardening,20261118150000_shared_rate_limits",
-  "seq": 703,
-  "triggers": 4,
-  "constraints": 416,
-  "blobs": "1:7"
- }
+ "after": null
 }

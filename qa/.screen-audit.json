@@ -1,8 +1,8 @@
 {
- "screens": 146,
+ "screens": 147,
  "tally": {
   "STATIC": 6,
-  "REAL": 78,
+  "REAL": 79,
   "SAMPLE, LABELLED": 58,
   "MIXED": 4
  },
@@ -769,6 +769,12 @@
    "onMenu": true,
    "verdict": "REAL",
    "file": "pages/Partners/PartnerRegistryPage.jsx"
+  },
+  {
+   "route": "admin/roles",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/RolesPage.jsx"
   },
   {
    "route": "admin/tax-rates",

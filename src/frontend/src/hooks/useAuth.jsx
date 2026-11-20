@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { setCurrentAccess } from '../config/roleAccess'
 
 // ============================================
 // DEMO MODE - skips login and signs everyone in as a demo admin.
@@ -27,6 +28,9 @@ const clearView = () => { writeView(VIEW_KEYS.branch, ''); writeView(VIEW_KEYS.v
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(DEMO_MODE ? DEMO_USER : null)
+  // The menu and every page go by the permissions the server sent for this login (config/roleAccess.js).
+  // Set while rendering, so the pages below never see an older login's access.
+  setCurrentAccess(user)
   const [token, setToken] = useState(() => DEMO_MODE ? 'demo-token' : localStorage.getItem('token'))
   // Start loading when a saved token exists, so a page refresh waits for /auth/me
   // instead of bouncing to the login page.
@@ -165,7 +169,8 @@ export function AuthProvider({ children }) {
     try {
       const { apiClient } = await import('../api/client')
       const response = await apiClient.put('/auth/profile', profileData)
-      setUser(response.data.user)
+      // The profile answer does not carry the login's permissions and branches: keep what /auth/me sent.
+      setUser((old) => ({ ...old, ...response.data.user }))
       return { success: true }
     } catch (err) {
       const message = err.response?.data?.error || err.response?.data?.message || 'Update failed'

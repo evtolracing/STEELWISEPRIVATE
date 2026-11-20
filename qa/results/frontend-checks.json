@@ -1,5 +1,5 @@
 {
- "at": "2026-11-19T02:26:21.128Z",
+ "at": "2026-11-20T08:03:43.551Z",
  "effects": [
   "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:90",
   "src/frontend/src/apps/bom/BomRecipeListPage.jsx:40",
@@ -30,7 +30,7 @@
   "src/frontend/src/components/production/ShippingScreen.jsx:86",
   "src/frontend/src/components/production/ShopFloorScreen.jsx:73",
   "src/frontend/src/contexts/CustomerSessionContext.jsx:56",
-  "src/frontend/src/hooks/useAuth.jsx:40",
+  "src/frontend/src/hooks/useAuth.jsx:55",
   "src/frontend/src/hooks/useDemandShaping.js:64",
   "src/frontend/src/hooks/useRealTimePricing.js:100",
   "src/frontend/src/hooks/useRealTimePricing.js:111",

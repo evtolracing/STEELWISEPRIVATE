@@ -17,12 +17,12 @@ import { planAssignments, SCHEDULABLE_JOB_STATUSES, PRIORITY_ORDER, SKILL_ORDER 
 import { currentScope } from '../lib/branchScope.js'
 import { Prisma } from '@prisma/client'
 import { readKindRules } from '../lib/workCenterKindRules.js'
-import { COST_VIEWERS } from '../lib/roleAccess.js'
+import { can } from '../lib/roleStore.js'
 const router = express.Router()
 
 /** The labor rate of a kind of work center is cost: it goes only to the roles that manage cost. */
 const kindForViewer = (req, kind) => {
-  if (!kind || COST_VIEWERS.has(req.user?.role)) return kind
+  if (!kind || can(req, 'inventory:viewCost')) return kind
   const { hourlyRate: _hourlyRate, ...rest } = kind
   return rest
 }
@@ -133,7 +133,7 @@ router.post('/work-center-types', async (req, res) => {
     }
 
     const normalizedId = id.toUpperCase().replace(/[^A-Z0-9_]/g, '_')
-    const rules = readKindRules(req.body, { mayCost: COST_VIEWERS.has(req.user?.role) })
+    const rules = readKindRules(req.body, { mayCost: can(req, 'inventory:viewCost') })
     if (rules.error) return res.status(rules.status).json({ success: false, error: rules.error })
 
     // Check for existing
@@ -183,7 +183,7 @@ router.patch('/work-center-types/:id', async (req, res) => {
     if (divs !== undefined) data.divisions = divs
     if (isActive !== undefined) data.isActive = isActive
     // Rules and rate for this kind of work: certification, two steps at once, labor rate, inspection checklist.
-    const rules = readKindRules(req.body, { mayCost: COST_VIEWERS.has(req.user?.role) })
+    const rules = readKindRules(req.body, { mayCost: can(req, 'inventory:viewCost') })
     if (rules.error) return res.status(rules.status).json({ success: false, error: rules.error })
     Object.assign(data, rules.data)
     if (data.inspectionChecklist === null) data.inspectionChecklist = Prisma.DbNull

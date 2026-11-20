@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { readFields } from '../lib/fieldRules.js';
-import { COST_VIEWERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 
 const router = Router();
 
@@ -149,7 +149,7 @@ router.get('/:heatNumber/trace', async (req, res) => {
     });
     if (!heat) return res.status(404).json({ error: 'Heat not found' });
     // What stock cost us goes only to the roles that buy or manage money.
-    if (!COST_VIEWERS.has(req.user?.role)) heat.coils = heat.coils.map(({ unitCost, landedCost, ...coil }) => coil);
+    if (!can(req, 'inventory:viewCost')) heat.coils = heat.coils.map(({ unitCost, landedCost, ...coil }) => coil);
     // Forward trace: where the heat went. Every pound that ships is taken from a named stock
     // item (a dispatch is refused otherwise), and a piece cut on a work order carries the heat
     // of its source, so the shipping movements of this heat's items are the full answer.

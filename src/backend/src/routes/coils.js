@@ -16,7 +16,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
-import { COST_VIEWERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
 import { HOLD_TYPES, placeHold, releaseHold } from '../lib/holds.js';
 import { record as recordLedger, retryItemEvents } from '../services/ledger.js';
@@ -42,7 +42,7 @@ const handle = (label, fn) => async (req, res) => {
   }
 };
 
-const canSeeCost = (req) => COST_VIEWERS.has(req.user?.role);
+const canSeeCost = (req) => can(req, 'inventory:viewCost');
 
 /** What a screen may see of an item: list price always, cost only for the roles that manage it. */
 function present(coil, req) {

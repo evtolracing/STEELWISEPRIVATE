@@ -301,6 +301,7 @@ export const navSections = [
     title: 'Administration',
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
+      { path: '/admin/roles', label: 'Roles & Permissions', icon: PermitIcon },
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/integrations', label: 'Integrations', icon: PartnerApiIcon },

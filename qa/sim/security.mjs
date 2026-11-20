@@ -698,10 +698,12 @@ section('Error replies do not expose internals', { pass: leaks.size === 0, summa
     }
 
     // Stock reserved for a line is given back when the lines are replaced.
-    const stock = await prisma.inventory.findFirst({ where: { qtyAvailable: { gte: 500 }, coil: { status: 'AVAILABLE', qcStatus: { notIn: ['FAILED', 'HOLD'] } } }, orderBy: { coilId: 'asc' } });
+    // Stock at the clerk's own branch: stock at a branch the clerk cannot see is refused as not found.
+    const stock = await prisma.inventory.findFirst({ where: { qtyAvailable: { gte: 500 }, unit: 'LB', coil: { status: 'AVAILABLE', qcStatus: { notIn: ['FAILED', 'HOLD'] }, locationId: csrUser.homeLocationId } }, orderBy: { coilId: 'asc' } });
     saved = await row(id);
     if (!saved.lines[0]) findings.push('the order has no lines left to reserve stock against');
-    else if (stock) {
+    else if (!stock) findings.push('no stock at the clerk\'s branch to reserve');
+    else {
       const reserve = await call('POST', `/api/orders/${id}/allocate`, { lineId: saved.lines[0].id, coilId: stock.coilId, qty: 100 });
       const during = await prisma.inventory.findUnique({ where: { coilId: stock.coilId } });
       await call('PATCH', `/api/orders/intake/${id}`, { lines: [line({ qty: 250, extPrice: 125 })] });

@@ -151,7 +151,7 @@ export default function OrderDetailPage() {
       setSnack({ open: true, msg: e?.message || 'Failed to create work orders', severity: 'error' })
     }
     setSaving(false)
-  }, [id])
+  }, [id, loadJobs])
 
   // ── Material / Processing dialogs ──
   const handleOpenMaterialPicker = (idx) => { setMaterialPickerIdx(idx); setMaterialPickerOpen(true) }

@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T10:28:17.164Z",
+ "at": "2026-11-20T11:56:54.404Z",
  "base": "http://localhost:3011",
  "scenarios": 7,
  "passed": 7,
@@ -34,7 +34,7 @@
     }
    ],
    "pass": true,
-   "ms": 357
+   "ms": 332
   },
   {
    "group": "Finance ledger sandbox",
@@ -94,7 +94,7 @@
     }
    ],
    "pass": true,
-   "ms": 365
+   "ms": 392
   },
   {
    "group": "Finance ledger sandbox",
@@ -130,7 +130,7 @@
     }
    ],
    "pass": true,
-   "ms": 51
+   "ms": 58
   },
   {
    "group": "Finance ledger sandbox",
@@ -149,12 +149,12 @@
      "ok": true
     },
     {
-     "what": "the invoice opened before the start (INV-000451) made no revenue in the books",
+     "what": "the invoice opened before the start (INV-000452) made no revenue in the books",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 30
+   "ms": 31
   },
   {
    "group": "Finance ledger sandbox",
@@ -242,7 +242,7 @@
     }
    ],
    "pass": true,
-   "ms": 694
+   "ms": 671
   },
   {
    "group": "Finance ledger sandbox",
@@ -270,7 +270,7 @@
     }
    ],
    "pass": true,
-   "ms": 40
+   "ms": 35
   },
   {
    "group": "Finance ledger sandbox",
@@ -302,7 +302,7 @@
     }
    ],
    "pass": true,
-   "ms": 99
+   "ms": 103
   }
  ]
 }

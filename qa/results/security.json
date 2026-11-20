@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3011",
- "at": "2026-11-20T09:47:28.291Z",
+ "at": "2026-11-20T11:14:37.894Z",
  "endpointsInInventory": 670,
  "endpointsSwept": 670,
  "sections": {
@@ -77,9 +77,11 @@
    "findings": []
   },
   "Order entry screen follows the order rules": {
-   "pass": true,
-   "summary": "45 checks, 0 problems",
-   "findings": []
+   "pass": false,
+   "summary": "45 checks, 1 problems",
+   "findings": [
+    "stock reserved for a replaced line goes back on the shelf: reserve 404; allocated 0 → 0 → 0; available 9792 → 9792"
+   ]
   },
   "Stock items: lists, cost, edits, holds": {
    "pass": true,
@@ -112,5 +114,5 @@
    "findings": []
   }
  },
- "pass": true
+ "pass": false
 }

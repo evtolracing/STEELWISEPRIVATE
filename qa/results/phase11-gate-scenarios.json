@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T10:40:27.688Z",
+ "at": "2026-11-20T12:09:26.112Z",
  "base": "http://localhost:3110",
  "scenarios": 320,
  "passed": 320,
@@ -64,7 +64,7 @@
     {
      "what": "reserved 800 of 1000, 200 still free, nothing negative",
      "ok": true,
-     "measured": "{\"id\":\"5e45bf53-e783-4b19-a8f5-acd4a8453709\",\"coilId\":\"9ffb3c8b-eddb-418e-9ec1-ae7ecd11f40c\",\"locationId\":\"bad32f33-e3cf-4908-9a4f-a03051f67750\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
+     "measured": "{\"id\":\"f1868d1c-9e5f-4556-be5c-036beb79d634\",\"coilId\":\"51755523-ee54-4102-b621-a17d5baa94ab\",\"locationId\":\"e7f1a9de-cf22-40cf-bd04-33295597d552\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
     },
     {
      "what": "the reservations on record add up to what the stock item says",
@@ -72,7 +72,7 @@
     }
    ],
    "pass": true,
-   "ms": 531,
+   "ms": 475,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "two reservations of 400 lb succeed, four are refused, the lot is never reserved beyond what is on hand",
@@ -105,7 +105,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 56,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the order is confirmed once; nobody is shown a server error",
@@ -143,7 +143,7 @@
     }
    ],
    "pass": true,
-   "ms": 133,
+   "ms": 135,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one stock item, one receipt movement, one posting; the other three are refused",
@@ -176,7 +176,7 @@
     }
    ],
    "pass": true,
-   "ms": 146,
+   "ms": 147,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve orders, twelve different numbers, no save refused",
@@ -202,7 +202,7 @@
     {
      "what": "the stock item agrees with the reservations on record",
      "ok": true,
-     "measured": "{\"i\":{\"id\":\"0ff2f627-70fc-44b5-ad77-794e23fe4093\",\"coilId\":\"b9342098-ae88-4c2f-8728-2d55483bdc54\",\"locationId\":\"bad32f33-e3cf-4908-9a4f-a03051f67750\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
+     "measured": "{\"i\":{\"id\":\"e454a380-a809-46b6-9879-89ec93224f36\",\"coilId\":\"b7af2058-86d1-4ea0-8d73-f863f427df59\",\"locationId\":\"e7f1a9de-cf22-40cf-bd04-33295597d552\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
     },
     {
      "what": "a cancelled order holds nothing",
@@ -211,7 +211,7 @@
     }
    ],
    "pass": true,
-   "ms": 214,
+   "ms": 173,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either the order is cancelled and holds no stock, or it is live and holds its stock; never a cancelled order holding stock",
@@ -245,7 +245,7 @@
     }
    ],
    "pass": true,
-   "ms": 201,
+   "ms": 189,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused with a plain answer; nothing is reserved",
@@ -279,7 +279,7 @@
     }
    ],
    "pass": true,
-   "ms": 1927,
+   "ms": 1958,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each branch sells its own stock; the other branch cannot take it",
@@ -308,7 +308,7 @@
     }
    ],
    "pass": true,
-   "ms": 40,
+   "ms": 41,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "placed once; no server error",
@@ -347,7 +347,7 @@
     }
    ],
    "pass": true,
-   "ms": 187,
+   "ms": 200,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the line is reserved for what it ordered and no more",
@@ -378,7 +378,7 @@
     {
      "what": "reserved 800 of 1000, 200 still free, nothing negative",
      "ok": true,
-     "measured": "{\"id\":\"70816760-2333-45d7-8726-bb28f0f49fd5\",\"coilId\":\"d0a6fa42-bb2b-4546-a524-f35fbc0b4cf5\",\"locationId\":\"c0d125d4-d70b-4f59-bfc2-da757d97db40\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
+     "measured": "{\"id\":\"45b9c55c-da50-406a-b7fb-0ffa3bca212d\",\"coilId\":\"deac0eaa-f694-4e08-87d5-312f39038e84\",\"locationId\":\"069084e6-cce2-4fee-a7c4-b2b49ccd933b\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
     },
     {
      "what": "the reservations on record add up to what the stock item says",
@@ -386,7 +386,7 @@
     }
    ],
    "pass": true,
-   "ms": 471,
+   "ms": 467,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "two reservations of 400 lb succeed, four are refused, the lot is never reserved beyond what is on hand",
@@ -419,7 +419,7 @@
     }
    ],
    "pass": true,
-   "ms": 56,
+   "ms": 54,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the order is confirmed once; nobody is shown a server error",
@@ -457,7 +457,7 @@
     }
    ],
    "pass": true,
-   "ms": 132,
+   "ms": 123,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one stock item, one receipt movement, one posting; the other three are refused",
@@ -490,7 +490,7 @@
     }
    ],
    "pass": true,
-   "ms": 111,
+   "ms": 135,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve orders, twelve different numbers, no save refused",
@@ -516,7 +516,7 @@
     {
      "what": "the stock item agrees with the reservations on record",
      "ok": true,
-     "measured": "{\"i\":{\"id\":\"c2278c63-a5f2-45f2-b2d6-b250201d495b\",\"coilId\":\"7a233f2d-ccc2-4bac-876f-6250b6e88c4e\",\"locationId\":\"c0d125d4-d70b-4f59-bfc2-da757d97db40\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
+     "measured": "{\"i\":{\"id\":\"6feb12b2-3548-45c6-aa58-15a82f37bea9\",\"coilId\":\"f36b05e3-2109-4d35-96c0-9a99253eff4f\",\"locationId\":\"069084e6-cce2-4fee-a7c4-b2b49ccd933b\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
     },
     {
      "what": "a cancelled order holds nothing",
@@ -525,7 +525,7 @@
     }
    ],
    "pass": true,
-   "ms": 171,
+   "ms": 177,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either the order is cancelled and holds no stock, or it is live and holds its stock; never a cancelled order holding stock",
@@ -559,7 +559,7 @@
     }
    ],
    "pass": true,
-   "ms": 178,
+   "ms": 203,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused with a plain answer; nothing is reserved",
@@ -593,7 +593,7 @@
     }
    ],
    "pass": true,
-   "ms": 1621,
+   "ms": 1548,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each branch sells its own stock; the other branch cannot take it",
@@ -622,7 +622,7 @@
     }
    ],
    "pass": true,
-   "ms": 43,
+   "ms": 65,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "placed once; no server error",
@@ -661,7 +661,7 @@
     }
    ],
    "pass": true,
-   "ms": 190,
+   "ms": 198,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the line is reserved for what it ordered and no more",
@@ -692,7 +692,7 @@
     {
      "what": "reserved 800 of 1000, 200 still free, nothing negative",
      "ok": true,
-     "measured": "{\"id\":\"303ed81a-d560-4e9c-a210-9c26f8354e27\",\"coilId\":\"4da990b3-fde7-4588-9df5-c1e4dd7f0614\",\"locationId\":\"6d60825c-2b10-4a3d-a9e9-d37b7d39bc31\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
+     "measured": "{\"id\":\"184c2ff7-2a2b-49af-b50e-27119a04f9ed\",\"coilId\":\"b112d650-199d-4cd7-b53c-16d1d0b27da6\",\"locationId\":\"aa4fbb6d-309a-4e8c-bcf3-8a12b8e23a47\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
     },
     {
      "what": "the reservations on record add up to what the stock item says",
@@ -700,7 +700,7 @@
     }
    ],
    "pass": true,
-   "ms": 419,
+   "ms": 450,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "two reservations of 400 lb succeed, four are refused, the lot is never reserved beyond what is on hand",
@@ -733,7 +733,7 @@
     }
    ],
    "pass": true,
-   "ms": 49,
+   "ms": 47,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the order is confirmed once; nobody is shown a server error",
@@ -771,7 +771,7 @@
     }
    ],
    "pass": true,
-   "ms": 141,
+   "ms": 131,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one stock item, one receipt movement, one posting; the other three are refused",
@@ -804,7 +804,7 @@
     }
    ],
    "pass": true,
-   "ms": 157,
+   "ms": 130,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve orders, twelve different numbers, no save refused",
@@ -830,7 +830,7 @@
     {
      "what": "the stock item agrees with the reservations on record",
      "ok": true,
-     "measured": "{\"i\":{\"id\":\"4234dcf7-1155-4fa9-ba51-b012ead6b286\",\"coilId\":\"52516657-6ace-4d1b-8922-3dbc97af3ddc\",\"locationId\":\"6d60825c-2b10-4a3d-a9e9-d37b7d39bc31\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
+     "measured": "{\"i\":{\"id\":\"50cfb24e-175c-4766-b9c2-de64c96e159a\",\"coilId\":\"7b38e36e-5633-4e97-9373-1e7b847d19e8\",\"locationId\":\"aa4fbb6d-309a-4e8c-bcf3-8a12b8e23a47\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
     },
     {
      "what": "a cancelled order holds nothing",
@@ -839,7 +839,7 @@
     }
    ],
    "pass": true,
-   "ms": 197,
+   "ms": 167,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either the order is cancelled and holds no stock, or it is live and holds its stock; never a cancelled order holding stock",
@@ -873,7 +873,7 @@
     }
    ],
    "pass": true,
-   "ms": 183,
+   "ms": 181,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused with a plain answer; nothing is reserved",
@@ -907,7 +907,7 @@
     }
    ],
    "pass": true,
-   "ms": 1106,
+   "ms": 1147,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each branch sells its own stock; the other branch cannot take it",
@@ -936,7 +936,7 @@
     }
    ],
    "pass": true,
-   "ms": 48,
+   "ms": 43,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "placed once; no server error",
@@ -975,7 +975,7 @@
     }
    ],
    "pass": true,
-   "ms": 194,
+   "ms": 200,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the line is reserved for what it ordered and no more",
@@ -1006,7 +1006,7 @@
     {
      "what": "reserved 800 of 1000, 200 still free, nothing negative",
      "ok": true,
-     "measured": "{\"id\":\"5c25b498-f0f4-418b-8bcc-883cbe2de091\",\"coilId\":\"be06d544-bf9b-4963-b3c9-1c4bf75e579b\",\"locationId\":\"94ff7027-2a5d-4fa7-b90d-01e3ff520aec\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
+     "measured": "{\"id\":\"adb0e55d-f233-4c9c-a229-c75c79ae0778\",\"coilId\":\"a6906ca1-9ed2-415b-a1e2-10ccda5cdd9b\",\"locationId\":\"e10b8dad-5a9d-4e28-a1dd-40144febe2c3\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
     },
     {
      "what": "the reservations on record add up to what the stock item says",
@@ -1014,7 +1014,7 @@
     }
    ],
    "pass": true,
-   "ms": 393,
+   "ms": 443,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "two reservations of 400 lb succeed, four are refused, the lot is never reserved beyond what is on hand",
@@ -1047,7 +1047,7 @@
     }
    ],
    "pass": true,
-   "ms": 48,
+   "ms": 60,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the order is confirmed once; nobody is shown a server error",
@@ -1085,7 +1085,7 @@
     }
    ],
    "pass": true,
-   "ms": 127,
+   "ms": 144,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one stock item, one receipt movement, one posting; the other three are refused",
@@ -1118,7 +1118,7 @@
     }
    ],
    "pass": true,
-   "ms": 131,
+   "ms": 112,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve orders, twelve different numbers, no save refused",
@@ -1144,7 +1144,7 @@
     {
      "what": "the stock item agrees with the reservations on record",
      "ok": true,
-     "measured": "{\"i\":{\"id\":\"4820a6ee-1d64-477d-a3f8-f9021e84b650\",\"coilId\":\"01e7be75-d4c0-454a-8958-0917f2b44254\",\"locationId\":\"94ff7027-2a5d-4fa7-b90d-01e3ff520aec\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
+     "measured": "{\"i\":{\"id\":\"aa5df940-464a-4899-9c86-cad4c0c70ae7\",\"coilId\":\"92112105-5892-433b-b4c4-bdbd0c1ceedf\",\"locationId\":\"e10b8dad-5a9d-4e28-a1dd-40144febe2c3\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
     },
     {
      "what": "a cancelled order holds nothing",
@@ -1153,7 +1153,7 @@
     }
    ],
    "pass": true,
-   "ms": 187,
+   "ms": 211,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either the order is cancelled and holds no stock, or it is live and holds its stock; never a cancelled order holding stock",
@@ -1187,7 +1187,7 @@
     }
    ],
    "pass": true,
-   "ms": 181,
+   "ms": 165,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused with a plain answer; nothing is reserved",
@@ -1221,7 +1221,7 @@
     }
    ],
    "pass": true,
-   "ms": 1139,
+   "ms": 1036,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each branch sells its own stock; the other branch cannot take it",
@@ -1250,7 +1250,7 @@
     }
    ],
    "pass": true,
-   "ms": 49,
+   "ms": 57,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "placed once; no server error",
@@ -1289,7 +1289,7 @@
     }
    ],
    "pass": true,
-   "ms": 197,
+   "ms": 190,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the line is reserved for what it ordered and no more",
@@ -1320,7 +1320,7 @@
     {
      "what": "reserved 800 of 1000, 200 still free, nothing negative",
      "ok": true,
-     "measured": "{\"id\":\"8e7435e0-fafb-4fe6-9e9d-0f40c2a5280b\",\"coilId\":\"20d175a4-2d4b-4ff0-a3bf-6cbbb4d12e1e\",\"locationId\":\"24cf9af3-b00b-4f48-a3b7-8a01b3b635e4\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
+     "measured": "{\"id\":\"f05f34b1-a62e-4598-9494-75b5279dfa2c\",\"coilId\":\"7defa3e0-7112-4a82-9b24-aee549c302e8\",\"locationId\":\"328ca8de-7c12-41ef-b4c1-d025e00943a4\",\"qtyOnHand\":\"1000\",\"qtyAvailable\":\"200\",\"qtyAllocated\":"
     },
     {
      "what": "the reservations on record add up to what the stock item says",
@@ -1328,7 +1328,7 @@
     }
    ],
    "pass": true,
-   "ms": 442,
+   "ms": 469,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "two reservations of 400 lb succeed, four are refused, the lot is never reserved beyond what is on hand",
@@ -1361,7 +1361,7 @@
     }
    ],
    "pass": true,
-   "ms": 48,
+   "ms": 47,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the order is confirmed once; nobody is shown a server error",
@@ -1432,7 +1432,7 @@
     }
    ],
    "pass": true,
-   "ms": 114,
+   "ms": 146,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve orders, twelve different numbers, no save refused",
@@ -1458,7 +1458,7 @@
     {
      "what": "the stock item agrees with the reservations on record",
      "ok": true,
-     "measured": "{\"i\":{\"id\":\"2b902416-2fab-46b2-80ac-56543b0c1c7d\",\"coilId\":\"28ef21ac-8ab1-4a01-b4d6-8964058a0853\",\"locationId\":\"24cf9af3-b00b-4f48-a3b7-8a01b3b635e4\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
+     "measured": "{\"i\":{\"id\":\"a02439c1-a126-47e6-98d6-911d76e1594b\",\"coilId\":\"9ffe7b51-3353-43e5-a3ea-d078f33512d9\",\"locationId\":\"328ca8de-7c12-41ef-b4c1-d025e00943a4\",\"qtyOnHand\":\"1500\",\"qtyAvailable\":\"1500\",\"qtyAlloc"
     },
     {
      "what": "a cancelled order holds nothing",
@@ -1467,7 +1467,7 @@
     }
    ],
    "pass": true,
-   "ms": 186,
+   "ms": 183,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either the order is cancelled and holds no stock, or it is live and holds its stock; never a cancelled order holding stock",
@@ -1501,7 +1501,7 @@
     }
    ],
    "pass": true,
-   "ms": 157,
+   "ms": 182,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused with a plain answer; nothing is reserved",
@@ -1535,7 +1535,7 @@
     }
    ],
    "pass": true,
-   "ms": 1329,
+   "ms": 1393,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each branch sells its own stock; the other branch cannot take it",
@@ -1564,7 +1564,7 @@
     }
    ],
    "pass": true,
-   "ms": 50,
+   "ms": 43,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "placed once; no server error",
@@ -1637,7 +1637,7 @@
     }
    ],
    "pass": true,
-   "ms": 115,
+   "ms": 130,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one order is made from the quote",
@@ -1671,7 +1671,7 @@
     }
    ],
    "pass": true,
-   "ms": 119,
+   "ms": 107,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one order is made from the quote",
@@ -1705,7 +1705,7 @@
     }
    ],
    "pass": true,
-   "ms": 102,
+   "ms": 97,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one order is made from the quote",
@@ -1735,7 +1735,7 @@
     }
    ],
    "pass": true,
-   "ms": 369,
+   "ms": 414,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the step is started once",
@@ -1771,11 +1771,11 @@
     {
      "what": "one clock, closed",
      "ok": true,
-     "measured": "[[\"2026-11-20T10:34:08.043Z\",\"2026-11-20T10:34:08.075Z\"]]"
+     "measured": "[[\"2026-11-20T12:02:54.494Z\",\"2026-11-20T12:02:54.532Z\"]]"
     }
    ],
    "pass": true,
-   "ms": 362,
+   "ms": 390,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "finished once; the clock is closed once",
@@ -1804,7 +1804,7 @@
     }
    ],
    "pass": true,
-   "ms": 278,
+   "ms": 299,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the step stays as it was",
@@ -1834,7 +1834,7 @@
     }
    ],
    "pass": true,
-   "ms": 438,
+   "ms": 510,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one open inspection",
@@ -1868,7 +1868,7 @@
     }
    ],
    "pass": true,
-   "ms": 558,
+   "ms": 574,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "passed once; the job moves to packaging once",
@@ -1889,12 +1889,12 @@
     {
      "what": "refused with 409",
      "ok": true,
-     "measured": "201 409 This shipment cannot go out yet: JOB-00598 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "201 409 This shipment cannot go out yet: JOB-00600 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the answer names the job",
      "ok": true,
-     "measured": "This shipment cannot go out yet: JOB-00598 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "This shipment cannot go out yet: JOB-00600 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the stock has not left",
@@ -1902,7 +1902,7 @@
     }
    ],
    "pass": true,
-   "ms": 519,
+   "ms": 478,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the shipment is refused and names the job",
@@ -1937,7 +1937,7 @@
     }
    ],
    "pass": true,
-   "ms": 604,
+   "ms": 641,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the runs take turns; the plan is one plan",
@@ -1970,7 +1970,7 @@
     }
    ],
    "pass": true,
-   "ms": 187,
+   "ms": 161,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "started once; the material is issued once",
@@ -2010,7 +2010,7 @@
     }
    ],
    "pass": true,
-   "ms": 260,
+   "ms": 251,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "completed once; the pieces are made once and the weight adds up",
@@ -2056,7 +2056,7 @@
     }
    ],
    "pass": true,
-   "ms": 764,
+   "ms": 772,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "invoice, shipment, job, inspection, stock item, heat and purchase order all link up",
@@ -2086,7 +2086,7 @@
     }
    ],
    "pass": true,
-   "ms": 398,
+   "ms": 402,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the step is started once",
@@ -2122,11 +2122,11 @@
     {
      "what": "one clock, closed",
      "ok": true,
-     "measured": "[[\"2026-11-20T10:34:14.172Z\",\"2026-11-20T10:34:14.205Z\"]]"
+     "measured": "[[\"2026-11-20T12:03:00.631Z\",\"2026-11-20T12:03:00.660Z\"]]"
     }
    ],
    "pass": true,
-   "ms": 400,
+   "ms": 374,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "finished once; the clock is closed once",
@@ -2155,7 +2155,7 @@
     }
    ],
    "pass": true,
-   "ms": 264,
+   "ms": 252,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the step stays as it was",
@@ -2185,7 +2185,7 @@
     }
    ],
    "pass": true,
-   "ms": 445,
+   "ms": 491,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one open inspection",
@@ -2219,7 +2219,7 @@
     }
    ],
    "pass": true,
-   "ms": 511,
+   "ms": 540,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "passed once; the job moves to packaging once",
@@ -2240,12 +2240,12 @@
     {
      "what": "refused with 409",
      "ok": true,
-     "measured": "201 409 This shipment cannot go out yet: JOB-00607 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "201 409 This shipment cannot go out yet: JOB-00609 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the answer names the job",
      "ok": true,
-     "measured": "This shipment cannot go out yet: JOB-00607 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "This shipment cannot go out yet: JOB-00609 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the stock has not left",
@@ -2253,7 +2253,7 @@
     }
    ],
    "pass": true,
-   "ms": 464,
+   "ms": 501,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the shipment is refused and names the job",
@@ -2288,7 +2288,7 @@
     }
    ],
    "pass": true,
-   "ms": 560,
+   "ms": 591,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the runs take turns; the plan is one plan",
@@ -2321,7 +2321,7 @@
     }
    ],
    "pass": true,
-   "ms": 158,
+   "ms": 150,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "started once; the material is issued once",
@@ -2407,7 +2407,7 @@
     }
    ],
    "pass": true,
-   "ms": 659,
+   "ms": 713,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "invoice, shipment, job, inspection, stock item, heat and purchase order all link up",
@@ -2437,7 +2437,7 @@
     }
    ],
    "pass": true,
-   "ms": 393,
+   "ms": 349,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the step is started once",
@@ -2473,11 +2473,11 @@
     {
      "what": "one clock, closed",
      "ok": true,
-     "measured": "[[\"2026-11-20T10:34:19.427Z\",\"2026-11-20T10:34:19.460Z\"]]"
+     "measured": "[[\"2026-11-20T12:03:05.970Z\",\"2026-11-20T12:03:06.005Z\"]]"
     }
    ],
    "pass": true,
-   "ms": 391,
+   "ms": 367,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "finished once; the clock is closed once",
@@ -2506,7 +2506,7 @@
     }
    ],
    "pass": true,
-   "ms": 230,
+   "ms": 281,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the step stays as it was",
@@ -2536,7 +2536,7 @@
     }
    ],
    "pass": true,
-   "ms": 413,
+   "ms": 470,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one open inspection",
@@ -2570,7 +2570,7 @@
     }
    ],
    "pass": true,
-   "ms": 505,
+   "ms": 527,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "passed once; the job moves to packaging once",
@@ -2591,12 +2591,12 @@
     {
      "what": "refused with 409",
      "ok": true,
-     "measured": "201 409 This shipment cannot go out yet: JOB-00616 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "201 409 This shipment cannot go out yet: JOB-00618 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the answer names the job",
      "ok": true,
-     "measured": "This shipment cannot go out yet: JOB-00616 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "This shipment cannot go out yet: JOB-00618 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the stock has not left",
@@ -2604,7 +2604,7 @@
     }
    ],
    "pass": true,
-   "ms": 457,
+   "ms": 513,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the shipment is refused and names the job",
@@ -2639,7 +2639,7 @@
     }
    ],
    "pass": true,
-   "ms": 564,
+   "ms": 671,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the runs take turns; the plan is one plan",
@@ -2672,7 +2672,7 @@
     }
    ],
    "pass": true,
-   "ms": 156,
+   "ms": 160,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "started once; the material is issued once",
@@ -2712,7 +2712,7 @@
     }
    ],
    "pass": true,
-   "ms": 225,
+   "ms": 262,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "completed once; the pieces are made once and the weight adds up",
@@ -2758,7 +2758,7 @@
     }
    ],
    "pass": true,
-   "ms": 681,
+   "ms": 706,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "invoice, shipment, job, inspection, stock item, heat and purchase order all link up",
@@ -2788,7 +2788,7 @@
     }
    ],
    "pass": true,
-   "ms": 395,
+   "ms": 406,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the step is started once",
@@ -2824,11 +2824,11 @@
     {
      "what": "one clock, closed",
      "ok": true,
-     "measured": "[[\"2026-11-20T10:34:24.641Z\",\"2026-11-20T10:34:24.676Z\"]]"
+     "measured": "[[\"2026-11-20T12:03:11.725Z\",\"2026-11-20T12:03:11.760Z\"]]"
     }
    ],
    "pass": true,
-   "ms": 400,
+   "ms": 436,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "finished once; the clock is closed once",
@@ -2857,7 +2857,7 @@
     }
    ],
    "pass": true,
-   "ms": 269,
+   "ms": 283,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the step stays as it was",
@@ -2887,7 +2887,7 @@
     }
    ],
    "pass": true,
-   "ms": 455,
+   "ms": 456,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one open inspection",
@@ -2921,7 +2921,7 @@
     }
    ],
    "pass": true,
-   "ms": 522,
+   "ms": 554,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "passed once; the job moves to packaging once",
@@ -2942,12 +2942,12 @@
     {
      "what": "refused with 409",
      "ok": true,
-     "measured": "201 409 This shipment cannot go out yet: JOB-00625 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "201 409 This shipment cannot go out yet: JOB-00627 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the answer names the job",
      "ok": true,
-     "measured": "This shipment cannot go out yet: JOB-00625 (waiting qc) is not finished. Finish or cancel the job first."
+     "measured": "This shipment cannot go out yet: JOB-00627 (waiting qc) is not finished. Finish or cancel the job first."
     },
     {
      "what": "the stock has not left",
@@ -2955,7 +2955,7 @@
     }
    ],
    "pass": true,
-   "ms": 479,
+   "ms": 475,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the shipment is refused and names the job",
@@ -2990,7 +2990,7 @@
     }
    ],
    "pass": true,
-   "ms": 580,
+   "ms": 621,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the runs take turns; the plan is one plan",
@@ -3023,7 +3023,7 @@
     }
    ],
    "pass": true,
-   "ms": 163,
+   "ms": 164,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "started once; the material is issued once",
@@ -3063,7 +3063,7 @@
     }
    ],
    "pass": true,
-   "ms": 243,
+   "ms": 254,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "completed once; the pieces are made once and the weight adds up",
@@ -3109,7 +3109,7 @@
     }
    ],
    "pass": true,
-   "ms": 717,
+   "ms": 809,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "invoice, shipment, job, inspection, stock item, heat and purchase order all link up",
@@ -3156,7 +3156,7 @@
     }
    ],
    "pass": true,
-   "ms": 353,
+   "ms": 348,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "it leaves once: one stock movement, one invoice, one cost-of-sale entry",
@@ -3189,7 +3189,7 @@
     }
    ],
    "pass": true,
-   "ms": 333,
+   "ms": 376,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "delivered once",
@@ -3219,7 +3219,7 @@
     }
    ],
    "pass": true,
-   "ms": 197,
+   "ms": 213,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one shipment is made; the line cannot be put on two trucks",
@@ -3252,7 +3252,7 @@
     }
    ],
    "pass": true,
-   "ms": 378,
+   "ms": 434,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the same one invoice is answered every time",
@@ -3273,17 +3273,17 @@
     {
      "what": "neither answer is a server error",
      "ok": true,
-     "measured": "409 200 This shipment was just changed by someone else. Reload and try again. | "
+     "measured": "200 409  | This order was just changed by someone else. Reload and try again."
     },
     {
      "what": "not both cancelled and shipped",
      "ok": true,
-     "measured": "CANCELLED / CANCELLED"
+     "measured": "COMPLETE / IN_TRANSIT"
     },
     {
      "what": "the stock agrees with the shipment",
      "ok": true,
-     "measured": "1350 / CANCELLED"
+     "measured": "1000 / IN_TRANSIT"
     },
     {
      "what": "a shipment that left has its invoice",
@@ -3291,7 +3291,7 @@
     }
    ],
    "pass": true,
-   "ms": 2305,
+   "ms": 2342,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either it shipped and the order lives, or it was cancelled and nothing left; never both",
@@ -3317,12 +3317,12 @@
     {
      "what": "twelve different numbers",
      "ok": true,
-     "measured": "1283,1284,1285,1286,1287,1288,1289,1290,1291,1292,1293,1294"
+     "measured": "1288,1289,1290,1291,1292,1293,1294,1295,1296,1297,1298,1299"
     },
     {
      "what": "in a row, with none skipped",
      "ok": true,
-     "measured": "1283,1284,1285,1286,1287,1288,1289,1290,1291,1292,1293,1294"
+     "measured": "1288,1289,1290,1291,1292,1293,1294,1295,1296,1297,1298,1299"
     },
     {
      "what": "answered by more than one server copy when several run",
@@ -3330,7 +3330,7 @@
     }
    ],
    "pass": true,
-   "ms": 3339,
+   "ms": 3100,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve invoices with twelve numbers in a row: none skipped, none repeated, on every server copy",
@@ -3359,7 +3359,7 @@
     }
    ],
    "pass": true,
-   "ms": 239,
+   "ms": 218,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the shipment stays on the dock",
@@ -3406,7 +3406,7 @@
     }
    ],
    "pass": true,
-   "ms": 365,
+   "ms": 364,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "it leaves once: one stock movement, one invoice, one cost-of-sale entry",
@@ -3439,7 +3439,7 @@
     }
    ],
    "pass": true,
-   "ms": 400,
+   "ms": 337,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "delivered once",
@@ -3469,7 +3469,7 @@
     }
    ],
    "pass": true,
-   "ms": 227,
+   "ms": 203,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one shipment is made; the line cannot be put on two trucks",
@@ -3502,7 +3502,7 @@
     }
    ],
    "pass": true,
-   "ms": 429,
+   "ms": 398,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the same one invoice is answered every time",
@@ -3523,17 +3523,17 @@
     {
      "what": "neither answer is a server error",
      "ok": true,
-     "measured": "409 200 This shipment was just changed by someone else. Reload and try again. | "
+     "measured": "200 409  | This order was just changed by someone else. Reload and try again."
     },
     {
      "what": "not both cancelled and shipped",
      "ok": true,
-     "measured": "CANCELLED / CANCELLED"
+     "measured": "COMPLETE / IN_TRANSIT"
     },
     {
      "what": "the stock agrees with the shipment",
      "ok": true,
-     "measured": "1350 / CANCELLED"
+     "measured": "1000 / IN_TRANSIT"
     },
     {
      "what": "a shipment that left has its invoice",
@@ -3541,7 +3541,7 @@
     }
    ],
    "pass": true,
-   "ms": 1298,
+   "ms": 2319,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either it shipped and the order lives, or it was cancelled and nothing left; never both",
@@ -3567,12 +3567,12 @@
     {
      "what": "twelve different numbers",
      "ok": true,
-     "measured": "1298,1299,1300,1301,1302,1303,1304,1305,1306,1307,1308,1309"
+     "measured": "1304,1305,1306,1307,1308,1309,1310,1311,1312,1313,1314,1315"
     },
     {
      "what": "in a row, with none skipped",
      "ok": true,
-     "measured": "1298,1299,1300,1301,1302,1303,1304,1305,1306,1307,1308,1309"
+     "measured": "1304,1305,1306,1307,1308,1309,1310,1311,1312,1313,1314,1315"
     },
     {
      "what": "answered by more than one server copy when several run",
@@ -3580,7 +3580,7 @@
     }
    ],
    "pass": true,
-   "ms": 3320,
+   "ms": 3230,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve invoices with twelve numbers in a row: none skipped, none repeated, on every server copy",
@@ -3609,7 +3609,7 @@
     }
    ],
    "pass": true,
-   "ms": 218,
+   "ms": 230,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the shipment stays on the dock",
@@ -3656,7 +3656,7 @@
     }
    ],
    "pass": true,
-   "ms": 384,
+   "ms": 427,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "it leaves once: one stock movement, one invoice, one cost-of-sale entry",
@@ -3689,7 +3689,7 @@
     }
    ],
    "pass": true,
-   "ms": 449,
+   "ms": 404,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "delivered once",
@@ -3719,7 +3719,7 @@
     }
    ],
    "pass": true,
-   "ms": 258,
+   "ms": 232,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one shipment is made; the line cannot be put on two trucks",
@@ -3752,7 +3752,7 @@
     }
    ],
    "pass": true,
-   "ms": 431,
+   "ms": 411,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the same one invoice is answered every time",
@@ -3791,7 +3791,7 @@
     }
    ],
    "pass": true,
-   "ms": 2350,
+   "ms": 2301,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either it shipped and the order lives, or it was cancelled and nothing left; never both",
@@ -3817,12 +3817,12 @@
     {
      "what": "twelve different numbers",
      "ok": true,
-     "measured": "1314,1315,1316,1317,1318,1319,1320,1321,1322,1323,1324,1325"
+     "measured": "1320,1321,1322,1323,1324,1325,1326,1327,1328,1329,1330,1331"
     },
     {
      "what": "in a row, with none skipped",
      "ok": true,
-     "measured": "1314,1315,1316,1317,1318,1319,1320,1321,1322,1323,1324,1325"
+     "measured": "1320,1321,1322,1323,1324,1325,1326,1327,1328,1329,1330,1331"
     },
     {
      "what": "answered by more than one server copy when several run",
@@ -3830,7 +3830,7 @@
     }
    ],
    "pass": true,
-   "ms": 3349,
+   "ms": 3294,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve invoices with twelve numbers in a row: none skipped, none repeated, on every server copy",
@@ -3859,7 +3859,7 @@
     }
    ],
    "pass": true,
-   "ms": 231,
+   "ms": 267,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the shipment stays on the dock",
@@ -3906,7 +3906,7 @@
     }
    ],
    "pass": true,
-   "ms": 443,
+   "ms": 370,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "it leaves once: one stock movement, one invoice, one cost-of-sale entry",
@@ -3939,7 +3939,7 @@
     }
    ],
    "pass": true,
-   "ms": 395,
+   "ms": 384,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "delivered once",
@@ -3969,7 +3969,7 @@
     }
    ],
    "pass": true,
-   "ms": 231,
+   "ms": 207,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one shipment is made; the line cannot be put on two trucks",
@@ -4002,7 +4002,7 @@
     }
    ],
    "pass": true,
-   "ms": 461,
+   "ms": 382,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the same one invoice is answered every time",
@@ -4023,17 +4023,17 @@
     {
      "what": "neither answer is a server error",
      "ok": true,
-     "measured": "409 200 This shipment was just changed by someone else. Reload and try again. | "
+     "measured": "200 409  | This order was just changed by someone else. Reload and try again."
     },
     {
      "what": "not both cancelled and shipped",
      "ok": true,
-     "measured": "CANCELLED / CANCELLED"
+     "measured": "COMPLETE / IN_TRANSIT"
     },
     {
      "what": "the stock agrees with the shipment",
      "ok": true,
-     "measured": "1350 / CANCELLED"
+     "measured": "1000 / IN_TRANSIT"
     },
     {
      "what": "a shipment that left has its invoice",
@@ -4041,7 +4041,7 @@
     }
    ],
    "pass": true,
-   "ms": 2325,
+   "ms": 2330,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either it shipped and the order lives, or it was cancelled and nothing left; never both",
@@ -4067,12 +4067,12 @@
     {
      "what": "twelve different numbers",
      "ok": true,
-     "measured": "1329,1330,1331,1332,1333,1334,1335,1336,1337,1338,1339,1340"
+     "measured": "1336,1337,1338,1339,1340,1341,1342,1343,1344,1345,1346,1347"
     },
     {
      "what": "in a row, with none skipped",
      "ok": true,
-     "measured": "1329,1330,1331,1332,1333,1334,1335,1336,1337,1338,1339,1340"
+     "measured": "1336,1337,1338,1339,1340,1341,1342,1343,1344,1345,1346,1347"
     },
     {
      "what": "answered by more than one server copy when several run",
@@ -4080,7 +4080,7 @@
     }
    ],
    "pass": true,
-   "ms": 3709,
+   "ms": 3258,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve invoices with twelve numbers in a row: none skipped, none repeated, on every server copy",
@@ -4109,7 +4109,7 @@
     }
    ],
    "pass": true,
-   "ms": 222,
+   "ms": 217,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the shipment stays on the dock",
@@ -4156,7 +4156,7 @@
     }
    ],
    "pass": true,
-   "ms": 322,
+   "ms": 356,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "it leaves once: one stock movement, one invoice, one cost-of-sale entry",
@@ -4189,7 +4189,7 @@
     }
    ],
    "pass": true,
-   "ms": 347,
+   "ms": 362,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "delivered once",
@@ -4219,7 +4219,7 @@
     }
    ],
    "pass": true,
-   "ms": 212,
+   "ms": 223,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one shipment is made; the line cannot be put on two trucks",
@@ -4252,7 +4252,7 @@
     }
    ],
    "pass": true,
-   "ms": 416,
+   "ms": 380,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the same one invoice is answered every time",
@@ -4291,7 +4291,7 @@
     }
    ],
    "pass": true,
-   "ms": 2311,
+   "ms": 2387,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "either it shipped and the order lives, or it was cancelled and nothing left; never both",
@@ -4317,12 +4317,12 @@
     {
      "what": "twelve different numbers",
      "ok": true,
-     "measured": "1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356"
+     "measured": "1352,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363"
     },
     {
      "what": "in a row, with none skipped",
      "ok": true,
-     "measured": "1345,1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356"
+     "measured": "1352,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363"
     },
     {
      "what": "answered by more than one server copy when several run",
@@ -4330,7 +4330,7 @@
     }
    ],
    "pass": true,
-   "ms": 3028,
+   "ms": 3355,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve invoices with twelve numbers in a row: none skipped, none repeated, on every server copy",
@@ -4359,7 +4359,7 @@
     }
    ],
    "pass": true,
-   "ms": 239,
+   "ms": 247,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused; the shipment stays on the dock",
@@ -4417,7 +4417,7 @@
     }
    ],
    "pass": true,
-   "ms": 111,
+   "ms": 124,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory up and accounts payable clearing up by pounds times cost, tagged with the branch",
@@ -4487,7 +4487,7 @@
     }
    ],
    "pass": true,
-   "ms": 334,
+   "ms": 339,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables up by the invoice total; revenue and tax credited; cost of goods at the item's cost",
@@ -4527,7 +4527,7 @@
     }
    ],
    "pass": true,
-   "ms": 428,
+   "ms": 467,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "both payments are recorded and posted; the invoice is paid, not overpaid",
@@ -4565,7 +4565,7 @@
     }
    ],
    "pass": true,
-   "ms": 398,
+   "ms": 414,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is taken; the second is refused",
@@ -4586,7 +4586,7 @@
     {
      "what": "a credit memo was issued",
      "ok": true,
-     "measured": "{\"id\":\"2b0f7602-9578-474f-b20b-cda281b38fb9\",\"number\":\"CM-000133\",\"total\":-1610}"
+     "measured": "{\"id\":\"0b166ae5-4ce8-480c-898c-02af4967c401\",\"number\":\"CM-000133\",\"total\":-1610}"
     },
     {
      "what": "the credit is posted once",
@@ -4615,7 +4615,7 @@
     }
    ],
    "pass": true,
-   "ms": 683,
+   "ms": 701,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the credit lowers receivables through sales returns; the refund pays it back; the stock comes back at cost",
@@ -4655,7 +4655,7 @@
     }
    ],
    "pass": true,
-   "ms": 159,
+   "ms": 198,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory down by pounds times cost, to an expense account",
@@ -4739,7 +4739,7 @@
     }
    ],
    "pass": true,
-   "ms": 231,
+   "ms": 270,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "on the road: in transit up, sending branch down; received: receiving branch up, in transit down",
@@ -4782,7 +4782,7 @@
     }
    ],
    "pass": true,
-   "ms": 1471,
+   "ms": 1671,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six invoices and six cost-of-goods entries, none missing, none twice, with six different entry numbers",
@@ -4813,16 +4813,16 @@
     {
      "what": "the report agrees with the invoices",
      "ok": true,
-     "measured": "{\"customerId\":\"ac94e434-73fa-49e1-8ad0-e5e1a124e533\",\"name\":\"P11 Synthetic Customer L30-3\",\"owed\":\"12376.00\",\"creditOwedBack\":\"0.00\",\"records\":\"12376.00\",\"ledger\":\"12376.00\",\"difference\":\"0.00\"} vs 12"
+     "measured": "{\"customerId\":\"0516872b-cb4e-4d54-88a6-9c61349007d1\",\"name\":\"P11 Synthetic Customer L30-3\",\"owed\":\"186.00\",\"creditOwedBack\":\"0.00\",\"records\":\"186.00\",\"ledger\":\"186.00\",\"difference\":\"0.00\"} vs 186"
     },
     {
      "what": "the report shows no difference for anyone",
      "ok": true,
-     "measured": "{\"owed\":\"202963.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"198747.72\",\"ledger\":\"198747.72\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"201872.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"197656.28\",\"ledger\":\"197656.28\",\"difference\":\"0.00\"}"
     }
    ],
    "pass": true,
-   "ms": 405,
+   "ms": 409,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the books and the invoice records give the same figure for the customer",
@@ -4880,7 +4880,7 @@
     }
    ],
    "pass": true,
-   "ms": 107,
+   "ms": 112,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory up and accounts payable clearing up by pounds times cost, tagged with the branch",
@@ -4950,7 +4950,7 @@
     }
    ],
    "pass": true,
-   "ms": 335,
+   "ms": 346,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables up by the invoice total; revenue and tax credited; cost of goods at the item's cost",
@@ -4990,7 +4990,7 @@
     }
    ],
    "pass": true,
-   "ms": 450,
+   "ms": 432,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "both payments are recorded and posted; the invoice is paid, not overpaid",
@@ -5028,7 +5028,7 @@
     }
    ],
    "pass": true,
-   "ms": 388,
+   "ms": 368,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is taken; the second is refused",
@@ -5049,7 +5049,7 @@
     {
      "what": "a credit memo was issued",
      "ok": true,
-     "measured": "{\"id\":\"f7a96b66-fa59-4948-8588-0039f92ed280\",\"number\":\"CM-000134\",\"total\":-800}"
+     "measured": "{\"id\":\"9a1b7163-ef17-4281-8c20-3f35f52e9ec8\",\"number\":\"CM-000134\",\"total\":-800}"
     },
     {
      "what": "the credit is posted once",
@@ -5118,7 +5118,7 @@
     }
    ],
    "pass": true,
-   "ms": 145,
+   "ms": 162,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory down by pounds times cost, to an expense account",
@@ -5202,7 +5202,7 @@
     }
    ],
    "pass": true,
-   "ms": 227,
+   "ms": 244,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "on the road: in transit up, sending branch down; received: receiving branch up, in transit down",
@@ -5245,7 +5245,7 @@
     }
    ],
    "pass": true,
-   "ms": 1653,
+   "ms": 1658,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six invoices and six cost-of-goods entries, none missing, none twice, with six different entry numbers",
@@ -5276,16 +5276,16 @@
     {
      "what": "the report agrees with the invoices",
      "ok": true,
-     "measured": "{\"customerId\":\"cbcd39c3-0bab-4817-ada4-56f8d2adfe79\",\"name\":\"P11 Synthetic Customer L11-3\",\"owed\":\"480.00\",\"creditOwedBack\":\"0.00\",\"records\":\"480.00\",\"ledger\":\"480.00\",\"difference\":\"0.00\"} vs 480"
+     "measured": "{\"customerId\":\"a2ed8a3d-1e14-4672-99c2-b208011b6454\",\"name\":\"P11 Synthetic Customer L11-3\",\"owed\":\"480.00\",\"creditOwedBack\":\"0.00\",\"records\":\"480.00\",\"ledger\":\"480.00\",\"difference\":\"0.00\"} vs 480"
     },
     {
      "what": "the report shows no difference for anyone",
      "ok": true,
-     "measured": "{\"owed\":\"206723.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"202507.72\",\"ledger\":\"202507.72\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"205632.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"201416.28\",\"ledger\":\"201416.28\",\"difference\":\"0.00\"}"
     }
    ],
    "pass": true,
-   "ms": 402,
+   "ms": 441,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the books and the invoice records give the same figure for the customer",
@@ -5343,7 +5343,7 @@
     }
    ],
    "pass": true,
-   "ms": 113,
+   "ms": 110,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory up and accounts payable clearing up by pounds times cost, tagged with the branch",
@@ -5413,7 +5413,7 @@
     }
    ],
    "pass": true,
-   "ms": 318,
+   "ms": 334,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables up by the invoice total; revenue and tax credited; cost of goods at the item's cost",
@@ -5453,7 +5453,7 @@
     }
    ],
    "pass": true,
-   "ms": 456,
+   "ms": 496,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "both payments are recorded and posted; the invoice is paid, not overpaid",
@@ -5491,7 +5491,7 @@
     }
    ],
    "pass": true,
-   "ms": 387,
+   "ms": 509,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is taken; the second is refused",
@@ -5512,7 +5512,7 @@
     {
      "what": "a credit memo was issued",
      "ok": true,
-     "measured": "{\"id\":\"0c8b5bcc-7088-401b-9855-7d85b60684dd\",\"number\":\"CM-000135\",\"total\":-1380}"
+     "measured": "{\"id\":\"a3b618f3-9792-48fc-9ad3-c4109a71ac8b\",\"number\":\"CM-000135\",\"total\":-1380}"
     },
     {
      "what": "the credit is posted once",
@@ -5541,7 +5541,7 @@
     }
    ],
    "pass": true,
-   "ms": 595,
+   "ms": 641,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the credit lowers receivables through sales returns; the refund pays it back; the stock comes back at cost",
@@ -5581,7 +5581,7 @@
     }
    ],
    "pass": true,
-   "ms": 158,
+   "ms": 147,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory down by pounds times cost, to an expense account",
@@ -5665,7 +5665,7 @@
     }
    ],
    "pass": true,
-   "ms": 1499,
+   "ms": 1506,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "on the road: in transit up, sending branch down; received: receiving branch up, in transit down",
@@ -5700,7 +5700,7 @@
     {
      "what": "receivables rose by the six totals",
      "ok": true,
-     "measured": "837.0000000000001"
+     "measured": "837"
     },
     {
      "what": "six cost-of-goods postings",
@@ -5708,7 +5708,7 @@
     }
    ],
    "pass": true,
-   "ms": 1446,
+   "ms": 1644,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six invoices and six cost-of-goods entries, none missing, none twice, with six different entry numbers",
@@ -5739,16 +5739,16 @@
     {
      "what": "the report agrees with the invoices",
      "ok": true,
-     "measured": "{\"customerId\":\"443b7740-971c-4d72-af98-4128e267bcd3\",\"name\":\"P11 Synthetic Customer L15-3\",\"owed\":\"186.00\",\"creditOwedBack\":\"0.00\",\"records\":\"186.00\",\"ledger\":\"186.00\",\"difference\":\"0.00\"} vs 186"
+     "measured": "{\"customerId\":\"c1310e0b-8572-4c32-9c91-5046a5d150ea\",\"name\":\"P11 Synthetic Customer L15-3\",\"owed\":\"186.00\",\"creditOwedBack\":\"0.00\",\"records\":\"186.00\",\"ledger\":\"186.00\",\"difference\":\"0.00\"} vs 186"
     },
     {
      "what": "the report shows no difference for anyone",
      "ok": true,
-     "measured": "{\"owed\":\"208180.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"203964.72\",\"ledger\":\"203964.72\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"207089.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"202873.28\",\"ledger\":\"202873.28\",\"difference\":\"0.00\"}"
     }
    ],
    "pass": true,
-   "ms": 445,
+   "ms": 396,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the books and the invoice records give the same figure for the customer",
@@ -5806,7 +5806,7 @@
     }
    ],
    "pass": true,
-   "ms": 128,
+   "ms": 144,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory up and accounts payable clearing up by pounds times cost, tagged with the branch",
@@ -5876,7 +5876,7 @@
     }
    ],
    "pass": true,
-   "ms": 346,
+   "ms": 309,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables up by the invoice total; revenue and tax credited; cost of goods at the item's cost",
@@ -5916,7 +5916,7 @@
     }
    ],
    "pass": true,
-   "ms": 473,
+   "ms": 455,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "both payments are recorded and posted; the invoice is paid, not overpaid",
@@ -5954,7 +5954,7 @@
     }
    ],
    "pass": true,
-   "ms": 371,
+   "ms": 388,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is taken; the second is refused",
@@ -5975,7 +5975,7 @@
     {
      "what": "a credit memo was issued",
      "ok": true,
-     "measured": "{\"id\":\"01ae4c0d-5ee5-4b51-85d8-5a98c8dc309e\",\"number\":\"CM-000136\",\"total\":-1220}"
+     "measured": "{\"id\":\"d4c72585-842c-4e5b-8a9e-dd78cba0b8f8\",\"number\":\"CM-000136\",\"total\":-1220}"
     },
     {
      "what": "the credit is posted once",
@@ -6000,11 +6000,11 @@
     {
      "what": "no stock movement of the return is left unposted",
      "ok": true,
-     "measured": "STOCK_RECEIVED POSTED,RETURN_RESTOCKED POSTED"
+     "measured": "RETURN_RESTOCKED POSTED,STOCK_RECEIVED POSTED"
     }
    ],
    "pass": true,
-   "ms": 613,
+   "ms": 584,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the credit lowers receivables through sales returns; the refund pays it back; the stock comes back at cost",
@@ -6044,7 +6044,7 @@
     }
    ],
    "pass": true,
-   "ms": 157,
+   "ms": 163,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory down by pounds times cost, to an expense account",
@@ -6128,7 +6128,7 @@
     }
    ],
    "pass": true,
-   "ms": 1472,
+   "ms": 1446,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "on the road: in transit up, sending branch down; received: receiving branch up, in transit down",
@@ -6171,7 +6171,7 @@
     }
    ],
    "pass": true,
-   "ms": 1586,
+   "ms": 1681,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six invoices and six cost-of-goods entries, none missing, none twice, with six different entry numbers",
@@ -6202,16 +6202,16 @@
     {
      "what": "the report agrees with the invoices",
      "ok": true,
-     "measured": "{\"customerId\":\"308a9bae-120e-4fe8-95a5-8f9db77b28ee\",\"name\":\"P11 Synthetic Customer L47-1\",\"owed\":\"1457.00\",\"creditOwedBack\":\"0.00\",\"records\":\"1457.00\",\"ledger\":\"1457.00\",\"difference\":\"0.00\"} vs 1457"
+     "measured": "{\"customerId\":\"ba131929-f522-468f-9be3-585f4f1e8982\",\"name\":\"P11 Synthetic Customer L47-1\",\"owed\":\"1457.00\",\"creditOwedBack\":\"0.00\",\"records\":\"1457.00\",\"ledger\":\"1457.00\",\"difference\":\"0.00\"} vs 1457"
     },
     {
      "what": "the report shows no difference for anyone",
      "ok": true,
-     "measured": "{\"owed\":\"209637.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"205421.72\",\"ledger\":\"205421.72\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"208546.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"204330.28\",\"ledger\":\"204330.28\",\"difference\":\"0.00\"}"
     }
    ],
    "pass": true,
-   "ms": 411,
+   "ms": 375,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the books and the invoice records give the same figure for the customer",
@@ -6269,7 +6269,7 @@
     }
    ],
    "pass": true,
-   "ms": 111,
+   "ms": 94,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory up and accounts payable clearing up by pounds times cost, tagged with the branch",
@@ -6339,7 +6339,7 @@
     }
    ],
    "pass": true,
-   "ms": 361,
+   "ms": 325,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables up by the invoice total; revenue and tax credited; cost of goods at the item's cost",
@@ -6379,7 +6379,7 @@
     }
    ],
    "pass": true,
-   "ms": 482,
+   "ms": 496,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "both payments are recorded and posted; the invoice is paid, not overpaid",
@@ -6417,7 +6417,7 @@
     }
    ],
    "pass": true,
-   "ms": 372,
+   "ms": 397,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is taken; the second is refused",
@@ -6438,7 +6438,7 @@
     {
      "what": "a credit memo was issued",
      "ok": true,
-     "measured": "{\"id\":\"633089b0-5652-464a-b78d-bf0c1a93e9ea\",\"number\":\"CM-000137\",\"total\":-1120}"
+     "measured": "{\"id\":\"f06da013-f1a6-4366-89d7-9f640ccf126c\",\"number\":\"CM-000137\",\"total\":-1120}"
     },
     {
      "what": "the credit is posted once",
@@ -6467,7 +6467,7 @@
     }
    ],
    "pass": true,
-   "ms": 584,
+   "ms": 587,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the credit lowers receivables through sales returns; the refund pays it back; the stock comes back at cost",
@@ -6507,7 +6507,7 @@
     }
    ],
    "pass": true,
-   "ms": 155,
+   "ms": 151,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "raw inventory down by pounds times cost, to an expense account",
@@ -6591,7 +6591,7 @@
     }
    ],
    "pass": true,
-   "ms": 1461,
+   "ms": 1563,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "on the road: in transit up, sending branch down; received: receiving branch up, in transit down",
@@ -6634,7 +6634,7 @@
     }
    ],
    "pass": true,
-   "ms": 1610,
+   "ms": 1648,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six invoices and six cost-of-goods entries, none missing, none twice, with six different entry numbers",
@@ -6665,16 +6665,16 @@
     {
      "what": "the report agrees with the invoices",
      "ok": true,
-     "measured": "{\"customerId\":\"62550425-0e93-4ad8-a6e7-f41405428fe8\",\"name\":\"P11 Synthetic Customer L48-3\",\"owed\":\"186.00\",\"creditOwedBack\":\"0.00\",\"records\":\"186.00\",\"ledger\":\"186.00\",\"difference\":\"0.00\"} vs 186"
+     "measured": "{\"customerId\":\"da90ae2b-eeec-48aa-8a1b-49fb626395b5\",\"name\":\"P11 Synthetic Customer L48-3\",\"owed\":\"186.00\",\"creditOwedBack\":\"0.00\",\"records\":\"186.00\",\"ledger\":\"186.00\",\"difference\":\"0.00\"} vs 186"
     },
     {
      "what": "the report shows no difference for anyone",
      "ok": true,
-     "measured": "{\"owed\":\"211094.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"206878.72\",\"ledger\":\"206878.72\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"210003.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"205787.28\",\"ledger\":\"205787.28\",\"difference\":\"0.00\"}"
     }
    ],
    "pass": true,
-   "ms": 400,
+   "ms": 405,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the books and the invoice records give the same figure for the customer",
@@ -6703,7 +6703,7 @@
     }
    ],
    "pass": true,
-   "ms": 56,
+   "ms": 65,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "posted once",
@@ -6732,7 +6732,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 85,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 SAME_PERSON every time",
@@ -6799,7 +6799,7 @@
     }
    ],
    "pass": true,
-   "ms": 444,
+   "ms": 394,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "forty posted entries with forty different numbers, every one balanced",
@@ -6828,7 +6828,7 @@
     }
    ],
    "pass": true,
-   "ms": 585,
+   "ms": 620,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "eighty entries, each tagged with its own branch",
@@ -6857,7 +6857,7 @@
     }
    ],
    "pass": true,
-   "ms": 344,
+   "ms": 357,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every reading balances",
@@ -6886,7 +6886,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 26,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "refused every time; the month stays open",
@@ -6924,7 +6924,7 @@
     }
    ],
    "pass": true,
-   "ms": 43,
+   "ms": 48,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "closed once; nothing is written into it",
@@ -6960,7 +6960,7 @@
     {
      "what": "the file totals balance",
      "ok": true,
-     "measured": "14866755.14"
+     "measured": "14921221.17"
     },
     {
      "what": "the file says it is not validated for any accounting product",
@@ -6968,7 +6968,7 @@
     }
    ],
    "pass": true,
-   "ms": 3325,
+   "ms": 3514,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no entry is in two batches; the file's debits equal its credits; nothing is sent anywhere",
@@ -7008,11 +7008,11 @@
     {
      "what": "the next export carries the freed entries",
      "ok": true,
-     "measured": "201 6615 vs 6615 "
+     "measured": "201 6621 vs 6621 "
     }
    ],
    "pass": true,
-   "ms": 1483,
+   "ms": 1765,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "a failed batch keeps its entries; a withdrawn batch frees them; the next export carries them",
@@ -7050,7 +7050,7 @@
     }
    ],
    "pass": true,
-   "ms": 217,
+   "ms": 203,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "four runs, the same figures, every check agrees",
@@ -7105,7 +7105,7 @@
     }
    ],
    "pass": true,
-   "ms": 5748,
+   "ms": 5848,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "debits equal credits in every run; once the work stops every figure agrees",
@@ -7161,7 +7161,7 @@
     {
      "what": "the item is named",
      "ok": true,
-     "measured": "[{\"coilId\":\"f5bba47d-2bed-4e29-bd56-2702282fa983\",\"number\":\"P11-MWOUCR55-648\",\"branch\":\"QA-L31\",\"ledger\":\"380.00\",\"records\":\"418.00\",\"difference\":\"-38.00\",\"uncosted\":false}]"
+     "measured": "[{\"coilId\":\"42ef6521-52ee-4a4d-a9b9-fc875b5b0303\",\"number\":\"P11-MWOXIWLB-648\",\"branch\":\"QA-L31\",\"ledger\":\"380.00\",\"records\":\"418.00\",\"difference\":\"-38.00\",\"uncosted\":false}]"
     },
     {
      "what": "no entry was made to hide it",
@@ -7198,7 +7198,7 @@
     }
    ],
    "pass": true,
-   "ms": 547,
+   "ms": 576,
    "record": {
     "initialConditions": "One item's quantity on hand is raised by 100 lb directly in the QA database, as a fault would",
     "expected": "the reconciliation names the item and the amount, makes no entry, and agrees again once the record is put right",
@@ -7276,7 +7276,7 @@
     }
    ],
    "pass": true,
-   "ms": 1313,
+   "ms": 1280,
    "record": {
     "initialConditions": "The cash mapping is changed by a CFO, which removes the accountant's approval",
     "expected": "the payment is saved; its event fails with the reason; nothing is posted until the approval is recorded; then it posts once",
@@ -7310,7 +7310,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 43,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "nothing is found and nothing is posted twice",
@@ -7336,7 +7336,7 @@
     {
      "what": "a delete is refused",
      "ok": true,
-     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00006787 cannot be deleted"
+     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00006799 cannot be deleted"
     },
     {
      "what": "a line cannot be added",
@@ -7349,7 +7349,7 @@
     }
    ],
    "pass": true,
-   "ms": 146,
+   "ms": 197,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the database refuses the change",
@@ -7415,7 +7415,7 @@
     }
    ],
    "pass": true,
-   "ms": 215,
+   "ms": 222,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no unbalanced entry, no repeated entry number, no posted event without its entry, no entry posted twice for one event",
@@ -7441,7 +7441,7 @@
     {
      "what": "receivables on the report equal the reconciliation",
      "ok": true,
-     "measured": "{\"owed\":\"214482.72\",\"creditOwedBack\":\"4216.00\",\"records\":\"210266.72\",\"ledger\":\"210266.72\",\"difference\":\"0.00\"} vs 210266.72"
+     "measured": "{\"owed\":\"213391.28\",\"creditOwedBack\":\"4216.00\",\"records\":\"209175.28\",\"ledger\":\"209175.28\",\"difference\":\"0.00\"} vs 209175.28"
     },
     {
      "what": "the exceptions list holds nothing from this run",
@@ -7451,11 +7451,11 @@
     {
      "what": "revenue is reported branch by branch and is positive",
      "ok": true,
-     "measured": "155 rows, 1155837.0499999993"
+     "measured": "155 rows, 1174832.2999999993"
     }
    ],
    "pass": true,
-   "ms": 255,
+   "ms": 275,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "receivables and stock value on the reports equal the reconciliation's figures; the exceptions list is empty",
@@ -7499,7 +7499,7 @@
     }
    ],
    "pass": true,
-   "ms": 77,
+   "ms": 74,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for QA-L10's manager; 403 or 404 for QA-L20",
@@ -7566,7 +7566,7 @@
     }
    ],
    "pass": true,
-   "ms": 138,
+   "ms": 139,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "orders, shipments and invoices of the branch are absent from the other branch's lists and searches",
@@ -7603,7 +7603,7 @@
     }
    ],
    "pass": true,
-   "ms": 37,
+   "ms": 42,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every change is refused; nothing moved, shipped or was paid",
@@ -7636,7 +7636,7 @@
     }
    ],
    "pass": true,
-   "ms": 115,
+   "ms": 124,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 for each",
@@ -7669,7 +7669,7 @@
     }
    ],
    "pass": true,
-   "ms": 192,
+   "ms": 207,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every own read answers 200 and every cross-branch read is refused, whichever server copy answers",
@@ -7709,7 +7709,7 @@
     }
    ],
    "pass": true,
-   "ms": 107,
+   "ms": 122,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "listed for its own buyer only; refused by id; staff routes closed to both",
@@ -7753,7 +7753,7 @@
     }
    ],
    "pass": true,
-   "ms": 67,
+   "ms": 78,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for QA-L32's manager; 403 or 404 for QA-L33",
@@ -7820,7 +7820,7 @@
     }
    ],
    "pass": true,
-   "ms": 95,
+   "ms": 126,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "orders, shipments and invoices of the branch are absent from the other branch's lists and searches",
@@ -7857,7 +7857,7 @@
     }
    ],
    "pass": true,
-   "ms": 40,
+   "ms": 47,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every change is refused; nothing moved, shipped or was paid",
@@ -7890,7 +7890,7 @@
     }
    ],
    "pass": true,
-   "ms": 100,
+   "ms": 112,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 for each",
@@ -7923,7 +7923,7 @@
     }
    ],
    "pass": true,
-   "ms": 189,
+   "ms": 197,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every own read answers 200 and every cross-branch read is refused, whichever server copy answers",
@@ -7963,7 +7963,7 @@
     }
    ],
    "pass": true,
-   "ms": 120,
+   "ms": 158,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "listed for its own buyer only; refused by id; staff routes closed to both",
@@ -8007,7 +8007,7 @@
     }
    ],
    "pass": true,
-   "ms": 87,
+   "ms": 96,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for QA-L43's manager; 403 or 404 for QA-L44",
@@ -8074,7 +8074,7 @@
     }
    ],
    "pass": true,
-   "ms": 115,
+   "ms": 137,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "orders, shipments and invoices of the branch are absent from the other branch's lists and searches",
@@ -8111,7 +8111,7 @@
     }
    ],
    "pass": true,
-   "ms": 43,
+   "ms": 63,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every change is refused; nothing moved, shipped or was paid",
@@ -8144,7 +8144,7 @@
     }
    ],
    "pass": true,
-   "ms": 138,
+   "ms": 139,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 for each",
@@ -8177,7 +8177,7 @@
     }
    ],
    "pass": true,
-   "ms": 195,
+   "ms": 294,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every own read answers 200 and every cross-branch read is refused, whichever server copy answers",
@@ -8217,7 +8217,7 @@
     }
    ],
    "pass": true,
-   "ms": 90,
+   "ms": 133,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "listed for its own buyer only; refused by id; staff routes closed to both",
@@ -8261,7 +8261,7 @@
     }
    ],
    "pass": true,
-   "ms": 70,
+   "ms": 87,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for QA-L27's manager; 403 or 404 for QA-L37",
@@ -8328,7 +8328,7 @@
     }
    ],
    "pass": true,
-   "ms": 114,
+   "ms": 125,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "orders, shipments and invoices of the branch are absent from the other branch's lists and searches",
@@ -8365,7 +8365,7 @@
     }
    ],
    "pass": true,
-   "ms": 41,
+   "ms": 71,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every change is refused; nothing moved, shipped or was paid",
@@ -8398,7 +8398,7 @@
     }
    ],
    "pass": true,
-   "ms": 113,
+   "ms": 161,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 for each",
@@ -8431,7 +8431,7 @@
     }
    ],
    "pass": true,
-   "ms": 186,
+   "ms": 203,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every own read answers 200 and every cross-branch read is refused, whichever server copy answers",
@@ -8457,7 +8457,7 @@
     {
      "what": "smaller than the company's",
      "ok": true,
-     "measured": "390553.15 vs 14905285.64"
+     "measured": "390553.15 vs 14959751.67"
     },
     {
      "what": "naming another branch gives the same own-branch figures or a refusal",
@@ -8470,7 +8470,7 @@
     }
    ],
    "pass": true,
-   "ms": 73,
+   "ms": 72,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the trial balance of the branch manager is limited to the branch, even when another branch is named",
@@ -8514,7 +8514,7 @@
     }
    ],
    "pass": true,
-   "ms": 81,
+   "ms": 74,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for QA-L48's manager; 403 or 404 for QA-L58",
@@ -8581,7 +8581,7 @@
     }
    ],
    "pass": true,
-   "ms": 128,
+   "ms": 106,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "orders, shipments and invoices of the branch are absent from the other branch's lists and searches",
@@ -8618,7 +8618,7 @@
     }
    ],
    "pass": true,
-   "ms": 38,
+   "ms": 40,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every change is refused; nothing moved, shipped or was paid",
@@ -8651,7 +8651,7 @@
     }
    ],
    "pass": true,
-   "ms": 101,
+   "ms": 116,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "403 for each",
@@ -8684,7 +8684,7 @@
     }
    ],
    "pass": true,
-   "ms": 161,
+   "ms": 185,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every own read answers 200 and every cross-branch read is refused, whichever server copy answers",
@@ -8724,7 +8724,7 @@
     }
    ],
    "pass": true,
-   "ms": 96,
+   "ms": 118,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "listed for its own buyer only; refused by id; staff routes closed to both",
@@ -8753,7 +8753,7 @@
     }
    ],
    "pass": true,
-   "ms": 21,
+   "ms": 37,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "401 for each of forty requests",
@@ -8795,7 +8795,7 @@
     }
    ],
    "pass": true,
-   "ms": 474,
+   "ms": 519,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "thirty requests with its old token are all refused straight after",
@@ -8825,7 +8825,7 @@
     }
    ],
    "pass": true,
-   "ms": 227,
+   "ms": 247,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the old token is refused on every copy",
@@ -8851,7 +8851,7 @@
     {
      "what": "the login is paused",
      "ok": true,
-     "measured": "Fri Nov 20 2026 10:51:05 GMT+0000 (Coordinated Universal Time)"
+     "measured": "Fri Nov 20 2026 12:19:56 GMT+0000 (Coordinated Universal Time)"
     },
     {
      "what": "the right password is refused while paused",
@@ -8863,7 +8863,7 @@
     }
    ],
    "pass": true,
-   "ms": 720,
+   "ms": 857,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "after ten wrong passwords the right one is refused; one pause is recorded",
@@ -8922,7 +8922,7 @@
     }
    ],
    "pass": true,
-   "ms": 72,
+   "ms": 87,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "reads answer; every write is 403",
@@ -8956,7 +8956,7 @@
     }
    ],
    "pass": true,
-   "ms": 22,
+   "ms": 27,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "answered; nothing from the books is handed to the model",
@@ -8989,7 +8989,7 @@
     }
    ],
    "pass": true,
-   "ms": 32,
+   "ms": 35,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the context for the manager of one branch never names the other branch's invoice or order",
@@ -9015,11 +9015,11 @@
     {
      "what": "nothing changed",
      "ok": true,
-     "measured": "6734,1239,57,1 -> 6734,1239,57,1"
+     "measured": "6740,1238,52,1 -> 6740,1238,52,1"
     }
    ],
    "pass": true,
-   "ms": 102,
+   "ms": 117,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no entry, payment, order change or user change whatever the message says",
@@ -9048,7 +9048,7 @@
     }
    ],
    "pass": true,
-   "ms": 62,
+   "ms": 57,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "figures only: no token, key, password or signing secret",
@@ -9074,11 +9074,11 @@
     {
      "what": "the books' receivables figure is in what the model was given",
      "ok": true,
-     "measured": "211800.72 not in: \\n      },\\n      {\\n        \\\"code\\\": \\\"1100\\\",\\n        \\\"name\\\": \\\"Accounts Receivable\\\",\\n        \\\"balance\\\": \\\"211800.72\\\",\\n        \\\"side\\\": \\\"debit\\\"\\n      },\\n      {\\n   "
+     "measured": "210709.28 not in: \\n      },\\n      {\\n        \\\"code\\\": \\\"1100\\\",\\n        \\\"name\\\": \\\"Accounts Receivable\\\",\\n        \\\"balance\\\": \\\"210709.28\\\",\\n        \\\"side\\\": \\\"debit\\\"\\n      },\\n      {\\n   "
     }
    ],
    "pass": true,
-   "ms": 81,
+   "ms": 97,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the figure handed to the model equals the receivables report read at the same time",
@@ -9113,7 +9113,7 @@
     {
      "what": "they are about this sale",
      "ok": true,
-     "measured": "{\"id\":\"evt_shipment.dispatched:9be0cd72-ee0d-4d92-bad0-b0c10270a1a7\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"f3d3161f-9a26-4b1b-b888-6db881e8acdf\",\"shipmentId\""
+     "measured": "{\"id\":\"evt_shipment.dispatched:1e8c2d49-6d84-4e7e-8fe5-7c68c3b30760\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"55503216-68cb-4c2f-b27c-abcc897528ac\",\"shipmentId\""
     },
     {
      "what": "no secret in the body",
@@ -9126,7 +9126,7 @@
     }
    ],
    "pass": true,
-   "ms": 478,
+   "ms": 523,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "two events, each delivered once, each signature matching the shared secret",
@@ -9166,7 +9166,7 @@
     }
    ],
    "pass": true,
-   "ms": 3716,
+   "ms": 3786,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "the event waits, then is delivered exactly once",
@@ -9217,7 +9217,7 @@
     }
    ],
    "pass": true,
-   "ms": 428,
+   "ms": 438,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is recorded; a later repeat is answered with the first answer; the key with a different amount is refused",
@@ -9251,7 +9251,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 38,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one web order",
@@ -9286,7 +9286,7 @@
     }
    ],
    "pass": true,
-   "ms": 726,
+   "ms": 750,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every read answers; every order belongs to the partner's organization; another customer's partner cannot open one",
@@ -9321,7 +9321,7 @@
     {
      "what": "they are about this sale",
      "ok": true,
-     "measured": "{\"id\":\"evt_shipment.dispatched:939670ac-bb10-4221-94a4-634c3a78df55\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"9b2efbd7-030c-40c5-8342-2ede41e0a556\",\"shipmentId\""
+     "measured": "{\"id\":\"evt_shipment.dispatched:b99d40a7-90c5-4acc-84f3-a62dfe111b90\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"2fbebe5f-47c8-433c-a35d-4e1bb5806a9d\",\"shipmentId\""
     },
     {
      "what": "no secret in the body",
@@ -9334,7 +9334,7 @@
     }
    ],
    "pass": true,
-   "ms": 498,
+   "ms": 500,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "two events, each delivered once, each signature matching the shared secret",
@@ -9374,7 +9374,7 @@
     }
    ],
    "pass": true,
-   "ms": 3740,
+   "ms": 3760,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "the event waits, then is delivered exactly once",
@@ -9425,7 +9425,7 @@
     }
    ],
    "pass": true,
-   "ms": 425,
+   "ms": 498,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is recorded; a later repeat is answered with the first answer; the key with a different amount is refused",
@@ -9459,7 +9459,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 45,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one web order",
@@ -9485,7 +9485,7 @@
     {
      "what": "orders were listed and none belongs to anyone else",
      "ok": true,
-     "measured": "6 orders, 0 foreign"
+     "measured": "7 orders, 0 foreign"
     },
     {
      "what": "another customer's partner cannot open it",
@@ -9494,7 +9494,7 @@
     }
    ],
    "pass": true,
-   "ms": 719,
+   "ms": 753,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every read answers; every order belongs to the partner's organization; another customer's partner cannot open one",
@@ -9529,7 +9529,7 @@
     {
      "what": "they are about this sale",
      "ok": true,
-     "measured": "{\"id\":\"evt_shipment.dispatched:c0dcb1f6-d3fe-4f78-bd78-9934a9aa4066\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"5800f2e9-396e-4d83-af51-2a8be0e0ea57\",\"shipmentId\""
+     "measured": "{\"id\":\"evt_shipment.dispatched:54395fc5-eb17-4fb8-97b8-a58e5465afcc\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"fcf34859-08a5-4da1-81c7-a29b3fa50f9d\",\"shipmentId\""
     },
     {
      "what": "no secret in the body",
@@ -9542,7 +9542,7 @@
     }
    ],
    "pass": true,
-   "ms": 471,
+   "ms": 482,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "two events, each delivered once, each signature matching the shared secret",
@@ -9582,7 +9582,7 @@
     }
    ],
    "pass": true,
-   "ms": 3703,
+   "ms": 3766,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "the event waits, then is delivered exactly once",
@@ -9633,7 +9633,7 @@
     }
    ],
    "pass": true,
-   "ms": 474,
+   "ms": 455,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is recorded; a later repeat is answered with the first answer; the key with a different amount is refused",
@@ -9667,7 +9667,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 39,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one web order",
@@ -9702,7 +9702,7 @@
     }
    ],
    "pass": true,
-   "ms": 661,
+   "ms": 670,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every read answers; every order belongs to the partner's organization; another customer's partner cannot open one",
@@ -9737,7 +9737,7 @@
     {
      "what": "they are about this sale",
      "ok": true,
-     "measured": "{\"id\":\"evt_shipment.dispatched:bafe5546-7a8a-43b2-b656-390114d70eae\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"f78a9d25-8eac-43ac-9480-c21f9fe70d1d\",\"shipmentId\""
+     "measured": "{\"id\":\"evt_shipment.dispatched:ca59a738-6242-4b9d-a915-eb65b149b45a\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"2f65345e-9ba9-4073-b6f8-79b2908f458c\",\"shipmentId\""
     },
     {
      "what": "no secret in the body",
@@ -9750,7 +9750,7 @@
     }
    ],
    "pass": true,
-   "ms": 448,
+   "ms": 462,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "two events, each delivered once, each signature matching the shared secret",
@@ -9790,7 +9790,7 @@
     }
    ],
    "pass": true,
-   "ms": 3701,
+   "ms": 3758,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "the event waits, then is delivered exactly once",
@@ -9841,7 +9841,7 @@
     }
    ],
    "pass": true,
-   "ms": 426,
+   "ms": 511,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is recorded; a later repeat is answered with the first answer; the key with a different amount is refused",
@@ -9880,7 +9880,7 @@
     }
    ],
    "pass": true,
-   "ms": 234,
+   "ms": 278,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one transfer; the item leaves the branch once",
@@ -9915,7 +9915,7 @@
     }
    ],
    "pass": true,
-   "ms": 1416,
+   "ms": 1479,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every read answers; every order belongs to the partner's organization; another customer's partner cannot open one",
@@ -9950,7 +9950,7 @@
     {
      "what": "they are about this sale",
      "ok": true,
-     "measured": "{\"id\":\"evt_shipment.dispatched:6a2d0ce1-af74-456b-903c-e44fcc7e2437\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"252066ab-4216-4f8d-b7f6-381c689d093d\",\"shipmentId\""
+     "measured": "{\"id\":\"evt_shipment.dispatched:bf027cf2-faa1-4503-a0f1-5057fbf4885e\",\"data\":{\"status\":\"IN_TRANSIT\",\"orderId\":\"bbd3bca4-54e8-49d5-8e61-3a3688f5097f\",\"shipmentId\""
     },
     {
      "what": "no secret in the body",
@@ -9963,7 +9963,7 @@
     }
    ],
    "pass": true,
-   "ms": 523,
+   "ms": 513,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "two events, each delivered once, each signature matching the shared secret",
@@ -10003,7 +10003,7 @@
     }
    ],
    "pass": true,
-   "ms": 3751,
+   "ms": 3806,
    "record": {
     "initialConditions": "A partner account of the branch's customer with a webhook at the local stand-in",
     "expected": "the event waits, then is delivered exactly once",
@@ -10054,7 +10054,7 @@
     }
    ],
    "pass": true,
-   "ms": 463,
+   "ms": 522,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one payment is recorded; a later repeat is answered with the first answer; the key with a different amount is refused",
@@ -10088,7 +10088,7 @@
     }
    ],
    "pass": true,
-   "ms": 31,
+   "ms": 38,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "one web order",
@@ -10123,7 +10123,7 @@
     }
    ],
    "pass": true,
-   "ms": 651,
+   "ms": 847,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every read answers; every order belongs to the partner's organization; another customer's partner cannot open one",
@@ -10152,7 +10152,7 @@
     }
    ],
    "pass": true,
-   "ms": 57,
+   "ms": 71,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "401 without it, with a wrong one, or with it in the address; 200 with it",
@@ -10186,7 +10186,7 @@
     }
    ],
    "pass": true,
-   "ms": 4623,
+   "ms": 4802,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every run answers; no event is sent twice; the checks still answer",
@@ -10233,7 +10233,7 @@
     }
    ],
    "pass": true,
-   "ms": 4191,
+   "ms": 4139,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "FAILED after five; the check fails; an alert is stored; replay delivers it once the address is back",
@@ -10264,16 +10264,16 @@
     {
      "what": "each carries its own time, and the late one is the earlier",
      "ok": true,
-     "measured": "[\"id\",\"data\",\"type\",\"created_at\",\"partner_id\"] 1795171012211 1795171008481"
+     "measured": "[\"id\",\"data\",\"type\",\"created_at\",\"partner_id\"] 1795176344385 1795176340647"
     },
     {
      "what": "they carry different ids",
      "ok": true,
-     "measured": "evt_shipment.dispatched:ff8bde33-194e-4030-83d7-814d9a0eae18 evt_shipment.dispatched:5f9c8bfa-329a-42ae-90c2-b3df6da70418"
+     "measured": "evt_shipment.dispatched:498128d8-c631-4721-b4c5-cac9d49f4f9d evt_shipment.dispatched:b81af67e-bdd1-46f4-b858-ae2e3c90a7e2"
     }
    ],
    "pass": true,
-   "ms": 4298,
+   "ms": 4316,
    "record": {
     "initialConditions": "The partner's address fails for the first sale and works for the second; the first is delivered later by the scheduled run",
     "expected": "both arrive once; the late one carries its own earlier time and a different id",
@@ -10304,7 +10304,7 @@
     {
      "what": "both calls carry the same id and the same body",
      "ok": true,
-     "measured": "evt_shipment.dispatched:2e4ee5e9-9369-46bb-ac00-8ddc85472d1f,evt_shipment.dispatched:2e4ee5e9-9369-46bb-ac00-8ddc85472d1f"
+     "measured": "evt_shipment.dispatched:91eddf4e-c395-4aa0-84ad-b2aaecdca339,evt_shipment.dispatched:91eddf4e-c395-4aa0-84ad-b2aaecdca339"
     },
     {
      "what": "both calls are signed",
@@ -10317,7 +10317,7 @@
     }
    ],
    "pass": true,
-   "ms": 3870,
+   "ms": 3871,
    "record": {
     "initialConditions": "The partner receives the event but its answer is an error, as when the answer is lost on the way",
     "expected": "the second delivery carries the id and the body of the first, with a valid signature; one delivery row",
@@ -10343,7 +10343,7 @@
     {
      "what": "none waited for the partner (each under 3 seconds)",
      "ok": true,
-     "measured": "slowest 725 ms, all eight in 725 ms"
+     "measured": "slowest 667 ms, all eight in 668 ms"
     },
     {
      "what": "all eight events were delivered afterwards",
@@ -10352,7 +10352,7 @@
     }
    ],
    "pass": true,
-   "ms": 7476,
+   "ms": 7537,
    "record": {
     "initialConditions": "The partner's address takes 4 seconds; the server gives up on it after 1.5",
     "expected": "eight shipments are dispatched in their usual time; the events are delivered later",
@@ -10383,7 +10383,7 @@
     {
      "what": "all thirty delivered",
      "ok": true,
-     "measured": "30 of 30 in 168 ms"
+     "measured": "30 of 30 in 148 ms"
     },
     {
      "what": "each reached the partner exactly once after it came back",
@@ -10392,7 +10392,7 @@
     }
    ],
    "pass": true,
-   "ms": 8233,
+   "ms": 8048,
    "record": {
     "initialConditions": "The partner's address is down while fifteen sales are shipped and billed",
     "expected": "thirty events wait; after the address returns the scheduled runs deliver every one exactly once",
@@ -10420,7 +10420,7 @@
     }
    ],
    "pass": true,
-   "ms": 1133,
+   "ms": 1071,
    "record": {
     "initialConditions": "The alert address answers 503",
     "expected": "the alert is in the audit trail; sales continue",
@@ -10458,7 +10458,7 @@
     }
    ],
    "pass": true,
-   "ms": 3837,
+   "ms": 3874,
    "record": {
     "initialConditions": "The AI stand-in answers 503",
     "expected": "a plain refusal for each, no internals; order reads at the same moment all answer",
@@ -10484,7 +10484,7 @@
     {
      "what": "each within 6 seconds",
      "ok": true,
-     "measured": "1518,3484,1513,1515,1518,3359 (all in 3485)"
+     "measured": "1517,1517,3296,1519,1519,3453 (all in 3453)"
     },
     {
      "what": "the health check stayed quick",
@@ -10493,7 +10493,7 @@
     }
    ],
    "pass": true,
-   "ms": 6786,
+   "ms": 6755,
    "record": {
     "initialConditions": "The AI stand-in answers after 6 seconds; the server's limit is 1.5",
     "expected": "each of six askers is answered within about 6 seconds; the health check answers quickly meanwhile",
@@ -10522,7 +10522,7 @@
     }
    ],
    "pass": true,
-   "ms": 1495,
+   "ms": 1508,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "a file is made; the stand-in for outside services records no call",
@@ -10557,7 +10557,7 @@
     }
    ],
    "pass": true,
-   "ms": 1080,
+   "ms": 1018,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twenty calls straight after are all refused",
@@ -10605,7 +10605,7 @@
     }
    ],
    "pass": true,
-   "ms": 998,
+   "ms": 1123,
    "record": {
     "initialConditions": "A partner allowed five requests a minute sends thirty at the same moment; the front door spreads them over the server copies",
     "expected": "about five are answered and the rest are refused with 429 and a time to retry; not five per copy",
@@ -10638,7 +10638,7 @@
     }
    ],
    "pass": true,
-   "ms": 61,
+   "ms": 64,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "200 for an administrator; no key, secret or token in it; 403 for a seller",
@@ -10696,7 +10696,7 @@
     }
    ],
    "pass": true,
-   "ms": 7122,
+   "ms": 7870,
    "record": {
     "initialConditions": "Twenty shipments wait on the dock; kill -9 of copy 1 once the first has been saved",
     "expected": "every shipment either left whole or did not leave; after the copy is back and the dock sends again, each has left once with one invoice; the books agree",
@@ -10725,7 +10725,7 @@
     }
    ],
    "pass": true,
-   "ms": 1075,
+   "ms": 1414,
    "record": {
     "initialConditions": "Ninety reads in three waves; copy 2 is killed during the second",
     "expected": "every read is answered: the front door hands a read to another copy",
@@ -10764,7 +10764,7 @@
     }
    ],
    "pass": true,
-   "ms": 1409,
+   "ms": 1413,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no request goes to the dead copy; after the restart it serves again, and a sign-in made before the crash still works on it",
@@ -10798,7 +10798,7 @@
     }
    ],
    "pass": true,
-   "ms": 6413,
+   "ms": 5699,
    "record": {
     "initialConditions": "Each payment carries its own request key; copy 1 is killed as they arrive",
     "expected": "a payment whose copy died is not taken twice: sending it again with the same key is held while the first attempt could still be alive, then taken once",
@@ -10836,7 +10836,7 @@
     }
    ],
    "pass": true,
-   "ms": 1227,
+   "ms": 1463,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every entry is a draft or posted whole; after sending again each is posted once with its own number",
@@ -10870,7 +10870,7 @@
     }
    ],
    "pass": true,
-   "ms": 2412,
+   "ms": 2501,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each work order is completed once; its pieces are made once and the weight adds up",
@@ -10891,7 +10891,7 @@
     {
      "what": "no answer was a 500",
      "ok": true,
-     "measured": "5 answered, 3 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
+     "measured": "6 answered, 2 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
     },
     {
      "what": "the copy came back",
@@ -10900,7 +10900,7 @@
     {
      "what": "all eight are received",
      "ok": true,
-     "measured": "RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED; 5 answered, 3 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
+     "measured": "RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED,RECEIVED; 6 answered, 2 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
     },
     {
      "what": "all eight items are at the receiving branch",
@@ -10929,7 +10929,7 @@
     }
    ],
    "pass": true,
-   "ms": 2979,
+   "ms": 3188,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each transfer is received once; nothing is left on the road in the books or in the records",
@@ -10950,12 +10950,12 @@
     {
      "what": "the stopped copy finished its requests and left within three seconds (Z-008)",
      "ok": true,
-     "measured": "554 ms"
+     "measured": "902 ms"
     },
     {
      "what": "no answer was a 500",
      "ok": true,
-     "measured": "24 answered, 6 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
+     "measured": "30 answered, 0 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
     },
     {
      "what": "the copy came back",
@@ -10964,11 +10964,11 @@
     {
      "what": "each invoice has exactly one payment",
      "ok": true,
-     "measured": "24 answered, 6 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors; 0 saved although the answer was lost (the office checks before sending again)"
+     "measured": "30 answered, 0 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors; 0 saved although the answer was lost (the office checks before sending again)"
     }
    ],
    "pass": true,
-   "ms": 12467,
+   "ms": 12772,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no payment is taken twice; every payment the client was told about is saved; the rest are taken when sent again",
@@ -11002,7 +11002,7 @@
     }
    ],
    "pass": true,
-   "ms": 17861,
+   "ms": 18901,
    "record": {
     "initialConditions": "A rolling restart, as a deployment does: copy 1, then 2, then 3, each after the one before is back",
     "expected": "every sale goes out once with one invoice; no answer is a 500",
@@ -11036,7 +11036,7 @@
     {
      "what": "a sale goes through",
      "ok": true,
-     "measured": "copies answering again 773 ms after the start was asked"
+     "measured": "copies answering again 1022 ms after the start was asked"
     },
     {
      "what": "after the restart: BOOKS_BALANCE agrees",
@@ -11060,7 +11060,7 @@
     }
    ],
    "pass": true,
-   "ms": 2197,
+   "ms": 2444,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the front door says plainly that nothing is running (503); after the start people sign in, a sale goes through and the books agree",
@@ -11095,7 +11095,7 @@
     }
    ],
    "pass": true,
-   "ms": 598,
+   "ms": 599,
    "record": {
     "initialConditions": "The RateWindow table is taken away from the QA database for a moment, as on a host where the new code is deployed first",
     "expected": "sign-in and the partner API keep working; the limits are counted per copy as before; no request fails because of the limiter",
@@ -11136,7 +11136,7 @@
     }
    ],
    "pass": true,
-   "ms": 1150,
+   "ms": 1215,
    "record": {
     "initialConditions": "A separate copy on port 3140 pointed at a database that does not answer",
     "expected": "ready 503 and health 503, live 200; sign-in fails without internals; the running copies are not affected",
@@ -11157,7 +11157,7 @@
     {
      "what": "one taken, none a server error",
      "ok": true,
-     "measured": "201,409,409 after 2072 ms"
+     "measured": "201,409,409 after 2079 ms"
     },
     {
      "what": "paid once",
@@ -11165,7 +11165,7 @@
     }
    ],
    "pass": true,
-   "ms": 2474,
+   "ms": 2544,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "they wait; one is taken when the row is free; the others are refused",
@@ -11186,16 +11186,16 @@
     {
      "what": "all eight left",
      "ok": true,
-     "measured": "200,200,200,200,200,200,200,200  in 3378 ms"
+     "measured": "200,200,200,200,200,200,200,200  in 3393 ms"
     },
     {
      "what": "eight numbers in a row",
      "ok": true,
-     "measured": "1599,1600,1601,1602,1603,1604,1605,1606"
+     "measured": "1606,1607,1608,1609,1610,1611,1612,1613"
     }
    ],
    "pass": true,
-   "ms": 5081,
+   "ms": 5305,
    "record": {
     "initialConditions": "Another session holds the document counter, as a long-running statement would",
     "expected": "the eight wait, then all leave, with eight numbers in a row",
@@ -11216,7 +11216,7 @@
     {
      "what": "no answer is a 500",
      "ok": true,
-     "measured": "200,200,200  after 23010 ms"
+     "measured": "200,200,200  after 23009 ms"
     },
     {
      "what": "nothing is half-saved",
@@ -11229,7 +11229,7 @@
     }
    ],
    "pass": true,
-   "ms": 23929,
+   "ms": 23945,
    "record": {
     "initialConditions": "The document counter is held for 23 seconds; a request gives up after 20",
     "expected": "the dock is told to try again (not a 500); the goods that left are listed as waiting for their invoice; when the hold ends they are billed once",
@@ -11250,12 +11250,12 @@
     {
      "what": "reads were answered, or told to try again",
      "ok": true,
-     "measured": "200,200,200,200,200,200,200,200,200,200,200,200,200,200,200, with 56 connections taken, in 570 ms"
+     "measured": "200,200,200,200,200,200,200,200,200,200,200,200,200,200,200, with 56 connections taken, in 567 ms"
     },
     {
      "what": "a change that found no connection is told to try again (503), never a 500",
      "ok": true,
-     "measured": "200,200,200,200,200,503 The system could not reach its database just now. Wait a moment and try again; if you were saving something, check first whether it was saved."
+     "measured": "200,200,200,200,200,200 "
     },
     {
      "what": "nothing is half-saved",
@@ -11267,7 +11267,7 @@
     }
    ],
    "pass": true,
-   "ms": 2471,
+   "ms": 2324,
    "record": {
     "initialConditions": "Idle sessions are opened until only a few connections are left for the application",
     "expected": "forty requests are answered with what is left: slower, not broken",
@@ -11292,7 +11292,7 @@
     {
      "what": "the servers answer again by themselves",
      "ok": true,
-     "measured": "7 answered, 0 lost with the copy (502), 0 cut, 23 no copy (503), 0 server errors"
+     "measured": "6 answered, 0 lost with the copy (502), 0 cut, 24 no copy (503), 0 server errors"
     },
     {
      "what": "nothing is half-saved",
@@ -11301,7 +11301,7 @@
     {
      "what": "every shipment left once with one invoice after sending again",
      "ok": true,
-     "measured": "sent again 6, billed afterwards 2; 7 answered, 0 lost with the copy (502), 0 cut, 23 no copy (503), 0 server errors"
+     "measured": "sent again 8, billed afterwards 0; 6 answered, 0 lost with the copy (502), 0 cut, 24 no copy (503), 0 server errors"
     },
     {
      "what": "afterwards: BOOKS_BALANCE agrees",
@@ -11325,7 +11325,7 @@
     }
    ],
    "pass": true,
-   "ms": 3809,
+   "ms": 4017,
    "record": {
     "initialConditions": "pg_terminate_backend on the application's sessions",
     "expected": "the servers reconnect by themselves within seconds; nothing is half-saved; a failed request succeeds when sent again",
@@ -11365,7 +11365,7 @@
     }
    ],
    "pass": true,
-   "ms": 3706,
+   "ms": 4033,
    "record": {
     "initialConditions": "The connection is cut 5 ms after each request leaves; each carries a request key",
     "expected": "no answer reaches the client; the repeat with the same key gets the first answer; one payment each",
@@ -11399,7 +11399,7 @@
     }
    ],
    "pass": true,
-   "ms": 2885,
+   "ms": 2899,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each shipment leaves once with one invoice, however many times it was sent",
@@ -11434,7 +11434,7 @@
     }
    ],
    "pass": true,
-   "ms": 846,
+   "ms": 843,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "six orders, not twelve",
@@ -11468,7 +11468,7 @@
     }
    ],
    "pass": true,
-   "ms": 4611,
+   "ms": 4708,
    "record": {
     "initialConditions": "The front door holds every dispatch answer for 2.5 seconds",
     "expected": "the work was done the first time; the repeat is told so; one invoice each",
@@ -11497,7 +11497,7 @@
     }
    ],
    "pass": true,
-   "ms": 1768,
+   "ms": 1791,
    "record": {
     "initialConditions": "The front door holds every posting answer for 1.5 seconds; the second click follows 200 ms after the first",
     "expected": "each entry is posted once",
@@ -11540,7 +11540,7 @@
     }
    ],
    "pass": true,
-   "ms": 137,
+   "ms": 129,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "401 for twelve reads and six writes; nothing saved; after signing in again the same write goes through",
@@ -11578,7 +11578,7 @@
     }
    ],
    "pass": true,
-   "ms": 453,
+   "ms": 476,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the step sent with the expired sign-in is refused and reserves nothing; after a new sign-in the same step succeeds and the sale completes",
@@ -11612,7 +11612,7 @@
     }
    ],
    "pass": true,
-   "ms": 7201,
+   "ms": 7096,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "all twelve sales go out and are billed; the events wait; when the addresses return each event is delivered once",
@@ -11655,7 +11655,7 @@
     }
    ],
    "pass": true,
-   "ms": 1305,
+   "ms": 1266,
    "record": {
     "initialConditions": "Six orders of 300 lb each against one item of 1,000 lb",
     "expected": "at most three are reserved; the item's reserved pounds equal the reservations that exist",
@@ -11693,7 +11693,7 @@
     }
    ],
    "pass": true,
-   "ms": 3160,
+   "ms": 3161,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each is delivered once in the end; still one invoice each",
@@ -11714,7 +11714,7 @@
     {
      "what": "no answer was a 500",
      "ok": true,
-     "measured": "8 answered, 4 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
+     "measured": "9 answered, 3 lost with the copy (502), 0 cut, 0 no copy (503), 0 server errors"
     },
     {
      "what": "the copy came back",
@@ -11732,11 +11732,11 @@
     {
      "what": "no number skipped between the first and the last of these invoices",
      "ok": true,
-     "measured": "12 invoices for numbers 1664 to 1675"
+     "measured": "12 invoices for numbers 1671 to 1682"
     }
    ],
    "pass": true,
-   "ms": 4663,
+   "ms": 4983,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no invoice number is used twice and none is skipped, across the whole company, although some saves were lost with the copy",
@@ -11773,7 +11773,7 @@
     }
    ],
    "pass": true,
-   "ms": 1315,
+   "ms": 1304,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "each entry is posted once; entry numbers are not repeated",
@@ -11815,7 +11815,7 @@
     }
    ],
    "pass": true,
-   "ms": 1420,
+   "ms": 1166,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the batch is whole or absent: its count equals its items, and no entry is in two batches; the next export carries what is left",
@@ -11873,7 +11873,7 @@
     }
    ],
    "pass": true,
-   "ms": 1380,
+   "ms": 1480,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "every run that was stored is complete; a run sent again agrees",
@@ -11907,7 +11907,7 @@
     }
    ],
    "pass": true,
-   "ms": 10316,
+   "ms": 10951,
    "record": {
     "initialConditions": "Three events wait; the partner answers slowly so the run is in flight when the copies die",
     "expected": "no event is lost: after the restart a run delivers each one; a copy the partner may already have received carries the same id",
@@ -11942,7 +11942,7 @@
     }
    ],
    "pass": true,
-   "ms": 116,
+   "ms": 133,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the search for unposted records finds nothing; no event is failed, pending or held; no shipment that left is unbilled",
@@ -12020,7 +12020,7 @@
     }
    ],
    "pass": true,
-   "ms": 303,
+   "ms": 350,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "no negative stock, no stock reserved beyond what is on hand, no repeated document number, every posted entry balanced, and the books agree with the records",
@@ -12051,7 +12051,7 @@
     {
      "what": "each serves",
      "ok": true,
-     "measured": "1,2,3"
+     "measured": "3,1,2"
     },
     {
      "what": "the copies were stopped many times during this group and are whole",
@@ -12060,7 +12060,7 @@
     }
    ],
    "pass": true,
-   "ms": 229,
+   "ms": 239,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the front door lists every copy as up; each answers its own readiness check; each has served requests since it last started",
@@ -12090,11 +12090,11 @@
     {
      "what": "the slowest within 2.5 seconds",
      "ok": true,
-     "measured": "median 1208 ms, slowest 1820 ms"
+     "measured": "median 1282 ms, slowest 1997 ms"
     }
    ],
    "pass": true,
-   "ms": 2891,
+   "ms": 3332,
    "record": {
     "initialConditions": "All copies restarted a moment ago: nothing is warm",
     "expected": "all sixty are signed in; the slowest within the proposed limit of 2.5 seconds",
@@ -12120,7 +12120,7 @@
     {
      "what": "the executive cockpit: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "median 11 ms, p95 37 ms"
+     "measured": "median 12 ms, p95 43 ms"
     },
     {
      "what": "the home dashboard: answered every time",
@@ -12130,7 +12130,7 @@
     {
      "what": "the home dashboard: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "median 38 ms, p95 42 ms"
+     "measured": "median 34 ms, p95 42 ms"
     },
     {
      "what": "the dashboard figures: answered every time",
@@ -12140,7 +12140,7 @@
     {
      "what": "the dashboard figures: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "median 17 ms, p95 26 ms"
+     "measured": "median 20 ms, p95 23 ms"
     },
     {
      "what": "the operations cockpit: answered every time",
@@ -12150,7 +12150,7 @@
     {
      "what": "the operations cockpit: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "median 76 ms, p95 95 ms"
+     "measured": "median 62 ms, p95 87 ms"
     },
     {
      "what": "the sales dashboard: answered every time",
@@ -12160,13 +12160,13 @@
     {
      "what": "the sales dashboard: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "median 41 ms, p95 45 ms"
+     "measured": "median 29 ms, p95 38 ms"
     }
    ],
    "pass": true,
-   "ms": 642,
+   "ms": 570,
    "record": {
-    "initialConditions": "The database after the enterprise run (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "The database after the enterprise run (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "each dashboard read twelve times, four at a time: all 200, 95th percentile under 800 ms",
     "actual": "as expected (10 checks)",
     "businessState": "the first screen of the day opens in under a second",
@@ -12195,11 +12195,11 @@
     {
      "what": "the slowest read stayed under 2.5 seconds",
      "ok": true,
-     "measured": "p95 286 ms, slowest 305 ms"
+     "measured": "p95 333 ms, slowest 346 ms"
     }
    ],
    "pass": true,
-   "ms": 5737,
+   "ms": 5980,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "forty dashboard reads beside twenty dispatches: every read 200, every sale billed",
@@ -12225,7 +12225,7 @@
     {
      "what": "the totals are equal",
      "ok": true,
-     "measured": "1183939.31 vs 1183939.31"
+     "measured": "1202934.56 vs 1202934.56"
     },
     {
      "what": "the rows add up to the total",
@@ -12238,7 +12238,7 @@
     }
    ],
    "pass": true,
-   "ms": 213,
+   "ms": 259,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the two groupings of the revenue report have the same total, and it equals the revenue the reconciliation reads from the books",
@@ -12264,7 +12264,7 @@
     {
      "what": "the branches add up to the reconciliation's record figure",
      "ok": true,
-     "measured": "9916252.200000001 / {\"rawMaterial\":\"9842453.31\",\"finishedGoods\":\"73098.89\",\"inTransit\":\"700.00\",\"ledger\":\"9916252.20\",\"records\":\"9916252.20\",\"difference\":\"0.00\",\"uncostedItems\":946} vs 9916252.20"
+     "measured": "9903236.450000001 / {\"rawMaterial\":\"9829437.56\",\"finishedGoods\":\"73098.89\",\"inTransit\":\"700.00\",\"ledger\":\"9903236.45\",\"records\":\"9903236.45\",\"difference\":\"0.00\",\"uncostedItems\":949} vs 9903236.45"
     },
     {
      "what": "and the books agree with the records",
@@ -12273,7 +12273,7 @@
     }
    ],
    "pass": true,
-   "ms": 202,
+   "ms": 212,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the report's branches add up to the reconciliation's figure for the records",
@@ -12307,11 +12307,11 @@
     {
      "what": "95th percentile under 800 ms",
      "ok": true,
-     "measured": "p95 115 ms"
+     "measured": "p95 120 ms"
     }
    ],
    "pass": true,
-   "ms": 116,
+   "ms": 121,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "twelve identical totals, within the proposed limit",
@@ -12352,7 +12352,7 @@
     {
      "what": "invoices: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "p95 27 ms"
+     "measured": "p95 30 ms"
     },
     {
      "what": "invoices: a request for 100,000 rows is refused or capped",
@@ -12367,7 +12367,7 @@
     {
      "what": "shipments: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "p95 25 ms"
+     "measured": "p95 24 ms"
     },
     {
      "what": "shipments: a request for 100,000 rows is refused or capped",
@@ -12387,7 +12387,7 @@
     {
      "what": "stock items: a request for 100,000 rows is refused or capped",
      "ok": true,
-     "measured": "200, 200 rows, 511 KB"
+     "measured": "200, 200 rows, 510 KB"
     },
     {
      "what": "journal entries: a page answers",
@@ -12397,7 +12397,7 @@
     {
      "what": "journal entries: 95th percentile under 800 ms",
      "ok": true,
-     "measured": "p95 24 ms"
+     "measured": "p95 31 ms"
     },
     {
      "what": "journal entries: a request for 100,000 rows is refused or capped",
@@ -12406,9 +12406,9 @@
     }
    ],
    "pass": true,
-   "ms": 1092,
+   "ms": 1188,
    "record": {
-    "initialConditions": "Thousands of rows in each list (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "Thousands of rows in each list (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "a page of fifty answers within the limit; asking for a hundred thousand rows does not return them all",
     "actual": "as expected (15 checks)",
     "businessState": "a list cannot be used to pull the whole table",
@@ -12432,13 +12432,13 @@
     {
      "what": "every run under 5 seconds",
      "ok": true,
-     "measured": "144, 138, 127, 130, 130 ms"
+     "measured": "188, 161, 187, 152, 152 ms"
     }
    ],
    "pass": true,
-   "ms": 671,
+   "ms": 841,
    "record": {
-    "initialConditions": "7617 journal entries, 2561 stock items",
+    "initialConditions": "7623 journal entries, 2564 stock items",
     "expected": "five runs, each under 5 seconds, each agreeing",
     "actual": "as expected (2 checks)",
     "businessState": "as the checks state",
@@ -12462,7 +12462,7 @@
     {
      "what": "the monthly statement under 5 seconds",
      "ok": true,
-     "measured": "50 ms"
+     "measured": "35 ms"
     },
     {
      "what": "the trial balance answers",
@@ -12472,7 +12472,7 @@
     {
      "what": "the trial balance under 5 seconds",
      "ok": true,
-     "measured": "24 ms"
+     "measured": "22 ms"
     },
     {
      "what": "the gross margin report answers",
@@ -12482,7 +12482,7 @@
     {
      "what": "the gross margin report under 5 seconds",
      "ok": true,
-     "measured": "24 ms"
+     "measured": "39 ms"
     },
     {
      "what": "the sales tax report answers",
@@ -12492,7 +12492,7 @@
     {
      "what": "the sales tax report under 5 seconds",
      "ok": true,
-     "measured": "12 ms"
+     "measured": "14 ms"
     },
     {
      "what": "the exceptions list answers",
@@ -12502,7 +12502,7 @@
     {
      "what": "the exceptions list under 5 seconds",
      "ok": true,
-     "measured": "11 ms"
+     "measured": "10 ms"
     },
     {
      "what": "the export batches answers",
@@ -12547,7 +12547,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1512 ms"
+     "measured": "1441 ms"
     },
     {
      "what": "no script error",
@@ -12564,9 +12564,9 @@
     }
    ],
    "pass": true,
-   "ms": 3351,
+   "ms": 3354,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12595,7 +12595,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1633 ms"
+     "measured": "1657 ms"
     },
     {
      "what": "no script error",
@@ -12612,9 +12612,9 @@
     }
    ],
    "pass": true,
-   "ms": 3431,
+   "ms": 3521,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12643,7 +12643,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1716 ms"
+     "measured": "1856 ms"
     },
     {
      "what": "no script error",
@@ -12660,9 +12660,9 @@
     }
    ],
    "pass": true,
-   "ms": 3660,
+   "ms": 3905,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12691,7 +12691,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1333 ms"
+     "measured": "1287 ms"
     },
     {
      "what": "no script error",
@@ -12708,9 +12708,9 @@
     }
    ],
    "pass": true,
-   "ms": 2983,
+   "ms": 2926,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12734,12 +12734,12 @@
     {
      "what": "it shows its screen, not the sign-in page or an error",
      "ok": true,
-     "measured": "http://localhost:5199/finance Skip to the page\nFinance\nCtrl K\nBranch\nAll branches\nBranch\nCutoff 3:30 PM (9h 50"
+     "measured": "http://localhost:5199/finance Skip to the page\nFinance\nCtrl K\nBranch\nAll branches\nBranch\nCutoff 3:30 PM (8h 21"
     },
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1400 ms"
+     "measured": "1409 ms"
     },
     {
      "what": "no script error",
@@ -12756,9 +12756,9 @@
     }
    ],
    "pass": true,
-   "ms": 3107,
+   "ms": 3269,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12787,7 +12787,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1327 ms"
+     "measured": "1305 ms"
     },
     {
      "what": "no script error",
@@ -12804,9 +12804,9 @@
     }
    ],
    "pass": true,
-   "ms": 2918,
+   "ms": 3085,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12835,7 +12835,7 @@
     {
      "what": "ready within 3000 ms",
      "ok": true,
-     "measured": "1590 ms"
+     "measured": "1604 ms"
     },
     {
      "what": "no script error",
@@ -12852,9 +12852,9 @@
     }
    ],
    "pass": true,
-   "ms": 3429,
+   "ms": 3571,
    "record": {
-    "initialConditions": "A real browser against the application (4020 orders, 1817 invoices, 2561 stock items, 7617 journal entries)",
+    "initialConditions": "A real browser against the application (4021 orders, 1824 invoices, 2564 stock items, 7623 journal entries)",
     "expected": "ready within 3000 ms (proposed); no script error; no failed request; fewer than 600 table rows drawn",
     "actual": "as expected (6 checks)",
     "businessState": "the screen stays usable as the data grows",
@@ -12887,7 +12887,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 9,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the health check of each copy names the same commit",
@@ -12908,7 +12908,7 @@
     {
      "what": "recorded as applied",
      "ok": true,
-     "measured": "[{\"migration_name\":\"20261118150000_shared_rate_limits\",\"finished_at\":\"2026-11-20T09:46:14.508Z\"}]"
+     "measured": "[{\"migration_name\":\"20261118150000_shared_rate_limits\",\"finished_at\":\"2026-11-20T11:13:20.275Z\"}]"
     },
     {
      "what": "the SQL Editor file exists and skips itself when already applied",
@@ -12925,7 +12925,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 11,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the QA database records the update; the SQL Editor file exists for it; the table has the columns the code uses",
@@ -12954,7 +12954,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 11,
    "record": {
     "initialConditions": "The 80-branch synthetic enterprise on the local QA database, the QA ledger active with test data only, the earlier work of the run in place",
     "expected": "the host build runs no migration; there is no .ts or .tsx source in the frontend",

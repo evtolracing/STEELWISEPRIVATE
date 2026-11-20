@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit bc1e330. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 15e91bb. Do not edit by hand: change the source and rerun.
 
 694 routes in 78 route files, served at 79 mount points. 367 change data.
 
@@ -61,7 +61,7 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/customers/preferences/list` | customers.js:86 |
 | `GET /api/work-centers` | workCenters.js:8 |
 | `GET /api/work-centers/:id/schedule` | workCenters.js:128 |
-| `GET /api/jobs/sla-risk` | jobs.js:218 |
+| `GET /api/jobs/sla-risk` | jobs.js:222 |
 | `GET /api/documents/entity/:entityType/:entityId` | documents.js:222 |
 | `GET /api/pos/quick-sale/daily-stats` | quickSale.js:313 |
 | `GET /api/v1/bom/recipes` | bomV1.js:126 |
@@ -69,15 +69,15 @@ Three shapes are in use: a bare record or list (most older routes), `{ data, met
 | `GET /api/v1/analytics/rfq-funnel` | analyticsV1.js:126 |
 | `GET /api/v1/analytics/work-centers/utilization` | analyticsV1.js:227 |
 | `GET /api/v1/events/exceptions/stats` | eventsV1.js:91 |
-| `GET /api/v1/jobs/sla-risk` | jobs.js:218 |
+| `GET /api/v1/jobs/sla-risk` | jobs.js:222 |
 | `GET /api/v1/work-centers` | workCenters.js:8 |
 | `GET /api/v1/work-centers/:id/schedule` | workCenters.js:128 |
 | `GET /api/v1/dispatch/work-center-types` | dispatchRoutes.js:72 |
 | `GET /api/v1/dispatch/locations` | dispatchRoutes.js:421 |
 | `GET /api/v1/dispatch/work-centers` | dispatchRoutes.js:476 |
 | `GET /api/v1/dispatch/operators` | dispatchRoutes.js:501 |
-| `GET /api/v1/dispatch/queue` | dispatchRoutes.js:659 |
-| `GET /api/v1/dispatch/stats` | dispatchRoutes.js:764 |
+| `GET /api/v1/dispatch/queue` | dispatchRoutes.js:662 |
+| `GET /api/v1/dispatch/stats` | dispatchRoutes.js:767 |
 | `GET /api/v1/operations/long-running` | operationsRoutes.js:120 |
 | `GET /api/v1/operations/:id/time-logs` | operationsRoutes.js:499 |
 | `GET /api/sales/dashboard/leaderboard` | salesRoutes.js:228 |
@@ -229,7 +229,7 @@ Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement, 
 | `POST /api/inventory/bulk-upload` | yes |  |  |  |  |  |
 | `GET /api/inventory/templates/:type` | yes |  |  |  |  |  |
 
-### intakeOrders.js (8 routes, 651 lines)
+### intakeOrders.js (8 routes, 678 lines)
 
 Mounted at /api/orders/intake. Tables: Organization, Order, Location, Quote, Job, OrderLine.
 
@@ -241,8 +241,8 @@ Mounted at /api/orders/intake. Tables: Organization, Order, Location, Quote, Job
 | `GET /api/orders/intake/summary` | yes |  |  |  |  |  |
 | `GET /api/orders/intake/:id` | yes |  |  |  |  |  |
 | `PATCH /api/orders/intake/:id` | yes | 4 | yes |  |  |  |
-| `POST /api/orders/intake/:id/submit` | yes | 1 |  |  |  |  |
-| `POST /api/orders/intake/:id/create-work-orders` | yes | 2 | yes |  |  |  |
+| `POST /api/orders/intake/:id/submit` | yes | 3 | yes |  |  |  |
+| `POST /api/orders/intake/:id/create-work-orders` | yes |  |  |  |  |  |
 
 ### onlineOrders.js (4 routes, 193 lines)
 
@@ -607,7 +607,7 @@ Mounted at /api/work-centers, /api/v1/work-centers. Tables: WorkCenter, Location
 | `PATCH /api/v1/work-centers/:id` |  | 1 |  |  |  |  |
 | `GET /api/v1/work-centers/:id/schedule` | yes |  |  | yes |  |  |
 
-### jobs.js (36 routes, 1007 lines)
+### jobs.js (36 routes, 1011 lines)
 
 Mounted at /api/jobs, /api/v1/jobs. Tables: Job, OrderLine, Order, WorkCenter, DispatchJob, WorkCenterType, DispatchOperation, User.
 
@@ -865,9 +865,9 @@ Mounted at /api/v1/events. Tables: ExceptionEvent.
 | `POST /api/v1/events/exceptions/:id/acknowledge` |  | 1 |  |  |  |  |
 | `GET /api/v1/events/exceptions/stats` | yes |  |  | yes |  |  |
 
-### dispatchRoutes.js (17 routes, 921 lines)
+### dispatchRoutes.js (17 routes, 924 lines)
 
-Mounted at /api/v1/dispatch. Tables: WorkCenterType, WorkCenter, DispatchDivision, Location, DispatchOperation, Organization, Operator, DispatchJob.
+Mounted at /api/v1/dispatch. Tables: WorkCenterType, WorkCenter, DispatchDivision, Location, DispatchOperation, Organization, Operator, DispatchJob, Job.
 
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|

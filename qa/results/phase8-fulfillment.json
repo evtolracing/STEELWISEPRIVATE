@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T09:51:02.074Z",
+ "at": "2026-11-20T11:18:21.916Z",
  "base": "http://localhost:3011",
  "scenarios": 155,
  "passed": 155,
@@ -60,7 +60,7 @@
     }
    ],
    "pass": true,
-   "ms": 146
+   "ms": 150
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -76,7 +76,7 @@
     }
    ],
    "pass": true,
-   "ms": 33
+   "ms": 30
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -96,7 +96,7 @@
     }
    ],
    "pass": true,
-   "ms": 158
+   "ms": 143
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -112,7 +112,7 @@
     }
    ],
    "pass": true,
-   "ms": 193
+   "ms": 181
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -128,7 +128,7 @@
     }
    ],
    "pass": true,
-   "ms": 155
+   "ms": 160
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -148,7 +148,7 @@
     }
    ],
    "pass": true,
-   "ms": 155
+   "ms": 177
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -172,7 +172,7 @@
     }
    ],
    "pass": true,
-   "ms": 175
+   "ms": 186
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -192,7 +192,7 @@
     }
    ],
    "pass": true,
-   "ms": 175
+   "ms": 203
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -216,7 +216,7 @@
     }
    ],
    "pass": true,
-   "ms": 154
+   "ms": 185
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -240,7 +240,7 @@
     }
    ],
    "pass": true,
-   "ms": 138
+   "ms": 180
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -264,7 +264,7 @@
     }
    ],
    "pass": true,
-   "ms": 316
+   "ms": 366
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -284,7 +284,7 @@
     }
    ],
    "pass": true,
-   "ms": 207
+   "ms": 239
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -308,7 +308,7 @@
     }
    ],
    "pass": true,
-   "ms": 396
+   "ms": 436
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -332,7 +332,7 @@
     }
    ],
    "pass": true,
-   "ms": 262
+   "ms": 276
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -356,7 +356,7 @@
     }
    ],
    "pass": true,
-   "ms": 267
+   "ms": 298
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -380,7 +380,7 @@
     }
    ],
    "pass": true,
-   "ms": 283
+   "ms": 350
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -404,7 +404,7 @@
     }
    ],
    "pass": true,
-   "ms": 393
+   "ms": 404
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -420,7 +420,7 @@
     }
    ],
    "pass": true,
-   "ms": 324
+   "ms": 365
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -440,7 +440,7 @@
     }
    ],
    "pass": true,
-   "ms": 373
+   "ms": 385
   },
   {
    "group": "Finished goods release, picking and packaging",
@@ -464,7 +464,7 @@
     }
    ],
    "pass": true,
-   "ms": 202
+   "ms": 240
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -488,7 +488,7 @@
     }
    ],
    "pass": true,
-   "ms": 209
+   "ms": 269
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -516,7 +516,7 @@
     }
    ],
    "pass": true,
-   "ms": 246
+   "ms": 247
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -540,7 +540,7 @@
     }
    ],
    "pass": true,
-   "ms": 347
+   "ms": 375
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -560,7 +560,7 @@
     }
    ],
    "pass": true,
-   "ms": 465
+   "ms": 497
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -576,7 +576,7 @@
     }
    ],
    "pass": true,
-   "ms": 229
+   "ms": 281
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -592,7 +592,7 @@
     }
    ],
    "pass": true,
-   "ms": 166
+   "ms": 232
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -612,7 +612,7 @@
     }
    ],
    "pass": true,
-   "ms": 294
+   "ms": 365
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -628,7 +628,7 @@
     }
    ],
    "pass": true,
-   "ms": 324
+   "ms": 344
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -640,7 +640,7 @@
     }
    ],
    "pass": true,
-   "ms": 126
+   "ms": 145
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -664,7 +664,7 @@
     }
    ],
    "pass": true,
-   "ms": 191
+   "ms": 214
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -680,7 +680,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 206
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -704,7 +704,7 @@
     }
    ],
    "pass": true,
-   "ms": 180
+   "ms": 218
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -724,7 +724,7 @@
     }
    ],
    "pass": true,
-   "ms": 268
+   "ms": 325
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -748,7 +748,7 @@
     }
    ],
    "pass": true,
-   "ms": 308
+   "ms": 305
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -768,7 +768,7 @@
     }
    ],
    "pass": true,
-   "ms": 270
+   "ms": 310
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -796,7 +796,7 @@
     }
    ],
    "pass": true,
-   "ms": 232
+   "ms": 279
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -828,7 +828,7 @@
     }
    ],
    "pass": true,
-   "ms": 216
+   "ms": 258
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -848,7 +848,7 @@
     }
    ],
    "pass": true,
-   "ms": 206
+   "ms": 244
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -864,7 +864,7 @@
     }
    ],
    "pass": true,
-   "ms": 139
+   "ms": 144
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -892,7 +892,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 310
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -908,7 +908,7 @@
     }
    ],
    "pass": true,
-   "ms": 153
+   "ms": 184
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -924,7 +924,7 @@
     }
    ],
    "pass": true,
-   "ms": 133
+   "ms": 147
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -940,7 +940,7 @@
     }
    ],
    "pass": true,
-   "ms": 133
+   "ms": 150
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -960,7 +960,7 @@
     }
    ],
    "pass": true,
-   "ms": 288
+   "ms": 250
   },
   {
    "group": "Shipment creation, partial shipments and backorders",
@@ -980,7 +980,7 @@
     }
    ],
    "pass": true,
-   "ms": 176
+   "ms": 194
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1000,7 +1000,7 @@
     }
    ],
    "pass": true,
-   "ms": 240
+   "ms": 276
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1024,7 +1024,7 @@
     }
    ],
    "pass": true,
-   "ms": 310
+   "ms": 288
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1040,7 +1040,7 @@
     }
    ],
    "pass": true,
-   "ms": 266
+   "ms": 281
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1060,7 +1060,7 @@
     }
    ],
    "pass": true,
-   "ms": 268
+   "ms": 295
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1088,7 +1088,7 @@
     }
    ],
    "pass": true,
-   "ms": 266
+   "ms": 329
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1108,7 +1108,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 325
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1128,7 +1128,7 @@
     }
    ],
    "pass": true,
-   "ms": 315
+   "ms": 362
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1172,7 +1172,7 @@
     }
    ],
    "pass": true,
-   "ms": 388
+   "ms": 400
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1192,7 +1192,7 @@
     }
    ],
    "pass": true,
-   "ms": 322
+   "ms": 348
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1208,7 +1208,7 @@
     }
    ],
    "pass": true,
-   "ms": 303
+   "ms": 385
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1228,7 +1228,7 @@
     }
    ],
    "pass": true,
-   "ms": 216
+   "ms": 238
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1248,7 +1248,7 @@
     }
    ],
    "pass": true,
-   "ms": 469
+   "ms": 556
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1268,7 +1268,7 @@
     }
    ],
    "pass": true,
-   "ms": 439
+   "ms": 503
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1288,7 +1288,7 @@
     }
    ],
    "pass": true,
-   "ms": 378
+   "ms": 322
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1308,7 +1308,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 7,
    "status": "NOT APPLICABLE"
   },
   {
@@ -1333,7 +1333,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 6,
    "status": "NOT APPLICABLE"
   },
   {
@@ -1354,7 +1354,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "status": "NOT APPLICABLE"
   },
   {
@@ -1403,7 +1403,7 @@
     }
    ],
    "pass": true,
-   "ms": 357
+   "ms": 376
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1419,7 +1419,7 @@
     }
    ],
    "pass": true,
-   "ms": 179
+   "ms": 197
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1443,7 +1443,7 @@
     }
    ],
    "pass": true,
-   "ms": 195
+   "ms": 206
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1463,7 +1463,7 @@
     }
    ],
    "pass": true,
-   "ms": 223
+   "ms": 235
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1491,7 +1491,7 @@
     }
    ],
    "pass": true,
-   "ms": 158
+   "ms": 177
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1519,7 +1519,7 @@
     }
    ],
    "pass": true,
-   "ms": 770
+   "ms": 741
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1531,7 +1531,7 @@
     }
    ],
    "pass": true,
-   "ms": 11
+   "ms": 12
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1555,7 +1555,7 @@
     }
    ],
    "pass": true,
-   "ms": 386
+   "ms": 470
   },
   {
    "group": "Dispatch, carriers, freight and delivery",
@@ -1592,7 +1592,7 @@
     }
    ],
    "pass": true,
-   "ms": 482
+   "ms": 510
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1620,7 +1620,7 @@
     }
    ],
    "pass": true,
-   "ms": 209
+   "ms": 227
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1640,7 +1640,7 @@
     }
    ],
    "pass": true,
-   "ms": 710
+   "ms": 682
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1660,7 +1660,7 @@
     }
    ],
    "pass": true,
-   "ms": 329
+   "ms": 235
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1684,7 +1684,7 @@
     }
    ],
    "pass": true,
-   "ms": 435
+   "ms": 377
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1696,7 +1696,7 @@
     }
    ],
    "pass": true,
-   "ms": 431
+   "ms": 424
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1720,7 +1720,7 @@
     }
    ],
    "pass": true,
-   "ms": 268
+   "ms": 257
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1744,7 +1744,7 @@
     }
    ],
    "pass": true,
-   "ms": 295
+   "ms": 321
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1764,7 +1764,7 @@
     }
    ],
    "pass": true,
-   "ms": 319
+   "ms": 292
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1788,7 +1788,7 @@
     }
    ],
    "pass": true,
-   "ms": 261
+   "ms": 263
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1816,7 +1816,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 379
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1836,7 +1836,7 @@
     }
    ],
    "pass": true,
-   "ms": 239
+   "ms": 319
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1852,7 +1852,7 @@
     }
    ],
    "pass": true,
-   "ms": 292
+   "ms": 278
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1880,7 +1880,7 @@
     }
    ],
    "pass": true,
-   "ms": 321
+   "ms": 400
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1904,7 +1904,7 @@
     }
    ],
    "pass": true,
-   "ms": 518
+   "ms": 592
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1924,7 +1924,7 @@
     }
    ],
    "pass": true,
-   "ms": 303
+   "ms": 274
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1952,7 +1952,7 @@
     }
    ],
    "pass": true,
-   "ms": 635
+   "ms": 671
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -1980,7 +1980,7 @@
     }
    ],
    "pass": true,
-   "ms": 958
+   "ms": 1103
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -2000,7 +2000,7 @@
     }
    ],
    "pass": true,
-   "ms": 622
+   "ms": 609
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -2024,7 +2024,7 @@
     }
    ],
    "pass": true,
-   "ms": 218
+   "ms": 222
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -2044,7 +2044,7 @@
     }
    ],
    "pass": true,
-   "ms": 266
+   "ms": 258
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -2060,7 +2060,7 @@
     }
    ],
    "pass": true,
-   "ms": 400
+   "ms": 505
   },
   {
    "group": "Invoicing, payments and accounting sync",
@@ -2084,7 +2084,7 @@
     }
    ],
    "pass": true,
-   "ms": 212,
+   "ms": 258,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2109,7 +2109,7 @@
     }
    ],
    "pass": true,
-   "ms": 245,
+   "ms": 299,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2130,7 +2130,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2159,7 +2159,7 @@
     }
    ],
    "pass": true,
-   "ms": 11
+   "ms": 12
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2183,7 +2183,7 @@
     }
    ],
    "pass": true,
-   "ms": 264
+   "ms": 247
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2199,7 +2199,7 @@
     }
    ],
    "pass": true,
-   "ms": 440
+   "ms": 486
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2219,7 +2219,7 @@
     }
    ],
    "pass": true,
-   "ms": 218
+   "ms": 256
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2243,7 +2243,7 @@
     }
    ],
    "pass": true,
-   "ms": 263
+   "ms": 249
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2259,7 +2259,7 @@
     }
    ],
    "pass": true,
-   "ms": 328
+   "ms": 277
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2275,7 +2275,7 @@
     }
    ],
    "pass": true,
-   "ms": 249
+   "ms": 237
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2295,7 +2295,7 @@
     }
    ],
    "pass": true,
-   "ms": 222
+   "ms": 231
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2315,7 +2315,7 @@
     }
    ],
    "pass": true,
-   "ms": 372
+   "ms": 351
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2331,7 +2331,7 @@
     }
    ],
    "pass": true,
-   "ms": 348
+   "ms": 366
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2351,7 +2351,7 @@
     }
    ],
    "pass": true,
-   "ms": 316
+   "ms": 324
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2371,7 +2371,7 @@
     }
    ],
    "pass": true,
-   "ms": 683
+   "ms": 695
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2395,7 +2395,7 @@
     }
    ],
    "pass": true,
-   "ms": 241,
+   "ms": 242,
    "status": "NOT APPLICABLE"
   },
   {
@@ -2416,7 +2416,7 @@
     }
    ],
    "pass": true,
-   "ms": 139
+   "ms": 144
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2444,7 +2444,7 @@
     }
    ],
    "pass": true,
-   "ms": 427
+   "ms": 347
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2492,7 +2492,7 @@
     }
    ],
    "pass": true,
-   "ms": 370
+   "ms": 367
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2508,7 +2508,7 @@
     }
    ],
    "pass": true,
-   "ms": 275
+   "ms": 323
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2544,7 +2544,7 @@
     }
    ],
    "pass": true,
-   "ms": 1511
+   "ms": 1667
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2564,7 +2564,7 @@
     }
    ],
    "pass": true,
-   "ms": 270
+   "ms": 296
   },
   {
    "group": "Costing, reconciliation and closeout",
@@ -2604,7 +2604,7 @@
     }
    ],
    "pass": true,
-   "ms": 20
+   "ms": 23
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2624,7 +2624,7 @@
     }
    ],
    "pass": true,
-   "ms": 260
+   "ms": 290
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2648,7 +2648,7 @@
     }
    ],
    "pass": true,
-   "ms": 491
+   "ms": 428
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2668,7 +2668,7 @@
     }
    ],
    "pass": true,
-   "ms": 320
+   "ms": 366
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2700,7 +2700,7 @@
     }
    ],
    "pass": true,
-   "ms": 340
+   "ms": 397
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2720,7 +2720,7 @@
     }
    ],
    "pass": true,
-   "ms": 319
+   "ms": 362
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2740,7 +2740,7 @@
     }
    ],
    "pass": true,
-   "ms": 357
+   "ms": 421
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2760,7 +2760,7 @@
     }
    ],
    "pass": true,
-   "ms": 329
+   "ms": 353
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2772,7 +2772,7 @@
     }
    ],
    "pass": true,
-   "ms": 302
+   "ms": 305
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2792,7 +2792,7 @@
     }
    ],
    "pass": true,
-   "ms": 392
+   "ms": 422
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2824,7 +2824,7 @@
     }
    ],
    "pass": true,
-   "ms": 397
+   "ms": 407
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2852,7 +2852,7 @@
     }
    ],
    "pass": true,
-   "ms": 462
+   "ms": 483
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2872,7 +2872,7 @@
     }
    ],
    "pass": true,
-   "ms": 330
+   "ms": 381
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2888,7 +2888,7 @@
     }
    ],
    "pass": true,
-   "ms": 359
+   "ms": 416
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2908,7 +2908,7 @@
     }
    ],
    "pass": true,
-   "ms": 250
+   "ms": 330
   },
   {
    "group": "Returns, credits, refunds and adjustments",
@@ -2928,7 +2928,7 @@
     }
    ],
    "pass": true,
-   "ms": 271
+   "ms": 285
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -2940,7 +2940,7 @@
     }
    ],
    "pass": true,
-   "ms": 641
+   "ms": 686
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -2956,7 +2956,7 @@
     }
    ],
    "pass": true,
-   "ms": 349
+   "ms": 318
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -2968,7 +2968,7 @@
     }
    ],
    "pass": true,
-   "ms": 412
+   "ms": 439
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -2984,7 +2984,7 @@
     }
    ],
    "pass": true,
-   "ms": 256
+   "ms": 252
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3000,7 +3000,7 @@
     }
    ],
    "pass": true,
-   "ms": 401
+   "ms": 286
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3016,7 +3016,7 @@
     }
    ],
    "pass": true,
-   "ms": 290
+   "ms": 330
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3032,7 +3032,7 @@
     }
    ],
    "pass": true,
-   "ms": 316
+   "ms": 372
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3048,7 +3048,7 @@
     }
    ],
    "pass": true,
-   "ms": 377
+   "ms": 330
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3076,7 +3076,7 @@
     }
    ],
    "pass": true,
-   "ms": 458
+   "ms": 423
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3092,7 +3092,7 @@
     }
    ],
    "pass": true,
-   "ms": 1018
+   "ms": 1266
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3112,7 +3112,7 @@
     }
    ],
    "pass": true,
-   "ms": 546
+   "ms": 584
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3128,7 +3128,7 @@
     }
    ],
    "pass": true,
-   "ms": 1654
+   "ms": 1694
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3148,7 +3148,7 @@
     }
    ],
    "pass": true,
-   "ms": 279
+   "ms": 297
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3168,7 +3168,7 @@
     }
    ],
    "pass": true,
-   "ms": 212
+   "ms": 231
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3184,7 +3184,7 @@
     }
    ],
    "pass": true,
-   "ms": 237
+   "ms": 273
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3216,7 +3216,7 @@
     }
    ],
    "pass": true,
-   "ms": 346
+   "ms": 437
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3244,7 +3244,7 @@
     }
    ],
    "pass": true,
-   "ms": 545
+   "ms": 558
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3260,7 +3260,7 @@
     }
    ],
    "pass": true,
-   "ms": 148
+   "ms": 169
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3271,7 +3271,7 @@
      "ok": true
     },
     {
-     "what": "outcomes: 0 shipped, 6 cancelled",
+     "what": "outcomes: 2 shipped, 4 cancelled",
      "ok": true
     },
     {
@@ -3280,7 +3280,7 @@
     }
    ],
    "pass": true,
-   "ms": 7248
+   "ms": 7242
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3296,7 +3296,7 @@
     }
    ],
    "pass": true,
-   "ms": 269
+   "ms": 323
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3328,7 +3328,7 @@
     }
    ],
    "pass": true,
-   "ms": 559
+   "ms": 706
   },
   {
    "group": "Concurrency, security, exceptions and recovery",
@@ -3360,7 +3360,7 @@
     }
    ],
    "pass": true,
-   "ms": 40
+   "ms": 15
   }
  ]
 }

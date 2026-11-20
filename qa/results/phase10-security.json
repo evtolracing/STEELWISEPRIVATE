@@ -1,9 +1,9 @@
 {
- "at": "2026-11-20T10:30:46.664Z",
+ "at": "2026-11-20T11:59:28.993Z",
  "base": "http://localhost:3011",
  "scenarios": 277,
  "passed": 257,
- "checks": 858,
+ "checks": 864,
  "groups": {
   "Authentication, sessions and roles": {
    "scenarios": 36,
@@ -38,7 +38,7 @@
   "Concurrency and failure recovery": {
    "scenarios": 26,
    "passed": 26,
-   "checks": 139
+   "checks": 145
   },
   "Backup, restore, deployment and rollback": {
    "scenarios": 26,
@@ -82,7 +82,7 @@
     }
    ],
    "pass": true,
-   "ms": 674,
+   "ms": 682,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The login itself",
@@ -114,7 +114,7 @@
     }
    ],
    "pass": true,
-   "ms": 365,
+   "ms": 391,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator over a staff login",
@@ -150,7 +150,7 @@
     }
    ],
    "pass": true,
-   "ms": 323,
+   "ms": 307,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator over a staff login",
@@ -182,7 +182,7 @@
     }
    ],
    "pass": true,
-   "ms": 196,
+   "ms": 195,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator",
@@ -226,7 +226,7 @@
     }
    ],
    "pass": true,
-   "ms": 366,
+   "ms": 387,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The login itself",
@@ -262,7 +262,7 @@
     }
    ],
    "pass": true,
-   "ms": 1228,
+   "ms": 1269,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Anyone who knows the address",
@@ -290,7 +290,7 @@
     }
    ],
    "pass": true,
-   "ms": 1198,
+   "ms": 1295,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "An attacker rotating addresses",
@@ -322,7 +322,7 @@
     }
    ],
    "pass": true,
-   "ms": 1112,
+   "ms": 1110,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The person",
@@ -350,7 +350,7 @@
     }
    ],
    "pass": true,
-   "ms": 271,
+   "ms": 270,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "The person",
@@ -374,7 +374,7 @@
     }
    ],
    "pass": true,
-   "ms": 362,
+   "ms": 396,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "Administrator",
@@ -402,7 +402,7 @@
     }
    ],
    "pass": true,
-   "ms": 462,
+   "ms": 455,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -426,7 +426,7 @@
     }
    ],
    "pass": true,
-   "ms": 1082,
+   "ms": 1150,
    "record": {
     "initialState": "A throwaway login",
     "authorizedScope": "Anyone",
@@ -474,7 +474,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 4,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -522,7 +522,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -546,7 +546,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An attacker with a crafted token",
@@ -650,7 +650,7 @@
     }
    ],
    "pass": true,
-   "ms": 41,
+   "ms": 48,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A sales rep holding a token that claims SUPER_ADMIN",
@@ -678,7 +678,7 @@
     }
    ],
    "pass": true,
-   "ms": 226,
+   "ms": 242,
    "record": {
     "initialState": "A fresh CFO login",
     "authorizedScope": "Administrator changes a role",
@@ -706,7 +706,7 @@
     }
    ],
    "pass": true,
-   "ms": 352,
+   "ms": 438,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A former employee",
@@ -754,7 +754,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 36,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -786,7 +786,7 @@
     }
    ],
    "pass": true,
-   "ms": 373,
+   "ms": 404,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The login itself",
@@ -822,7 +822,7 @@
     }
    ],
    "pass": true,
-   "ms": 17,
+   "ms": 22,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Not signed in; an administrator; a sales rep",
@@ -870,7 +870,7 @@
     }
    ],
    "pass": true,
-   "ms": 127,
+   "ms": 139,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Tenant owner",
@@ -906,7 +906,7 @@
     }
    ],
    "pass": true,
-   "ms": 29,
+   "ms": 30,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Branch manager",
@@ -934,7 +934,7 @@
     }
    ],
    "pass": true,
-   "ms": 200,
+   "ms": 211,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -962,7 +962,7 @@
     }
    ],
    "pass": true,
-   "ms": 215,
+   "ms": 252,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator sending extra fields",
@@ -986,7 +986,7 @@
     }
    ],
    "pass": true,
-   "ms": 317,
+   "ms": 380,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator and the person",
@@ -1022,7 +1022,7 @@
     }
    ],
    "pass": true,
-   "ms": 266,
+   "ms": 248,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep and administrator",
@@ -1062,7 +1062,7 @@
     }
    ],
    "pass": true,
-   "ms": 25,
+   "ms": 35,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep",
@@ -1114,7 +1114,7 @@
     }
    ],
    "pass": true,
-   "ms": 142,
+   "ms": 134,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Customer buyer login",
@@ -1142,7 +1142,7 @@
     }
    ],
    "pass": true,
-   "ms": 241,
+   "ms": 231,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "An old token with no session mark",
@@ -1174,7 +1174,7 @@
     }
    ],
    "pass": true,
-   "ms": 1845,
+   "ms": 2045,
    "record": {
     "initialState": "A fresh login made for this scenario only",
     "authorizedScope": "A burst of guesses",
@@ -1202,7 +1202,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 53,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1230,7 +1230,7 @@
     }
    ],
    "pass": true,
-   "ms": 28,
+   "ms": 42,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1258,7 +1258,7 @@
     }
    ],
    "pass": true,
-   "ms": 41,
+   "ms": 52,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1286,7 +1286,7 @@
     }
    ],
    "pass": true,
-   "ms": 28,
+   "ms": 26,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1314,7 +1314,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 41,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1342,7 +1342,7 @@
     }
    ],
    "pass": true,
-   "ms": 41,
+   "ms": 33,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 against QA-L01",
@@ -1378,7 +1378,7 @@
     }
    ],
    "pass": true,
-   "ms": 93,
+   "ms": 75,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Sales reps by branch",
@@ -1410,7 +1410,7 @@
     }
    ],
    "pass": true,
-   "ms": 46,
+   "ms": 36,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1442,7 +1442,7 @@
     }
    ],
    "pass": true,
-   "ms": 38,
+   "ms": 44,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1474,7 +1474,7 @@
     }
    ],
    "pass": true,
-   "ms": 50,
+   "ms": 45,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1498,7 +1498,7 @@
     }
    ],
    "pass": true,
-   "ms": 16,
+   "ms": 9,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1530,7 +1530,7 @@
     }
    ],
    "pass": true,
-   "ms": 56,
+   "ms": 57,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -1566,7 +1566,7 @@
     }
    ],
    "pass": true,
-   "ms": 91,
+   "ms": 95,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 sending branch=QA-L01",
@@ -1598,7 +1598,7 @@
     }
    ],
    "pass": true,
-   "ms": 24,
+   "ms": 35,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Branch manager",
@@ -1638,7 +1638,7 @@
     }
    ],
    "pass": true,
-   "ms": 197,
+   "ms": 223,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B login",
@@ -1674,7 +1674,7 @@
     }
    ],
    "pass": true,
-   "ms": 364,
+   "ms": 393,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Both customer logins",
@@ -1702,7 +1702,7 @@
     }
    ],
    "pass": true,
-   "ms": 264,
+   "ms": 309,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B export",
@@ -1734,7 +1734,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 22,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer B",
@@ -1770,7 +1770,7 @@
     }
    ],
    "pass": true,
-   "ms": 102,
+   "ms": 115,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Login on QA-C01-D1",
@@ -1810,7 +1810,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 53,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Customer A",
@@ -1842,7 +1842,7 @@
     }
    ],
    "pass": true,
-   "ms": 53,
+   "ms": 66,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Partner token of customer B",
@@ -1870,7 +1870,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner and staff tokens crossed",
@@ -1898,7 +1898,7 @@
     }
    ],
    "pass": true,
-   "ms": 259,
+   "ms": 279,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner with rfq:read only",
@@ -1930,7 +1930,7 @@
     }
    ],
    "pass": true,
-   "ms": 47,
+   "ms": 56,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep and QA-L02 manager asking about the books",
@@ -1954,7 +1954,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 9,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Customer B uploading against customer A's order",
@@ -1982,7 +1982,7 @@
     }
    ],
    "pass": true,
-   "ms": 25,
+   "ms": 15,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2010,7 +2010,7 @@
     }
    ],
    "pass": true,
-   "ms": 40,
+   "ms": 24,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2038,7 +2038,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 23,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02 uploading against the QA-L01 order",
@@ -2070,7 +2070,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 47,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2098,7 +2098,7 @@
     }
    ],
    "pass": true,
-   "ms": 13,
+   "ms": 24,
    "record": {
     "initialState": "Customer A (QA-C01) has an order at branch QA-L01, shipped and invoiced, with a PDF on the order and a posted journal entry",
     "authorizedScope": "Branch manager of QA-L02",
@@ -2130,7 +2130,7 @@
     }
    ],
    "pass": true,
-   "ms": 53,
+   "ms": 45,
    "record": {
     "initialState": "80 QA branches",
     "authorizedScope": "The CFO and per-branch reads",
@@ -2158,7 +2158,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 21,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2186,7 +2186,7 @@
     }
    ],
    "pass": true,
-   "ms": 16,
+   "ms": 21,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2214,7 +2214,7 @@
     }
    ],
    "pass": true,
-   "ms": 17,
+   "ms": 18,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2242,7 +2242,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 15,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2298,7 +2298,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 20,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2326,7 +2326,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2354,7 +2354,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2410,7 +2410,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 12,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A signed-in administrator",
@@ -2442,7 +2442,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 27,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator with a crafted record kind",
@@ -2470,7 +2470,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 24,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -2502,7 +2502,7 @@
     }
    ],
    "pass": true,
-   "ms": 42,
+   "ms": 61,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone with the address",
@@ -2530,7 +2530,7 @@
     }
    ],
    "pass": true,
-   "ms": 21,
+   "ms": 32,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -2566,7 +2566,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -2590,7 +2590,7 @@
     }
    ],
    "pass": true,
-   "ms": 44,
+   "ms": 55,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -2618,7 +2618,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone",
@@ -2646,7 +2646,7 @@
     }
    ],
    "pass": true,
-   "ms": 876,
+   "ms": 1215,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Signed-in administrator",
@@ -2678,7 +2678,7 @@
     }
    ],
    "pass": true,
-   "ms": 33,
+   "ms": 34,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Signed-in user",
@@ -2706,7 +2706,7 @@
     }
    ],
    "pass": true,
-   "ms": 63,
+   "ms": 68,
    "record": {
     "initialState": "A second server process started with NODE_ENV=production and no secrets",
     "authorizedScope": "Deployment",
@@ -2758,7 +2758,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 27,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2782,7 +2782,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2806,7 +2806,7 @@
     }
    ],
    "pass": true,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2854,7 +2854,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2878,7 +2878,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2902,7 +2902,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2950,7 +2950,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -2998,7 +2998,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3070,7 +3070,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3094,7 +3094,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3130,7 +3130,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3162,7 +3162,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's own database role, steelwise_runtime (what a compromised server could do)",
@@ -3214,7 +3214,7 @@
     }
    ],
    "pass": true,
-   "ms": 11,
+   "ms": 17,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Signed-in administrator sending a value the database rejects",
@@ -3278,7 +3278,7 @@
     }
    ],
    "pass": true,
-   "ms": 17,
+   "ms": 16,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3310,7 +3310,7 @@
     }
    ],
    "pass": true,
-   "ms": 11,
+   "ms": 14,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3342,7 +3342,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3374,7 +3374,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3406,7 +3406,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 20,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3438,7 +3438,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 21,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3470,7 +3470,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 30,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3502,7 +3502,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3534,7 +3534,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 30,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO writing, another CFO posting",
@@ -3558,7 +3558,7 @@
     }
    ],
    "pass": true,
-   "ms": 82,
+   "ms": 74,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3590,7 +3590,7 @@
     }
    ],
    "pass": true,
-   "ms": 97,
+   "ms": 122,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "a sales rep",
@@ -3622,7 +3622,7 @@
     }
    ],
    "pass": true,
-   "ms": 102,
+   "ms": 115,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "an auditor",
@@ -3654,7 +3654,7 @@
     }
    ],
    "pass": true,
-   "ms": 78,
+   "ms": 132,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "an executive",
@@ -3686,7 +3686,7 @@
     }
    ],
    "pass": true,
-   "ms": 83,
+   "ms": 102,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "a branch manager",
@@ -3718,7 +3718,7 @@
     }
    ],
    "pass": true,
-   "ms": 91,
+   "ms": 102,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3746,7 +3746,7 @@
     }
    ],
    "pass": true,
-   "ms": 46,
+   "ms": 86,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -3782,7 +3782,7 @@
     }
    ],
    "pass": true,
-   "ms": 87,
+   "ms": 138,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO reverses a manual entry",
@@ -3842,7 +3842,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 46,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two finance people at once",
@@ -3870,7 +3870,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -3898,7 +3898,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4038,7 +4038,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4094,7 +4094,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4122,7 +4122,7 @@
     }
    ],
    "pass": true,
-   "ms": 6,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The application's database role, as a compromised server would use it",
@@ -4154,7 +4154,7 @@
     }
    ],
    "pass": true,
-   "ms": 14,
+   "ms": 18,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The whole QA journal",
@@ -4178,7 +4178,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 1,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The whole QA journal",
@@ -4230,7 +4230,7 @@
     }
    ],
    "pass": true,
-   "ms": 156,
+   "ms": 65,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The ledger engine",
@@ -4294,7 +4294,7 @@
     }
    ],
    "pass": true,
-   "ms": 80,
+   "ms": 92,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO asking the assistant to post, reverse and delete",
@@ -4322,7 +4322,7 @@
     }
    ],
    "pass": true,
-   "ms": 28,
+   "ms": 32,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO asking about receivables",
@@ -4358,7 +4358,7 @@
     }
    ],
    "pass": true,
-   "ms": 16,
+   "ms": 24,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator, auditor, sales rep",
@@ -4390,7 +4390,7 @@
     }
    ],
    "pass": true,
-   "ms": 196,
+   "ms": 203,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A partner API token",
@@ -4422,7 +4422,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 14,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep, branch manager",
@@ -4450,7 +4450,7 @@
     }
    ],
    "pass": true,
-   "ms": 5,
+   "ms": 39,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The export routes",
@@ -4494,7 +4494,7 @@
     }
    ],
    "pass": true,
-   "ms": 45,
+   "ms": 68,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4538,7 +4538,7 @@
     }
    ],
    "pass": true,
-   "ms": 176,
+   "ms": 173,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4586,7 +4586,7 @@
     }
    ],
    "pass": true,
-   "ms": 134,
+   "ms": 176,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4634,7 +4634,7 @@
     }
    ],
    "pass": true,
-   "ms": 138,
+   "ms": 184,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4682,7 +4682,7 @@
     }
    ],
    "pass": true,
-   "ms": 148,
+   "ms": 150,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4730,7 +4730,7 @@
     }
    ],
    "pass": true,
-   "ms": 391,
+   "ms": 499,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4774,7 +4774,7 @@
     }
    ],
    "pass": true,
-   "ms": 109,
+   "ms": 140,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4802,7 +4802,7 @@
     }
    ],
    "pass": true,
-   "ms": 30,
+   "ms": 41,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4850,7 +4850,7 @@
     }
    ],
    "pass": true,
-   "ms": 126,
+   "ms": 150,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4898,7 +4898,7 @@
     }
    ],
    "pass": true,
-   "ms": 530,
+   "ms": 541,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4946,7 +4946,7 @@
     }
    ],
    "pass": true,
-   "ms": 197,
+   "ms": 211,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -4990,7 +4990,7 @@
     }
    ],
    "pass": true,
-   "ms": 196,
+   "ms": 217,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5062,7 +5062,7 @@
     }
    ],
    "pass": true,
-   "ms": 298,
+   "ms": 347,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5106,7 +5106,7 @@
     }
    ],
    "pass": true,
-   "ms": 253,
+   "ms": 266,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5154,7 +5154,7 @@
     }
    ],
    "pass": true,
-   "ms": 186,
+   "ms": 230,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5202,7 +5202,7 @@
     }
    ],
    "pass": true,
-   "ms": 295,
+   "ms": 405,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5230,7 +5230,7 @@
     }
    ],
    "pass": true,
-   "ms": 36,
+   "ms": 40,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5258,7 +5258,7 @@
     }
    ],
    "pass": true,
-   "ms": 24,
+   "ms": 28,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5286,7 +5286,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 13,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5342,7 +5342,7 @@
     }
    ],
    "pass": true,
-   "ms": 218,
+   "ms": 316,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5390,7 +5390,7 @@
     }
    ],
    "pass": true,
-   "ms": 411,
+   "ms": 491,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5418,7 +5418,7 @@
     }
    ],
    "pass": true,
-   "ms": 116,
+   "ms": 120,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5466,7 +5466,7 @@
     }
    ],
    "pass": true,
-   "ms": 59,
+   "ms": 77,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5494,7 +5494,7 @@
     }
    ],
    "pass": true,
-   "ms": 221,
+   "ms": 242,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5518,7 +5518,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 25,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5546,7 +5546,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 9,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5594,7 +5594,7 @@
     }
    ],
    "pass": true,
-   "ms": 237,
+   "ms": 266,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5642,7 +5642,7 @@
     }
    ],
    "pass": true,
-   "ms": 418,
+   "ms": 425,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5694,7 +5694,7 @@
     }
    ],
    "pass": true,
-   "ms": 444,
+   "ms": 455,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5734,7 +5734,7 @@
     }
    ],
    "pass": true,
-   "ms": 53,
+   "ms": 46,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Staff doing the business step; CFO reconciling",
@@ -5766,7 +5766,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5818,7 +5818,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 0,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5842,7 +5842,7 @@
     }
    ],
    "pass": true,
-   "ms": 441,
+   "ms": 506,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -5902,7 +5902,7 @@
     }
    ],
    "pass": true,
-   "ms": 26,
+   "ms": 39,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Webhook address rules with NODE_ENV=production",
@@ -5970,7 +5970,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 10,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -6010,7 +6010,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 43,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone calling the scheduler address",
@@ -6042,7 +6042,7 @@
     }
    ],
    "pass": true,
-   "ms": 37,
+   "ms": 53,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Scheduler",
@@ -6066,7 +6066,7 @@
     }
    ],
    "pass": true,
-   "ms": 796,
+   "ms": 959,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -6098,7 +6098,7 @@
     }
    ],
    "pass": true,
-   "ms": 1203,
+   "ms": 1398,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The alert channel (local stand-in)",
@@ -6126,7 +6126,7 @@
     }
    ],
    "pass": true,
-   "ms": 1225,
+   "ms": 1331,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Alert channel answering 500",
@@ -6150,7 +6150,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 15,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A storm of the same failure",
@@ -6186,7 +6186,7 @@
     }
    ],
    "pass": true,
-   "ms": 33,
+   "ms": 38,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator, sales rep, customer",
@@ -6222,7 +6222,7 @@
     }
    ],
    "pass": true,
-   "ms": 135,
+   "ms": 168,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO and a second CFO posting a held receipt, naming the account",
@@ -6250,7 +6250,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 30,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO",
@@ -6278,7 +6278,7 @@
     }
    ],
    "pass": true,
-   "ms": 323,
+   "ms": 341,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO; the AI stand-in answering 503",
@@ -6302,7 +6302,7 @@
     }
    ],
    "pass": true,
-   "ms": 3377,
+   "ms": 3360,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO; the AI stand-in answering after 5 s with a 1.5 s limit",
@@ -6338,7 +6338,7 @@
     }
    ],
    "pass": true,
-   "ms": 221,
+   "ms": 275,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator revoking a key",
@@ -6366,7 +6366,7 @@
     }
    ],
    "pass": true,
-   "ms": 385,
+   "ms": 373,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Anyone with a client id",
@@ -6414,7 +6414,7 @@
     }
    ],
    "pass": true,
-   "ms": 237,
+   "ms": 219,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A partner with a burst limit of 5",
@@ -6442,7 +6442,7 @@
     }
    ],
    "pass": true,
-   "ms": 9,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Partner of customer QA-C02 with a webhook at the local stand-in",
@@ -6486,7 +6486,7 @@
     }
    ],
    "pass": true,
-   "ms": 1436,
+   "ms": 1396,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO exporting for XERO with every account mapped",
@@ -6526,7 +6526,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 22,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Sales rep and auditor",
@@ -6554,7 +6554,7 @@
     }
    ],
    "pass": true,
-   "ms": 14,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Administrator",
@@ -6602,7 +6602,7 @@
     }
    ],
    "pass": true,
-   "ms": 840,
+   "ms": 755,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6646,7 +6646,7 @@
     }
    ],
    "pass": true,
-   "ms": 569,
+   "ms": 627,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6694,7 +6694,7 @@
     }
    ],
    "pass": true,
-   "ms": 302,
+   "ms": 294,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6742,7 +6742,7 @@
     }
    ],
    "pass": true,
-   "ms": 285,
+   "ms": 228,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6770,7 +6770,7 @@
     }
    ],
    "pass": true,
-   "ms": 160,
+   "ms": 139,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6802,7 +6802,7 @@
     }
    ],
    "pass": true,
-   "ms": 114,
+   "ms": 128,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6826,7 +6826,7 @@
     }
    ],
    "pass": true,
-   "ms": 51,
+   "ms": 26,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6854,7 +6854,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 31,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6878,7 +6878,7 @@
     }
    ],
    "pass": true,
-   "ms": 56,
+   "ms": 35,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6930,7 +6930,7 @@
     }
    ],
    "pass": true,
-   "ms": 1656,
+   "ms": 1700,
    "record": {
     "initialState": "80 QA branches",
     "authorizedScope": "All 80 branches receiving at the same moment",
@@ -6958,7 +6958,7 @@
     }
    ],
    "pass": true,
-   "ms": 10000,
+   "ms": 9822,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -6986,7 +6986,7 @@
     }
    ],
    "pass": true,
-   "ms": 10,
+   "ms": 11,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -7021,7 +7021,31 @@
      "ok": true
     },
     {
-     "what": "each of the 2 shipped without an invoice is listed for a person",
+     "what": "each of the 5 shipped without an invoice is listed for a person",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
+     "ok": true
+    },
+    {
+     "what": "its invoice is raised from the shipment",
+     "ok": true
+    },
+    {
+     "what": "and only once: raising it again answers the same invoice",
      "ok": true
     },
     {
@@ -7062,12 +7086,12 @@
     }
    ],
    "pass": true,
-   "ms": 4240,
+   "ms": 4845,
    "record": {
     "initialState": "Twenty shipments ready",
     "authorizedScope": "kill -9 of the QA server while dispatches run",
     "expected": "Each shipment either fully dispatched with invoice and entry, or not dispatched; MATCH",
-    "actual": "as expected (14 checks)",
+    "actual": "as expected (20 checks)",
     "securityOutcome": "No double spend, no double post",
     "databaseOutcome": "Transactions either committed whole or not at all",
     "financialOutcome": "Test data on the QA database only",
@@ -7090,7 +7114,7 @@
     }
    ],
    "pass": true,
-   "ms": 4651,
+   "ms": 4644,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "pg_terminate_backend on the server's connections",
@@ -7130,7 +7154,7 @@
     }
    ],
    "pass": true,
-   "ms": 830,
+   "ms": 1404,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A second server pointed at a database that does not answer",
@@ -7158,7 +7182,7 @@
     }
    ],
    "pass": true,
-   "ms": 2499,
+   "ms": 2596,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A database session holding the invoice row for 2 s",
@@ -7186,7 +7210,7 @@
     }
    ],
    "pass": true,
-   "ms": 245,
+   "ms": 279,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -7230,7 +7254,7 @@
     }
    ],
    "pass": true,
-   "ms": 261,
+   "ms": 265,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Several requests at the same moment",
@@ -7294,7 +7318,7 @@
     }
    ],
    "pass": true,
-   "ms": 604,
+   "ms": 568,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Owner stops and resumes posting; CFO records what is missing",
@@ -7334,7 +7358,7 @@
     }
    ],
    "pass": true,
-   "ms": 89,
+   "ms": 209,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "CFO and a second CFO reverse the same posted entry at once",
@@ -7374,7 +7398,7 @@
     }
    ],
    "pass": true,
-   "ms": 46,
+   "ms": 47,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two CFO sessions post the same draft at once",
@@ -7422,7 +7446,7 @@
     }
    ],
    "pass": true,
-   "ms": 210,
+   "ms": 236,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Two adjustments of -60 lb on a 100 lb coil at the same moment",
@@ -7482,7 +7506,7 @@
     }
    ],
    "pass": true,
-   "ms": 1121,
+   "ms": 1203,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Books stopped, three shipments, resume, two CFO sessions record what is missing at once",
@@ -7530,7 +7554,7 @@
     }
    ],
    "pass": true,
-   "ms": 637,
+   "ms": 701,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Ten payments of 10.00 and a 30.00 credit on a 50.00 invoice at once",
@@ -7578,7 +7602,7 @@
     }
    ],
    "pass": true,
-   "ms": 1109,
+   "ms": 1180,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Twenty CSR payments within a few milliseconds on one 200.00 invoice",
@@ -7630,7 +7654,7 @@
     }
    ],
    "pass": true,
-   "ms": 1473,
+   "ms": 1519,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "A second server on 3015 stopped with SIGTERM during twenty payments",
@@ -7698,7 +7722,7 @@
     }
    ],
    "pass": true,
-   "ms": 1011,
+   "ms": 1066,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8002,7 +8026,7 @@
     }
    ],
    "pass": false,
-   "ms": 42,
+   "ms": 35,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8027,7 +8051,7 @@
     }
    ],
    "pass": false,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8057,7 +8081,7 @@
     }
    ],
    "pass": false,
-   "ms": 36,
+   "ms": 33,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8082,7 +8106,7 @@
     }
    ],
    "pass": false,
-   "ms": 31,
+   "ms": 42,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8107,7 +8131,7 @@
     }
    ],
    "pass": false,
-   "ms": 0,
+   "ms": 1,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "A QA server on port 3014 pointed at the restore",
@@ -8162,7 +8186,7 @@
     }
    ],
    "pass": false,
-   "ms": 28,
+   "ms": 40,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "QA operator; separate restore server on port 5433",
@@ -8197,7 +8221,7 @@
     }
    ],
    "pass": false,
-   "ms": 2182,
+   "ms": 2318,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "An empty database on the restore server",
@@ -8247,7 +8271,7 @@
     }
    ],
    "pass": false,
-   "ms": 932,
+   "ms": 1020,
    "record": {
     "initialState": "The QA database after the earlier groups, with an active test ledger",
     "authorizedScope": "Copy of the restore",
@@ -8275,7 +8299,7 @@
     }
    ],
    "pass": true,
-   "ms": 1,
+   "ms": 2,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The host build (scripts/build.cjs, vercel.json)",
@@ -8331,7 +8355,7 @@
     }
    ],
    "pass": true,
-   "ms": 114,
+   "ms": 145,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "Tracked files",
@@ -8403,7 +8427,7 @@
     }
    ],
    "pass": true,
-   "ms": 13,
+   "ms": 14,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8435,7 +8459,7 @@
     }
    ],
    "pass": true,
-   "ms": 427,
+   "ms": 450,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8467,7 +8491,7 @@
     }
    ],
    "pass": true,
-   "ms": 28,
+   "ms": 21,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8523,7 +8547,7 @@
     }
    ],
    "pass": true,
-   "ms": 3,
+   "ms": 8,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8579,7 +8603,7 @@
     }
    ],
    "pass": true,
-   "ms": 27,
+   "ms": 25,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8607,7 +8631,7 @@
     }
    ],
    "pass": true,
-   "ms": 1200,
+   "ms": 1152,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8635,7 +8659,7 @@
     }
    ],
    "pass": true,
-   "ms": 245,
+   "ms": 200,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8667,7 +8691,7 @@
     }
    ],
    "pass": true,
-   "ms": 23,
+   "ms": 22,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8711,7 +8735,7 @@
     }
    ],
    "pass": true,
-   "ms": 1503,
+   "ms": 1520,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8739,7 +8763,7 @@
     }
    ],
    "pass": true,
-   "ms": 2,
+   "ms": 3,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8791,7 +8815,7 @@
     }
    ],
    "pass": true,
-   "ms": 13,
+   "ms": 12,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8819,7 +8843,7 @@
     }
    ],
    "pass": true,
-   "ms": 15,
+   "ms": 14,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8875,7 +8899,7 @@
     }
    ],
    "pass": true,
-   "ms": 18,
+   "ms": 14,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8903,7 +8927,7 @@
     }
    ],
    "pass": true,
-   "ms": 7,
+   "ms": 6,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8931,7 +8955,7 @@
     }
    ],
    "pass": true,
-   "ms": 4,
+   "ms": 5,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -8955,7 +8979,7 @@
     }
    ],
    "pass": true,
-   "ms": 318,
+   "ms": 372,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -9039,7 +9063,7 @@
     }
    ],
    "pass": true,
-   "ms": 524,
+   "ms": 444,
    "record": {
     "initialState": "QA database rebuilt from fixtures; the earlier suites have run; the QA ledger is active with test data only",
     "authorizedScope": "The running QA server",
@@ -9111,13 +9135,13 @@
   }
  },
  "restore": {
-  "at": "2026-11-20T10:30:37.840Z",
+  "at": "2026-11-20T11:59:19.918Z",
   "source": "local QA database steelwise_qa",
   "target": "separate PostgreSQL 16 server on port 5433, database steelwise_qa_restore",
   "backup": {
-   "startedAt": "2026-11-20T10:30:38.490Z",
+   "startedAt": "2026-11-20T11:59:20.608Z",
    "seconds": 0.4,
-   "bytes": 2338517,
+   "bytes": 2350537,
    "format": "pg_dump custom format, compression 6"
   },
   "freshMigrations": {

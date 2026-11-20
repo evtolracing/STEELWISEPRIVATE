@@ -1,7 +1,7 @@
 // New order to dispatch: the small rules the screens go by (the browser run is qa/sim/ui-order-flow.cjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { orderProblems, unpricedLines } from '../../frontend/src/pages/Orders/intakeChecks.js';
+import { orderProblems, unpricedLines, nextStepFor } from '../../frontend/src/pages/Orders/intakeChecks.js';
 import { defaultBranch, typeFor, usableTemplate } from '../../frontend/src/components/jobs/routingTemplates.js';
 import { dispatchMessage } from '../../frontend/src/apps/shopfloor/dispatchMessage.js';
 
@@ -59,4 +59,13 @@ test('Run Dispatch says what it did, and what still needs a route', () => {
   const partly = dispatchMessage({ assignedCount: 2, unassignedCount: 2, unassigned: [{ reason: 'This branch has no SAW work center' }, {}], notPlannedCount: 1, notChecked: ['x'] });
   assert.match(partly.message, /Assigned 2 steps\. 2 could not be placed: This branch has no SAW work center \(and others\)\. 1 new job has no route yet/);
   assert.equal(partly.severity, 'warning');
+});
+
+test('the Orders list offers Create Work Orders for a submitted order and the board for a confirmed one', () => {
+  assert.equal(nextStepFor('SUBMITTED'), 'CREATE_WORK_ORDERS');
+  assert.equal(nextStepFor('PENDING'), 'CREATE_WORK_ORDERS');
+  assert.equal(nextStepFor('CONFIRMED'), 'SEE_ON_BOARD');
+  assert.equal(nextStepFor('IN_PRODUCTION'), 'SEE_ON_BOARD');
+  assert.equal(nextStepFor('DRAFT'), 'OPEN');
+  assert.equal(nextStepFor('CANCELLED'), 'OPEN');
 });

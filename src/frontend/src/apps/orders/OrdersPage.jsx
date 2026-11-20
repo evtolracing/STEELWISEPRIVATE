@@ -28,9 +28,13 @@ import {
   Email as EmailIcon,
   Print as PrintIcon,
   Add as AddIcon,
+  Build as WorkOrderIcon,
+  OpenInNew as OpenIcon,
+  ViewKanban as BoardIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { listIntakeOrders } from '../../services/intakeOrdersApi';
+import { listIntakeOrders, createWorkOrdersFromOrder } from '../../services/intakeOrdersApi';
+import { nextStepFor } from '../../pages/Orders/intakeChecks';
 
 const statusColors = {
   DRAFT: 'default',
@@ -56,12 +60,29 @@ function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [working, setWorking] = useState(false);
 
   useEffect(() => {
     loadOrders();
   }, []);
 
-  async function loadOrders() {
+  // A submitted order gets its work orders here, without opening its page: one per line, under New Orders on the board.
+  async function makeWorkOrders(order) {
+    setWorking(true);
+    setNotice(null);
+    try {
+      const res = await createWorkOrdersFromOrder(order.id);
+      const made = (res?.data?.workOrders || res?.data || []).length || 0;
+      await loadOrders(order.id);
+      setNotice({ severity: 'success', text: `${order.orderNumber}: ${made === 1 ? '1 work order is' : `${made} work orders are`} now under New Orders on the Order Board.`, orderNumber: order.orderNumber });
+    } catch (err) {
+      setNotice({ severity: 'error', text: `${order.orderNumber}: its work orders were not made. ${err?.message || ''}` });
+    }
+    setWorking(false);
+  }
+
+  async function loadOrders(keepId) {
     try {
       setLoading(true);
       setError(null);
@@ -111,7 +132,7 @@ function OrdersPage() {
 
       setOrders(allOrders);
       if (allOrders.length > 0) {
-        setSelectedOrder(allOrders[0]);
+        setSelectedOrder(allOrders.find((o) => o.id === keepId) || allOrders[0]);
       }
     } catch (err) {
       setError(err.message);
@@ -136,11 +157,18 @@ function OrdersPage() {
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/orders/intake')}>
             New Order
           </Button>
-          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={loadOrders}>
+          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => loadOrders(selectedOrder?.id)}>
             Refresh
           </Button>
         </Stack>
       </Stack>
+
+      {notice && (
+        <Alert severity={notice.severity} sx={{ mb: 2 }} onClose={() => setNotice(null)} data-testid="orders-notice"
+          action={notice.orderNumber ? <Button color="inherit" size="small" onClick={() => navigate(`/order-board?search=${encodeURIComponent(notice.orderNumber)}`)}>See on Order Board</Button> : undefined}>
+          {notice.text}
+        </Alert>
+      )}
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -211,6 +239,29 @@ function OrdersPage() {
                     <Chip label={selectedOrder.status} color={statusColors[selectedOrder.status]} />
                     <Chip label={selectedOrder.priority} color={priorityColors[selectedOrder.priority]} variant="outlined" />
                   </Stack>
+                </Stack>
+
+                {nextStepFor(selectedOrder.status) === 'CREATE_WORK_ORDERS' && (
+                  <Alert severity="info" className="no-print" data-testid="needs-work-orders">
+                    This order is submitted but not on the Order Board yet. Create its work orders to put it under New Orders, ready to plan.
+                  </Alert>
+                )}
+                <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+                  {nextStepFor(selectedOrder.status) === 'CREATE_WORK_ORDERS' && (
+                    <Button variant="contained" color="secondary" startIcon={<WorkOrderIcon />} disabled={working} className="no-print"
+                      onClick={() => makeWorkOrders(selectedOrder)}>
+                      Create Work Orders
+                    </Button>
+                  )}
+                  {nextStepFor(selectedOrder.status) === 'SEE_ON_BOARD' && (
+                    <Button variant="contained" color="secondary" startIcon={<BoardIcon />} className="no-print"
+                      onClick={() => navigate(`/order-board?search=${encodeURIComponent(selectedOrder.orderNumber)}`)}>
+                      See on Order Board
+                    </Button>
+                  )}
+                  <Button variant="outlined" startIcon={<OpenIcon />} className="no-print" onClick={() => navigate(`/orders/${selectedOrder.id}`)}>
+                    Open Order
+                  </Button>
                 </Stack>
 
                 <Divider />
@@ -330,8 +381,8 @@ function OrdersPage() {
                 <Divider />
 
                 {/* Actions */}
-                <Stack direction="row" spacing={2}>
-                  <Button variant="contained" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">
+                <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+                  <Button variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">
                     Print Order
                   </Button>
                   {selectedOrder.customerEmail ? (

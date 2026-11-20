@@ -85,3 +85,15 @@ Readiness: CONDITIONAL.
 ## Next
 
 After the owner says merge: run one order marked TEST on the live site in the app browser while he watches, as he chose.
+
+## Addendum, 2026-11-20: orders submitted before the fix
+
+Pull request 43 was merged on the owner's word and checked on the live site: test order SO-00075 was submitted, its job JOB-00069 appeared under New Orders and was planned.
+
+The owner then reported that the seven orders submitted before the fix "have no way to create a work order". Cause: the Orders list (`/orders`) opens a side panel that offered Print and Email only. The Create Work Orders button was on the order's own page, which the list never linked to.
+
+Fix (`src/frontend/src/apps/orders/OrdersPage.jsx`, `nextStepFor` in `pages/Orders/intakeChecks.js`): at the top of the panel, a submitted order shows a note that it is not on the Order Board yet and a Create Work Orders button; a confirmed order shows See on Order Board; every order shows Open Order. After the button, a message says how many work orders are under New Orders, with a link to the board.
+
+Evidence (this session, local QA database): unit tests in `test/orderFlow.test.js` 7 of 7; `qa/sim/ui-order-flow.cjs` 28 of 28 (5 new checks: an order submitted with no work orders, the note, Open Order, the button makes the job, the button is then replaced by the board link); `ui-sales` 24, `ui-phase5` 14; the Orders screen at three sizes: no hard to read text, no overflow; lint 0 errors; build succeeds; effect ratchet 38 of 38. The full gate suite was not rerun for this addition (NOT VERIFIED as a whole).
+
+Also seen on the live site, not changed: orders are taken for branches that have no machines (for example Detroit Service Center), while the saws are under Detroit Branch - Bay A and Jackson. A job planned at a branch with no machines is not placed by Run Dispatch. While the Plan Job box loads, it briefly says no template fits.

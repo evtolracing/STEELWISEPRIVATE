@@ -45,7 +45,7 @@ The branch picker in the top bar narrows any login to one of the branches in its
 | AUDITOR | Orders, Invoices, Production, Stock, Quality, Material tracking, Supplier quality, Customer quality, Finance | Every branch | Nothing (view-only) | No | No |
 | MAINTENANCE_MANAGER | Production, Stock, Maintenance, Contractors | Own branches | Maintenance records | No | No |
 | DATA_ANALYST | Sales, Orders, Invoices, Production, Stock, Purchasing, Ops cockpit, Quality, Receiving and shipping, Executive | Every branch | Nothing (view-only) | No | No |
-| INTEGRATION_ADMIN | Dashboards, safety, training and help only | Every branch | Integration records | No | No |
+| INTEGRATION_ADMIN | Partner API and integrations | Every branch | Integration records | No | No |
 | CUSTOMER_ADMIN | Web shop | Own account | Own account in the web shop | No | No |
 | CUSTOMER_BUYER | Web shop | Own account | Own account in the web shop | No | No |
 | CUSTOMER_VIEWER | Web shop | Own account | Own account in the web shop | No | No |

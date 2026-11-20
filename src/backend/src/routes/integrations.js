@@ -19,7 +19,8 @@ import { replayDelivery } from '../services/webhookService.js';
 
 const router = Router();
 // The report covers the whole company, so it is for the people who see the whole company.
-const COMPANY_WIDE = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'CIO', 'COO'];
+// The integration admin runs the integrations (owner, 2026-11-20).
+const COMPANY_WIDE = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'CIO', 'COO', 'INTEGRATION_ADMIN'];
 const only = (...roles) => (req, res, next) => (roles.includes(req.user?.role) ? next() : res.status(403).json({ error: 'This page is for company administrators.' }));
 const fail = (res, label, error, req) => {
   console.error(JSON.stringify({ level: 'error', msg: 'integrations_failed', label, id: req.id }), error);
@@ -59,7 +60,7 @@ router.get('/deliveries', only(...COMPANY_WIDE), async (req, res) => {
   } catch (error) { fail(res, 'list deliveries', error, req); }
 });
 
-router.post('/deliveries/:id/replay', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN'), async (req, res) => {
+router.post('/deliveries/:id/replay', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'INTEGRATION_ADMIN'), async (req, res) => {
   try {
     const result = await replayDelivery(req.params.id, req.user.id);
     if (result.status !== 200) return res.status(result.status).json({ error: result.error });
@@ -67,7 +68,7 @@ router.post('/deliveries/:id/replay', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN
   } catch (error) { fail(res, 'send the event again', error, req); }
 });
 
-router.post('/run', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN'), async (req, res) => {
+router.post('/run', only('SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'INTEGRATION_ADMIN'), async (req, res) => {
   try { res.json(await runTasks({ by: `user ${req.user.id}` })); } catch (error) { fail(res, 'run the periodic work', error, req); }
 });
 

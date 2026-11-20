@@ -152,3 +152,32 @@ test('the dashboard follows the login, not a list of made-up roles and branches'
   assert.doesNotMatch(app, /RoleSwitcher|searchParams\.get\('role'\)/);
   assert.match(page, /useAuth\(\)/);
 });
+
+// ── Owner decisions of 2026-11-20 ─────────────────────────────────────────────
+
+test('the inventory manager saves the web shop settings; the integration admin runs the partner API and integrations', async () => {
+  const { adminAreaRoles } = await import('../src/middleware/apiGate.js');
+  const may = (role, path) => roleAllowed(role, adminAreaRoles(path));
+  for (const path of ['/api/admin/catalog/p1/visibility', '/api/admin/online-settings/rules']) {
+    assert.equal(may('INVENTORY_MANAGER', path), true, path);
+    assert.equal(may('BRANCH_MANAGER', path), false, path);
+    assert.equal(may('INTEGRATION_ADMIN', path), false, path);
+  }
+  for (const path of ['/api/v1/admin/partners', '/api/v1/admin/partners/x/keys', '/api/admin/integrations/run']) {
+    assert.equal(may('INTEGRATION_ADMIN', path), true, path);
+    assert.equal(may('INVENTORY_MANAGER', path), false, path);
+    assert.equal(may('OPS_MANAGER', path), false, path);
+  }
+  for (const path of ['/api/admin/seed-demo', '/api/admin/tax', '/api/admin/retention']) {
+    assert.equal(may('INVENTORY_MANAGER', path), false, path);
+    assert.equal(may('INTEGRATION_ADMIN', path), false, path);
+    assert.equal(may('ADMIN', path), true, path);
+  }
+  // The screens offer the same.
+  assert.equal(canAccessPath('INVENTORY_MANAGER', '/admin/catalog'), true);
+  assert.equal(canAccessPath('INVENTORY_MANAGER', '/admin/online-settings'), true);
+  assert.equal(canAccessPath('INTEGRATION_ADMIN', '/admin/partners'), true);
+  assert.equal(canAccessPath('INTEGRATION_ADMIN', '/admin/integrations'), true);
+  assert.equal(canAccessPath('INTEGRATION_ADMIN', '/admin/audit-log'), false);
+  assert.equal(canAccessPath('INTEGRATION_ADMIN', '/admin/tax-rates'), false);
+});

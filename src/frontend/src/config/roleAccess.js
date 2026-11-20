@@ -34,7 +34,8 @@ export const SECTION_PATHS = {
   adminUsers: ['admin/users'],
   adminStaff: ['admin/staff'],
   adminRecipes: ['admin/processing-recipes'],
-  // Everything else under /admin: partner API, integrations, audit log, tax rates.
+  adminIntegrations: ['admin/partners', 'admin/integrations'],
+  // Everything else under /admin: audit log, tax rates.
   admin: ['admin'],
   finance: ['finance'],
 }
@@ -65,7 +66,7 @@ const ROLE_GROUPS = {
 
 export const SYSTEM_ADMIN_ROLES = ROLE_GROUPS.system
 
-const ADMIN_AREAS = ['admin', 'adminUsers', 'adminStaff', 'adminRecipes', 'ecommerceAdmin']
+const ADMIN_AREAS = ['admin', 'adminUsers', 'adminStaff', 'adminRecipes', 'adminIntegrations', 'ecommerceAdmin']
 const WORKING_AREAS = Object.keys(SECTION_PATHS).filter((s) => !ADMIN_AREAS.includes(s))
 
 const GROUP_SECTIONS = {
@@ -78,9 +79,9 @@ const GROUP_SECTIONS = {
   quality: ['quality', 'supplierQuality', 'customerQuality', 'materialTracking', 'inventory', 'orders', 'production'],
   maintenance: ['maintenance', 'production', 'inventory', 'contractors'],
   analyst: ['executive', 'sales', 'orders', 'billing', 'inventory', 'purchasing', 'opsCockpit', 'production', 'quality', 'logistics'],
-  // The integration admin has no screen of its own yet: the partner API and integration pages are
-  // for system administrators on the server (routes/integrations.js, routes/partner/adminRoutes.js).
-  integration: [],
+  // The integration admin runs the partner API and the integrations (owner, 2026-11-20). The server
+  // agrees: routes/integrations.js, routes/partner/adminRoutes.js and ADMIN_AREA_ROLES in middleware/apiGate.js.
+  integration: ['adminIntegrations'],
   customer: ['ecommerce'],
   partner: [],
 }
@@ -97,6 +98,7 @@ const ROLE_EXTRAS = {
   SALES_DIRECTOR: ['executive'],
   PRODUCTION_MANAGER: ['logistics', 'contractors', 'opsCockpit'],
   SCHEDULER: ['opsCockpit'],
+  // The inventory manager runs the web shop catalog and online settings, and may save them (owner, 2026-11-20).
   INVENTORY_MANAGER: ['ecommerceAdmin', 'opsCockpit'],
   // A branch manager adds and changes the staff logins of their own branch (lib/userAdminRules.js).
   BRANCH_MANAGER: ['adminUsers'],

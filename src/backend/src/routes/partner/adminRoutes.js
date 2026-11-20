@@ -14,9 +14,9 @@ import { PARTNER_SCOPES } from '../../middleware/partnerAuth.js';
 import { requireRole } from '../../middleware/auth.js';
 
 const router = Router();
-// Partner accounts and their keys are managed by administrators; reading them is no different (Y-019).
-// The API gate already lets only administrators change them.
-router.use(requireRole());
+// Partner accounts and their keys are managed by the system administrators and the integration admin
+// (owner, 2026-11-20); reading them is no different (Y-019). The API gate applies the same rule to changes.
+router.use(requireRole('INTEGRATION_ADMIN'));
 
 // ─── Partners CRUD ─────────────────────────────────────────────────────────────
 

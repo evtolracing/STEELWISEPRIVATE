@@ -20,7 +20,7 @@ const AREA = {
   opsCockpit: 'Ops cockpit', quality: 'Quality', materialTracking: 'Material tracking', logistics: 'Receiving and shipping',
   supplierQuality: 'Supplier quality', customerQuality: 'Customer quality', ecommerce: 'Web shop', ecommerceAdmin: 'Web shop settings',
   maintenance: 'Maintenance', contractors: 'Contractors', executive: 'Executive', finance: 'Finance', adminUsers: 'Users',
-  adminStaff: 'Staff', adminRecipes: 'Processing recipes', admin: 'System settings',
+  adminStaff: 'Staff', adminRecipes: 'Processing recipes', adminIntegrations: 'Partner API and integrations', admin: 'System settings',
 };
 const sample = Object.fromEntries(Object.entries(fe.SECTION_PATHS).map(([k, v]) => [k, `/${v[0]}`]));
 const USER_MANAGERS = new Set(['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER']); // routes/users.js POST and PUT

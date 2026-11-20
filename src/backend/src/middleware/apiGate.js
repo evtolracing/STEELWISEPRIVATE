@@ -33,8 +33,15 @@ export function isPublicApi(method, url) {
   return PARTNER_PREFIXES.some((p) => under(path, p));
 }
 
-// System administrators only (SUPER_ADMIN, TENANT_OWNER, ADMIN); not branch or operations managers.
-const adminOnly = requireRole();
+// Changes under /api/admin are for the system administrators (SUPER_ADMIN, TENANT_OWNER, ADMIN), not
+// branch or operations managers. Two areas also belong to one role each (owner, 2026-11-20): the web
+// shop catalog and online settings to the inventory manager, and the partner API and integrations
+// to the integration admin.
+export const ADMIN_AREA_ROLES = [
+  [['/api/admin/catalog', '/api/admin/online-settings'], ['INVENTORY_MANAGER']],
+  [['/api/admin/integrations', '/api/v1/admin/partners'], ['INTEGRATION_ADMIN']],
+];
+export const adminAreaRoles = (path) => (ADMIN_AREA_ROLES.find(([prefixes]) => prefixes.some((p) => under(path, p))) || [[], []])[1];
 
 export function apiGate(req, res, next) {
   if (req.method === 'OPTIONS' || isPublicApi(req.method, req.originalUrl)) return next();
@@ -43,7 +50,7 @@ export function apiGate(req, res, next) {
     const path = normalize(req.originalUrl);
     const denial = previewWriteDenial(req.view, path, req.method) || apiRoleDenial(req.user, path, req.method);
     if (denial) return res.status(403).json({ error: denial });
-    if (!READ_METHODS.has(req.method) && ADMIN_PREFIXES.some((p) => under(path, p))) return adminOnly(req, res, next);
+    if (!READ_METHODS.has(req.method) && ADMIN_PREFIXES.some((p) => under(path, p))) return requireRole(...adminAreaRoles(path))(req, res, next);
     next();
   });
 }

@@ -126,50 +126,51 @@ model CustomerPreference {
 }
 
 model User {
-  id               String               @id @default(uuid())
-  email            String               @unique
-  passwordHash     String
-  firstName        String
-  lastName         String
-  role             UserRole
-  organizationId   String
-  homeLocationId   String?
+  id                  String                   @id @default(uuid())
+  email               String                   @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  role                UserRole
+  organizationId      String
+  homeLocationId      String?
   // For customer logins (CUSTOMER_* roles): the customer account they buy for.
-  customerId       String?
-  title            String?
-  phone            String?
-  avatarUrl        String?
-  lastLoginAt      DateTime?
-  mfaEnabled       Boolean              @default(false)
-  isActive         Boolean              @default(true)
+  customerId          String?
+  title               String?
+  phone               String?
+  avatarUrl           String?
+  lastLoginAt         DateTime?
+  mfaEnabled          Boolean                  @default(false)
+  isActive            Boolean                  @default(true)
   /// A sign-in token issued before this moment is refused (password changed or reset, login switched off, signed out everywhere).
-  tokensValidAfter DateTime?
+  tokensValidAfter    DateTime?
   /// Wrong passwords in a row; back to 0 after a correct one.
-  failedLoginCount Int                  @default(0)
+  failedLoginCount    Int                      @default(0)
   /// No sign-in until then, after too many wrong passwords in a row.
-  lockedUntil      DateTime?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
-  createdCoils     Coil[]               @relation("CoilCreator")
-  createdHeats     Heat[]               @relation("HeatCreator")
-  assignedJobs     Job[]                @relation("JobAssignee")
-  createdJobs      Job[]                @relation("JobCreator")
-  movements        MaterialMovement[]
-  orders           Order[]              @relation("OrderCreator")
-  qcHolds          QCHold[]             @relation("HoldBy")
-  resolvedHolds    QCHold[]             @relation("ResolvedBy")
-  approvedTests    TestResult[]         @relation("ApprovedBy")
-  testResults      TestResult[]         @relation("TestedBy")
-  organization     Organization         @relation(fields: [organizationId], references: [id])
-  customer         Organization?        @relation("CustomerLogins", fields: [customerId], references: [id])
-  homeLocation     Location?            @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
-  userRoles        UserRoleAssignment[]
-  userLocations    UserLocation[]
-  userDivisions    UserDivision[]
-  auditLogs        AuditLog[]           @relation("AuditActor")
-  approvalRequests ApprovalRequest[]    @relation("ApprovalRequester")
-  approvalsMade    ApprovalDecision[]   @relation("ApprovalDecider")
-  operator         Operator?
+  lockedUntil         DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  createdCoils        Coil[]                   @relation("CoilCreator")
+  createdHeats        Heat[]                   @relation("HeatCreator")
+  assignedJobs        Job[]                    @relation("JobAssignee")
+  createdJobs         Job[]                    @relation("JobCreator")
+  movements           MaterialMovement[]
+  orders              Order[]                  @relation("OrderCreator")
+  qcHolds             QCHold[]                 @relation("HoldBy")
+  resolvedHolds       QCHold[]                 @relation("ResolvedBy")
+  approvedTests       TestResult[]             @relation("ApprovedBy")
+  testResults         TestResult[]             @relation("TestedBy")
+  organization        Organization             @relation(fields: [organizationId], references: [id])
+  customer            Organization?            @relation("CustomerLogins", fields: [customerId], references: [id])
+  homeLocation        Location?                @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
+  userRoles           UserRoleAssignment[]
+  permissionOverrides UserPermissionOverride[]
+  userLocations       UserLocation[]
+  userDivisions       UserDivision[]
+  auditLogs           AuditLog[]               @relation("AuditActor")
+  approvalRequests    ApprovalRequest[]        @relation("ApprovalRequester")
+  approvalsMade       ApprovalDecision[]       @relation("ApprovalDecider")
+  operator            Operator?
 
   quotesCreated         Quote[]         @relation("QuoteCreatedBy")
   stockTransfersCreated StockTransfer[] @relation("StockTransferCreator")
@@ -185,12 +186,38 @@ model Role {
   name        String               @unique
   displayName String
   description String?
-  permissions Json // Array of permission strings
+  permissions Json // Old dotted permission strings. Nothing reads them; kept until the role matrix clean-up.
+  /// What the role may do: an array of "<area>:<action>" from lib/permissionCatalog.js, or ["*"] for everything.
+  grants      Json                 @default("[]")
+  /// STAFF, CUSTOMER or PARTNER.
+  audience    String               @default("STAFF")
+  /// Which branches the role's records come from: ALL, ASSIGNED (home branch plus assigned branches) or OWN (home branch only).
+  branchScope String               @default("ASSIGNED")
+  /// The built-in role this one stands on while some routes still check a role by name.
+  baseRole    String?
+  updatedById String?
   isSystem    Boolean              @default(false)
   isActive    Boolean              @default(true)
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   userRoles   UserRoleAssignment[]
+}
+
+/// One permission granted to, or taken from, one person, on top of their roles. A denial always wins.
+model UserPermissionOverride {
+  id          String    @id @default(uuid())
+  userId      String
+  permission  String
+  /// GRANT or DENY.
+  effect      String
+  reason      String
+  createdById String?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permission])
+  @@index([userId])
 }
 
 // Many-to-many: User <-> Role

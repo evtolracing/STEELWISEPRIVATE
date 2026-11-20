@@ -19,7 +19,7 @@
 import prisma from './db.js';
 import { BUILTIN_DEFAULTS } from './builtinRoleDefaults.js';
 import { LOCKED_ROLES } from './roleEditRules.js';
-import { PERMISSIONS } from './permissionCatalog.js';
+import { addedSince, CATALOG_VERSION, PERMISSIONS } from './permissionCatalog.js';
 import { ALL, has } from './permissions.js';
 
 const KEEP_MS = 60_000;
@@ -43,6 +43,35 @@ export function accessOf(roleName, rows = {}) {
 }
 
 const NONE = { byName: {}, byId: {} };
+
+/**
+ * A saved role carries the catalog version it was saved under as one extra entry in its list
+ * ("@catalog:2"). No entry means version 1, the catalog of database update 19.
+ */
+const MARK = /^@catalog:(\d+)$/;
+export const catalogMark = (version = CATALOG_VERSION) => `@catalog:${version}`;
+/** A list of permissions as it is stored: with the mark of the catalog it was chosen from. */
+export const toStore = (grants) => [...grants.filter((p) => !MARK.test(p)), catalogMark()];
+
+/**
+ * A role row as the server uses it: the mark taken out, and, for a role saved under an older
+ * catalog, the permissions added since that its built-in default holds (a custom role: the default
+ * of the built-in role it stands on). Those rights were decided by that role's name until they
+ * became boxes in the grid, so the role keeps them until someone saves it and decides otherwise.
+ * Pure.
+ */
+export function storedRole(row) {
+  if (!row || !Array.isArray(row.grants)) return row;
+  const mark = row.grants.map((p) => MARK.exec(String(p))).find(Boolean);
+  const version = mark ? Number(mark[1]) : 1;
+  const grants = row.grants.filter((p) => !MARK.test(String(p)));
+  if (version < CATALOG_VERSION && !grants.includes(ALL)) {
+    const standsOn = BUILTIN_DEFAULTS[row.isSystem ? row.name : row.baseRole || 'VIEWER'];
+    const theirs = new Set(standsOn?.grants || []);
+    for (const p of addedSince(version)) if (theirs.has(p) && !grants.includes(p)) grants.push(p);
+  }
+  return { ...row, grants, catalogVersion: version };
+}
 const ROLE_COLUMNS = { id: true, name: true, displayName: true, grants: true, branchScope: true, audience: true, baseRole: true, isSystem: true, isActive: true };
 
 /**
@@ -53,7 +82,7 @@ export async function allRoles() {
   if (matrixOff() || !prisma) return NONE;
   if (kept.rows && Date.now() - kept.at < KEEP_MS) return kept.rows;
   try {
-    const rows = await prisma.role.findMany({ select: ROLE_COLUMNS });
+    const rows = (await prisma.role.findMany({ select: ROLE_COLUMNS })).map(storedRole);
     kept = { at: Date.now(), rows: {
       byName: Object.fromEntries(rows.filter((r) => r.isSystem && Object.hasOwn(BUILTIN_DEFAULTS, r.name)).map((r) => [r.name, r])),
       byId: Object.fromEntries(rows.map((r) => [r.id, r])),

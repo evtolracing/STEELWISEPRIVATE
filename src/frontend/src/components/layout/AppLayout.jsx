@@ -54,12 +54,12 @@ function usePageName(mainRef) {
 // Shows the page only if the user's role can open it.
 // While an administrator previews another role, every page says so and offers the way back.
 function PreviewBanner() {
-  const { previewRole, realRole, setViewAsRole } = useAuth()
+  const { previewRole, previewLabel, realRole, setViewAsRole } = useAuth()
   if (!previewRole) return null
   return (
     <Alert severity="info" variant="filled" sx={{ mb: 2 }} data-testid="preview-banner"
       action={<Button color="inherit" size="small" onClick={() => setViewAsRole('')}>End preview</Button>}>
-      Previewing as {roleLabel(previewRole)}: this is the menu, pages and records that role sees. Nothing can be changed while previewing. Your own role is {roleLabel(realRole)}.
+      Previewing as {previewLabel || roleLabel(previewRole)}: this is the menu, pages and records that role sees. Nothing can be changed while previewing. Your own role is {roleLabel(realRole)}.
     </Alert>
   )
 }

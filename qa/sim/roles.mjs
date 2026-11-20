@@ -88,7 +88,7 @@ const before = byName.QC_INSPECTOR.grants;
 const trimmed = await a.put(`${R}/${byName.QC_INSPECTOR.id}`, { grants: before.filter((g) => g !== 'quality:delete') }, 'roleAdmin');
 check('a built-in role can be changed', trimmed.status === 200 && !trimmed.body.grants.includes('quality:delete') && trimmed.body.grants.length === before.length - 1);
 const reset = await a.post(`${R}/${byName.QC_INSPECTOR.id}/reset`, {}, 'roleAdmin');
-check('reset returns it to its default', reset.status === 200 && reset.body.grants.join() === before.join(), JSON.stringify(reset.body).slice(0, 200));
+check('reset returns it to its default', reset.status === 200 && [...reset.body.grants].sort().join() === [...before].sort().join(), JSON.stringify(reset.body).slice(0, 200));
 check('a custom role has no default to reset to', (await a.post(`${R}/${id}/reset`, {}, 'roleAdmin')).status === 400);
 
 // ── A change takes effect (phase 3): the server and the menu answer from what is saved ──

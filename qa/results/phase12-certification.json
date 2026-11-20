@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T09:18:20.939Z",
+ "at": "2026-11-20T10:41:33.608Z",
  "base": "http://localhost:3110",
  "scenarios": 68,
  "passed": 68,
@@ -232,7 +232,7 @@
     }
    ],
    "pass": true,
-   "ms": 764,
+   "ms": 886,
    "record": {
     "workflowId": "WF-01",
     "purpose": "Sell stock material to a new account from request to cash",
@@ -462,7 +462,7 @@
     }
    ],
    "pass": true,
-   "ms": 1667,
+   "ms": 1610,
    "record": {
     "workflowId": "WF-02",
     "purpose": "Sell processed material: quote, production, quality release, shipment, invoice",
@@ -482,7 +482,7 @@
      "job status after the last step: WAITING_QC",
      "job status after the failed inspection: ON_HOLD",
      "sending the job for rework answered 200; job now SCHEDULED",
-     "job cost answer: {\"orderId\":\"cd5b1345-e5a1-4faa-9fe2-ce81b53aae17\",\"orderNumber\":\"SO-02591\",\"status\":\"COMPLETE\",\"revenue\":{\"invoiced\":1162.5,\"credited\":0,\"net\":1162.5,\"note\":\"Goods only: tax and freight billed are not revenue here.\"},\"material\":{\"shippedCost\":570,\"returnedToStockCost\":0,\"cost\":570,\"quantityCosted\":1500,\"quantityWithNoCost\":0},\"lines\":[{\"lineNumber\":1,\"description\":\"P12 A36 cut to size\",\"unit\":\"LB\""
+     "job cost answer: {\"orderId\":\"ef78c15c-8f36-4a1f-bce9-9762c4054160\",\"orderNumber\":\"SO-02591\",\"status\":\"COMPLETE\",\"revenue\":{\"invoiced\":1162.5,\"credited\":0,\"net\":1162.5,\"note\":\"Goods only: tax and freight billed are not revenue here.\"},\"material\":{\"shippedCost\":570,\"returnedToStockCost\":0,\"cost\":570,\"quantityCosted\":1500,\"quantityWithNoCost\":0},\"lines\":[{\"lineNumber\":1,\"description\":\"P12 A36 cut to size\",\"unit\":\"LB\""
     ],
     "result": "PASS"
    }
@@ -499,7 +499,7 @@
     {
      "what": "goods cannot be received against a purchase order that is not placed",
      "ok": true,
-     "measured": "409 Purchase order PO-01932 is still a draft: it has not been placed with the supplier"
+     "measured": "409 Purchase order PO-01929 is still a draft: it has not been placed with the supplier"
     },
     {
      "what": "the purchase order is placed",
@@ -529,7 +529,7 @@
     {
      "what": "with a hold that says why",
      "ok": true,
-     "measured": "[[\"DISPUTE\",\"Received against PO PO-01932 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.\"]]"
+     "measured": "[[\"DISPUTE\",\"Received against PO PO-01929 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.\"]]"
     },
     {
      "what": "and it cannot be reserved for a customer while held",
@@ -569,7 +569,7 @@
     {
      "what": "the 2500 lb item carries its heat",
      "ok": true,
-     "measured": "bfacc5a4-026f-4f6e-9dd5-a7edcd583bb6"
+     "measured": "0a6521d6-2125-4192-aec6-183e836da1a8"
     },
     {
      "what": "the 1500 lb item is in stock at the branch at the line's price",
@@ -604,7 +604,7 @@
     {
      "what": "the 1500 lb item carries its heat",
      "ok": true,
-     "measured": "bfacc5a4-026f-4f6e-9dd5-a7edcd583bb6"
+     "measured": "0a6521d6-2125-4192-aec6-183e836da1a8"
     },
     {
      "what": "the purchase order line shows what arrived, including the part on hold",
@@ -643,7 +643,7 @@
     }
    ],
    "pass": true,
-   "ms": 666,
+   "ms": 642,
    "record": {
     "workflowId": "WF-03",
     "purpose": "Buy material and bring it into stock at its actual cost",
@@ -660,7 +660,7 @@
     "actual": "as expected (30 checks)",
     "observations": [
      "after 2,500 of 4,000 lb the purchase order is CONFIRMED; line received 2500",
-     "the over-receipt says: Received on hold: Received against PO PO-01932 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.",
+     "the over-receipt says: Received on hold: Received against PO PO-01929 line 1, and more than ordered: 4500 LB received against 4000 ordered. Check it before it is used.",
      "purchase order status with everything received: CONFIRMED"
     ],
     "result": "PASS"
@@ -688,7 +688,7 @@
     {
      "what": "stock in transit cannot be reserved for an order",
      "ok": true,
-     "measured": "409 Stock item P11-MWORMLSF-35 is on its way to another branch. Reserve it after the receiving branch has received it."
+     "measured": "409 Stock item P11-MWOULKGF-35 is on its way to another branch. Reserve it after the receiving branch has received it."
     },
     {
      "what": "while in transit: the reconciliation ran",
@@ -777,7 +777,7 @@
     }
    ],
    "pass": true,
-   "ms": 721,
+   "ms": 762,
    "record": {
     "workflowId": "WF-04",
     "purpose": "Move stock between two branches without losing it from the books",
@@ -827,7 +827,7 @@
     {
      "what": "the work order cannot use the pounds promised to the customer",
      "ok": true,
-     "measured": "409 Stock item P11-MWORMLSF-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output and scrap reported. The rest is reserved for other orders, on hold, or already used. Correct the weights or the item's balance."
+     "measured": "409 Stock item P11-MWOULKGF-37 has 2,900 lb this work order can use, which is less than the 3,000 lb of output and scrap reported. The rest is reserved for other orders, on hold, or already used. Correct the weights or the item's balance."
     },
     {
      "what": "and the refusal changed nothing",
@@ -865,7 +865,7 @@
     {
      "what": "the work order's postings are all posted",
      "ok": true,
-     "measured": "WORK_ORDER_COMPLETED:POSTED, STOCK_RECEIVED:POSTED"
+     "measured": "STOCK_RECEIVED:POSTED, WORK_ORDER_COMPLETED:POSTED"
     },
     {
      "what": "together they balance, and scrap is expensed at 30 lb times cost",
@@ -904,7 +904,7 @@
     }
    ],
    "pass": true,
-   "ms": 627,
+   "ms": 617,
    "record": {
     "workflowId": "WF-05",
     "purpose": "Process material and keep weight, cost and traceability through the cut",
@@ -921,7 +921,7 @@
     "actual": "as expected (20 checks)",
     "observations": [
      "by the permissions matrix, sales, warehouse, quality and production staff may all move a work order (lib/roleAccess.js, Jobs)",
-     "ledger events of the work order: WORK_ORDER_COMPLETED:POSTED, STOCK_RECEIVED:POSTED",
+     "ledger events of the work order: STOCK_RECEIVED:POSTED, WORK_ORDER_COMPLETED:POSTED",
      "net effect of the work order on the books: {\"1200\":38,\"1210\":1090.6,\"2000\":-1140,\"5300\":11.4}",
      "remnant list answered 200 with 10 rows"
     ],
@@ -1038,7 +1038,7 @@
     }
    ],
    "pass": true,
-   "ms": 1976,
+   "ms": 1981,
    "record": {
     "workflowId": "WF-06",
     "purpose": "Take an order from the web store through to cash",
@@ -1055,7 +1055,7 @@
     "actual": "as expected (21 checks)",
     "observations": [
      "order was PENDING; confirm answered 200",
-     "shelf stock for the web product: {\"coilId\":\"cfad23fb-c022-40fc-bebb-9af7477326e3\",\"product\":{\"id\":\"5d5278e7-bcc5-479c-a968-13fd138e66da\",\"sku\":\"CUT-DISC-9\",\"name\":\"Cut-Off Disc 9\\\"\",\"description\":null,\"category\":\"Abrasives\",\"productT",
+     "shelf stock for the web product: {\"coilId\":\"e05965c4-938a-4f54-bd57-7165ad656bdc\",\"product\":{\"id\":\"ce2d82ca-c938-4a0f-8e93-8aca9176fd5d\",\"sku\":\"CUT-DISC-9\",\"name\":\"Cut-Off Disc 9\\\"\",\"description\":null,\"category\":\"Abrasives\",\"productT",
      "the portal now shows the order as: COMPLETED"
     ],
     "result": "PASS"
@@ -1068,7 +1068,7 @@
     {
      "what": "pressed three times at once, the sale is taken once",
      "ok": true,
-     "measured": "200  | 201  | 200 "
+     "measured": "200  | 200  | 201 "
     },
     {
      "what": "one order for the sale",
@@ -1131,7 +1131,7 @@
     }
    ],
    "pass": true,
-   "ms": 285,
+   "ms": 363,
    "record": {
     "workflowId": "WF-07",
     "purpose": "Sell shelf goods over the counter for immediate payment",
@@ -1263,7 +1263,7 @@
     }
    ],
    "pass": true,
-   "ms": 912,
+   "ms": 879,
    "record": {
     "workflowId": "WF-08",
     "purpose": "Take material back and return the customer's money",
@@ -1364,7 +1364,7 @@
     }
    ],
    "pass": true,
-   "ms": 699,
+   "ms": 721,
    "record": {
     "workflowId": "WF-09",
     "purpose": "Ship what is ready and bill only that; keep the rest reserved",
@@ -1397,22 +1397,22 @@
     {
      "what": "total debits equal total credits",
      "ok": true,
-     "measured": "15229647.64 vs 15229647.64"
+     "measured": "15176495.92 vs 15176495.92"
     },
     {
      "what": "and both equal the journal lines summed in the database",
      "ok": true,
-     "measured": "15229647.64 vs 15229647.64"
+     "measured": "15176495.92 vs 15176495.92"
     },
     {
      "what": "revenue by branch and by customer have one total",
      "ok": true,
-     "measured": "1171596.26 vs 1171596.26"
+     "measured": "1189146.26 vs 1189146.26"
     },
     {
      "what": "and it is revenue less returns in the journal",
      "ok": true,
-     "measured": "1171596.26 vs 1171596.26"
+     "measured": "1189146.26 vs 1189146.26"
     },
     {
      "what": "the branch rows add up to the total",
@@ -1421,7 +1421,7 @@
     {
      "what": "the gross margin report's net sales are the same revenue",
      "ok": true,
-     "measured": "200 1171596.2599999998 vs 1171596.26"
+     "measured": "200 1189146.2599999995 vs 1189146.26"
     },
     {
      "what": "and it says it is not a profit and loss statement",
@@ -1435,7 +1435,7 @@
     {
      "what": "and its total is that branch's row in the enterprise report",
      "ok": true,
-     "measured": "37330.00 vs 37330.00"
+     "measured": "33940.00 vs 33940.00"
     },
     {
      "what": "the report reads are in the audit log",
@@ -1469,7 +1469,7 @@
     }
    ],
    "pass": true,
-   "ms": 315,
+   "ms": 320,
    "record": {
     "workflowId": "WF-10",
     "purpose": "Consolidate the branches into one set of books",
@@ -1485,7 +1485,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Cross-module workflows end to end; 16 checks",
     "actual": "as expected (16 checks)",
     "observations": [
-     "journal: debits 15229647.64, credits 15229647.64; trial balance debit 15229647.64, credit 15229647.64",
+     "journal: debits 15176495.92, credits 15176495.92; trial balance debit 15176495.92, credit 15176495.92",
      "a branch manager asking for the trial balance is answered 200"
     ],
     "result": "PASS"
@@ -1525,7 +1525,7 @@
     }
    ],
    "pass": true,
-   "ms": 55,
+   "ms": 58,
    "record": {
     "workflowId": "LC-01",
     "purpose": "Chart of accounts",
@@ -1562,11 +1562,11 @@
     {
      "what": "everything held carries a reason in words",
      "ok": true,
-     "measured": "No cost is on file for item UI6-MWOPYZFS-KTH66. It is not valued at zero: enter the cost and post it again. | No cost is on file for item RC-MWOPRWFJ-435. It is not valued at zero: enter the cost and "
+     "measured": "No cost is on file for item UI6-MWOSZ2NR-AWTUD. It is not valued at zero: enter the cost and post it again. | No cost is on file for item RC-MWOSRU9R-435. It is not valued at zero: enter the cost and "
     }
    ],
    "pass": true,
-   "ms": 373,
+   "ms": 375,
    "record": {
     "workflowId": "LC-02",
     "purpose": "Posting rules",
@@ -1582,7 +1582,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
     "actual": "as expected (3 checks)",
     "observations": [
-     "events on file by kind and state: REFUND_RECORDED POSTED 66; STOCK_RECEIVED POSTED 1175; TRANSFER_SHIPPED RECONCILIATION_REQUIRED 2; TRANSFER_SHIPPED POSTED 146; STOCK_ADJUSTED POSTED 125; INVOICE_ISSUED POSTED 1221; RETURN_RESTOCKED POSTED 66; PAYMENT_RECORDED POSTED 897; WORK_ORDER_COMPLETED POSTED 51; STOCK_SHIPPED POSTED 1221; TRANSFER_RECEIVED POSTED 145; CREDIT_ISSUED POSTED 66; STOCK_SCRAPPED POSTED 20",
+     "events on file by kind and state: REFUND_RECORDED POSTED 66; STOCK_RECEIVED POSTED 1172; TRANSFER_SHIPPED RECONCILIATION_REQUIRED 2; TRANSFER_SHIPPED POSTED 146; STOCK_ADJUSTED POSTED 125; INVOICE_ISSUED POSTED 1220; RETURN_RESTOCKED POSTED 66; PAYMENT_RECORDED POSTED 897; WORK_ORDER_COMPLETED POSTED 51; STOCK_SHIPPED POSTED 1220; TRANSFER_RECEIVED POSTED 145; CREDIT_ISSUED POSTED 66; STOCK_SCRAPPED POSTED 20",
      "No rule exists for freight income, carrier freight cost, labor or work in progress; the product posts none of them (accountant decision)."
     ],
     "result": "PASS"
@@ -1609,7 +1609,7 @@
     }
    ],
    "pass": true,
-   "ms": 129,
+   "ms": 144,
    "record": {
     "workflowId": "LC-03",
     "purpose": "Balanced journal entries",
@@ -1660,12 +1660,12 @@
     {
      "what": "SQL as the application cannot delete a posted entry",
      "ok": true,
-     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00007826 cannot be deleted"
+     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00007832 cannot be deleted"
     },
     {
      "what": "SQL as the application cannot re-date a posted entry",
      "ok": true,
-     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00007826 cannot be changed"
+     "measured": "LEDGER_IMMUTABLE: posted journal entry JE-00007832 cannot be changed"
     },
     {
      "what": "the application cannot switch the guards off",
@@ -1678,7 +1678,7 @@
     }
    ],
    "pass": true,
-   "ms": 83,
+   "ms": 91,
    "record": {
     "workflowId": "LC-04",
     "purpose": "Immutable posted history",
@@ -1726,11 +1726,11 @@
     {
      "what": "the reversal names who and why",
      "ok": true,
-     "measured": "Reversal of JE-00007827: P12: entered in error"
+     "measured": "Reversal of JE-00007833: P12: entered in error"
     }
    ],
    "pass": true,
-   "ms": 107,
+   "ms": 115,
    "record": {
     "workflowId": "LC-05",
     "purpose": "Authorized reversals",
@@ -1817,7 +1817,7 @@
     {
      "what": "recording missing events again adds nothing for what is already posted",
      "ok": true,
-     "measured": "200 7727→7727"
+     "measured": "200 7722→7722"
     },
     {
      "what": "no business record has two events of one kind anywhere in the database",
@@ -1831,7 +1831,7 @@
     }
    ],
    "pass": true,
-   "ms": 465,
+   "ms": 418,
    "record": {
     "workflowId": "LC-07",
     "purpose": "Posting idempotency",
@@ -1921,7 +1921,7 @@
     }
    ],
    "pass": true,
-   "ms": 694,
+   "ms": 715,
    "record": {
     "workflowId": "LC-08",
     "purpose": "Invoice, payment, credit and refund posting",
@@ -1959,7 +1959,7 @@
     {
      "what": "the report's record figure is the pounds times cost in the database, less what is in transit separately or within a cent a row",
      "ok": true,
-     "measured": "10007590.35 vs 10007590.341 (in transit 700.00)"
+     "measured": "9927501.30 vs 9927501.291 (in transit 700.00)"
     },
     {
      "what": "a count adjustment is taken",
@@ -1978,7 +1978,7 @@
     }
    ],
    "pass": true,
-   "ms": 364,
+   "ms": 360,
    "record": {
     "workflowId": "LC-11",
     "purpose": "Inventory valuation",
@@ -1994,7 +1994,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 6 checks",
     "actual": "as expected (6 checks)",
     "observations": [
-     "records by direct SQL: 10007590.341; report records: 10007590.35; report books: undefined; items on hand with no cost: 944"
+     "records by direct SQL: 9927501.291; report records: 9927501.30; report books: undefined; items on hand with no cost: 946"
     ],
     "result": "PASS"
    }
@@ -2024,7 +2024,7 @@
     }
    ],
    "pass": true,
-   "ms": 465,
+   "ms": 425,
    "record": {
     "workflowId": "LC-12",
     "purpose": "Manufacturing costing, scrap and write-offs",
@@ -2040,7 +2040,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 4 checks",
     "actual": "as expected (4 checks)",
     "observations": [
-     "scrap report: \"10831.40\"",
+     "scrap report: \"10204.45\"",
      "Labor, machine time, overhead and work in progress are not posted: no approved rule exists (K-007, L-026, W-001). Job cost is shown to managers from the records, not from the books."
     ],
     "result": "PASS"
@@ -2067,7 +2067,7 @@
     }
    ],
    "pass": true,
-   "ms": 315,
+   "ms": 342,
    "record": {
     "workflowId": "LC-14",
     "purpose": "Freight income and expense",
@@ -2096,7 +2096,7 @@
     {
      "what": "lines posted from business events carry a branch",
      "ok": true,
-     "measured": "0 of 10583"
+     "measured": "0 of 10573"
     },
     {
      "what": "a sale at another branch is tagged with that branch, not the first",
@@ -2110,7 +2110,7 @@
     }
    ],
    "pass": true,
-   "ms": 354,
+   "ms": 421,
    "record": {
     "workflowId": "LC-15",
     "purpose": "Branch and division attribution",
@@ -2126,7 +2126,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
     "actual": "as expected (3 checks)",
     "observations": [
-     "0 of 10583 lines posted from business events carry no branch",
+     "0 of 10573 lines posted from business events carry no branch",
      "JournalLine columns: id, entryId, lineNumber, accountId, debit, credit, locationId, division, customerId, supplierId, productId, coilId, jurisdiction, memo"
     ],
     "result": "PASS"
@@ -2162,7 +2162,7 @@
     }
    ],
    "pass": true,
-   "ms": 1250,
+   "ms": 1374,
    "record": {
     "workflowId": "LC-17",
     "purpose": "External accounting mappings",
@@ -2178,7 +2178,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 5 checks",
     "actual": "as expected (5 checks)",
     "observations": [
-     "export answered 201: {\"id\":\"c2586481-56d8-419f-968b-0e338b558f2d\",\"batchNumber\":\"EXP-GE-00005\",\"provider\":\"GENERIC\",\"from\":\"2026-11-01\",\"to\":\"2026-11-20\",\"status\":\"GENERATED\",\"entryCount\":131,\"totalDebit\":\"49629.53\",\"checksum\":\"6fa675ff8e387",
+     "export answered 201: {\"id\":\"3a09bd3e-bdd1-4b34-871d-3350846710be\",\"batchNumber\":\"EXP-GE-00005\",\"provider\":\"GENERIC\",\"from\":\"2026-11-01\",\"to\":\"2026-11-20\",\"status\":\"GENERATED\",\"entryCount\":131,\"totalDebit\":\"49629.53\",\"checksum\":\"4117d13650214",
      "the two-batch check could not read the tables by those names: \nInvalid `prisma.$queryRawUnsafe()` invocation:\n\n\nRaw query failed. Code: `42P01`. Message: `relation \"LedgerExportEntry\" does not exist`",
      "GENERIC is a file. No outside accounting system is connected, and none received anything: NOT VERIFIED against a real system."
     ],
@@ -2246,11 +2246,11 @@
     {
      "what": "receivables on the report equal receivables in the reconciliation",
      "ok": true,
-     "measured": "{\"owed\":\"232546.85\",\"creditOwedBack\":\"4216.00\",\"records\":\"228330.85\",\"ledger\":\"228330.85\",\"difference\":\"0.00\"} vs 228330.85"
+     "measured": "{\"owed\":\"244087.98\",\"creditOwedBack\":\"4216.00\",\"records\":\"239871.98\",\"ledger\":\"239871.98\",\"difference\":\"0.00\"} vs 239871.98"
     }
    ],
    "pass": true,
-   "ms": 444,
+   "ms": 473,
    "record": {
     "workflowId": "LC-18",
     "purpose": "Financial reporting",
@@ -2266,7 +2266,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 12 checks",
     "actual": "as expected (12 checks)",
     "observations": [
-     "receivables totals: {\"owed\":\"232546.85\",\"creditOwedBack\":\"4216.00\",\"records\":\"228330.85\",\"ledger\":\"228330.85\",\"difference\":\"0.00\"}"
+     "receivables totals: {\"owed\":\"244087.98\",\"creditOwedBack\":\"4216.00\",\"records\":\"239871.98\",\"ledger\":\"239871.98\",\"difference\":\"0.00\"}"
     ],
     "result": "PASS"
    }
@@ -2291,7 +2291,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 32,
    "record": {
     "workflowId": "LC-19",
     "purpose": "Audit trails",
@@ -2307,7 +2307,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 3 checks",
     "actual": "as expected (3 checks)",
     "observations": [
-     "ledger audit lines in the last fifteen minutes: LEDGER_DEACTIVATED 4; LEDGER_ACCOUNT_CHANGED 2; LEDGER_ENTRY_REVERSED 9; LEDGER_APPROVAL_RECORDED 13; LEDGER_EXPORT_FAILED 2; LEDGER_MISSING_RECORDED 51; LEDGER_PERIOD_REOPENED 1; LEDGER_EVENT_RETRIED 84; LEDGER_REPORT_READ 806; LEDGER_RESUMED 4; LEDGER_EXPORT_ACKNOWLEDGED 1; LEDGER_SETTING_CHANGED 2; LEDGER_CHART_LOADED 3; LEDGER_AI_READ 16; LEDGER_ENTRY_POSTED 2462; LEDGER_SANDBOX_STARTED 1; LEDGER_MAPPING_CHANGED 12; LEDGER_EXPORT_DOWNLOADED 3; LEDGER_EXTERNAL_ACCOUNT_SET 309; LEDGER_EXPORT_VOID 2; LEDGER_CUTOVER_DRY_RUN 10; LEDGER_EVENT_RESOLVED 1; LEDGER_PERIOD_CLOSED 5; LEDGER_ENTRY_DRAFTED 2474; LEDGER_EXPORT_CREATED 10; LEDGER_DRAFT_DELETED 11; LEDGER_ACTIVATED 3"
+     "ledger audit lines in the last fifteen minutes: LEDGER_DEACTIVATED 4; LEDGER_ACCOUNT_CHANGED 2; LEDGER_ENTRY_REVERSED 9; LEDGER_APPROVAL_RECORDED 13; LEDGER_EXPORT_FAILED 2; LEDGER_MISSING_RECORDED 51; LEDGER_PERIOD_REOPENED 1; LEDGER_EVENT_RETRIED 84; LEDGER_REPORT_READ 790; LEDGER_RESUMED 4; LEDGER_EXPORT_ACKNOWLEDGED 1; LEDGER_SETTING_CHANGED 2; LEDGER_CHART_LOADED 3; LEDGER_AI_READ 16; LEDGER_ENTRY_POSTED 2462; LEDGER_SANDBOX_STARTED 1; LEDGER_MAPPING_CHANGED 12; LEDGER_EXPORT_DOWNLOADED 3; LEDGER_EXTERNAL_ACCOUNT_SET 309; LEDGER_EXPORT_VOID 2; LEDGER_CUTOVER_DRY_RUN 10; LEDGER_EVENT_RESOLVED 1; LEDGER_PERIOD_CLOSED 5; LEDGER_ENTRY_DRAFTED 2474; LEDGER_EXPORT_CREATED 10; LEDGER_DRAFT_DELETED 11; LEDGER_ACTIVATED 3"
     ],
     "result": "PASS"
    }
@@ -2324,7 +2324,7 @@
     {
      "what": "its posting is held with the reason, not dropped and not guessed",
      "ok": true,
-     "measured": "RECONCILIATION_REQUIRED Item P12H-MWORMLSF-69 was received with no purchase order. There is no approved rule for what it is owed to. An accountant can post it again, naming the account for the other side."
+     "measured": "RECONCILIATION_REQUIRED Item P12H-MWOULKGF-69 was received with no purchase order. There is no approved rule for what it is owed to. An accountant can post it again, naming the account for the other side."
     },
     {
      "what": "the reconciliation says an event is open",
@@ -2372,7 +2372,7 @@
     }
    ],
    "pass": true,
-   "ms": 545,
+   "ms": 537,
    "record": {
     "workflowId": "LC-20",
     "purpose": "Recovery from failed posting",
@@ -2388,7 +2388,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial ledger certification; 11 checks",
     "actual": "as expected (11 checks)",
     "observations": [
-     "retry before a cost is on file answered 200: {\"id\":\"ad5a34ad-c436-4986-8ef0-ba4e0fb95bd0\",\"eventKind\":\"STOCK_RECEIVED\",\"sourceType\":\"MaterialMovement\",\"sourceId\":\"2e",
+     "retry before a cost is on file answered 200: {\"id\":\"2ae53c2a-fb8f-4c5e-a50c-326ee5c305f7\",\"eventKind\":\"STOCK_RECEIVED\",\"sourceType\":\"MaterialMovement\",\"sourceId\":\"75",
      "setting the item's cost answered 200"
     ],
     "result": "PASS"
@@ -2401,7 +2401,7 @@
     {
      "what": "total debits equal total credits to the cent",
      "ok": true,
-     "measured": "15243801.01 / 15243801.01"
+     "measured": "15190649.29 / 15190649.29"
     },
     {
      "what": "no single posted entry is out of balance",
@@ -2410,16 +2410,16 @@
     {
      "what": "the trial balance says the same",
      "ok": true,
-     "measured": "{\"debit\":\"15243801.01\",\"credit\":\"15243801.01\"}"
+     "measured": "{\"debit\":\"15190649.29\",\"credit\":\"15190649.29\"}"
     },
     {
      "what": "the product's own check agrees",
      "ok": true,
-     "measured": "{\"key\":\"BOOKS_BALANCE\",\"title\":\"Debits equal credits, in total and in every entry\",\"status\":\"MATCH\",\"ledger\":\"15243801.01\",\"records\":\"15243801.01\",\"difference\":"
+     "measured": "{\"key\":\"BOOKS_BALANCE\",\"title\":\"Debits equal credits, in total and in every entry\",\"status\":\"MATCH\",\"ledger\":\"15190649.29\",\"records\":\"15190649.29\",\"difference\":"
     }
    ],
    "pass": true,
-   "ms": 67,
+   "ms": 66,
    "record": {
     "workflowId": "RC-01",
     "purpose": "Debits equal credits in every posted entry and in total",
@@ -2435,7 +2435,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 4 checks",
     "actual": "as expected (4 checks)",
     "observations": [
-     "7752 posted entries; debits 15243801.01, credits 15243801.01"
+     "7747 posted entries; debits 15190649.29, credits 15190649.29"
     ],
     "result": "PASS"
    }
@@ -2447,26 +2447,26 @@
     {
      "what": "the report's ledger figure is the account balance",
      "ok": true,
-     "measured": "229498.85 / 229498.85"
+     "measured": "241039.98 / 241039.98"
     },
     {
      "what": "the report shows no difference between ledger and records",
      "ok": true,
-     "measured": "{\"owed\":\"233714.85\",\"creditOwedBack\":\"4216.00\",\"records\":\"229498.85\",\"ledger\":\"229498.85\",\"difference\":\"0.00\"}"
+     "measured": "{\"owed\":\"245255.98\",\"creditOwedBack\":\"4216.00\",\"records\":\"241039.98\",\"ledger\":\"241039.98\",\"difference\":\"0.00\"}"
     },
     {
      "what": "the reconciliation says the same",
      "ok": true,
-     "measured": "{\"key\":\"RECEIVABLES\",\"title\":\"Accounts receivable: the books beside the open invoices and credits\",\"status\":\"MATCH\",\"ledger\":\"229498.85\",\"records\":\"229498.85\",\"difference\":\"0.00\",\"note\":null,\"detail\":"
+     "measured": "{\"key\":\"RECEIVABLES\",\"title\":\"Accounts receivable: the books beside the open invoices and credits\",\"status\":\"MATCH\",\"ledger\":\"241039.98\",\"records\":\"241039.98\",\"difference\":\"0.00\",\"note\":null,\"detail\":"
     },
     {
      "what": "the customers add up to the total",
      "ok": true,
-     "measured": "95 customers"
+     "measured": "93 customers"
     }
    ],
    "pass": true,
-   "ms": 39,
+   "ms": 61,
    "record": {
     "workflowId": "RC-02",
     "purpose": "Accounts receivable",
@@ -2482,7 +2482,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 4 checks",
     "actual": "as expected (4 checks)",
     "observations": [
-     "ledger 1100 = 229498.85; invoices less payments by SQL = 237930.85; report: {\"owed\":\"233714.85\",\"creditOwedBack\":\"4216.00\",\"records\":\"229498.85\",\"ledger\":\"229498.85\",\"difference\":\"0.00\"}"
+     "ledger 1100 = 241039.98; invoices less payments by SQL = 249471.98; report: {\"owed\":\"245255.98\",\"creditOwedBack\":\"4216.00\",\"records\":\"241039.98\",\"ledger\":\"241039.98\",\"difference\":\"0.00\"}"
     ],
     "result": "PASS"
    }
@@ -2499,7 +2499,7 @@
     {
      "what": "the reconciliation finds no inventory difference",
      "ok": true,
-     "measured": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"MATCH\",\"ledger\":\"10011654.55\",\"records\":\"10011654.55\",\"difference\":\"0.00\",\"note\":\"0 items disagree by more than "
+     "measured": "{\"key\":\"INVENTORY\",\"title\":\"Stock value: the books beside quantity on hand at cost, item by item\",\"status\":\"MATCH\",\"ledger\":\"9931565.50\",\"records\":\"9931565.50\",\"difference\":\"0.00\",\"note\":\"0 items disagree by more than 0."
     },
     {
      "what": "goods on the road agree",
@@ -2523,7 +2523,7 @@
     }
    ],
    "pass": true,
-   "ms": 54,
+   "ms": 66,
    "record": {
     "workflowId": "RC-03",
     "purpose": "Inventory valuation",
@@ -2539,7 +2539,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 6 checks",
     "actual": "as expected (6 checks)",
     "observations": [
-     "1567 stock items with a cost; on hand at cost by SQL = 10011654.55; report totals {\"rawMaterial\":\"9936012.66\",\"finishedGoods\":\"74941.89\",\"inTransit\":\"700.00\",\"ledger\":\"10011654.55\",\"records\":\"10011654.55\",\"difference\":\"0.00\",\"uncostedItems\":944}"
+     "1564 stock items with a cost; on hand at cost by SQL = 9931565.50; report totals {\"rawMaterial\":\"9855923.61\",\"finishedGoods\":\"74941.89\",\"inTransit\":\"700.00\",\"ledger\":\"9931565.50\",\"records\":\"9931565.50\",\"difference\":\"0.00\",\"uncostedItems\":946}"
     ],
     "result": "PASS"
    }
@@ -2556,16 +2556,16 @@
     {
      "what": "revenue by branch, by customer and by product give one total",
      "ok": true,
-     "measured": "1174727.26 1174727.26 1174727.26"
+     "measured": "1192277.26 1192277.26 1192277.26"
     },
     {
      "what": "cost of sales in the margin report is the cost-of-sales account",
      "ok": true,
-     "measured": "680663.83"
+     "measured": "689379.83"
     }
    ],
    "pass": true,
-   "ms": 88,
+   "ms": 111,
    "record": {
     "workflowId": "RC-04",
     "purpose": "Revenue",
@@ -2581,7 +2581,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 3 checks",
     "actual": "as expected (3 checks)",
     "observations": [
-     "{\"key\":\"REVENUE\",\"title\":\"Sales and freight billed, less credits, since the books began\",\"status\":\"MATCH\",\"ledger\":\"1174727.26\",\"records\":\"1174727.26\",\"difference\":\"0.00\",\"note\":null,\"detail\":[]}"
+     "{\"key\":\"REVENUE\",\"title\":\"Sales and freight billed, less credits, since the books began\",\"status\":\"MATCH\",\"ledger\":\"1192277.26\",\"records\":\"1192277.26\",\"difference\":\"0.00\",\"note\":null,\"detail\":[]}"
     ],
     "result": "PASS"
    }
@@ -2611,16 +2611,16 @@
      "measured": "0"
     },
     {
-     "what": "invoice INV-001713 of this run is posted once",
+     "what": "invoice INV-001711 of this run is posted once",
      "ok": true
     },
     {
-     "what": "invoice INV-001714 of this run is posted once",
+     "what": "invoice INV-001712 of this run is posted once",
      "ok": true
     }
    ],
    "pass": true,
-   "ms": 30,
+   "ms": 36,
    "record": {
     "workflowId": "RC-05",
     "purpose": "Completeness of posting",
@@ -2636,7 +2636,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Financial and inventory reconciliation; 6 checks",
     "actual": "as expected (6 checks)",
     "observations": [
-     "ledger events by state: NOT_POSTED 1, POSTED 5230, RECONCILIATION_REQUIRED 2; held before this run began: 2"
+     "ledger events by state: NOT_POSTED 1, POSTED 5225, RECONCILIATION_REQUIRED 2; held before this run began: 2"
     ],
     "result": "PASS"
    }
@@ -2666,7 +2666,7 @@
     }
    ],
    "pass": true,
-   "ms": 471,
+   "ms": 461,
    "record": {
     "workflowId": "RC-06",
     "purpose": "The reconciliation detects a real difference",
@@ -2692,12 +2692,12 @@
     {
      "what": "pounds on hand, available and reserved",
      "ok": true,
-     "measured": "{\"totalOnHand\":\"19419268.8078\",\"available\":\"19289762.8078\",\"allocated\":\"88071\",\"onHold\":\"35935\"} / {\"h\":19419268.8078,\"a\":19289762.8078,\"r\":88071}"
+     "measured": "{\"totalOnHand\":\"19364093.8078\",\"available\":\"19234627.8078\",\"allocated\":\"88021\",\"onHold\":\"35945\"} / {\"h\":19364093.8078,\"a\":19234627.8078,\"r\":88021}"
     },
     {
      "what": "orders by status",
      "ok": true,
-     "measured": "{\"PARTIAL\":13,\"CANCELLED\":54,\"PENDING\":80,\"CONFIRMED\":2039,\"COMPLETE\":1759,\"HOLD\":2,\"DRAFT\":151} / {\"PARTIAL\":13,\"DRAFT\":151,\"COMPLETE\":1759,\"CANCELLED\":54,\"HOLD\":2,\"PENDING\":80,\"CONFIRMED\":2039}"
+     "measured": "{\"HOLD\":2,\"CANCELLED\":57,\"CONFIRMED\":2035,\"COMPLETE\":1757,\"PENDING\":80,\"DRAFT\":151,\"PARTIAL\":13} / {\"PARTIAL\":13,\"DRAFT\":151,\"COMPLETE\":1757,\"CANCELLED\":57,\"HOLD\":2,\"PENDING\":80,\"CONFIRMED\":2035}"
     },
     {
      "what": "stock items by status",
@@ -2706,7 +2706,7 @@
     {
      "what": "the monthly pounds figure equals the same sum",
      "ok": true,
-     "measured": "19419268.8078"
+     "measured": "19364093.8078"
     },
     {
      "what": "orders this month",
@@ -2714,7 +2714,7 @@
     }
    ],
    "pass": true,
-   "ms": 45,
+   "ms": 38,
    "record": {
     "workflowId": "DB-01",
     "purpose": "Home dashboard",
@@ -2742,7 +2742,7 @@
     {
      "what": "pounds on hand are the branch's own",
      "ok": true,
-     "measured": "392236 / 392236"
+     "measured": "393136 / 393136"
     },
     {
      "what": "the order counts add up to the branch's orders",
@@ -2760,7 +2760,7 @@
     }
    ],
    "pass": true,
-   "ms": 37,
+   "ms": 32,
    "record": {
     "workflowId": "DB-02",
     "purpose": "Home dashboard at a branch",
@@ -2796,12 +2796,12 @@
     {
      "what": "orders",
      "ok": true,
-     "measured": "4098 / 4098"
+     "measured": "4095 / 4095"
     },
     {
      "what": "stock items",
      "ok": true,
-     "measured": "2607 / 2607"
+     "measured": "2606 / 2606"
     },
     {
      "what": "shipments",
@@ -2815,7 +2815,7 @@
     }
    ],
    "pass": true,
-   "ms": 126,
+   "ms": 100,
    "record": {
     "workflowId": "DB-03",
     "purpose": "Operations cockpit",
@@ -2831,7 +2831,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Dashboards and reports agree with the records; 6 checks",
     "actual": "as expected (6 checks)",
     "observations": [
-     "summary: {\"totalJobs\":627,\"activeJobs\":284,\"totalOrders\":4098,\"totalCoils\":2607,\"totalWorkCenters\":404,\"totalShipments\":1793}"
+     "summary: {\"totalJobs\":627,\"activeJobs\":284,\"totalOrders\":4095,\"totalCoils\":2606,\"totalWorkCenters\":404,\"totalShipments\":1793}"
     ],
     "result": "PASS"
    }
@@ -2895,7 +2895,7 @@
     }
    ],
    "pass": true,
-   "ms": 20,
+   "ms": 21,
    "record": {
     "workflowId": "DB-05",
     "purpose": "Material tracking",
@@ -2921,17 +2921,17 @@
     {
      "what": "receivables on the trial balance equal the receivables report",
      "ok": true,
-     "measured": "229635.25 / 229635.25"
+     "measured": "241176.38 / 241176.38"
     },
     {
      "what": "inventory on the report equals the ledger figure it names",
      "ok": true,
-     "measured": "{\"rawMaterial\":\"9936392.66\",\"finishedGoods\":\"74941.89\",\"inTransit\":\"700.00\",\"ledger\":\"10012034.55\",\"records\":\"10012034.55\",\"difference\":\"0.00\",\"uncostedItems\":944}"
+     "measured": "{\"rawMaterial\":\"9856303.61\",\"finishedGoods\":\"74941.89\",\"inTransit\":\"700.00\",\"ledger\":\"9931945.50\",\"records\":\"9931945.50\",\"difference\":\"0.00\",\"uncostedItems\":946}"
     },
     {
      "what": "revenue on the trial balance equals the revenue lines by SQL",
      "ok": true,
-     "measured": "1217068.66 / 1217068.66"
+     "measured": "1232548.66 / 1232548.66"
     },
     {
      "what": "a branch manager's revenue report holds only that branch",
@@ -2944,7 +2944,7 @@
     }
    ],
    "pass": true,
-   "ms": 150,
+   "ms": 166,
    "record": {
     "workflowId": "DB-06",
     "purpose": "Finance reports",
@@ -2970,7 +2970,7 @@
     {
      "what": "the executive cockpit answer says it is sample data, or is not served",
      "ok": true,
-     "measured": "{\"sample\":true,\"sampleNotice\":\"Sample data. These figures are examples from the design of this screen, not your company's records.\",\"timestamp\":\"2026-11-20T09:1"
+     "measured": "{\"sample\":true,\"sampleNotice\":\"Sample data. These figures are examples from the design of this screen, not your company's records.\",\"timestamp\":\"2026-11-20T10:4"
     },
     {
      "what": "the executive question box does not answer with invented figures",
@@ -2979,7 +2979,7 @@
     }
    ],
    "pass": true,
-   "ms": 19,
+   "ms": 20,
    "record": {
     "workflowId": "DB-07",
     "purpose": "Sample data stays labelled",
@@ -3051,7 +3051,7 @@
     }
    ],
    "pass": true,
-   "ms": 50,
+   "ms": 46,
    "record": {
     "workflowId": "AI-01",
     "purpose": "Who may ask",
@@ -3127,7 +3127,7 @@
     {
      "what": "the receivables figure given for the CFO is the figure on the report",
      "ok": true,
-     "measured": "229883.25"
+     "measured": "241424.38"
     },
     {
      "what": "a branch manager gets own-branch figures and is told so",
@@ -3146,7 +3146,7 @@
     }
    ],
    "pass": true,
-   "ms": 404,
+   "ms": 436,
    "record": {
     "workflowId": "AI-02",
     "purpose": "Read-only financial access by role",
@@ -3183,7 +3183,7 @@
     {
      "what": "nor its stock item",
      "ok": true,
-     "measured": "P11-MWORMLSF-76"
+     "measured": "P11-MWOULKGF-76"
     },
     {
      "what": "the assistant gives an operator no staff directory the API refuses them",
@@ -3200,7 +3200,7 @@
     }
    ],
    "pass": true,
-   "ms": 111,
+   "ms": 131,
    "record": {
     "workflowId": "AI-03",
     "purpose": "Role-based and branch-limited data",
@@ -3247,7 +3247,7 @@
     {
      "what": "nothing in the database changed",
      "ok": true,
-     "measured": "[7758,1304,54,35,\"19420268.8078\",4790,1023] -> [7758,1304,54,35,\"19420268.8078\",4790,1023]"
+     "measured": "[7753,1305,57,36,\"19365093.8078\",4791,1023] -> [7753,1305,57,36,\"19365093.8078\",4791,1023]"
     },
     {
      "what": "the model is given no tool it could call",
@@ -3255,7 +3255,7 @@
     }
    ],
    "pass": true,
-   "ms": 112,
+   "ms": 116,
    "record": {
     "workflowId": "AI-04",
     "purpose": "Prompt injection and permission bypass",
@@ -3283,17 +3283,17 @@
     {
      "what": "when the AI service fails the assistant says it could not answer",
      "ok": true,
-     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"c5de072a-8b4e-408c-bc59-4c65e31e9eb1\"}"
+     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"675828db-693c-4f51-aa35-d319d7dd4b67\"}"
     },
     {
      "what": "the failure carries the request id and no internals",
      "ok": true,
-     "measured": "{\"error\":\"The assistant could not answer.\",\"requestId\":\"c5de072a-8b4e-408c-bc59-4c65e31e9eb1\"}"
+     "measured": "{\"error\":\"The assistant could not answer.\",\"requestId\":\"675828db-693c-4f51-aa35-d319d7dd4b67\"}"
     },
     {
      "what": "when the AI service does not answer in time the assistant says so",
      "ok": true,
-     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"0bf49070-f706-455b-a1e2-3655f52ec672\"}"
+     "measured": "502 {\"error\":\"The assistant could not answer.\",\"requestId\":\"0b332c26-3e02-4d87-a70d-03c5f15ce78d\"}"
     },
     {
      "what": "the executive question route gives no invented analysis",
@@ -3306,7 +3306,7 @@
     }
    ],
    "pass": true,
-   "ms": 3868,
+   "ms": 3891,
    "record": {
     "workflowId": "AI-05",
     "purpose": "No fabricated figures",
@@ -3342,7 +3342,7 @@
     }
    ],
    "pass": true,
-   "ms": 331,
+   "ms": 321,
    "record": {
     "workflowId": "AI-06",
     "purpose": "Audit logging",
@@ -3397,7 +3397,7 @@
     }
    ],
    "pass": true,
-   "ms": 73,
+   "ms": 62,
    "record": {
     "workflowId": "AI-07",
     "purpose": "Error handling",
@@ -3441,11 +3441,11 @@
     {
      "what": "when the AI service fails mid-stream the person is told it failed, without the service's own message",
      "ok": true,
-     "measured": "event: meta\ndata: {\"queryTypes\":[\"orders\"],\"hasDbData\":true}\n\nevent: error\ndata: {\"error\":\"The assistant could not answer.\",\"requestId\":\"95b8e465-27f6-4d35-8e5e-702847d701f7\"}\n\n"
+     "measured": "event: meta\ndata: {\"queryTypes\":[\"orders\"],\"hasDbData\":true}\n\nevent: error\ndata: {\"error\":\"The assistant could not answer.\",\"requestId\":\"995669ed-f4f2-4f74-b20e-6b55710200de\"}\n\n"
     }
    ],
    "pass": true,
-   "ms": 60,
+   "ms": 47,
    "record": {
     "workflowId": "AI-08",
     "purpose": "Streaming variant",
@@ -3489,7 +3489,7 @@
     }
    ],
    "pass": true,
-   "ms": 32,
+   "ms": 38,
    "record": {
     "workflowId": "AI-09",
     "purpose": "Quote helper, product analysis and work order optimizer",
@@ -3628,7 +3628,7 @@
     }
    ],
    "pass": true,
-   "ms": 243,
+   "ms": 278,
    "record": {
     "workflowId": "SC-01",
     "purpose": "Authentication",
@@ -3670,7 +3670,7 @@
     }
    ],
    "pass": true,
-   "ms": 327,
+   "ms": 371,
    "record": {
     "workflowId": "SC-02",
     "purpose": "Sessions",
@@ -3749,7 +3749,7 @@
     }
    ],
    "pass": true,
-   "ms": 633,
+   "ms": 811,
    "record": {
     "workflowId": "SC-03",
     "purpose": "Role-based access",
@@ -3908,7 +3908,7 @@
     }
    ],
    "pass": true,
-   "ms": 842,
+   "ms": 950,
    "record": {
     "workflowId": "SC-04",
     "purpose": "Tenant (customer account) and branch isolation",
@@ -3963,7 +3963,7 @@
     }
    ],
    "pass": true,
-   "ms": 77,
+   "ms": 97,
    "record": {
     "workflowId": "SC-06",
     "purpose": "Branch boundary on the dispatch board",
@@ -4004,7 +4004,7 @@
     {
      "what": "GET /api/orders?limit=999999999: not a server error and no internals",
      "ok": true,
-     "measured": "200 [{\"id\":\"b9cdd50a-931c-43f7-9a33-1dbe448195b5\",\"orderNumber\":\"SO-02613\",\"orderType\":\"SO\",\"buyerId\":\"f"
+     "measured": "200 [{\"id\":\"3caf5812-9176-4c6c-84f9-ea34de6b860f\",\"orderNumber\":\"SO-02613\",\"orderType\":\"SO\",\"buyerId\":\"0"
     },
     {
      "what": "GET /api/orders?limit=-5&offset=abc: not a server error and no internals",
@@ -4049,11 +4049,11 @@
     {
      "what": "answers carry a request id and the safety headers",
      "ok": true,
-     "measured": "8eb32658-490d-4c60-bd05-7194f39c8434 nosniff"
+     "measured": "c2b018fc-82f3-4dc2-9214-782123a19b94 nosniff"
     }
    ],
    "pass": true,
-   "ms": 138,
+   "ms": 140,
    "record": {
     "workflowId": "SC-07",
     "purpose": "API security",
@@ -4128,7 +4128,7 @@
     }
    ],
    "pass": true,
-   "ms": 35,
+   "ms": 34,
    "record": {
     "workflowId": "SC-08",
     "purpose": "Database security",
@@ -4182,7 +4182,7 @@
     }
    ],
    "pass": true,
-   "ms": 433,
+   "ms": 421,
    "record": {
     "workflowId": "SC-09",
     "purpose": "File security",
@@ -4198,7 +4198,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Security and access revalidation; 6 checks",
     "actual": "as expected (6 checks)",
     "observations": [
-     "upload answered 201: {\"id\":\"e33bf32f-cd38-426e-ab38-c733277973fb\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-cert.pdf\",\"fileType\":\"application/pdf\",\"fil"
+     "upload answered 201: {\"id\":\"868a8c9d-d316-4b5a-8655-ccd23158e563\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-cert.pdf\",\"fileType\":\"application/pdf\",\"fil"
     ],
     "result": "PASS"
    }
@@ -4227,7 +4227,7 @@
     }
    ],
    "pass": true,
-   "ms": 146,
+   "ms": 156,
    "record": {
     "workflowId": "SC-10",
     "purpose": "Secrets",
@@ -4277,7 +4277,7 @@
     }
    ],
    "pass": true,
-   "ms": 257,
+   "ms": 259,
    "record": {
     "workflowId": "SC-11",
     "purpose": "Webhooks and partner API",
@@ -4329,7 +4329,7 @@
     }
    ],
    "pass": true,
-   "ms": 78,
+   "ms": 76,
    "record": {
     "workflowId": "SC-12",
     "purpose": "Financial permissions and audit",
@@ -4373,7 +4373,7 @@
     }
    ],
    "pass": true,
-   "ms": 8,
+   "ms": 9,
    "record": {
     "workflowId": "ML-01",
     "purpose": "Branch set-up is complete",
@@ -4456,7 +4456,7 @@
     }
    ],
    "pass": true,
-   "ms": 3444,
+   "ms": 3437,
    "record": {
     "workflowId": "ML-02",
     "purpose": "Location-specific permissions",
@@ -4505,7 +4505,7 @@
     }
    ],
    "pass": true,
-   "ms": 331,
+   "ms": 321,
    "record": {
     "workflowId": "ML-03",
     "purpose": "Inter-location transfers and inventory visibility",
@@ -4555,7 +4555,7 @@
     }
    ],
    "pass": true,
-   "ms": 12,
+   "ms": 11,
    "record": {
     "workflowId": "ML-04",
     "purpose": "Document numbering across branches",
@@ -4594,7 +4594,7 @@
     }
    ],
    "pass": true,
-   "ms": 1078,
+   "ms": 1154,
    "record": {
     "workflowId": "ML-05",
     "purpose": "Location-specific tax and reporting",
@@ -4643,7 +4643,7 @@
     }
    ],
    "pass": true,
-   "ms": 1362,
+   "ms": 1371,
    "record": {
     "workflowId": "ML-06",
     "purpose": "New location onboarding",
@@ -4686,7 +4686,7 @@
     {
      "what": "the id and the date are the server's, not the request's",
      "ok": true,
-     "measured": "DEC-2026-0048 2026-11-20T09:18:17.734Z"
+     "measured": "DEC-2026-0048 2026-11-20T10:41:30.296Z"
     },
     {
      "what": "a sales representative cannot record one",
@@ -4695,7 +4695,7 @@
     }
    ],
    "pass": true,
-   "ms": 1198,
+   "ms": 1254,
    "record": {
     "workflowId": "GP-01",
     "purpose": "Executive decision create reads no identity from the request",
@@ -4711,7 +4711,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Evidence gaps closed; 5 checks",
     "actual": "as expected (5 checks)",
     "observations": [
-     "answered 201: {\"id\":\"DEC-2026-0048\",\"timestamp\":\"2026-11-20T09:18:17.734Z\",\"type\":\"PRICING\",\"title\":\"P12 decision\",\"description\":\"synthetic\",\"decisionMaker\":\"P11 COO HQ\",\"role\":\"COO\",\"status\":\"PENDING\",\"scenarioId\":null,\"predictedOutcome\":null,\"actualOut"
+     "answered 201: {\"id\":\"DEC-2026-0048\",\"timestamp\":\"2026-11-20T10:41:30.296Z\",\"type\":\"PRICING\",\"title\":\"P12 decision\",\"description\":\"synthetic\",\"decisionMaker\":\"P11 COO HQ\",\"role\":\"COO\",\"status\":\"PENDING\",\"scenarioId\":null,\"predictedOutcome\":null,\"actualOut"
     ],
     "result": "PASS"
    }
@@ -4733,7 +4733,7 @@
     {
      "what": "the slowest read is under 5 seconds",
      "ok": true,
-     "measured": "83 ms"
+     "measured": "88 ms"
     },
     {
      "what": "the answer is a summary, not every record: under 1 MB",
@@ -4742,7 +4742,7 @@
     }
    ],
    "pass": true,
-   "ms": 517,
+   "ms": 531,
    "record": {
     "workflowId": "GP-02",
     "purpose": "Operations cockpit at volume",
@@ -4758,7 +4758,7 @@
     "evidence": "qa/sim/phase12-certification.mjs, Evidence gaps closed; 4 checks",
     "actual": "as expected (4 checks)",
     "observations": [
-     "records: {\"orders\":4115,\"jobs\":627,\"coils\":2616,\"shipments\":1801}; seven reads took 60, 62, 62, 75, 82, 83, 83 ms; answer 74 KB"
+     "records: {\"orders\":4112,\"jobs\":627,\"coils\":2615,\"shipments\":1801}; seven reads took 63, 67, 70, 75, 77, 84, 88 ms; answer 74 KB"
     ],
     "result": "PASS"
    }
@@ -4770,7 +4770,7 @@
     {
      "what": "a 200 KB PDF is accepted",
      "ok": true,
-     "measured": "201 {\"id\":\"bf440f96-f84b-4d5b-aab5-64cc8acad46b\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-siz"
+     "measured": "201 {\"id\":\"66433be6-ce0c-42d0-a20a-331d1ad2648e\",\"documentType\":\"MTR\",\"documentNumber\":null,\"title\":null,\"fileName\":\"p12-siz"
     },
     {
      "what": "a 26 MB PDF, over the 25 MB limit of a self-hosted server, is refused as too large and not as a server error",
@@ -4784,7 +4784,7 @@
     }
    ],
    "pass": true,
-   "ms": 1498,
+   "ms": 1534,
    "record": {
     "workflowId": "GP-03",
     "purpose": "Upload size limit",

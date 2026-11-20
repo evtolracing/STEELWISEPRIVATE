@@ -14,7 +14,7 @@
  *   POST   /:id/create-work-orders → generate Jobs from order lines
  */
 import { statusAfterCreditCheck, recordCreditHold, openCreditHold, creditHoldMessage } from '../lib/creditControl.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
@@ -397,7 +397,7 @@ router.get('/:id', async (req, res) => {
     });
     if (!order) return res.status(404).json({ error: 'Order not found' });
     const hold = order.status === 'HOLD' ? await openCreditHold(prisma, order.id) : null;
-    res.json({ data: { ...mapOrderForIntake(order), ...(hold && { creditHold: { ...hold.details, placedAt: hold.timestamp, message: creditHoldMessage(hold.details), canRelease: MONEY_MANAGERS.has(req.user?.role) } }) } });
+    res.json({ data: { ...mapOrderForIntake(order), ...(hold && { creditHold: { ...hold.details, placedAt: hold.timestamp, message: creditHoldMessage(hold.details), canRelease: can(req, 'orders:releaseCreditHold') } }) } });
   } catch (error) {
     console.error('Error fetching intake order:', error);
     res.status(500).json({ error: 'Failed to fetch order' });

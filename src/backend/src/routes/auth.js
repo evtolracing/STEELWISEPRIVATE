@@ -6,11 +6,12 @@ import { authenticate, requireRole, signUserToken, missingUpdate17, UPDATE_17 } 
 import { raiseAlertLater } from '../lib/alerts.js';
 import { userChangeDenial } from '../lib/userAdminRules.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
-import { grantList } from '../lib/roleStore.js';
+import { allRoles, grantList } from '../lib/roleStore.js';
 import { OPEN_PAGES_PERMISSION, PAGE_PERMISSION } from '../lib/permissionCatalog.js';
 import { ALL_BRANCH_ROLES } from '../lib/branchScope.js';
 import { EXTERNAL_ROLES } from '../lib/roleAccess.js';
-import { PREVIEW_ROLES } from '../lib/viewScope.js';
+import { PREVIEW_ROLES, previewableCustom } from '../lib/viewScope.js';
+import { has } from '../lib/permissions.js';
 
 const router = Router();
 
@@ -217,10 +218,15 @@ router.get('/me', authenticate, async (req, res, next) => {
       select: { id: true, code: true, name: true },
       orderBy: { code: 'asc' },
     });
+    // The custom roles this login may preview: the ones that hold nothing it does not hold itself.
+    const customRoles = mayPreview && req.realAccess ? previewableCustom(Object.values((await allRoles()).byId), (p) => has(req.realAccess.grants, p)) : [];
     const user = {
       ...publicUser(req.user),
       realRole: real.role,
       previewRole: view.previewRole || null,
+      // A custom role's own name, for the banner and the picker.
+      previewLabel: view.previewLabel || null,
+      previewableCustomRoles: customRoles.map((r) => ({ name: r.name, displayName: r.displayName || r.name })).sort((a, b) => a.displayName.localeCompare(b.displayName)),
       canPreviewRoles: mayPreview,
       previewableRoles: mayPreview ? [...PREVIEW_ROLES].filter((r) => r !== real.role && (real.role !== 'ADMIN' || !['SUPER_ADMIN', 'TENANT_OWNER'].includes(r))) : [],
       allBranches,

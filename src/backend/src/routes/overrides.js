@@ -12,14 +12,14 @@
  *   POST /api/overrides/:id/revoke      { reason }                                                  (managers)
  */
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 
 const router = Router();
 const EVENT = 'ORDER_OVERRIDE';
 const TYPES = ['CUTOFF_VIOLATION', 'CAPACITY_WARNING', 'PRICING_OVERRIDE'];
 const text = (v, max = 500) => (v == null || v === '' ? null : String(v).slice(0, max));
-const isManager = (req) => MONEY_MANAGERS.has(req.user?.role);
+const isManager = (req) => can(req, 'sales:approveOverride');
 const managersOnly = (req, res, next) => (isManager(req) ? next() : res.status(403).json({ error: 'Only a manager can do this' }));
 
 function toApi(row) {

@@ -22,7 +22,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { apiRoleDenial, COST_VIEWERS, EXTERNAL_ROLES, staffGroupOf } from '../src/lib/roleAccess.js';
+import { apiRoleDenial, COST_VIEWERS, EXTERNAL_ROLES, MONEY_MANAGERS, STAFF_GROUPS, staffGroupOf } from '../src/lib/roleAccess.js';
+import { ADDED_IN } from '../src/lib/permissionCatalog.js';
+
+// The role-name lists four routes kept to themselves until phase 5 (stock corrections, quality hold
+// release, operators' pay, drop tag overrides). They live here now: the built-in default of each role.
+const LEGACY = {
+  stockAdjusters: new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'INVENTORY_MANAGER']),
+  holdReleasers: new Set(['QC_MANAGER', 'QC_INSPECTOR', 'PRODUCTION_MANAGER', 'SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'COO', 'OPS_MANAGER']),
+  payViewers: new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'PRODUCTION_MANAGER']),
+  tagManagers: new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'PRODUCTION_MANAGER', 'INVENTORY_MANAGER', 'QC_MANAGER']),
+};
 import { ALL_BRANCH_ROLES } from '../src/lib/branchScope.js';
 import { SYSTEM_ADMIN_ROLES, TOP_ROLES } from '../src/lib/viewScope.js';
 import { adminAreaRoles, isPublicApi } from '../src/middleware/apiGate.js';
@@ -104,6 +114,17 @@ export const todayOpens = (role, section) => fe.canAccessPath(role, `/${fe.SECTI
 const HANDLER_RIGHTS = {
   'inventory:viewCost': (role) => COST_VIEWERS.has(role),
   'admin:preview': (role) => SYSTEM_ADMIN_ROLES.has(role),
+  // Catalog version 2 (phase 5): the lists of role names the routes used until then.
+  'sales:editProducts': (role) => COST_VIEWERS.has(role),
+  'sales:editGrades': (role) => COST_VIEWERS.has(role) || role === 'QC_MANAGER',
+  'sales:setListPrice': (role) => MONEY_MANAGERS.has(role),
+  'sales:approveOverride': (role) => MONEY_MANAGERS.has(role),
+  'customers:setCredit': (role) => MONEY_MANAGERS.has(role),
+  'orders:releaseCreditHold': (role) => MONEY_MANAGERS.has(role),
+  'inventory:adjust': (role) => LEGACY.stockAdjusters.has(role),
+  'jobs:releaseQualityHold': (role) => LEGACY.holdReleasers.has(role),
+  'staff:viewPay': (role) => LEGACY.payViewers.has(role),
+  'dropTags:override': (role) => LEGACY.tagManagers.has(role),
 };
 
 const byPermission = {};
@@ -192,9 +213,13 @@ export const BUILTIN_ROLES = ROLES.map((name) => {
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
 export const SEED_BEGIN = '-- BUILT-IN ROLES: BEGIN (written by scripts/permission-defaults.js; do not edit by hand)';
 export const SEED_END = '-- BUILT-IN ROLES: END';
-/** SQL that creates or resets the built-in roles. Safe to run again. */
-export function seedSql() {
-  const rows = BUILTIN_ROLES.map((r) => `  (gen_random_uuid()::text, ${q(r.name)}, ${q(r.displayName)}, '[]'::jsonb, ${q(JSON.stringify(r.grants))}::jsonb, ${q(r.audience)}, ${q(r.branchScope)}, ${q(r.name)}, true, true, CURRENT_TIMESTAMP)`);
+/**
+ * SQL that creates or resets the built-in roles. Safe to run again.
+ * version: the catalog version the database update was written for. Database update 19 was written for
+ * version 1; permissions added since reach a saved role through lib/roleStore.js, not through SQL.
+ */
+export function seedSql(version = 1) {
+  const rows = BUILTIN_ROLES.map((r) => `  (gen_random_uuid()::text, ${q(r.name)}, ${q(r.displayName)}, '[]'::jsonb, ${q(JSON.stringify(r.grants.filter((p) => !(ADDED_IN[p] > version))))}::jsonb, ${q(r.audience)}, ${q(r.branchScope)}, ${q(r.name)}, true, true, CURRENT_TIMESTAMP)`);
   return [
     SEED_BEGIN,
     'INSERT INTO "Role" ("id", "name", "displayName", "permissions", "grants", "audience", "branchScope", "baseRole", "isSystem", "isActive", "updatedAt") VALUES',

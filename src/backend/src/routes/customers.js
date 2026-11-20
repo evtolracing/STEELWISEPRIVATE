@@ -1,7 +1,7 @@
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
 import { ci } from '../lib/dbText.js';
-import { MONEY_MANAGERS } from '../lib/roleAccess.js';
 import { TIER_TO_LEVEL, levelForTier } from '../lib/priceRules.js';
 
 // The pricing tier on this screen is the one prices are worked out from
@@ -336,7 +336,7 @@ router.put('/:id/preferences', async (req, res) => {
     const tier = await prisma.customerPricingTier.findUnique({ where: { customerId: accountId } });
     const tierChanged = wantTier !== tierInForce(tier);
     const limitChanged = !sameAmount(wantLimit, tier?.creditLimit ?? null);
-    if ((tierChanged || limitChanged) && !MONEY_MANAGERS.has(req.user?.role)) {
+    if ((tierChanged || limitChanged) && !can(req, 'customers:setCredit')) {
       return res.status(403).json({ error: 'Only a manager can change a customer\'s pricing tier or credit limit' });
     }
 

@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit bc1e330. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -16,8 +16,8 @@ Every figure here is counted from the code or measured in a test run. The module
 | Enumerations | 96 |
 | Migrations | 38 |
 | Screens (routes in the browser) | 147 |
-| Frontend source files | 413 (122,322 lines) |
-| Server route code | 25,912 lines |
+| Frontend source files | 413 (122,375 lines) |
+| Server route code | 25,919 lines |
 | Background jobs, queues, schedules, event bus | 0 |
 | Email or text providers | 0 |
 | Outside services called | 4 (three AI providers, one voice provider) plus partner webhooks |
@@ -913,7 +913,7 @@ Finding B-014.
 
 | File | Lines | Pieces of state (useState) |
 |---|---:|---:|
-| src/frontend/src/help/manualContent.js | 3570 | 0 |
+| src/frontend/src/help/manualContent.js | 3605 | 0 |
 | src/frontend/src/router/AppRouter.jsx | 1591 | 0 |
 | src/frontend/src/pages/Admin/StaffManagementPage.jsx | 1337 | 35 |
 | src/frontend/src/pages/OpsCockpit/OpsCockpitPage.jsx | 1093 | 14 |
@@ -939,7 +939,7 @@ Finding B-014.
 | src/backend/src/routes/dispatchRoutes.js | 921 | |
 | src/backend/src/routes/inventoryV1.js | 876 | |
 | src/backend/src/routes/opsCockpit.js | 873 | |
-| src/backend/src/routes/staff.js | 788 | |
+| src/backend/src/routes/staff.js | 787 | |
 | src/backend/src/routes/bomV1.js | 734 | |
 | src/backend/src/routes/operationsRoutes.js | 672 | |
 | src/backend/src/routes/aiOrderHubRoutes.js | 652 | |

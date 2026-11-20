@@ -5,7 +5,7 @@ import { hashPassword } from '../lib/passwords.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { ci } from '../lib/dbText.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
-import { allRoles, forgetUser } from '../lib/roleStore.js';
+import { allRoles, can, forgetUser } from '../lib/roleStore.js';
 import { roleGiftDenial } from '../lib/userAccessRules.js';
 
 /**
@@ -49,10 +49,10 @@ const router = Router();
  * looking up a name does not learn whose login is being guessed at.
  */
 const LOGIN_MANAGERS = new Set(['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'BRANCH_MANAGER']);
-export function forViewer(user, viewer) {
+export function forViewer(user, viewer, manages = LOGIN_MANAGERS.has(viewer?.role)) {
   // eslint-disable-next-line no-unused-vars
   const { passwordHash, failedLoginCount, lockedUntil, tokensValidAfter, ...rest } = user;
-  return LOGIN_MANAGERS.has(viewer?.role) || viewer?.id === user.id ? { ...rest, failedLoginCount, lockedUntil, tokensValidAfter } : rest;
+  return manages || viewer?.id === user.id ? { ...rest, failedLoginCount, lockedUntil, tokensValidAfter } : rest;
 }
 
 // ==================== USER CRUD ====================
@@ -124,7 +124,7 @@ router.get('/', authenticate, async (req, res) => {
     ]);
 
     // Remove password hash from response
-    const sanitizedUsers = users.map((u) => forViewer(u, req.user));
+    const sanitizedUsers = users.map((u) => forViewer(u, req.user, can(req, 'adminUsers:edit')));
 
     res.json({
       users: sanitizedUsers,
@@ -169,7 +169,7 @@ router.get('/:id', authenticate, async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(forViewer(user, req.user));
+    res.json(forViewer(user, req.user, can(req, 'adminUsers:edit')));
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Failed to fetch user' });

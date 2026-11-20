@@ -44,11 +44,31 @@ export function previewRoleFor(realRole, asked, mayPreview = SYSTEM_ADMIN_ROLES.
  *   branches  null = every branch, otherwise the branch ids this request is held to
  * seesEveryBranch(role): whether a previewed role sees every branch; mayPreview: whether this login may preview
  * (the saved roles decide both; the role's name decides when they are not given)
+ * customRole: the custom role asked for, when the caller found one this login may preview
+ * ({ name, baseRole, branchScope }, see customPreview). The login then carries the built-in role the
+ * custom role stands on, as a person with that main role does.
  */
-export function requestView(user, { viewAs, branchId } = {}, { seesEveryBranch = (role) => ALL_BRANCH_ROLES.has(role), mayPreview } = {}) {
+/**
+ * The custom roles a login may preview: active staff roles that hold nothing the login does not
+ * hold itself, so a preview never shows more than the person's own sign-in would.
+ * roles: the saved roles; holds(permission): whether the login holds it.
+ */
+export function previewableCustom(roles, holds) {
+  return (roles || []).filter((r) => r && !r.isSystem && r.isActive !== false && r.audience === 'STAFF' && Array.isArray(r.grants) && r.grants.every((p) => holds(p)));
+}
+/** The custom role named in the View as header, if the login may preview it. */
+export function customPreview(roles, holds, asked) {
+  const name = String(asked || '').trim().toUpperCase();
+  if (!name) return null;
+  const role = previewableCustom(roles, holds).find((r) => r.name === name);
+  return role ? { id: role.id, name: role.name, displayName: role.displayName || role.name, baseRole: role.baseRole || 'VIEWER', branchScope: role.branchScope } : null;
+}
+
+export function requestView(user, { viewAs, branchId } = {}, { seesEveryBranch = (role) => ALL_BRANCH_ROLES.has(role), mayPreview, customRole = null } = {}) {
   const realRole = user?.role || null;
-  const previewRole = previewRoleFor(realRole, viewAs, mayPreview);
-  const effective = previewRole ? { ...user, role: previewRole } : user;
+  const custom = customRole && (mayPreview ?? SYSTEM_ADMIN_ROLES.has(realRole)) && !EXTERNAL_ROLES.has(realRole) ? customRole : null;
+  const previewRole = custom ? custom.name : previewRoleFor(realRole, viewAs, mayPreview);
+  const effective = previewRole ? { ...user, role: custom ? custom.baseRole : previewRole } : user;
 
   // Which branches the person may pick from: their own login decides, never the preview.
   const mayPick = branchesOf(user);
@@ -60,7 +80,7 @@ export function requestView(user, { viewAs, branchId } = {}, { seesEveryBranch =
   else if (previewRole) {
     // A preview of a role held to branches, with no branch picked, shows the administrator's own
     // branches; one that sees every branch shows every branch.
-    branches = seesEveryBranch(previewRole) ? null : (branchesOf({ ...user, role: 'CSR', branchScope: 'ASSIGNED' }) || []);
+    branches = (custom ? custom.branchScope === 'ALL' : seesEveryBranch(previewRole)) ? null : (branchesOf({ ...user, role: 'CSR', branchScope: 'ASSIGNED' }) || []);
   } else branches = branchesOf(user);
 
   return {

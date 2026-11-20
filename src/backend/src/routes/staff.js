@@ -1,17 +1,16 @@
 import { Router } from 'express'
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js'
 import { createNumbered, padded } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js'
-import { STAFF_GROUPS } from '../lib/roleAccess.js'
 
 const router = Router()
 
-// Pay rates and emergency contacts are personal. They are sent to managers, leadership and the
-// production manager; everyone else who may look up an operator gets the record without them.
-const PAY_VIEWERS = new Set([...STAFF_GROUPS.admin, ...STAFF_GROUPS.leadership, 'PRODUCTION_MANAGER'])
+// Pay rates and emergency contacts are personal. They are sent to people whose roles hold
+// "See pay rates and emergency contacts"; everyone else gets the record without them.
 const PRIVATE_FIELDS = ['hourlyRate', 'overtimeMultiplier', 'emergencyContactName', 'emergencyContactPhone']
 function forViewer(req, operator) {
-  if (!operator || PAY_VIEWERS.has(req.user?.role)) return operator
+  if (!operator || can(req, 'staff:viewPay')) return operator
   const copy = { ...operator }
   for (const f of PRIVATE_FIELDS) delete copy[f]
   return copy

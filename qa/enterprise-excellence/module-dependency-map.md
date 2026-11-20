@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit fd6076c. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit bc1e330. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -103,9 +103,8 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | File | Imported by (route files) | Count |
 |---|---|---:|
 | lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 62 |
+| lib/roleStore.js | auth.js, coils.js, customers.js, dispatchRoutes.js, dropTagRoutes.js, grades.js, heats.js, intakeOrders.js, … | 23 |
 | lib/numbering.js | intakeOrders.js, inventory.js, invoices.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, … | 15 |
-| lib/roleStore.js | auth.js, coils.js, dispatchRoutes.js, heats.js, integrations.js, inventory.js, jobs.js, ledger.js, … | 13 |
-| lib/roleAccess.js | auth.js, customers.js, grades.js, intakeOrders.js, intakePricing.js, orders.js, overrides.js, pos.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
 | lib/branchScope.js | auth.js, dispatchRoutes.js, documents.js, intakeOrders.js, inventory.js, ledger.js, purchaseOrders.js, shipments.js | 8 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
@@ -131,6 +130,8 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/userAdminRules.js | auth.js, userAccess.js, users.js | 3 |
 | lib/customerPricing.js | ecom.js, intakePricing.js, quickSale.js | 3 |
 | lib/lineSpecs.js | intakeOrders.js, quotes.js, rfqs.js | 3 |
+| lib/roleAccess.js | auth.js, shipments.js | 2 |
+| lib/permissions.js | auth.js, userAccess.js | 2 |
 | lib/holds.js | coils.js, returns.js | 2 |
 | lib/priceRules.js | customers.js, intakePricing.js | 2 |
 | lib/workCenterKindRules.js | dispatchRoutes.js, qcRoutes.js | 2 |
@@ -177,7 +178,6 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/builtinRoleDefaults.js | roles.js | 1 |
 | services/pricingIntelligenceService.js | salesRoutes.js | 1 |
 | lib/shippingDocuments.js | shipments.js | 1 |
-| lib/permissions.js | userAccess.js | 1 |
 | lib/workOrderRules.js | workOrders.js | 1 |
 
 ## Highest-risk dependencies

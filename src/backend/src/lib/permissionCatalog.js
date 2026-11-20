@@ -39,12 +39,19 @@ export const AREAS = [
   area('sales', 'Sales and pricing', 'Sales', 'sales', ['view', ...CRUD], [
     ['ask', 'Run a what-if on the order pipeline (changes nothing)'],
     ['configure', 'Change the demand shaping settings'],
+    ['editProducts', 'Add or change a product'],
+    ['editGrades', 'Add or change a grade'],
+    ['setListPrice', 'Set or change a list price', true],
+    ['approveOverride', 'Approve a price override or a counter discount, and read the override log', true],
   ]),
-  area('customers', 'Customers and contacts', 'Sales', null, CRUD),
+  area('customers', 'Customers and contacts', 'Sales', null, CRUD, [
+    ['setCredit', 'Change a customer\'s price tier or credit limit', true],
+  ]),
   area('quotes', 'Quotes and requests for quote', 'Sales', null, CRUD),
   area('orders', 'Orders', 'Sales', 'orders', ['view', ...CRUD], [
     ['allocate', 'Reserve stock for an order'],
     ['plan', 'Plan an order and mark it for packaging'],
+    ['releaseCreditHold', 'Release an order from credit hold', true],
   ]),
   area('returns', 'Returns', 'Sales', null, CRUD, [['receive', 'Receive a return']]),
   area('billing', 'Invoices and payments', 'Sales', 'billing', ['view', ...CRUD], [
@@ -57,6 +64,7 @@ export const AREAS = [
 
   area('inventory', 'Stock', 'Stock and purchasing', 'inventory', ['view', ...CRUD], [
     ['viewCost', 'See what stock cost and the margin', true],
+    ['adjust', 'Correct a stock balance and settle a shortage', true],
   ]),
   area('materialTracking', 'Material tracking', 'Stock and purchasing', 'materialTracking', ['view', ...CRUD]),
   area('purchasing', 'Purchase orders', 'Stock and purchasing', 'purchasing', ['view', ...CRUD]),
@@ -66,16 +74,21 @@ export const AREAS = [
   area('opsCockpit', 'Operations cockpit', 'Stock and purchasing', 'opsCockpit', ['view', ...CRUD]),
 
   area('production', 'Production screens', 'Production', 'production', ['view']),
-  area('jobs', 'Jobs and work orders', 'Production', null, CRUD),
+  area('jobs', 'Jobs and work orders', 'Production', null, CRUD, [
+    ['releaseQualityHold', 'Release a quality hold on a work order'],
+  ]),
   area('shopFloor', 'Shop-floor operations', 'Production', null, CRUD),
   area('recipes', 'Processing recipes and bills of material', 'Production', 'adminRecipes', ['view', ...CRUD], [
     ['ask', 'Match a recipe and ask for a suggestion (changes nothing)'],
   ]),
   area('workCenters', 'Work centers', 'Production', null, CRUD),
   area('dispatch', 'Dispatch and scheduling runs', 'Production', null, CRUD),
-  area('staff', 'Operators, skills and shifts', 'Production', 'adminStaff', ['view', ...CRUD]),
+  area('staff', 'Operators, skills and shifts', 'Production', 'adminStaff', ['view', ...CRUD], [
+    ['viewPay', 'See what operators are paid', true],
+  ]),
   area('dropTags', 'Drop tags and packages', 'Production', null, CRUD, [
     ['qcRelease', 'Release or hold a package after inspection'],
+    ['override', 'Print a tag again past the limit, and void a tag after the material left the dock'],
   ]),
   area('tagTemplates', 'Tag templates', 'Production', null, CRUD),
   area('printQueue', 'Print queue', 'Production', null, CRUD),
@@ -122,6 +135,24 @@ export const AREAS = [
 /** Every permission there is, as "<area>:<action>". */
 export const PERMISSIONS = AREAS.flatMap((a) => [...a.actions, ...a.special.map((s) => s.action)].map((action) => `${a.id}:${action}`));
 export const PERMISSION_SET = new Set(PERMISSIONS);
+
+/**
+ * The catalog's version, and the permissions each version added. A role saved under an older
+ * version has never been asked about the newer permissions: until it is saved again it holds the
+ * ones its built-in default holds (lib/roleStore.js, storedRole). That keeps everyone's access the
+ * same when a right that used to be decided by role name becomes a box in the grid, with no
+ * database update.
+ *
+ * Version 2 (phase 5): the rights the routes used to decide by fixed lists of role names.
+ */
+export const CATALOG_VERSION = 2;
+export const ADDED_IN = {
+  'sales:editProducts': 2, 'sales:editGrades': 2, 'sales:setListPrice': 2, 'sales:approveOverride': 2,
+  'customers:setCredit': 2, 'orders:releaseCreditHold': 2, 'inventory:adjust': 2, 'jobs:releaseQualityHold': 2,
+  'staff:viewPay': 2, 'dropTags:override': 2,
+};
+/** The permissions a role saved under `version` has not been asked about. */
+export const addedSince = (version) => Object.keys(ADDED_IN).filter((p) => ADDED_IN[p] > version);
 /** The menu area (frontend section) each view permission opens. */
 export const PAGE_PERMISSION = Object.fromEntries(AREAS.filter((a) => a.page).map((a) => [a.page, `${a.id}:view`]));
 /** Pages outside every menu area (dashboards, safety, training, help). */

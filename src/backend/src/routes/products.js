@@ -1,8 +1,8 @@
 import { Router } from 'express';
+import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
 import { searchProducts, productCategories } from '../services/intakeCatalogService.js';
 import { readFields, rangeError } from '../lib/fieldRules.js';
-import { MONEY_MANAGERS, COST_VIEWERS } from '../lib/roleAccess.js';
 
 const router = Router();
 
@@ -87,12 +87,12 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Adding a product needs a manager, the inventory manager or a buyer.' });
+    if (!can(req, 'sales:editProducts')) return res.status(403).json({ error: 'Adding a product needs a manager, the inventory manager or a buyer.' });
     const { data, error } = readFields(req.body, CREATE_FIELDS, { creating: true });
     if (error) return res.status(400).json({ error });
     const range = rangeError(data, RANGES);
     if (range) return res.status(400).json({ error: range });
-    if (data.basePriceCwt != null && !MONEY_MANAGERS.has(req.user.role)) return res.status(403).json({ error: 'Setting a list price needs a manager. Add the product without a price and ask a manager to price it.' });
+    if (data.basePriceCwt != null && !can(req, 'sales:setListPrice')) return res.status(403).json({ error: 'Setting a list price needs a manager. Add the product without a price and ask a manager to price it.' });
     if (data.gradeId && !(await prisma.grade.findUnique({ where: { id: data.gradeId }, select: { id: true } }))) return res.status(400).json({ error: 'That grade does not exist' });
     if (await prisma.product.findUnique({ where: { sku: data.sku }, select: { id: true } })) return res.status(409).json({ error: `Product ${data.sku} already exists` });
     const product = await prisma.$transaction(async (tx) => {
@@ -110,7 +110,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Changing a product needs a manager, the inventory manager or a buyer.' });
+    if (!can(req, 'sales:editProducts')) return res.status(403).json({ error: 'Changing a product needs a manager, the inventory manager or a buyer.' });
     const before = await prisma.product.findUnique({ where: { id: req.params.id } });
     if (!before) return res.status(404).json({ error: 'Product not found' });
     const { data, error } = readFields(req.body, FIELDS);
@@ -119,7 +119,7 @@ router.put('/:id', async (req, res) => {
     const range = rangeError({ ...before, ...data }, RANGES);
     if (range) return res.status(400).json({ error: range });
     const priceChanged = ('basePriceCwt' in data && amount(data.basePriceCwt) !== amount(before.basePriceCwt)) || ('priceUnit' in data && data.priceUnit !== before.priceUnit);
-    if (priceChanged && !MONEY_MANAGERS.has(req.user.role)) return res.status(403).json({ error: 'Changing a list price needs a manager.' });
+    if (priceChanged && !can(req, 'sales:setListPrice')) return res.status(403).json({ error: 'Changing a list price needs a manager.' });
     if (data.gradeId && !(await prisma.grade.findUnique({ where: { id: data.gradeId }, select: { id: true } }))) return res.status(400).json({ error: 'That grade does not exist' });
     if (data.sku && data.sku !== before.sku && (await prisma.product.findUnique({ where: { sku: data.sku }, select: { id: true } }))) return res.status(409).json({ error: `Product ${data.sku} already exists` });
     const product = await prisma.$transaction(async (tx) => {

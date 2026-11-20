@@ -228,6 +228,8 @@ export function AuthProvider({ children }) {
     // The person's own role, also while previewing another one.
     realRole: user?.realRole || user?.role || null,
     previewRole: user?.previewRole || null,
+    // What to call the previewed role: a custom role's own name, when it is one.
+    previewLabel: user?.previewLabel || null,
     branchId: user?.branchId || '',
     viewVersion,
     setBranch,

@@ -717,7 +717,9 @@ router.post('/run', async (req, res) => {
         }
       }
       for (const reason of Object.values(locked)) plan.notChecked.push(`${reason}, so it was given no work`)
-      return { assigned, plan }
+      // New jobs for this branch's orders that have no route yet: dispatch cannot place what was never planned.
+      const notPlanned = await tx.job.count({ where: { status: 'ORDERED', order: { locationId: branch.id } } })
+      return { assigned, plan, notPlanned }
     }, { timeout: 60000, maxWait: 20000 })
 
   res.json({
@@ -729,6 +731,7 @@ router.post('/run', async (req, res) => {
       unassignedCount: result.plan.unassigned.length,
       unassigned: result.plan.unassigned,
       notChecked: result.plan.notChecked,
+      notPlannedCount: result.notPlanned,
     },
   })
   } catch (error) {

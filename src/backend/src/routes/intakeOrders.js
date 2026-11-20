@@ -548,7 +548,23 @@ router.post('/:id/submit', async (req, res) => {
     const order = await prisma.order.findUnique({ where: { id: existing.id }, include: ORDER_INCLUDE });
     if (gate.creditHold) await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
 
-    res.json({ data: mapOrderForIntake(order), ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }) });
+    // The order desk asks for the work orders in the same step, so the order is on the Order Board
+    // (New Orders) as soon as it is submitted. An order on credit hold waits for a manager first.
+    let made = null;
+    if (req.body?.createWorkOrders === true && !gate.creditHold) {
+      try { made = await workOrdersFor(order.id, req.user); } catch (error) {
+        console.error('Error creating work orders after submit:', error);
+        made = { status: 500, body: { error: 'The work orders could not be created' } };
+      }
+    }
+    const after = made?.jobs ? await prisma.order.findUnique({ where: { id: existing.id }, include: ORDER_INCLUDE }) : order;
+    res.json({
+      data: mapOrderForIntake(after),
+      ...(gate.creditHold && { creditHold: gate.creditHold, warning: gate.creditHold.message }),
+      ...(made?.jobs && { workOrders: made.jobs }),
+      // Submitted, but the work orders were not made: the screen says so and the order page still offers the button.
+      ...(made && !made.jobs && { workOrdersError: made.body?.error || 'The work orders could not be created', ...(made.body?.creditHold && { creditHold: made.body.creditHold, warning: made.body.error }) }),
+    });
   } catch (error) {
     console.error('Error submitting intake order:', error);
     res.status(500).json({ error: 'Failed to submit order' });
@@ -557,20 +573,24 @@ router.post('/:id/submit', async (req, res) => {
 
 // ─── POST /:id/create-work-orders — generate Jobs from order lines ──
 
-router.post('/:id/create-work-orders', async (req, res) => {
-  try {
+/**
+ * Makes the work orders of a sales order: confirms the order, then one job per line that has none.
+ * Returns { status, body } for a refusal, or { jobs }. Used by the Create Work Orders button and by
+ * a submit that asks for them in the same step.
+ */
+async function workOrdersFor(orderId, user) {
     const order = await prisma.order.findUnique({
-      where: { id: req.params.id },
+      where: { id: orderId },
       include: { lines: { orderBy: { lineNumber: 'asc' } }, buyer: true },
     });
-    if (!order || order.orderType !== 'SO') return res.status(404).json({ error: 'Order not found' });
+    if (!order || order.orderType !== 'SO') return { status: 404, body: { error: 'Order not found' } };
     if (order.status === 'HOLD' && (await openCreditHold(prisma, order.id))) {
-      return res.status(409).json({ error: 'This order is on credit hold. A manager releases it before work orders can be created.' });
+      return { status: 409, body: { error: 'This order is on credit hold. A manager releases it before work orders can be created.' } };
     }
     if (!['DRAFT', 'PENDING', 'CONFIRMED'].includes(order.status)) {
-      return res.status(409).json({ error: `Work orders cannot be created for a ${order.status.toLowerCase()} order` });
+      return { status: 409, body: { error: `Work orders cannot be created for a ${order.status.toLowerCase()} order` } };
     }
-    if (!order.lines.length) return res.status(400).json({ error: 'The order has no lines to make work orders for' });
+    if (!order.lines.length) return { status: 400, body: { error: 'The order has no lines to make work orders for' } };
 
     const { meta } = unpackNotes(order.notes);
 
@@ -583,10 +603,10 @@ router.post('/:id/create-work-orders', async (req, res) => {
     if (order.status !== 'CONFIRMED') {
       const gate = await statusAfterCreditCheck(prisma, { customerId: order.buyerId, orderId: order.id, orderTotal: order.totalAmount, wanted: 'CONFIRMED' });
       const moved = await prisma.order.updateMany({ where: { id: order.id, status: order.status }, data: { status: gate.status } });
-      if (!moved.count) return res.status(409).json({ error: 'This order was just changed by someone else. Reload and try again.' });
+      if (!moved.count) return { status: 409, body: { error: 'This order was just changed by someone else. Reload and try again.' } };
       if (gate.creditHold) {
-        await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user: req.user });
-        return res.status(409).json({ error: gate.creditHold.message, creditHold: gate.creditHold });
+        await recordCreditHold(prisma, { orderId: order.id, orderNumber: order.orderNumber, creditHold: gate.creditHold, user });
+        return { status: 409, body: { error: gate.creditHold.message, creditHold: gate.creditHold } };
       }
     }
 
@@ -624,7 +644,7 @@ router.post('/:id/create-work-orders', async (req, res) => {
             processes,
             requirements: specsOfLine(line),
           }),
-          createdById: req.user.id,
+          createdById: user.id,
         },
       }) });
       jobs.push({
@@ -640,7 +660,14 @@ router.post('/:id/create-work-orders', async (req, res) => {
       });
     }
 
-    res.json({ data: { workOrders: jobs, count: jobs.length } });
+    return { jobs };
+}
+
+router.post('/:id/create-work-orders', async (req, res) => {
+  try {
+    const made = await workOrdersFor(req.params.id, req.user);
+    if (!made.jobs) return res.status(made.status).json(made.body);
+    res.json({ data: { workOrders: made.jobs, count: made.jobs.length } });
   } catch (error) {
     console.error('Error creating work orders:', error);
     res.status(500).json({ error: 'Failed to create work orders' });

@@ -325,6 +325,7 @@ const ModernJobCard = ({
                   >
                     <PersonIcon sx={{ fontSize: 12 }} />
                     {job.customerName || job.instructions?.split('-')[0]?.trim() || 'Customer'}
+                    {job.orderNumber ? ` · ${job.orderNumber}` : ''}
                   </Typography>
                 </>
               )}

@@ -34,6 +34,7 @@ import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import AuditLogViewer from '../../components/orders/AuditLogViewer'
 import OrderCloseoutPanel from '../../components/orders/OrderCloseoutPanel'
 import { ReleaseHoldDialog } from './CreditHoldsPage'
+import { getJobs } from '../../api/jobs'
 
 const STATUS_COLOR = {
   DRAFT: 'default', HOLD: 'warning', SUBMITTED: 'primary', CONFIRMED: 'info', IN_PRODUCTION: 'warning',
@@ -87,6 +88,17 @@ export default function OrderDetailPage() {
 
   useEffect(() => { loadOrder() }, [loadOrder])
 
+  // The order's work orders, so the page says whether it is on the Order Board yet and where.
+  const [jobs, setJobs] = useState([])
+  const loadJobs = useCallback(() => {
+    if (!id) return
+    getJobs({ orderId: id }).then((rows) => setJobs(Array.isArray(rows) ? rows.filter((j) => j.status !== 'CANCELLED') : [])).catch(() => setJobs([]))
+  }, [id])
+  useEffect(() => { loadJobs() }, [loadJobs])
+  const linesWithoutJob = (order?.lines || []).filter((l) => !jobs.some((j) => j.orderLineId === l.id)).length
+  const mayCreateWOs = ['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order?.status) && (jobs.length === 0 || linesWithoutJob > 0)
+  const seeOnBoard = () => navigate(`/order-board?search=${encodeURIComponent(order?.orderNumber || '')}`)
+
   // Load overrides for this order
   useEffect(() => {
     if (!id) return
@@ -113,14 +125,18 @@ export default function OrderDetailPage() {
   const handleSubmit = useCallback(async () => {
     setSaving(true)
     try {
-      const res = await submitOrder(id)
-      setSnack(res?.warning ? { open: true, msg: res.warning, severity: 'warning' } : { open: true, msg: 'Order submitted', severity: 'success' })
+      // As on the intake screen: the work orders are made in the same step, so the order is on the Order Board.
+      const res = await submitOrder(id, { createWorkOrders: true })
+      setSnack(res?.warning ? { open: true, msg: res.warning, severity: 'warning' }
+        : res?.workOrdersError ? { open: true, msg: `Order submitted, but its work orders were not made: ${res.workOrdersError}`, severity: 'warning' }
+        : { open: true, msg: 'Order submitted. Its work orders are under New Orders on the Order Board.', severity: 'success' })
       loadOrder()
+      loadJobs()
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
     }
     setSaving(false)
-  }, [id, loadOrder])
+  }, [id, loadOrder, loadJobs])
 
   // ── Create Work Orders ──
   const handleCreateWOs = useCallback(async () => {
@@ -130,6 +146,7 @@ export default function OrderDetailPage() {
       setWoResult(res.data)
       setWoDialogOpen(true)
       setSnack({ open: true, msg: 'Work orders created!', severity: 'success' })
+      loadJobs()
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Failed to create work orders', severity: 'error' })
     }
@@ -240,7 +257,7 @@ export default function OrderDetailPage() {
             <Button size="small" startIcon={<SubmitIcon />} variant="contained" onClick={handleSubmit} disabled={saving}>Submit</Button>
           </>
         )}
-        {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
+        {mayCreateWOs && (
           <Button size="small" startIcon={<WOIcon />} variant="contained" color="secondary" onClick={handleCreateWOs} disabled={saving}>
             Create Work Orders
           </Button>
@@ -347,8 +364,23 @@ export default function OrderDetailPage() {
               {order.status === 'DRAFT' && (
                 <Button fullWidth size="small" variant="contained" startIcon={<SubmitIcon />} onClick={handleSubmit} disabled={saving}>Submit Order</Button>
               )}
-              {['SUBMITTED', 'PENDING', 'CONFIRMED'].includes(order.status) && (
+              {mayCreateWOs && (
                 <Button fullWidth size="small" variant="contained" color="secondary" startIcon={<WOIcon />} onClick={handleCreateWOs} disabled={saving}>Create Work Orders</Button>
+              )}
+              {jobs.length > 0 && (
+                <Box data-testid="order-work-orders">
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                    {jobs.length} work order{jobs.length === 1 ? '' : 's'} on the Order Board
+                  </Typography>
+                  {jobs.map((j) => (
+                    <Chip key={j.id} size="small" variant="outlined" sx={{ mr: 0.5, mb: 0.5 }}
+                      label={`${j.jobNumber} · ${j.status === 'ORDERED' ? 'New, not planned' : String(j.status || '').replace(/_/g, ' ').toLowerCase()}`} />
+                  ))}
+                  <Button fullWidth size="small" variant="outlined" onClick={seeOnBoard} data-testid="see-on-board">See on Order Board</Button>
+                </Box>
+              )}
+              {jobs.length === 0 && ['SUBMITTED', 'PENDING'].includes(order.status) && (
+                <Alert severity="info" sx={{ py: 0 }} data-testid="no-work-orders">Not on the Order Board yet. Create its work orders to put it under New Orders.</Alert>
               )}
               <Button fullWidth size="small" variant="outlined" startIcon={<PrintIcon />} onClick={() => window.print()} className="no-print">Print</Button>
             </Box>
@@ -374,12 +406,13 @@ export default function OrderDetailPage() {
           )}
         </DialogContent>
         <DialogActions>
+          <Button onClick={() => { setWoDialogOpen(false); seeOnBoard() }}>See on Order Board</Button>
           <Button variant="contained" onClick={() => { setWoDialogOpen(false); loadOrder() }}>OK</Button>
         </DialogActions>
       </Dialog>
 
       {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+      <Snackbar open={snack.open} autoHideDuration={6000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} variant="filled" onClose={() => setSnack(s => ({ ...s, open: false }))}>{snack.msg}</Alert>
       </Snackbar>
     </Box>

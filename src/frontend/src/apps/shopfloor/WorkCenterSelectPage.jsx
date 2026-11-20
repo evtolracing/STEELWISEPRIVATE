@@ -62,6 +62,7 @@ import { useAuth } from '../../hooks/useAuth'
 import CreateWorkCenterDialog from './CreateWorkCenterDialog'
 import ManageWorkCenterTypesDialog from './ManageWorkCenterTypesDialog'
 import { ask } from '../../utils/ask'
+import { dispatchMessage } from './dispatchMessage'
 
 function WorkCenterSelectPage() {
   const { user } = useAuth()
@@ -167,12 +168,8 @@ function WorkCenterSelectPage() {
     setDispatching(true)
     try {
       const result = await runDispatch(selectedLocation)
-      setSnackbar({
-        open: true,
-        // Says what could not be placed and why, so the planner is not left guessing.
-        message: `Assigned ${result.assignedCount} step${result.assignedCount === 1 ? '' : 's'}.${result.unassignedCount ? ` ${result.unassignedCount} could not be placed: ${result.unassigned[0].reason}${result.unassignedCount > 1 ? ' (and others)' : ''}.` : ''}${result.notChecked?.length ? ` Note: ${result.notChecked[0]}.` : ''}`,
-        severity: result.unassignedCount ? 'warning' : 'success',
-      })
+      // Says what was placed, what could not be and why, and which new jobs still need a route.
+      setSnackbar({ open: true, ...dispatchMessage(result) })
       loadData()
     } catch (err) {
       setSnackbar({ open: true, message: `Dispatch failed: ${err.message}`, severity: 'error' })
@@ -316,8 +313,9 @@ function WorkCenterSelectPage() {
             New Work Center
           </Button>
           <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Location</InputLabel>
+            <InputLabel id="shopfloor-location-label">Location</InputLabel>
             <Select
+              labelId="shopfloor-location-label"
               value={selectedLocation}
               label="Location"
               onChange={(e) => setSelectedLocation(e.target.value)}
@@ -478,7 +476,7 @@ function WorkCenterSelectPage() {
                               {wc.name}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {wc.id}
+                              {wc.code || ""}
                             </Typography>
                           </Box>
                         </Box>
@@ -714,7 +712,7 @@ function WorkCenterSelectPage() {
       {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={4000}
+        autoHideDuration={snackbar.message?.length > 60 ? 15000 : 4000}
         onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >

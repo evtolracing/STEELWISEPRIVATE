@@ -78,6 +78,10 @@ const ModernKanbanColumn = ({
     const pA = priorityOrder[a.priority] ?? 2
     const pB = priorityOrder[b.priority] ?? 2
     if (pA !== pB) return pA - pB
+    // New orders: the newest first, so an order just submitted is at the top of its priority.
+    if (column.id === 'new') {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    }
     return new Date(a.dueDate || 0) - new Date(b.dueDate || 0)
   })
 
@@ -287,7 +291,10 @@ const ModernKanbanBoard = ({
   onRefresh,
   loading = false,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('')
+  // /order-board?search=SO-01234 opens the board already narrowed to that order (the order page links here).
+  const [searchQuery, setSearchQuery] = useState(() => {
+    try { return new URLSearchParams(window.location.search).get('search') || '' } catch { return '' }
+  })
   const [filterAnchor, setFilterAnchor] = useState(null)
   const [activeFilters, setActiveFilters] = useState({
     priority: [],
@@ -308,6 +315,7 @@ const ModernKanbanBoard = ({
       const query = searchQuery.toLowerCase()
       const matchesSearch =
         job.jobNumber?.toLowerCase().includes(query) ||
+        job.orderNumber?.toLowerCase().includes(query) ||
         job.customerName?.toLowerCase().includes(query) ||
         job.material?.toLowerCase().includes(query) ||
         job.instructions?.toLowerCase().includes(query) ||
@@ -356,7 +364,7 @@ const ModernKanbanBoard = ({
         {/* Search */}
         <TextField inputProps={{ 'aria-label': "Search jobs, customers, materials" }}
           size="small"
-          placeholder="Search jobs, customers, materials..."
+          placeholder="Search jobs, orders, customers..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           InputProps={{

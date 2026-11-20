@@ -1,5 +1,5 @@
 {
- "at": "2026-11-20T10:43:34.043Z",
+ "at": "2026-11-20T12:16:47.376Z",
  "effects": [
   "src/frontend/src/apps/bom/BomRecipeEditorPage.jsx:90",
   "src/frontend/src/apps/bom/BomRecipeListPage.jsx:40",
@@ -11,8 +11,8 @@
   "src/frontend/src/apps/shopfloor/WorkCenterQueuePage.jsx:190",
   "src/frontend/src/components/MapComponent.jsx:143",
   "src/frontend/src/components/common/SearchInput.jsx:21",
-  "src/frontend/src/components/jobs/JobPlanningDialog.jsx:78",
-  "src/frontend/src/components/jobs/JobPlanningDialog.jsx:110",
+  "src/frontend/src/components/jobs/JobPlanningDialog.jsx:81",
+  "src/frontend/src/components/jobs/JobPlanningDialog.jsx:113",
   "src/frontend/src/components/jobs/ModernJobCard.jsx:165",
   "src/frontend/src/components/layout/CutoffClockChip.jsx:41",
   "src/frontend/src/components/layout/HeaderAIAssistant.jsx:146",
@@ -37,7 +37,7 @@
   "src/frontend/src/pages/Admin/UserManagementPage.jsx:102",
   "src/frontend/src/pages/Ecommerce/OnlineSettingsPage.jsx:63",
   "src/frontend/src/pages/Executive/CompressionMetricsDashboard.jsx:151",
-  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:290",
+  "src/frontend/src/pages/Orders/CSRIntakePage.jsx:293",
   "src/frontend/src/pages/Orders/RetailPOSPage.jsx:163"
  ],
  "invented": [],

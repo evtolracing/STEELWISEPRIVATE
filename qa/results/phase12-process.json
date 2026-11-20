@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-11-20T10:42:04.853Z",
+ "ranAt": "2026-11-20T12:11:04.592Z",
  "checks": 23,
  "failed": 0,
  "results": [
@@ -7,13 +7,13 @@
    "finding": "M-013",
    "what": "/api/jobs with no database does not answer 200",
    "ok": true,
-   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"76397ab9-fb2b-43b0-89ea-958b31d8bb80\"}"
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"6f8cb9e5-1cc6-46d3-927f-7dad8e0ba253\"}"
   },
   {
    "finding": "M-013",
    "what": "/api/jobs with no database carries no invented record",
    "ok": true,
-   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"76397ab9-fb2b-43b0-89ea-958b31d8bb80\"}"
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"6f8cb9e5-1cc6-46d3-927f-7dad8e0ba253\"}"
   },
   {
    "finding": "M-013",
@@ -25,13 +25,13 @@
    "finding": "AA-001",
    "what": "/api/dashboard with no database does not answer 200",
    "ok": true,
-   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"ec46c522-20e7-457c-8992-c6a843632580\"}"
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"84268826-b54e-4257-9c7c-5b537ecd7cee\"}"
   },
   {
    "finding": "AA-001",
    "what": "/api/dashboard with no database carries no invented record",
    "ok": true,
-   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"ec46c522-20e7-457c-8992-c6a843632580\"}"
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"84268826-b54e-4257-9c7c-5b537ecd7cee\"}"
   },
   {
    "finding": "AA-001",
@@ -43,13 +43,13 @@
    "finding": "AA-001",
    "what": "/api/dashboard/kpis with no database does not answer 200",
    "ok": true,
-   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"7636812e-f8ce-41e1-be6c-bacbf1febef4\"}"
+   "detail": "503 {\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"c6569c98-eec7-4843-8083-6fc7c0192d60\"}"
   },
   {
    "finding": "AA-001",
    "what": "/api/dashboard/kpis with no database carries no invented record",
    "ok": true,
-   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"7636812e-f8ce-41e1-be6c-bacbf1febef4\"}"
+   "detail": "{\"error\":\"The database is not available. Try again shortly.\",\"requestId\":\"c6569c98-eec7-4843-8083-6fc7c0192d60\"}"
   },
   {
    "finding": "AA-001",
@@ -97,13 +97,13 @@
    "finding": "E-010",
    "what": "within 5 seconds",
    "ok": true,
-   "detail": "651 ms"
+   "detail": "667 ms"
   },
   {
    "finding": "E-010",
    "what": "it says so in its log",
    "ok": true,
-   "detail": "\":\"warn\",\"msg\":\"request\",\"id\":\"122b148b-b94f-4eb2-a43d-123a39ad6cdf\",\"method\":\"POST\",\"path\":\"/api/auth/login\",\"status\":401,\"ms\":1027,\"slow\":true}\nServer closed\n"
+   "detail": "\":\"warn\",\"msg\":\"request\",\"id\":\"d38a27c5-4e60-4582-b693-d2d7ddbaae23\",\"method\":\"POST\",\"path\":\"/api/auth/login\",\"status\":401,\"ms\":1039,\"slow\":true}\nServer closed\n"
   },
   {
    "finding": "E-010",

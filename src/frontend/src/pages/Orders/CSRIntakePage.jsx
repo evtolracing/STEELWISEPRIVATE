@@ -42,6 +42,8 @@ import useCustomerDefaults from '../../hooks/useCustomerDefaults'
 import DemandShapingSuggestionPanel from '../../components/orders/DemandShapingSuggestionPanel'
 import useDemandShaping from '../../hooks/useDemandShaping'
 import UnsavedWorkGuard from '../../components/common/UnsavedWorkGuard'
+import { orderProblems, unpricedLines } from './intakeChecks'
+import { ask } from '../../utils/ask'
 
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET']
 const PRIORITIES = ['STANDARD', 'RUSH', 'HOT', 'EMERGENCY']
@@ -275,7 +277,8 @@ export default function CSRIntakePage() {
         setSnack({ open: true, msg: `Draft saved — ${res.data?.orderNumber}`, severity: 'success' })
       }
     } catch (err) {
-      setSnack({ open: true, msg: 'Save failed', severity: 'error' })
+      // Say why: the server's own reason (no customer and no line yet, a quantity of zero, and so on).
+      setSnack({ open: true, msg: `The draft was not saved. ${err?.message || 'Try again.'}`, severity: 'error' })
     }
     setSaving(false)
   }, [source, division, location, priority, ownership, poNumber, notes, requestedDate, customer, lines, orderId])
@@ -310,21 +313,37 @@ export default function CSRIntakePage() {
   }, [pendingSubmit])
 
   const doSubmit = useCallback(async () => {
+    // Nothing is sent while a line has no material or no quantity: say which line.
+    const problems = orderProblems({ customer, lines })
+    if (problems.length) {
+      setSnack({ open: true, msg: problems[0], severity: 'warning' })
+      return
+    }
+    const free = unpricedLines(lines)
+    if (free.length && !(await ask(`Line ${free.join(', ')} has no price. Submit the order anyway?`))) return
     setSaving(true)
     try {
+      // What is on the screen now is saved first, also when a draft was saved earlier:
+      // lines added after "Save Draft" used to be left out of the submitted order.
+      const payload = {
+        source, division, location, priority, ownership, poNumber, notes, requestedDate,
+        customerId: customer?.id, customerName: customer?.name, lines, status: 'DRAFT',
+      }
       let id = orderId
-      if (!id) {
-        const payload = {
-          source, division, location, priority, ownership, poNumber, notes, requestedDate,
-          customerId: customer?.id, customerName: customer?.name, lines, status: 'DRAFT',
-        }
+      if (id) await updateIntakeOrder(id, payload)
+      else {
         const res = await createIntakeOrder(payload)
         id = res.data?.id
+        setOrderId(id)
       }
-      const sent = await submitOrder(id)
+      const sent = await submitOrder(id, { createWorkOrders: true })
       // Over the credit limit: the order is saved on hold for a manager (rule 32). Say so, then show the order.
-      setSnack(sent?.warning ? { open: true, msg: sent.warning, severity: 'warning' } : { open: true, msg: 'Order submitted!', severity: 'success' })
-      setTimeout(() => navigate(`/orders/${id}`), sent?.warning ? 3500 : 1200)
+      const made = sent?.workOrders?.length || 0
+      const slow = Boolean(sent?.warning || sent?.workOrdersError)
+      setSnack(sent?.warning ? { open: true, msg: sent.warning, severity: 'warning' }
+        : sent?.workOrdersError ? { open: true, msg: `Order submitted, but its work orders were not made: ${sent.workOrdersError} Use "Create Work Orders" on the order.`, severity: 'warning' }
+        : { open: true, msg: `Order ${sent?.data?.orderNumber || ''} submitted. ${made} work order${made === 1 ? ' is' : 's are'} in New Orders on the Order Board.`, severity: 'success' })
+      setTimeout(() => navigate(`/orders/${id}`), slow ? 3500 : 1500)
     } catch (e) {
       setSnack({ open: true, msg: e?.message || 'Submit failed', severity: 'error' })
     }
@@ -594,7 +613,7 @@ export default function CSRIntakePage() {
       />
 
       {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={snack.severity === 'warning' ? 8000 : 3000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+      <Snackbar open={snack.open} autoHideDuration={snack.severity === 'success' && snack.msg.length < 40 ? 3000 : 8000} onClose={() => setSnack(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert severity={snack.severity} variant="filled" onClose={() => setSnack(s => ({ ...s, open: false }))}>{snack.msg}</Alert>
       </Snackbar>
     </Box>

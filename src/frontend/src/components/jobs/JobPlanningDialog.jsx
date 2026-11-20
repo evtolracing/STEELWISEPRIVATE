@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { defaultBranch, usableTemplate } from './routingTemplates'
+import { useAuth } from '../../hooks/useAuth'
 import {
   Dialog,
   DialogTitle,
@@ -48,6 +50,7 @@ const SKILL_LEVELS = [
 ]
 
 const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
+  const { user } = useAuth()
   // Available data from dispatch engine
   const [workCenterTypes, setWorkCenterTypes] = useState([])
   const [workCenters, setWorkCenters] = useState([])
@@ -154,9 +157,10 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       setLocations(locs || [])
       setDivisions(divs || [])
       setWorkCenters(wcs || [])
-      // Default to first available location
-      if (locs && locs.length > 0 && !locationId) {
-        setLocationId(locs[0].id)
+      // The branch the order was taken for, not simply the first one in the list: a job planned at
+      // another branch never reaches this branch's shop floor or its Run Dispatch.
+      if (locs && locs.length > 0 && job?.status !== 'SCHEDULED') {
+        setLocationId(defaultBranch(job, locs, user?.homeLocationId))
       }
     } catch (err) {
       console.error('Failed to load planning data:', err)
@@ -173,11 +177,11 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
     }
   }, [locationId, open])
 
-  // Helper: get work centers matching a given type (show all, prefer current location)
+  // The machines of a type at the branch the job is planned at. A machine at another branch is not offered.
   const getWorkCentersForType = (wcType) => {
     return workCenters.filter((wc) => {
       const matchesType = !wcType || wc.workCenterType === wcType
-      return matchesType && wc.isOnline !== false
+      return matchesType && wc.isOnline !== false && (!locationId || !wc.locationId || wc.locationId === locationId)
     })
   }
 
@@ -263,7 +267,8 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
         materialCode: materialCode || undefined,
         commodity,
-        thickness: thickness ? parseFloat(thickness) : 0.5,
+        // A thickness that was not typed is not sent: the server uses the order line's, and assumes nothing.
+        thickness: thickness ? parseFloat(thickness) : undefined,
         form,
         grade: grade || undefined,
         locationId,
@@ -282,10 +287,12 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
   // Quick-add common routing templates
   const addTemplate = (templateOps) => {
     const newOps = templateOps.map((op, i) => {
-      const matching = getWorkCentersForType(op.type)
+      // The template's kind of work as this company's own work center type.
+      const typeId = op.typeId || ''
+      const matching = typeId ? getWorkCentersForType(typeId).filter((wc) => !locationId || wc.locationId === locationId) : []
       return {
         id: Date.now() + i,
-        workCenterType: op.type,
+        workCenterType: typeId,
         workCenterId: matching.length === 1 ? matching[0].id : '',
         name: op.name,
         skillLevel: op.skill || 'STANDARD',
@@ -350,6 +357,9 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       ],
     },
   ]
+  // Each template with this company's own work center types; one that needs a kind of work the
+  // company has no type for is not offered (it used to be offered and then refused on save).
+  const templates = ROUTING_TEMPLATES.map((tpl) => usableTemplate(tpl, workCenterTypes, (typeId) => workCenters.some((wc) => wc.workCenterType === typeId && (!locationId || wc.locationId === locationId))))
 
   if (!job) return null
 
@@ -454,7 +464,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           >
             {locations.map((loc) => (
               <MenuItem key={loc.id} value={loc.id}>
-                {loc.name} ({loc.id})
+                {loc.name || loc.code || loc.id}
               </MenuItem>
             ))}
             {locations.length === 0 && (
@@ -506,7 +516,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           <Typography variant="caption" color="text.secondary" sx={{ mr: 1, alignSelf: 'center' }}>
             Templates:
           </Typography>
-          {ROUTING_TEMPLATES.map((tpl) => (
+          {templates.filter((tpl) => tpl.missing.length === 0).map((tpl) => (
             <Chip
               key={tpl.label}
               label={tpl.label}
@@ -516,6 +526,11 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
               sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
             />
           ))}
+          {templates.every((tpl) => tpl.missing.length > 0) && (
+            <Typography variant="caption" color="text.secondary" sx={{ alignSelf: 'center' }} data-testid="no-templates">
+              None fit your work center types. Use Add Step and pick a type.
+            </Typography>
+          )}
         </Box>
 
         {/* Operations List */}
@@ -591,7 +606,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                         size="small"
                         sx={{ minWidth: 180 }}
                         disabled={!op.workCenterType}
-                        helperText={op.workCenterType && getWorkCentersForType(op.workCenterType).length === 0 ? 'No machines of this type exist' : ''}
+                        helperText={op.workCenterType && getWorkCentersForType(op.workCenterType).length === 0 ? 'No machine of this type at this branch' : ''}
                       >
                         <MenuItem value="">
                           <em>Auto-assign</em>

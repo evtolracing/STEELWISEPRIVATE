@@ -770,7 +770,7 @@ export function ForecastWidget({ title = 'Today vs Tomorrow', data, loading, err
             <Grid item xs={6}>
               <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
                 <Typography variant="overline" color="text.secondary">Tomorrow</Typography>
-                <Typography variant="h5" fontWeight={600} color="secondary.main">
+                <Typography variant="h5" fontWeight={600} color="secondary.dark">
                   {tomorrow.utilizationPercent}%
                 </Typography>
                 <Typography variant="caption" color="text.secondary">

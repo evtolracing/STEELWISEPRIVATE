@@ -38,6 +38,10 @@ function mapJobForFrontend(job) {
     customerName: job.order?.buyer?.name || (job.instructions ? job.instructions.split(' - ')[0] : null) || 'Unassigned',
     // Material hint from instructions
     material: job.instructions || null,
+    // The sales order the job was made for, so a card can show it and the board can be searched by it
+    orderNumber: job.order?.orderNumber || null,
+    // The branch the order was taken for: the Plan Job box starts there
+    orderLocationId: job.order?.locationId || null,
   }
 }
 
@@ -170,7 +174,7 @@ router.get('/', async (req, res) => {
 
     const include = {
       order: {
-        select: { id: true, orderNumber: true, buyerId: true, buyer: { select: { name: true } } },
+        select: { id: true, orderNumber: true, locationId: true, buyerId: true, buyer: { select: { name: true } } },
       },
       workCenter: {
         select: { id: true, code: true, name: true, locationId: true },

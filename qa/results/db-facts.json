@@ -1,8 +1,8 @@
 {
- "at": "2026-11-20T10:33:36.448Z",
+ "at": "2026-11-20T12:02:22.299Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
  "tables": 175,
- "totalRows": 74495,
+ "totalRows": 74589,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -114,7 +114,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 18570
+   "rows": 18575
   },
   {
    "table": "BomOperation",
@@ -126,7 +126,7 @@
   },
   {
    "table": "Coil",
-   "rows": 2014
+   "rows": 2017
   },
   {
    "table": "CommodityPrice",
@@ -146,7 +146,7 @@
   },
   {
    "table": "DemandSuggestionEvent",
-   "rows": 1283
+   "rows": 1295
   },
   {
    "table": "DispatchDivision",
@@ -154,11 +154,11 @@
   },
   {
    "table": "DispatchJob",
-   "rows": 300
+   "rows": 301
   },
   {
    "table": "DispatchOperation",
-   "rows": 455
+   "rows": 456
   },
   {
    "table": "DispatchTimeLog",
@@ -238,7 +238,7 @@
   },
   {
    "table": "Inventory",
-   "rows": 2014
+   "rows": 2017
   },
   {
    "table": "InventoryAdjustment",
@@ -262,15 +262,15 @@
   },
   {
    "table": "Invoice",
-   "rows": 1409
+   "rows": 1413
   },
   {
    "table": "InvoiceLine",
-   "rows": 1423
+   "rows": 1427
   },
   {
    "table": "Job",
-   "rows": 590
+   "rows": 592
   },
   {
    "table": "JobInspection",
@@ -350,7 +350,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 3708
+   "rows": 3718
   },
   {
    "table": "MeterReading",
@@ -370,15 +370,15 @@
   },
   {
    "table": "Order",
-   "rows": 2895
+   "rows": 2896
   },
   {
    "table": "OrderLine",
-   "rows": 2921
+   "rows": 2923
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 145
+   "rows": 143
   },
   {
    "table": "Organization",
@@ -418,7 +418,7 @@
   },
   {
    "table": "Payment",
-   "rows": 1188
+   "rows": 1187
   },
   {
    "table": "PipelineRun",
@@ -494,7 +494,7 @@
   },
   {
    "table": "RateWindow",
-   "rows": 1112
+   "rows": 1125
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -506,7 +506,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 114
+   "rows": 115
   },
   {
    "table": "RfidScanEvent",
@@ -762,7 +762,7 @@
   },
   {
    "table": "WebhookDelivery",
-   "rows": 3991
+   "rows": 4023
   },
   {
    "table": "WorkCenter",
@@ -778,7 +778,7 @@
   },
   {
    "table": "WorkOrderOutput",
-   "rows": 163
+   "rows": 166
   },
   {
    "table": "_prisma_migrations",

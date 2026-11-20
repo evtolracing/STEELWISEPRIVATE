@@ -51,13 +51,14 @@ export async function updateIntakeOrder(id, payload) {
   return res.json()
 }
 
-export async function submitOrder(id) {
+// createWorkOrders: also make the order's work orders, so it is on the Order Board at once.
+export async function submitOrder(id, { createWorkOrders = false } = {}) {
   if (USE_MOCK) {
     const idx = _mockOrders.findIndex(o => o.id === id)
     if (idx >= 0) { _mockOrders[idx].status = 'SUBMITTED'; _mockOrders[idx].submittedAt = new Date().toISOString() }
     return { data: _mockOrders[idx] || { id, status: 'SUBMITTED' } }
   }
-  const res = await fetch(`${API_BASE}/orders/intake/${id}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+  const res = await fetch(`${API_BASE}/orders/intake/${id}/submit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ createWorkOrders }) })
   if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || 'Failed to submit order') }
   return res.json()
 }

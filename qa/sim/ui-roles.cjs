@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Role matrix, phase 2: the Roles and permissions screens in a real browser, on the QA server and QA database.
+// Role matrix, phases 2 and 3: the Roles and permissions screens in a real browser, on the QA server and QA database.
 //   node qa/sim/ui-roles.cjs --app http://localhost:5199 --api http://localhost:3001 [--shots folder]
 // Needs the frontend dev server and a QA backend on port 3001 (qa/README.md). Leaves no test role behind.
 const fs = require('node:fs');
@@ -50,7 +50,7 @@ const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push
   await page.goto(`${APP}/admin/roles`);
   await page.waitForSelector('[data-testid="roles-table"] tbody tr');
   check('the list shows every role', (await page.locator('[data-testid="roles-table"] tbody tr').count()) >= 48);
-  check('the page says changes are not enforced yet', await page.locator('[data-testid="not-enforced"]').isVisible());
+  check('the page says when changes take effect', await page.locator('[data-testid="applies-now"]').isVisible() && (await page.locator('[data-testid="not-enforced"]').count()) === 0);
   check('the menu offers the page', (await page.getByText('Roles & Permissions').count()) > 0);
   await shot(page, 'roles-list');
 
@@ -99,6 +99,28 @@ const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push
   check('reset to default puts the role back', back.grants.join() === back.defaults.grants.join(), `${back.grants.length} against ${back.defaults.grants.length}`);
   await page.waitForFunction(() => document.querySelector('[data-testid="change-count"]')?.innerText === 'No changes' && document.querySelector('[data-testid="reset-role"]')?.disabled === true, null, { timeout: 8000 }).catch(() => {});
   check('and the grid shows the role as reset', await page.locator('[data-testid="perm-quality:delete"]').isChecked() && !(await page.locator('[data-testid="perm-executive:view"]').isChecked()));
+
+  // ── A change reaches the clerk's menu and pages (phase 3) ──
+  {
+    const csr = (await call(owner, 'GET', '/api/users/roles/list?all=1')).body.find((r) => r.name === 'CSR');
+    const menuOf = async () => {
+      const c = await open(clerk);
+      await c.page.goto(`${APP}/executive/cockpit`);
+      await c.page.waitForTimeout(2500);
+      const text = await c.page.locator('body').innerText();
+      await c.context.close();
+      return text;
+    };
+    const closed = await menuOf();
+    check('before: the clerk has no executive pages', !closed.includes('Executive Cockpit'), closed.slice(0, 150));
+    const given = await call(owner, 'PUT', `/api/users/roles/${csr.id}`, { grants: [...csr.grants, 'executive:view'] });
+    check('the clerk role is given the executive pages', given.status === 200);
+    const opened = await menuOf();
+    check('after: the clerk\'s menu and the page itself are open', opened.includes('Executive Cockpit'), opened.slice(0, 150));
+    const undone = await call(owner, 'POST', `/api/users/roles/${csr.id}/reset`, {});
+    check('the clerk role is reset', undone.status === 200 && undone.body.grants.join() === csr.grants.join());
+    check('reset: the executive pages are closed again', !(await menuOf()).includes('Executive Cockpit'));
+  }
 
   // ── A new role as a copy, then deleted ──
   await page.click('[data-testid="back-to-roles"]');

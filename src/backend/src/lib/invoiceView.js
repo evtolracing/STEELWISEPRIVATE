@@ -28,12 +28,15 @@ export function withoutInvoiceDetail(value, depth = 0) {
   return out;
 }
 
+const POS = /^\/(api\/)?pos(\/|$)/;
 /** Whether this reader's answers are cut down: staff who do not read invoices, outside counter sales. */
 export const cutsInvoices = (role, path) => Boolean(staffGroupOf(role)) && !INVOICE_READERS.has(role) && !/^\/(api\/)?pos(\/|$)/.test(path || '');
 
 /** Express guard, mounted on /api. */
 export function invoiceDetailGuard(req, res, next) {
   const send = res.json.bind(res);
-  res.json = (body) => send(cutsInvoices(req.user?.role, req.originalUrl.split('?')[0]) ? withoutInvoiceDetail(body) : body);
+  // Since the role matrix switchover: staff whose role does not hold "billing:view" (lib/roleStore.js).
+  const cuts = () => (req.access ? req.access.audience === 'STAFF' && !req.access.grants.has('*') && !req.access.grants.has('billing:view') && !POS.test(req.originalUrl.split('?')[0]) : cutsInvoices(req.user?.role, req.originalUrl.split('?')[0]));
+  res.json = (body) => send(cuts() ? withoutInvoiceDetail(body) : body);
   next();
 }

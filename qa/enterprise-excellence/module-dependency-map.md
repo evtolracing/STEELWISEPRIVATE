@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -65,7 +65,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | Table | Modules | Count |
 |---|---|---:|
 | AuditLog | Sign-in and sessions; Users, roles and branches; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Stock items and stock levels; Purchase orders and supply position; Coil work orders; Quality inspections; Shipping; Returns; Partner API; Operations cockpit and dashboards | 15 |
-| Location | Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping | 11 |
+| Location | Sign-in and sessions; Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping | 12 |
 | Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Dispatch, work centers and shop-floor operations; Partner API; Operations cockpit and dashboards | 11 |
 | Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Jobs, job board and schedule; Shipping; Returns; Partner API; Operations cockpit and dashboards | 11 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Coil work orders; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 10 |
@@ -102,18 +102,20 @@ Two views. The first is the business flow, written by hand in the module map. Th
 
 | File | Imported by (route files) | Count |
 |---|---|---:|
-| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 60 |
-| lib/roleAccess.js | coils.js, customers.js, dispatchRoutes.js, grades.js, heats.js, intakeOrders.js, intakePricing.js, inventory.js, … | 15 |
+| lib/db.js | aiAssistant.js, analyticsV1.js, assets.js, auth.js, bomV1.js, coils.js, compressionMetrics.js, customers.js, … | 61 |
 | lib/numbering.js | intakeOrders.js, inventory.js, invoices.js, jobs.js, maintenanceOrders.js, orders.js, qcRoutes.js, quickSale.js, … | 15 |
+| lib/roleStore.js | auth.js, coils.js, dispatchRoutes.js, heats.js, integrations.js, inventory.js, jobs.js, ledger.js, … | 11 |
+| lib/roleAccess.js | auth.js, customers.js, grades.js, intakeOrders.js, intakePricing.js, orders.js, overrides.js, pos.js, … | 11 |
 | lib/dbText.js | bomV1.js, coils.js, customers.js, intakePricing.js, inventory.js, orderHubStore.js, processingRecipes.js, quickSale.js, … | 10 |
+| lib/branchScope.js | auth.js, dispatchRoutes.js, documents.js, intakeOrders.js, inventory.js, ledger.js, purchaseOrders.js, shipments.js | 8 |
 | lib/fieldRules.js | assets.js, grades.js, heats.js, maintenanceOrders.js, products.js, workCenters.js, workOrders.js | 7 |
-| lib/branchScope.js | dispatchRoutes.js, documents.js, intakeOrders.js, inventory.js, ledger.js, purchaseOrders.js, shipments.js | 7 |
 | lib/workflowRules.js | intakeOrders.js, inventory.js, jobs.js, orders.js, returns.js, rfqs.js, shipments.js | 7 |
 | services/ledger.js | coils.js, inventory.js, ledger.js, quickSale.js, returns.js, shipments.js | 6 |
 | services/webhookService.js | integrations.js, orders.js, carrierRoutes.js, customerRoutes.js, webhookRoutes.js, shipments.js | 6 |
 | middleware/partnerAuth.js | adminRoutes.js, carrierRoutes.js, common.js, customerRoutes.js, partnerAuthRoutes.js, supplierRoutes.js | 6 |
-| middleware/auth.js | admin.js, auth.js, integrations.js, adminRoutes.js, users.js | 5 |
+| middleware/auth.js | admin.js, auth.js, adminRoutes.js, roles.js, users.js | 5 |
 | lib/customerScope.js | auth.js, ecom.js, portal.js, users.js | 4 |
+| lib/permissionCatalog.js | auth.js, integrations.js, ledger.js, roles.js | 4 |
 | services/intakeCatalogService.js | coils.js, intakePricing.js, inventory.js, products.js | 4 |
 | lib/settings.js | compressionMetrics.js, demandShaping.js, onlineSettings.js, operationsRoutes.js | 4 |
 | lib/workCenterGuard.js | dispatchRoutes.js, operationsRoutes.js, optimizationV1.js, workCenters.js | 4 |
@@ -143,6 +145,7 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | services/ledgerAssistant.js | aiAssistant.js | 1 |
 | lib/assistantInput.js | aiAssistant.js | 1 |
 | lib/alerts.js | auth.js | 1 |
+| lib/viewScope.js | auth.js | 1 |
 | lib/dispatchPlan.js | dispatchRoutes.js | 1 |
 | services/dropTagListingService.js | dropTagRoutes.js | 1 |
 | services/scanService.js | dropTagRoutes.js | 1 |
@@ -167,6 +170,9 @@ Two views. The first is the business flow, written by hand in the module map. Th
 | lib/zip.js | portal.js | 1 |
 | services/tagRenderer.js | printQueue.js | 1 |
 | services/remnantService.js | remnants.js | 1 |
+| lib/permissions.js | roles.js | 1 |
+| lib/builtinRoleDefaults.js | roles.js | 1 |
+| lib/roleEditRules.js | roles.js | 1 |
 | services/pricingIntelligenceService.js | salesRoutes.js | 1 |
 | lib/shippingDocuments.js | shipments.js | 1 |
 | lib/workOrderRules.js | workOrders.js | 1 |

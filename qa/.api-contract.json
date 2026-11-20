@@ -1,5 +1,5 @@
 {
- "total": 305,
+ "total": 306,
  "missing": [
   {
    "call": "GET /api/admin/integrations",

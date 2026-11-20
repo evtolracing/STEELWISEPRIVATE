@@ -248,7 +248,7 @@ const OUT = arg('out', 'qa/results/ui-phase8.json');
     check('lost load: the shipping desk is told it needs a manager, and nothing changes', await has(page, /needs? a manager/) && (await shipmentOf(c.shipment.id)).status === 'EXCEPTION');
     await page.close();
     page = await open(desk, '/orders/invoices');
-    check('shipping desk: the invoices screen says who may read invoices and lists none', await has(page, /sales, accounting and managers/) && !/INV-\d+/.test(await body(page)));
+    check('shipping desk: the invoices screen is closed to them and lists none', await has(page, /sales, accounting and managers|doesn't include this page/) && !/INV-\d+/.test(await body(page)));
     await page.close();
 
     page = await open(office, `/shipping/${c.shipment.id}`);

@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-19T02:26:50.669Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-20T08:04:16.304Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -51,8 +51,8 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 409,201; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
-- Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
+- Pass: one shipment dispatched three times at once: counted once. statuses 409,200,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
@@ -76,7 +76,7 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-19T01:32:06.514Z. 662 of 662 routes swept.
+Run 2026-11-20T07:09:49.582Z. 662 of 662 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
@@ -103,7 +103,7 @@ Run 2026-11-19T01:32:06.514Z. 662 of 662 routes swept.
 
 ## Screen check
 
-Run 2026-11-19T02:05:19.215Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-20T07:42:18.609Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
 - Screens opened: 131
 - OK: 131
@@ -119,8 +119,8 @@ Run 2026-11-19T02:05:19.215Z as qa-admin@qa.test. Every route in the app's route
 | `GET /api/coils/:id/history → 404` | `/units/:id` |
 | `GET /api/work-orders/:id → 404` | `/work-orders/:id` |
 | `GET /api/qc/inspections/:id → 404` | `/qc/inspect/:id` |
-| `GET /api/jobs/:id/history → 404` | `/jobs/:id` |
 | `GET /api/jobs/:id → 404` | `/jobs/:id` |
+| `GET /api/jobs/:id/history → 404` | `/jobs/:id` |
 | `GET /api/orders/intake/:id → 404` | `/orders/:id` |
 | `GET /api/ecom/catalog/:id → 404` | `/shop/products/:id` |
 | `GET /api/ecom/my-orders/:id → 404` | `/shop/orders/:id` |
@@ -129,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-19T01:37:19.345Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-20T07:15:13.983Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -163,7 +163,7 @@ Run 2026-11-19T01:37:19.345Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-19T01:37:45.964Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-20T07:15:36.712Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 23
 - Failed: 0
@@ -196,7 +196,7 @@ Run 2026-11-19T01:37:45.964Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-19T01:36:56.103Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-20T07:14:53.089Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 31
 - Failed: 0
@@ -237,7 +237,7 @@ Run 2026-11-19T01:36:56.103Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-19T01:36:24.393Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-20T07:14:25.165Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
 - Checks: 30
 - Failed: 0
@@ -277,7 +277,7 @@ Run 2026-11-19T01:36:24.393Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 
 ## Sample notices and invented figures checked in a browser
 
-Run 2026-11-19T01:36:00.635Z with `qa/sim/ui-experience.cjs`.
+Run 2026-11-20T07:14:02.063Z with `qa/sim/ui-experience.cjs`.
 
 - Checks: 22
 - Failed: 0
@@ -309,11 +309,11 @@ Run 2026-11-19T01:36:00.635Z with `qa/sim/ui-experience.cjs`.
 
 ## Screen audit
 
-146 screens: 6 STATIC, 78 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
+147 screens: 6 STATIC, 79 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
 
 ## Screen-to-server contract
 
-305 distinct API calls are written in the screens; 67 have no matching server route. Full list in `qa/api-contract.md`.
+306 distinct API calls are written in the screens; 67 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

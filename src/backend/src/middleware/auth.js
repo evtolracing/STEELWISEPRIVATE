@@ -6,6 +6,9 @@ import prisma from '../lib/db.js';
 import config from '../config/index.js';
 import { setBranchScope } from '../lib/branchScope.js';
 import { requestView, SYSTEM_ADMIN_ROLES } from '../lib/viewScope.js';
+import { accessOf, savedRoles } from '../lib/roleStore.js';
+import { permissionFor } from '../lib/permissionCatalog.js';
+import { has } from '../lib/permissions.js';
 
 // The roles of the "admin" department in lib/roleAccess.js: their changes are not held to a department.
 // They are NOT all system administrators: a branch or operations manager runs a branch, not the system,
@@ -74,10 +77,19 @@ export async function authenticate(req, res, next) {
 
     // The branch picked in the top bar and an administrator's role preview (lib/viewScope.js). Both can
     // only narrow what the login may see. req.realUser is the login itself.
-    const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] });
+    // What each role may do and which branches it sees: the saved roles (lib/roleStore.js).
+    const roles = await savedRoles();
+    const own = accessOf(user.role, roles);
+    user.branchScope = own.branchScope;
+    const view = requestView(user, { viewAs: req.headers['x-view-as-role'], branchId: req.headers['x-branch-id'] }, { seesEveryBranch: (role) => accessOf(role, roles).branchScope === 'ALL', mayPreview: has(own.grants, 'admin:preview') });
+    // req.access is what this request may do: the previewed role's permissions while previewing.
+    const access = accessOf(view.user.role, roles);
+    if (view.previewRole) view.user.branchScope = access.branchScope;
     req.realUser = user;
     req.view = view;
     req.user = view.user;
+    req.access = { ...access, customerId: view.user.customerId || null };
+    req.realAccess = own;
     setBranchScope(view.user, view);
     next();
   } catch (error) {
@@ -108,11 +120,18 @@ export function roleAllowed(role, roles = []) {
   return SYSTEM_ADMIN_ROLES.has(role) || roles.includes(role);
 }
 
+/**
+ * Since the role matrix switchover (phase 3) the check is by permission wherever the catalog names
+ * one for the request (lib/permissionCatalog.js): the roles listed are then the built-in default,
+ * and what decides is whether the login's role holds that permission now. Where the catalog names
+ * none, the listed roles decide as before.
+ */
 export function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 
-    if (!roleAllowed(req.user.role, roles)) {
+    const needed = req.access ? permissionFor((req.originalUrl || '').split('?')[0].replace(/\/+$/, '') || '/', req.method) : null;
+    if (needed ? !has(req.access.grants, needed) : !roleAllowed(req.user.role, roles)) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
     next();

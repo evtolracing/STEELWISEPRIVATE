@@ -27,6 +27,7 @@ import {
 
 import { invoiceShipment, creditInvoice, BillingError } from '../services/billing.js';
 import { MONEY_MANAGERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 import { moveJobsWhere } from '../lib/jobHistory.js';
 import { recordBusinessEvent, kick } from '../services/webhookService.js';
 import { acrossBranches, currentScope } from '../lib/branchScope.js';
@@ -459,8 +460,8 @@ const LOST_KINDS = { LOST: 'Lost in transit', DESTROYED: 'Destroyed in transit',
  * what was lost stays on the order as a sale with no revenue. Material that does come back is a
  * return, not this.
  */
-async function markLost(id, body, user) {
-  if (!MONEY_MANAGERS.has(user?.role)) refuse(403, 'Recording a lost load credits its invoice and needs a manager.');
+async function markLost(id, body, user, allowed = MONEY_MANAGERS.has(user?.role)) {
+  if (!allowed) refuse(403, 'Recording a lost load credits its invoice and needs a manager.');
   const kind = String(body.kind || '').toUpperCase();
   if (!LOST_KINDS[kind]) refuse(400, `kind must be one of: ${Object.keys(LOST_KINDS).join(', ')}`);
   const reason = podText(body.reason, 'reason', 300);
@@ -598,7 +599,7 @@ router.put('/:id/deliver', handle('mark delivered', async (req, res) => {
 }));
 
 router.put('/:id/lost', handle('record a lost load', async (req, res) => {
-  res.json(await markLost(req.params.id, req.body || {}, req.user));
+  res.json(await markLost(req.params.id, req.body || {}, req.user, can(req, 'logistics:markLost')));
 }));
 
 router.patch('/:id/status', handle('update shipment status', async (req, res) => {

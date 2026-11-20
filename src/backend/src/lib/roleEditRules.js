@@ -85,6 +85,8 @@ export function roleChangeDenial(actor, existing, change = {}, facts = {}) {
     const { added, removed } = grantsDiff(existing?.grants || [], change.grants);
     const beyond = added.filter((p) => !has(actor.grants, p));
     if (beyond.length) return `You cannot give a permission you do not hold: ${beyond.slice(0, 3).map(permissionLabel).join('; ')}.`;
+    // The role editor is reached through the administration pages: losing either locks the person out of it.
+    if (existing?.name === actor.role && removed.includes('admin:view')) return 'You cannot take the administration pages away from your own role: you would lose this screen.';
     if (removed.includes('roles:edit')) {
       if (existing?.name === actor.role) return 'You cannot take the right to edit roles away from your own role.';
       if (facts.editorsAfter !== undefined && facts.editorsAfter < 1) return 'This would leave nobody who can edit roles.';

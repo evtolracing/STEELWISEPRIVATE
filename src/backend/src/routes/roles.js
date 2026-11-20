@@ -5,8 +5,9 @@
  * system administrator, and lib/roleEditRules.js then decides what that person may change. Every
  * change is written to the audit log with the role before and after.
  *
- * What is saved here is not enforced yet: until phase 3 the server still decides from its code
- * (lib/roleAccess.js). The screens say so.
+ * Since phase 3 what is saved here decides access: lib/roleStore.js reads it, at once on this server
+ * copy and within a minute on the others. Custom roles decide nothing until they can be given to
+ * people (phase 4).
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
@@ -14,6 +15,7 @@ import { authenticate, requireRole } from '../middleware/auth.js';
 import { ACTION_LABELS, AREAS } from '../lib/permissionCatalog.js';
 import { ALL } from '../lib/permissions.js';
 import { BUILTIN_DEFAULTS } from '../lib/builtinRoleDefaults.js';
+import { forgetRoles, matrixOff } from '../lib/roleStore.js';
 import { cleanGrants, grantsDiff, isLocked, roleChangeDenial, roleDeleteDenial, roleName, SENSITIVE } from '../lib/roleEditRules.js';
 
 const router = Router();
@@ -78,7 +80,8 @@ const snapshot = (role) => (role ? { displayName: role.displayName, description:
 
 // The grid: every area, its boxes and its single rights.
 router.get('/catalog', authenticate, (req, res) => {
-  res.json({ actions: ACTION_LABELS, areas: AREAS, enforced: false });
+  // enforced: whether what is saved here decides access now (false only while ROLE_MATRIX=off).
+  res.json({ actions: ACTION_LABELS, areas: AREAS, enforced: !matrixOff() });
 });
 
 // The roles. ?all=1 includes roles that are switched off.
@@ -166,6 +169,7 @@ async function change(req, res, eventType, build) {
     await audit(tx, req, eventType, next, snapshot(role), snapshot(next));
     return next;
   });
+  forgetRoles();
   return res.json(shown(saved, facts.holders));
 }
 

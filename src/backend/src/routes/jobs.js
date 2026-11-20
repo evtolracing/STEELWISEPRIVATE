@@ -7,7 +7,7 @@ import { shipForJob } from './shipments.js';
 import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
 import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
-import { COST_VIEWERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -455,7 +455,7 @@ router.get('/:id/material', async (req, res) => {
 // GET /api/jobs/:id/cost: material at actual cost plus labor at the rate on file (L-026). Cost goes only to the roles that manage it.
 router.get('/:id/cost', async (req, res) => {
   try {
-    if (!COST_VIEWERS.has(req.user?.role)) return res.status(403).json({ error: 'Job cost is shown to managers, the inventory manager and buyers.' });
+    if (!can(req, 'inventory:viewCost')) return res.status(403).json({ error: 'Job cost is shown to managers, the inventory manager and buyers.' });
     const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, workOrderId: true } }).catch(() => null);
     if (!job) return res.status(404).json({ error: 'Job not found' });
     const material = await jobMaterial(prisma, job);

@@ -21,6 +21,38 @@
    "file": "src/backend/src/routes/auth.js"
   },
   {
+   "ep": "GET /api/users/roles/catalog",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "GET /api/users/roles/list",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "GET /api/users/roles/:id",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "GET /api/users/roles/:id/history",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "POST /api/users/roles",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "PUT /api/users/roles/:id",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "POST /api/users/roles/:id/reset",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
+   "ep": "DELETE /api/users/roles/:id",
+   "file": "src/backend/src/routes/roles.js"
+  },
+  {
    "ep": "GET /api/users",
    "file": "src/backend/src/routes/users.js"
   },
@@ -42,22 +74,6 @@
   },
   {
    "ep": "POST /api/users/:id/reset-password",
-   "file": "src/backend/src/routes/users.js"
-  },
-  {
-   "ep": "GET /api/users/roles/list",
-   "file": "src/backend/src/routes/users.js"
-  },
-  {
-   "ep": "GET /api/users/roles/:id",
-   "file": "src/backend/src/routes/users.js"
-  },
-  {
-   "ep": "POST /api/users/roles",
-   "file": "src/backend/src/routes/users.js"
-  },
-  {
-   "ep": "PUT /api/users/roles/:id",
    "file": "src/backend/src/routes/users.js"
   },
   {
@@ -762,6 +778,10 @@
   },
   {
    "ep": "POST /api/ledger/activate",
+   "file": "src/backend/src/routes/ledger.js"
+  },
+  {
+   "ep": "POST /api/ledger/sandbox/start",
    "file": "src/backend/src/routes/ledger.js"
   },
   {
@@ -2664,14 +2684,20 @@
   },
   {
    "name": "User",
-   "fields": 42,
+   "fields": 43,
    "fks": 3,
    "status": null
   },
   {
    "name": "Role",
-   "fields": 10,
+   "fields": 15,
    "fks": 0,
+   "status": null
+  },
+  {
+   "name": "UserPermissionOverride",
+   "fields": 9,
+   "fks": 1,
    "status": null
   },
   {
@@ -4597,6 +4623,7 @@
   "admin/integrations",
   "admin/users",
   "admin/partners",
+  "admin/roles",
   "admin/tax-rates",
   "admin/audit-log",
   "admin/processing-recipes",

@@ -52,6 +52,7 @@ test('the right to edit roles cannot be lost', () => {
   const adminRole = { id: 'r-admin', name: 'ADMIN', isSystem: true, isActive: true, audience: 'STAFF', grants: admin.grants };
   const without = admin.grants.filter((g) => g !== 'roles:edit');
   assert.match(roleChangeDenial(admin, adminRole, { grants: without }), /your own role/);
+  assert.match(roleChangeDenial(admin, adminRole, { grants: admin.grants.filter((g) => g !== 'admin:view') }), /lose this screen/);
   assert.match(roleChangeDenial(owner, adminRole, { grants: without }, { editorsAfter: 0 }), /nobody who can edit roles/);
   assert.equal(roleChangeDenial(owner, adminRole, { grants: without }, { editorsAfter: 2 }), null);
 });

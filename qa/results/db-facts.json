@@ -1,8 +1,8 @@
 {
- "at": "2026-11-19T02:17:05.481Z",
+ "at": "2026-11-20T07:54:14.355Z",
  "database": "postgresql://localhost:5432/steelwise_qa",
- "tables": 173,
- "totalRows": 74026,
+ "tables": 174,
+ "totalRows": 74394,
  "emptyTables": [
   "ApprovalDecision",
   "ApprovalRequest",
@@ -79,6 +79,7 @@
   "TagIdentifier",
   "TestResult",
   "UserDivision",
+  "UserPermissionOverride",
   "UserRoleAssignment"
  ],
  "rows": [
@@ -112,7 +113,7 @@
   },
   {
    "table": "AuditLog",
-   "rows": 18253
+   "rows": 18477
   },
   {
    "table": "BomOperation",
@@ -144,7 +145,7 @@
   },
   {
    "table": "DemandSuggestionEvent",
-   "rows": 1287
+   "rows": 1283
   },
   {
    "table": "DispatchDivision",
@@ -260,11 +261,11 @@
   },
   {
    "table": "Invoice",
-   "rows": 1411
+   "rows": 1412
   },
   {
    "table": "InvoiceLine",
-   "rows": 1425
+   "rows": 1426
   },
   {
    "table": "Job",
@@ -276,11 +277,11 @@
   },
   {
    "table": "JournalEntry",
-   "rows": 5894
+   "rows": 5889
   },
   {
    "table": "JournalLine",
-   "rows": 12182
+   "rows": 12174
   },
   {
    "table": "LabelTemplate",
@@ -288,11 +289,11 @@
   },
   {
    "table": "LedgerAccount",
-   "rows": 22
+   "rows": 103
   },
   {
    "table": "LedgerEvent",
-   "rows": 3610
+   "rows": 3605
   },
   {
    "table": "LedgerExportBatch",
@@ -348,7 +349,7 @@
   },
   {
    "table": "MaterialMovement",
-   "rows": 3709
+   "rows": 3714
   },
   {
    "table": "MeterReading",
@@ -368,15 +369,15 @@
   },
   {
    "table": "Order",
-   "rows": 2894
+   "rows": 2893
   },
   {
    "table": "OrderLine",
-   "rows": 2920
+   "rows": 2919
   },
   {
    "table": "OrderLineAllocation",
-   "rows": 142
+   "rows": 143
   },
   {
    "table": "Organization",
@@ -416,7 +417,7 @@
   },
   {
    "table": "Payment",
-   "rows": 1189
+   "rows": 1188
   },
   {
    "table": "PipelineRun",
@@ -464,7 +465,7 @@
   },
   {
    "table": "QCHold",
-   "rows": 62
+   "rows": 60
   },
   {
    "table": "Quote",
@@ -492,7 +493,7 @@
   },
   {
    "table": "RateWindow",
-   "rows": 1085
+   "rows": 1099
   },
   {
    "table": "RecipeRoutingTemplate",
@@ -504,7 +505,7 @@
   },
   {
    "table": "RequestKey",
-   "rows": 113
+   "rows": 114
   },
   {
    "table": "RfidScanEvent",
@@ -512,7 +513,7 @@
   },
   {
    "table": "Role",
-   "rows": 10
+   "rows": 49
   },
   {
    "table": "SafetyAttachment",
@@ -672,11 +673,11 @@
   },
   {
    "table": "Shipment",
-   "rows": 1332
+   "rows": 1334
   },
   {
    "table": "ShipmentItem",
-   "rows": 1303
+   "rows": 1305
   },
   {
    "table": "ShipmentStop",
@@ -736,7 +737,7 @@
   },
   {
    "table": "User",
-   "rows": 985
+   "rows": 1000
   },
   {
    "table": "UserDivision",
@@ -747,12 +748,16 @@
    "rows": 246
   },
   {
+   "table": "UserPermissionOverride",
+   "rows": 0
+  },
+  {
    "table": "UserRoleAssignment",
    "rows": 0
   },
   {
    "table": "WebhookDelivery",
-   "rows": 4007
+   "rows": 4015
   },
   {
    "table": "WorkCenter",
@@ -772,10 +777,10 @@
   },
   {
    "table": "_prisma_migrations",
-   "rows": 36
+   "rows": 37
   }
  ],
- "indexes": 634,
+ "indexes": 637,
  "views": [],
  "triggers": [
   "\"JournalEntry\".JournalEntry_guard",
@@ -856,6 +861,7 @@
   "RecipeRoutingTemplate.steps",
   "RequestKey.responseBody",
   "RfidScanEvent.data",
+  "Role.grants",
   "Role.permissions",
   "SafetyAudit.auditTeam",
   "SafetyAudit.locationIds",
@@ -950,9 +956,9 @@
  ],
  "fkNoIndex": [],
  "constraintCounts": {
-  "foreign key": 201,
-  "primary key": 173,
-  "check": 42
+  "foreign key": 202,
+  "primary key": 174,
+  "check": 47
  },
  "checkConstraints": [
   {
@@ -1166,6 +1172,24 @@
    "def": "CHECK ((\"unitPrice\" >= (0)::numeric))"
   },
   {
+   "table": "Role",
+   "name": "Role_audience_check",
+   "kind": "check",
+   "def": "CHECK ((audience = ANY (ARRAY['STAFF'::text, 'CUSTOMER'::text, 'PARTNER'::text])))"
+  },
+  {
+   "table": "Role",
+   "name": "Role_branchScope_check",
+   "kind": "check",
+   "def": "CHECK ((\"branchScope\" = ANY (ARRAY['ALL'::text, 'ASSIGNED'::text, 'OWN'::text])))"
+  },
+  {
+   "table": "Role",
+   "name": "Role_grants_array_check",
+   "kind": "check",
+   "def": "CHECK ((jsonb_typeof(grants) = 'array'::text))"
+  },
+  {
    "table": "ShipmentItem",
    "name": "ShipmentItem_qtyShipped_positive",
    "kind": "check",
@@ -1194,6 +1218,18 @@
    "name": "StockTransferLine_quantities",
    "kind": "check",
    "def": "CHECK (((\"qtyShipped\" > (0)::numeric) AND ((\"qtyReceived\" IS NULL) OR (\"qtyReceived\" >= (0)::numeric))))"
+  },
+  {
+   "table": "UserPermissionOverride",
+   "name": "UserPermissionOverride_effect_check",
+   "kind": "check",
+   "def": "CHECK ((effect = ANY (ARRAY['GRANT'::text, 'DENY'::text])))"
+  },
+  {
+   "table": "UserPermissionOverride",
+   "name": "UserPermissionOverride_reason_check",
+   "kind": "check",
+   "def": "CHECK ((length(btrim(reason)) > 0))"
   },
   {
    "table": "WorkCenterType",

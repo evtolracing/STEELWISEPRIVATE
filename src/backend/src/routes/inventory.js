@@ -5,7 +5,7 @@ import prisma from '../lib/db.js';
 import { positiveQty } from '../lib/workflowRules.js';
 import { ci } from '../lib/dbText.js';
 import { searchStock } from '../services/intakeCatalogService.js';
-import { COST_VIEWERS } from '../lib/roleAccess.js';
+import { can } from '../lib/roleStore.js';
 import { receiveStock, recentReceipts } from '../lib/receiving.js';
 import { TEMPLATE_FORMS, MAX_UPLOAD_ROWS } from '../lib/receivingRules.js';
 import { adjustStock, ADJUST_REASONS, STOCK_ADJUSTERS } from '../lib/stockChanges.js';
@@ -15,7 +15,7 @@ import { recordMovement } from '../services/ledger.js';
 
 /** Cost goes only to the roles that manage it. */
 const withoutCost = (req, row) => {
-  if (!row || COST_VIEWERS.has(req.user?.role)) return row;
+  if (!row || can(req, 'inventory:viewCost')) return row;
   const { unitCost, landedCost, avgCost, ...rest } = row;
   if (rest.coil) { const { unitCost: c1, landedCost: c2, ...coil } = rest.coil; rest.coil = coil; }
   return rest;

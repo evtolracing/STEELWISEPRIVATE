@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-19 by `qa/tools/excellence-docs.mjs` at commit 7fddc98. Do not edit by hand: change the source and rerun.
+Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 77af9b4. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 
@@ -19,7 +19,7 @@ How access is decided today, read from `src/backend/src/middleware/apiGate.js`, 
 - **No tenant boundary between companies on staff routes.** Only the user list is filtered by organization. The system runs as one company. If a second company is ever hosted in the same database, every staff route would show it both (E-019).
 - **No approval authority.** ApprovalRequest and ApprovalDecision tables exist with no code. The only approvals are: a manager releases a credit hold; a manager issues credits and refunds.
 - **No permission inheritance.** `Role`, `UserRoleAssignment` tables are saved by the user screen and read by no access check; access comes from the single `User.role` value.
-- **The screens have their own list** (`src/frontend/src/config/roleAccess.js`, 138 lines; `constants/permissions.js` is imported by nothing). The server list is the one that counts.
+- **The screens have their own list** (`src/frontend/src/config/roleAccess.js`, 197 lines; `constants/permissions.js` is imported by nothing). The server list is the one that counts.
 
 ## Roles and their department
 
@@ -104,22 +104,14 @@ Found in Phase 9 and not fixed: `GET /api/v1/dispatch/work-centers?locationId=` 
 
 | Check | Result |
 |---|---|
-| Read-only roles cannot change anything | 624 write calls as auditor and data analyst, 0 not refused |
+| Read-only roles cannot change anything | 630 write calls as auditor and data analyst, 0 not refused |
 | A second address follows the same department rules | 4 checks, 0 problems |
-| Write routes sent an empty body do not crash | 317 write routes, 0 answered with a server error (allowed: 0), 4 saved a record from nothing |
-| Branch to branch access (reported, not judged) | a login whose home branch is P12NGZTK read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
+| Write routes sent an empty body do not crash | 320 write routes, 0 answered with a server error (allowed: 0), 4 saved a record from nothing |
+| Branch to branch access (reported, not judged) | a login whose home branch is DEMO-DET read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
 
 ## Decisions needed from the owner
 
 1. Which roles are held to their own branch, and which to a region, for reading and for changing (B-003).
 2. The owner department for each area in the table above (B-004).
 3. Whether every staff login should read invoices and cost-bearing records (F-009).
-
-### Phase 12 update (2026-11-19)
-
-The table above is generated from the code and was regenerated for the release candidate. Phase 12 tested it again from outside (`phase-12-security-certification.md`) and it held. Three points for the people who accept it (`phase-12-operational-acceptance.md`):
-
-- Sales staff may dispatch a shipment and move a work order; warehouse and quality staff may move a job (AA-010). This is the role table as written, not a fault in enforcement. Confirm it or change it.
-- The assistants answer only for the caller's own organization, list people by name, role and title only, and write an audit row for every question (AA-003).
-- No one has approved this matrix. Approval status: NOT GIVEN.
 

@@ -27,9 +27,9 @@ export const PREVIEW_ROLES = new Set(Object.values(STAFF_GROUPS).flat());
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 
 /** The role to preview, or null. Never a role above the person's own. */
-export function previewRoleFor(realRole, asked) {
+export function previewRoleFor(realRole, asked, mayPreview = SYSTEM_ADMIN_ROLES.has(realRole)) {
   const role = String(asked || '').trim().toUpperCase();
-  if (!role || role === realRole || !SYSTEM_ADMIN_ROLES.has(realRole)) return null;
+  if (!role || role === realRole || !mayPreview) return null;
   if (!PREVIEW_ROLES.has(role) || EXTERNAL_ROLES.has(role)) return null;
   // An ADMIN may not preview the two roles above it.
   if (TOP_ROLES.has(role) && !TOP_ROLES.has(realRole)) return null;
@@ -42,10 +42,12 @@ export function previewRoleFor(realRole, asked) {
  * Returns { user, realRole, previewRole, branchId, branches, home }
  *   user      the login as this request sees it (role replaced while previewing)
  *   branches  null = every branch, otherwise the branch ids this request is held to
+ * seesEveryBranch(role): whether a previewed role sees every branch; mayPreview: whether this login may preview
+ * (the saved roles decide both; the role's name decides when they are not given)
  */
-export function requestView(user, { viewAs, branchId } = {}) {
+export function requestView(user, { viewAs, branchId } = {}, { seesEveryBranch = (role) => ALL_BRANCH_ROLES.has(role), mayPreview } = {}) {
   const realRole = user?.role || null;
-  const previewRole = previewRoleFor(realRole, viewAs);
+  const previewRole = previewRoleFor(realRole, viewAs, mayPreview);
   const effective = previewRole ? { ...user, role: previewRole } : user;
 
   // Which branches the person may pick from: their own login decides, never the preview.
@@ -58,7 +60,7 @@ export function requestView(user, { viewAs, branchId } = {}) {
   else if (previewRole) {
     // A preview of a role held to branches, with no branch picked, shows the administrator's own
     // branches; one that sees every branch shows every branch.
-    branches = ALL_BRANCH_ROLES.has(previewRole) ? null : (branchesOf({ ...user, role: 'CSR' }) || []);
+    branches = seesEveryBranch(previewRole) ? null : (branchesOf({ ...user, role: 'CSR', branchScope: 'ASSIGNED' }) || []);
   } else branches = branchesOf(user);
 
   return {

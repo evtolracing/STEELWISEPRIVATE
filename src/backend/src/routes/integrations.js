@@ -13,7 +13,8 @@
 import crypto from 'node:crypto';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { requireRole } from '../middleware/auth.js';
+import { can } from '../lib/roleStore.js';
+import { permissionFor } from '../lib/permissionCatalog.js';
 import { integrationReport, runTasks } from '../lib/integrationReport.js';
 import { replayDelivery } from '../services/webhookService.js';
 
@@ -21,7 +22,11 @@ const router = Router();
 // The report covers the whole company, so it is for the people who see the whole company.
 // The integration admin runs the integrations (owner, 2026-11-20).
 const COMPANY_WIDE = ['SUPER_ADMIN', 'TENANT_OWNER', 'ADMIN', 'CIO', 'COO', 'INTEGRATION_ADMIN'];
-const only = (...roles) => (req, res, next) => (roles.includes(req.user?.role) ? next() : res.status(403).json({ error: 'This page is for company administrators.' }));
+// Since the role matrix switchover the role's permissions decide; the roles named are the built-in default.
+const only = (...roles) => (req, res, next) => {
+  const needed = req.access ? permissionFor(req.originalUrl.split('?')[0].replace(/\/+$/, ''), req.method) : null;
+  return (needed ? can(req, needed) : roles.includes(req.user?.role)) ? next() : res.status(403).json({ error: 'This page is for company administrators.' });
+};
 const fail = (res, label, error, req) => {
   console.error(JSON.stringify({ level: 'error', msg: 'integrations_failed', label, id: req.id }), error);
   res.status(500).json({ error: `Could not ${label}`, requestId: req.id });

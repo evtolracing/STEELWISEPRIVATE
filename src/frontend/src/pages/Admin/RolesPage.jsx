@@ -3,8 +3,8 @@
  *
  * The grid comes from the server (GET /users/roles/catalog), so this page never keeps its own copy
  * of what exists. The server decides who may change what (src/backend/src/lib/roleEditRules.js);
- * this page only greys out what it knows will be refused. What is saved here is recorded but is not
- * enforced until the server is switched over to it (phase 3), and the page says so.
+ * this page only greys out what it knows will be refused. What is saved for a built-in role decides
+ * access within a minute (src/backend/src/lib/roleStore.js); the page says when it applies.
  */
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import {
@@ -77,7 +77,7 @@ export default function RolesPage() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         A role is a set of permissions. Open a role to see and change what it may do. Built-in roles can be changed and reset, but not deleted.
       </Typography>
-      <NotEnforcedYet />
+      <WhenItApplies catalog={catalog} />
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
       {notice && <Alert severity="success" sx={{ mb: 2 }} onClose={() => setNotice(null)}>{notice}</Alert>}
       <TableContainer component={Paper}>
@@ -117,12 +117,15 @@ export default function RolesPage() {
   )
 }
 
-function NotEnforcedYet() {
-  return (
-    <Alert severity="info" sx={{ mb: 2 }} data-testid="not-enforced">
-      Changes here are saved and recorded, but they do not take effect yet. Until the switchover (phase 3 of the role matrix) the system keeps using its built-in rules for each role.
-    </Alert>
-  )
+/** When what is saved takes effect: at once for built-in roles, unless the server says it is switched off. */
+function WhenItApplies({ catalog, role }) {
+  if (catalog && catalog.enforced === false) {
+    return <Alert severity="warning" sx={{ mb: 2 }} data-testid="not-enforced">The role matrix is switched off on the server (ROLE_MATRIX=off). Changes here are saved and recorded, but every role keeps its built-in default until it is switched on again.</Alert>
+  }
+  if (role && !role.builtIn && !role.isSystem) {
+    return <Alert severity="info" sx={{ mb: 2 }} data-testid="custom-not-assignable">A custom role can be prepared here, but it cannot be given to people yet (phase 4 of the role matrix). Until then it changes nothing for anyone.</Alert>
+  }
+  return <Alert severity="info" sx={{ mb: 2 }} data-testid="applies-now">Changes take effect within a minute of saving, for everyone who holds the role. They do not need to sign out; their menu follows the next time they open or refresh the app.</Alert>
 }
 
 function NewRoleDialog({ roles, onClose, onStart }) {
@@ -234,7 +237,7 @@ function RoleEditor({ catalog, role, roles, notice, onBack, onSaved }) {
         {role.builtIn && <Chip size="small" label="Built-in" variant="outlined" />}
         {role.locked && <Chip size="small" icon={<LockIcon />} label="Always holds everything" />}
       </Stack>
-      <NotEnforcedYet />
+      <WhenItApplies catalog={catalog} role={role} />
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)} data-testid="role-error">{error}</Alert>}
       {notice && <Alert severity="success" sx={{ mb: 2 }} data-testid="role-notice">{notice}</Alert>}
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Role matrix, phase 2: the roles API against a running QA server (local QA database only).
+// Role matrix, phases 2 and 3: the roles API against a running QA server (local QA database only).
 //   node qa/sim/roles.mjs [--base http://localhost:3011]
 // Reads the grid and the roles, then creates, changes, resets and deletes roles as a super admin,
 // an administrator and a clerk, and checks every safeguard and the audit trail. Leaves no test role behind.
@@ -16,6 +16,24 @@ const R = '/api/users/roles';
 await a.login('admin');
 await a.login('csr');
 
+// --matrix-off: the server was started with ROLE_MATRIX=off. A saved change must then change nothing.
+if (process.argv.includes('--matrix-off')) {
+  const cat = await a.get(`${R}/catalog`, 'csr');
+  check('the server says the matrix is switched off', cat.status === 200 && cat.body.enforced === false);
+  const csr = (await a.get(`${R}/list?all=1`)).body.find((r) => r.name === 'CSR');
+  const put = await a.put(`${R}/${csr.id}`, { grants: [...csr.grants.filter((g) => g !== 'customers:edit'), 'finance:view'] });
+  check('a change is still saved', put.status === 200);
+  check('switched off: the clerk still cannot read the ledger', (await a.get('/api/ledger/status', 'csr')).status === 403);
+  check('switched off: the clerk can still change a customer', (await a.put('/api/customers/00000000-0000-0000-0000-000000000000', { name: 'x' }, 'csr')).status !== 403);
+  const told = await a.get('/api/auth/me', 'csr');
+  const list = told.body?.user?.permissions || told.body?.permissions || [];
+  check('switched off: the login is told its built-in permissions', list.includes('customers:edit') && !list.includes('finance:view'));
+  check('the clerk role is reset', (await a.post(`${R}/${csr.id}/reset`, {})).status === 200);
+  console.log(`roles API, matrix switched off: ${passed} passed, ${failed.length} failed`);
+  for (const f of failed) console.log(`  FAILED: ${f}`);
+  process.exit(failed.length ? 1 : 0);
+}
+
 // An administrator (role ADMIN) to act as: made here so its password is known.
 const stamp = Date.now().toString(36);
 QA_USERS.roleAdmin = `qa-roles-admin-${stamp}@qa.test`;
@@ -26,7 +44,7 @@ await a.login('roleAdmin');
 
 // ── Reading ──
 const catalog = await a.get(`${R}/catalog`, 'csr');
-check('any staff login reads the grid', catalog.status === 200 && catalog.body.areas.length > 30 && catalog.body.enforced === false);
+check('any staff login reads the grid', catalog.status === 200 && catalog.body.areas.length > 30 && catalog.body.enforced === true);
 const list = await a.get(`${R}/list?all=1`);
 check('the roles are listed with who holds them', list.status === 200 && list.body.length >= 48 && list.body.every((r) => Array.isArray(r.grants) && typeof r.holders === 'number'));
 const byName = Object.fromEntries(list.body.map((r) => [r.name, r]));
@@ -72,6 +90,28 @@ check('a built-in role can be changed', trimmed.status === 200 && !trimmed.body.
 const reset = await a.post(`${R}/${byName.QC_INSPECTOR.id}/reset`, {}, 'roleAdmin');
 check('reset returns it to its default', reset.status === 200 && reset.body.grants.join() === before.join(), JSON.stringify(reset.body).slice(0, 200));
 check('a custom role has no default to reset to', (await a.post(`${R}/${id}/reset`, {}, 'roleAdmin')).status === 400);
+
+// ── A change takes effect (phase 3): the server and the menu answer from what is saved ──
+const csrId = byName.CSR.id;
+const csrDefault = byName.CSR.grants;
+const meBefore = await a.get('/api/auth/me', 'csr');
+const mine = (r) => r.body?.user?.permissions || r.body?.permissions || [];
+check('a login is told its own permissions', meBefore.status === 200 && mine(meBefore).join() === csrDefault.join(), `${mine(meBefore).length} against ${csrDefault.length}`);
+check('before: a clerk cannot read the ledger', (await a.get('/api/ledger/status', 'csr')).status === 403);
+check('before: a clerk can change a customer (404: none with that id)', (await a.put('/api/customers/00000000-0000-0000-0000-000000000000', { name: 'x' }, 'csr')).status !== 403);
+const changed = await a.put(`${R}/${csrId}`, { grants: [...csrDefault.filter((g) => g !== 'customers:edit'), 'finance:view'] });
+check('the clerk role is changed', changed.status === 200 && changed.body.grants.includes('finance:view') && !changed.body.grants.includes('customers:edit'), JSON.stringify(changed.body).slice(0, 200));
+const ledgerNow = await a.get('/api/ledger/status', 'csr');
+check('after: the clerk reads the ledger at once, with no new sign-in', ledgerNow.status === 200, `${ledgerNow.status} ${JSON.stringify(ledgerNow.body).slice(0, 120)}`);
+const custNow = await a.put('/api/customers/00000000-0000-0000-0000-000000000000', { name: 'x' }, 'csr');
+check('after: the clerk can no longer change a customer', custNow.status === 403, `${custNow.status}`);
+const meAfter = await a.get('/api/auth/me', 'csr');
+check('after: the login is told its new permissions', mine(meAfter).includes('finance:view') && !mine(meAfter).includes('customers:edit'));
+const back = await a.post(`${R}/${csrId}/reset`, {});
+check('the clerk role is reset', back.status === 200 && back.body.grants.join() === csrDefault.join());
+check('reset: the ledger is closed to the clerk again', (await a.get('/api/ledger/status', 'csr')).status === 403);
+check('reset: the clerk can change a customer again', (await a.put('/api/customers/00000000-0000-0000-0000-000000000000', { name: 'x' }, 'csr')).status !== 403);
+check('the super admin is never held back', (await a.get('/api/ledger/status')).status === 200);
 
 // ── Preview is view-only here too ──
 const preview = await fetch(`${base}${R}/${id}`, { method: 'PUT', headers: { 'content-type': 'application/json', authorization: `Bearer ${(await (await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: QA_USERS.admin, password: QA_PASSWORD }) })).json()).token}`, 'x-view-as-role': 'CSR' }, body: JSON.stringify({ grants: [] }) });

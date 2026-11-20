@@ -6,9 +6,11 @@ import { authenticate, requireRole, signUserToken, missingUpdate17, UPDATE_17 } 
 import { raiseAlertLater } from '../lib/alerts.js';
 import { userChangeDenial } from '../lib/userAdminRules.js';
 import { CUSTOMER_ROLES } from '../lib/customerScope.js';
+import { grantList } from '../lib/roleStore.js';
+import { OPEN_PAGES_PERMISSION, PAGE_PERMISSION } from '../lib/permissionCatalog.js';
 import { ALL_BRANCH_ROLES } from '../lib/branchScope.js';
 import { EXTERNAL_ROLES } from '../lib/roleAccess.js';
-import { SYSTEM_ADMIN_ROLES, PREVIEW_ROLES } from '../lib/viewScope.js';
+import { PREVIEW_ROLES } from '../lib/viewScope.js';
 
 const router = Router();
 
@@ -207,7 +209,8 @@ router.get('/me', authenticate, async (req, res, next) => {
     const real = req.realUser || req.user;
     const view = req.view || {};
     const external = EXTERNAL_ROLES.has(real.role);
-    const allBranches = !external && ALL_BRANCH_ROLES.has(real.role);
+    const mayPreview = Boolean(req.realAccess?.grants.has('*') || req.realAccess?.grants.has('admin:preview'));
+    const allBranches = !external && (real.branchScope ? real.branchScope === 'ALL' : ALL_BRANCH_ROLES.has(real.role));
     const own = [...new Set([real.homeLocationId, ...(real.userLocations || []).map((l) => l.locationId)].filter(Boolean))];
     const branches = external ? [] : await prisma.location.findMany({
       where: allBranches ? { isActive: true } : { id: { in: own } },
@@ -218,11 +221,17 @@ router.get('/me', authenticate, async (req, res, next) => {
       ...publicUser(req.user),
       realRole: real.role,
       previewRole: view.previewRole || null,
-      canPreviewRoles: SYSTEM_ADMIN_ROLES.has(real.role),
-      previewableRoles: SYSTEM_ADMIN_ROLES.has(real.role) ? [...PREVIEW_ROLES].filter((r) => r !== real.role && (real.role !== 'ADMIN' || !['SUPER_ADMIN', 'TENANT_OWNER'].includes(r))) : [],
+      canPreviewRoles: mayPreview,
+      previewableRoles: mayPreview ? [...PREVIEW_ROLES].filter((r) => r !== real.role && (real.role !== 'ADMIN' || !['SUPER_ADMIN', 'TENANT_OWNER'].includes(r))) : [],
       allBranches,
       branches,
       branchId: view.branchId || null,
+      // What this login may do (the previewed role's permissions while previewing), and which permission
+      // opens each menu area. The screens go by these, not by the role's name (role matrix, phase 3).
+      audience: req.access.audience,
+      permissions: grantList(req.access),
+      pagePermissions: PAGE_PERMISSION,
+      openPagesPermission: OPEN_PAGES_PERMISSION,
       // What this request is held to: 'ALL', or how many branches (a preview of a branch role, with
       // no branch picked, shows the administrator's own branches).
       branchScope: view.branches === null || view.branches === undefined ? 'ALL' : view.branches.length,

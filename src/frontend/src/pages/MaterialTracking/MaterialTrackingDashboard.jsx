@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { getTrackingStats } from '../../api/materialTracking';
 import { getJobs } from '../../api/jobs';
 import { activateOnKey } from '../../utils/activateOnKey'
+import { calendarDate } from '../../utils/calendarDate'
 
 const StatCard = ({ title, value, icon, color, subtitle, onClick }) => (
   <Card role="button" tabIndex={0} onKeyDown={activateOnKey}
@@ -238,7 +239,7 @@ const MaterialTrackingDashboard = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   {job.dueDate && (
                     <Typography variant="caption" color="text.secondary">
-                      Due: {new Date(job.dueDate).toLocaleDateString()}
+                      Due: {calendarDate(job.dueDate)}
                     </Typography>
                   )}
                   <Chip

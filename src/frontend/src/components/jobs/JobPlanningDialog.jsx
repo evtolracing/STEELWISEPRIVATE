@@ -526,7 +526,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
               sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
             />
           ))}
-          {templates.every((tpl) => tpl.missing.length > 0) && (
+          {workCenterTypes.length > 0 && templates.every((tpl) => tpl.missing.length > 0) && (
             <Typography variant="caption" color="text.secondary" sx={{ alignSelf: 'center' }} data-testid="no-templates">
               None fit your work center types. Use Add Step and pick a type.
             </Typography>

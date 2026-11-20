@@ -765,7 +765,7 @@ router.get('/queue', async (req, res) => {
     
     const rawOps = await prisma.dispatchOperation.findMany({
       where: opWhere,
-      include: { dispatchJob: true },
+      include: { dispatchJob: { include: { order: { select: { orderNumber: true } } } } },
       orderBy: { sequence: 'asc' },
     })
     
@@ -814,6 +814,7 @@ router.get('/queue', async (req, res) => {
           ? {
               id: job.id,
               orderId: job.orderId,
+              orderNumber: job.order?.orderNumber || null,
               materialCode: job.materialCode,
               commodity: job.commodity,
               form: job.form,
@@ -835,10 +836,14 @@ router.get('/queue', async (req, res) => {
       if (wc) wcName = wc.name
     } catch (e) { /* use id as fallback */ }
     
+    // The branch by name, for the heading (the address carries its id).
+    const branch = locationId ? await prisma.location.findUnique({ where: { id: String(locationId) }, select: { name: true } }).catch(() => null) : null
+
     res.json({
       success: true,
       data: {
         locationId: locationId || null,
+        locationName: branch?.name || null,
         workCenterId,
         workCenterName: wcName,
         operationCount: enrichedQueue.length,

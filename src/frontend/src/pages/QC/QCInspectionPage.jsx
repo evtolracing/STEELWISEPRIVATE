@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { jobNotesText } from './qcRules'
 import {
   Box,
   Typography,
@@ -319,12 +320,12 @@ export default function QCInspectionPage() {
                 </Typography>
               </>
             )}
-            {job?.notes && (
+            {jobNotesText(job?.notes) && (
               <>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="caption" color="text.secondary">Job Notes:</Typography>
                 <Typography variant="body2" sx={{ mt: 0.5, whiteSpace: 'pre-wrap', fontSize: 12 }}>
-                  {job.notes}
+                  {jobNotesText(job.notes)}
                 </Typography>
               </>
             )}
@@ -390,6 +391,7 @@ export default function QCInspectionPage() {
               <Chip
                 label={`${checklistProgress}% complete`}
                 color={checklistProgress === 100 ? (hasFailedChecks ? 'error' : 'success') : 'default'}
+                variant={checklistProgress === 100 ? 'outlined' : 'filled'}
                 size="small"
               />
             </Box>

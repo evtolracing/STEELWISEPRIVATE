@@ -105,3 +105,65 @@ Pull request 44 was merged on the owner's word and seen on the live site. The ow
 Fix (`OrdersPage.jsx`): in a narrow window a click opens the order's own page, and the hidden panel is not drawn. In a wide window a click still shows the details beside the list, and a double click opens the order's page.
 
 Evidence (this session, local QA database): `qa/sim/ui-order-flow.cjs` 31 of 31 (3 new checks: narrow click opens the order, the order shows its work order, wide double click opens it); the Orders screen at three sizes: no findings; lint 0 errors; build succeeds; effect ratchet 38 of 38. NOT VERIFIED: the full gate suite; `ui-shipping` could not start on the used QA database ("no test customer or branch") and was not rerun on a fresh one.
+
+## Addendum 3, 2026-11-20: one order from intake to shipping on the live site
+
+Pull request 45 was merged on the owner's word. He then asked for one order to be run through the whole process in the app browser, and for anything found broken to be fixed.
+
+### What was run on the live site (order marked TEST, with the owner's approval)
+
+| Step | Result |
+|---|---|
+| Intake: SO-00076, Eli White, PO "TEST 2 - DO NOT SHIP", 100 LB of A36 plate | Submitted, JOB-00073 under New Orders |
+| Plan Job (saw, Detroit Branch - Bay A) | Planned |
+| Run Dispatch at Bay A | Placed on KASTO 2 |
+| Work center queue: START, COMPLETE | Job to Waiting QC |
+| QC: inspection INS-00007, passed | Job to Packaging |
+| Packaging: Mark Ready | Job to Ready to Ship |
+| Shipping: shipment SHP-00053 created | Created |
+| Dispatch (the owner chose "Dispatch it") | REFUSED: no stock is reserved on the order. Nothing was invoiced. The shipment is still Not yet loaded |
+
+### What was found and fixed
+
+| # | Problem | Fix |
+|---|---|---|
+| 1 | No screen could reserve stock for an order, and a shipment cannot be dispatched without it. No order could ship from the screens | New "Stock for this order" panel on the order page (`components/orders/OrderStockPanel.jsx`, `pages/Orders/reserveRules.js`): each line shows ordered and reserved, Reserve Stock lists available stock in the line's unit and grade with the order's branch first, the server's own refusals are shown. The shipment page links to it when nothing is reserved |
+| 2 | An inspection started with no inspector could not be reached: it was in no tab and had no button | Starting an inspection opens its checklist. The queue row offers Open Inspection. The In Progress tab and count include it (`pages/QC/qcRules.js`, `QCDashboardPage.jsx`, `qcRoutes.js`) |
+| 3 | The work center queue showed record ids for the job, the order and the branch, and a thickness of 0 | Job number and customer, order number, branch name (`apps/shopfloor/queueLabels.js`, `dispatchRoutes.js`) |
+| 4 | In a narrow window START and COMPLETE were under the full-height job list | The job in hand and its buttons come first, the list after |
+| 5 | A row clicked in the queue while the list was loading or refreshing jumped back to the first row | The refresh keeps the row chosen at the moment its answer arrives |
+| 6 | The inspection page printed the job notes as raw JSON, and the "100% complete" chip was hard to read | Notes in words; outlined chip |
+| 7 | Due dates showed a day early on the shop floor, packaging, staging and the Orders list | `utils/calendarDate.js`: a date with no time of day is shown as the day it names |
+| 8 | Plan Job said no template fits while it was still loading | The note waits for the work center types |
+| 9 | Intake showed "Draft #" with a record id | "Draft saved" |
+
+Not changed: an order taken for a branch with no machines still has to be planned at another branch by hand. In a narrow window the Description column of an intake line is squeezed. The work center and print queues poll the server often (about 1,800 requests in six hours for one open tab). A reservation cannot be taken back from a screen, except by replacing the order's lines.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 360 of 360 (5 new in `test/orderFlow.test.js`: open inspections, notes in words, calendar dates, queue labels, reservation rules) |
+| `qa/sim/ui-floor-to-ship.cjs` (new, added to the gate script) | 26 of 26, run three times: queue names and layout at 800 wide, START and COMPLETE, inspection opens and can be found again, packaging, the shipment links to the order, Reserve Stock (offer, refusal of too much, saved), dispatch raises the invoice |
+| `qa/sim/ui-order-flow.cjs` | 31 of 31 |
+| `qa/sim/ui-shop.cjs` | 31 of 31 |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings (effects 38 of 38, click-only rows 0); build succeeds |
+
+NOT VERIFIED: the full gate suite; `ui-shipping` and the QC suites on a fresh database; the new screens on the live site; phones.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules in small pure modules; the panel uses the existing reservation endpoint |
+| B Functional completeness | CONDITIONAL | A reservation cannot be released from a screen |
+| C Cross-layer integrity | PASS | The browser suite runs queue to dispatch against server and database |
+| D Data integrity | PASS | No schema change; the server's reservation rules are unchanged |
+| E Security | NOT ASSESSED | No access rule changed |
+| F Reliability | PASS | Refusals from the server are shown where the person is working |
+| G Performance | NOT ASSESSED | The stock list asks for up to 200 items twice |
+| H User experience | CONDITIONAL | Checked at 800 and 1280 wide only |
+| I Regression | CONDITIONAL | Three browser suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual was not updated |
+
+Readiness: CONDITIONAL.

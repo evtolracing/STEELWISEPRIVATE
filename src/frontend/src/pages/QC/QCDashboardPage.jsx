@@ -42,7 +42,9 @@ import {
   TrendingUp as TrendIcon,
   Build as ReworkIcon,
 } from '@mui/icons-material'
+import { useNavigate } from 'react-router-dom'
 import { getQCQueue, getQCStats, getInspections, createInspection, getInspectors } from '../../api/qc'
+import { isOpenInspection, openInspectionOf, inspectionStatusLabel } from './qcRules'
 
 const statusColors = {
   PENDING: 'default',
@@ -59,6 +61,7 @@ const resultIcons = {
 }
 
 export default function QCDashboardPage() {
+  const navigate = useNavigate()
   const [tab, setTab] = useState(0)
   const [queue, setQueue] = useState([])
   const [queueTotal, setQueueTotal] = useState(0)
@@ -103,7 +106,7 @@ export default function QCDashboardPage() {
     if (!startDialog.job) return
     try {
       setSubmitting(true)
-      await createInspection({
+      const made = await createInspection({
         jobId: startDialog.job.id,
         inspectorId: selectedInspector || undefined,
         notes: inspectionNotes || undefined,
@@ -111,7 +114,10 @@ export default function QCDashboardPage() {
       setStartDialog({ open: false, job: null })
       setSelectedInspector('')
       setInspectionNotes('')
-      load()
+      // Straight to the inspection just started: the checklist is the next thing to do.
+      const madeId = made?.data?.id || made?.id
+      if (madeId) navigate(`/qc/inspect/${madeId}`)
+      else load()
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create inspection')
     } finally {
@@ -234,8 +240,8 @@ export default function QCDashboardPage() {
           Showing the {queue.length} most urgent of {queueTotal} jobs waiting for inspection.
         </Alert>
       )}
-      {tab === 0 && <QueueTab queue={queue} onStart={(job) => setStartDialog({ open: true, job })} />}
-      {tab === 1 && <InspectionListTab inspections={inspections.filter(i => i.status === 'IN_PROGRESS')} title="In Progress Inspections" />}
+      {tab === 0 && <QueueTab queue={queue} onStart={(job) => setStartDialog({ open: true, job })} onOpen={(inspectionId) => navigate(`/qc/inspect/${inspectionId}`)} />}
+      {tab === 1 && <InspectionListTab inspections={inspections.filter(isOpenInspection)} title="In Progress Inspections" />}
       {tab === 2 && <InspectionListTab inspections={inspections.filter(i => ['PASSED', 'FAILED'].includes(i.status))} title="Completed Inspections" />}
       {tab === 3 && <InspectionListTab inspections={inspections} title="All Inspections" />}
 
@@ -303,7 +309,7 @@ export default function QCDashboardPage() {
 }
 
 // ── QC Queue Tab ────────────────────────────────────────────────────────────
-function QueueTab({ queue, onStart }) {
+function QueueTab({ queue, onStart, onOpen }) {
   if (queue.length === 0) {
     return (
       <Paper sx={{ p: 4, textAlign: 'center' }}>
@@ -337,7 +343,7 @@ function QueueTab({ queue, onStart }) {
           {queue.map((job) => {
             const ops = job.dispatchJob?.operations || []
             const completedOps = ops.filter(o => o.status === 'COMPLETE').length
-            const hasActiveInspection = (job.inspections || []).some(i => ['PENDING', 'IN_PROGRESS'].includes(i.status))
+            const openInspection = openInspectionOf(job)
             return (
               <TableRow key={job.id} hover>
                 <TableCell>
@@ -358,8 +364,10 @@ function QueueTab({ queue, onStart }) {
                   {new Date(job.updatedAt).toLocaleString()}
                 </TableCell>
                 <TableCell align="center">
-                  {hasActiveInspection ? (
-                    <Chip size="small" label="Inspection Active" color="info" />
+                  {openInspection ? (
+                    <Button size="small" variant="outlined" startIcon={<InspectIcon />} onClick={() => onOpen(openInspection.id)} data-testid="open-inspection">
+                      Open Inspection
+                    </Button>
                   ) : (
                     <Tooltip title="Start QC Inspection">
                       <Button
@@ -422,7 +430,7 @@ function InspectionListTab({ inspections, title }) {
                 <Chip size="small" label={insp.inspectionType} variant="outlined" />
               </TableCell>
               <TableCell>
-                <Chip size="small" label={insp.status} color={statusColors[insp.status] || 'default'} />
+                <Chip size="small" label={inspectionStatusLabel(insp.status)} color={statusColors[insp.status] || 'default'} />
               </TableCell>
               <TableCell>
                 {insp.overallResult ? (
@@ -449,14 +457,15 @@ function InspectionListTab({ inspections, title }) {
                 {new Date(insp.completedAt || insp.createdAt).toLocaleString()}
               </TableCell>
               <TableCell align="center">
-                {insp.status === 'IN_PROGRESS' && (
+                {isOpenInspection(insp) && (
                   <Button
                     size="small"
                     variant="outlined"
                     startIcon={<InspectIcon />}
                     href={`/qc/inspect/${insp.id}`}
+                    data-testid="continue-inspection"
                   >
-                    Continue
+                    {insp.status === 'PENDING' ? 'Start' : 'Continue'}
                   </Button>
                 )}
                 {['PASSED', 'FAILED'].includes(insp.status) && (

@@ -37,6 +37,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { listIntakeOrders, createWorkOrdersFromOrder } from '../../services/intakeOrdersApi';
 import { nextStepFor } from '../../pages/Orders/intakeChecks';
+import { calendarDate } from '../../utils/calendarDate'
 
 const statusColors = {
   DRAFT: 'default',
@@ -210,7 +211,7 @@ function OrdersPage() {
                           <Stack direction="row" spacing={1}>
                             <Chip label={order.priority} size="small" color={priorityColors[order.priority]} variant="outlined" />
                             <Typography variant="caption" color="text.secondary">
-                              Due: {order.dueDate ? new Date(order.dueDate).toLocaleDateString() : '—'}
+                              Due: {calendarDate(order.dueDate)}
                             </Typography>
                           </Stack>
                           <Typography variant="subtitle2" color="primary">

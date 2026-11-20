@@ -69,3 +69,71 @@ test('the Orders list offers Create Work Orders for a submitted order and the bo
   assert.equal(nextStepFor('DRAFT'), 'OPEN');
   assert.equal(nextStepFor('CANCELLED'), 'OPEN');
 });
+
+// ── Shop floor to shipping: the rules found wanting on the live walkthrough of 2026-11-20 ──
+const { isOpenInspection, openInspectionOf, inspectionStatusLabel, jobNotesText } = await import('../../frontend/src/pages/QC/qcRules.js');
+const { calendarDate } = await import('../../frontend/src/utils/calendarDate.js');
+const { jobTitle, orderOf, thicknessOf, branchLabel } = await import('../../frontend/src/apps/shopfloor/queueLabels.js');
+const { reservedOn, openToReserve, mayReserve, stockChoices, suggestedQty, stockSummary } = await import('../../frontend/src/pages/Orders/reserveRules.js');
+
+test('an inspection started with no inspector is still open work that can be reached', () => {
+  assert.equal(isOpenInspection({ status: 'PENDING' }), true);
+  assert.equal(isOpenInspection({ status: 'IN_PROGRESS' }), true);
+  assert.equal(isOpenInspection({ status: 'PASSED' }), false);
+  assert.equal(openInspectionOf({ inspections: [{ id: 'i1', status: 'PENDING' }] }).id, 'i1');
+  assert.equal(openInspectionOf({ inspections: [{ id: 'i0', status: 'FAILED' }] }), null);
+  assert.equal(inspectionStatusLabel('PENDING'), 'Not started');
+});
+
+test('job notes kept as JSON are shown as words', () => {
+  const text = jobNotesText('{"customerName":"Eli White","orderNumber":"SO-00076","lineNumber":1,"processes":[],"requirements":{"gradeOverride":"A36"}}');
+  assert.equal(text, 'Customer: Eli White\nOrder: SO-00076, line 1\nGrade: A36');
+  assert.equal(jobNotesText('Handle with care'), 'Handle with care');
+  assert.equal(jobNotesText(null), '');
+});
+
+test('a due date reads as the day it names, whatever the time zone of the reader', () => {
+  const was = process.env.TZ;
+  process.env.TZ = 'America/Los_Angeles';
+  try {
+    assert.equal(calendarDate('2026-11-21T00:00:00.000Z'), '11/21/2026');
+    assert.equal(calendarDate(null), '—');
+    assert.equal(calendarDate('not a date'), '—');
+  } finally { if (was === undefined) delete process.env.TZ; else process.env.TZ = was; }
+});
+
+test('the work center queue names the job, never a record id', () => {
+  const op = { jobId: '7b430a97-1438-4ed6-ace0-a3072bfd6a93', job: { id: '7b430a97-1438-4ed6-ace0-a3072bfd6a93', jobNumber: 'JOB-00073', orderId: '787679d5-cc43', orderNumber: 'SO-00076' } };
+  assert.equal(jobTitle(op), 'JOB-00073');
+  assert.equal(orderOf(op), 'SO-00076');
+  assert.equal(orderOf({ job: { orderId: '787679d5-cc43' } }), '—');
+  assert.equal(thicknessOf(0), '—');
+  assert.equal(thicknessOf('1.5'), '1.5"');
+  assert.equal(branchLabel({ locationName: 'Detroit Branch - Bay A' }, '1e7e3193-7580-4e24-9413-d2c3a20fefee'), 'Detroit Branch - Bay A');
+  assert.equal(branchLabel({}, '1e7e3193-7580-4e24-9413-d2c3a20fefee'), '');
+});
+
+test('reserving stock: what a line still needs and which stock is offered', () => {
+  const line = { lineNumber: 1, unit: 'LB', gradeId: 'g1', qtyOrdered: '100', qtyShipped: '0', allocations: [{ qtyAllocated: '40' }] };
+  assert.equal(reservedOn(line), 40);
+  assert.equal(openToReserve(line), 60);
+  assert.equal(openToReserve({ ...line, qtyShipped: '70' }), 0);
+  assert.equal(mayReserve({ status: 'CONFIRMED' }), true);
+  assert.equal(mayReserve({ status: 'DRAFT' }), false);
+  assert.equal(mayReserve({ status: 'CANCELLED' }), false);
+  const stock = [
+    { id: 'far', locationId: 'b2', gradeId: 'g1', status: 'AVAILABLE', inventory: { qtyAvailable: '900', unit: 'LB' } },
+    { id: 'here', locationId: 'b1', gradeId: 'g1', status: 'AVAILABLE', inventory: { qtyAvailable: '50', unit: 'lbs' } },
+    { id: 'pieces', locationId: 'b1', gradeId: 'g1', status: 'AVAILABLE', inventory: { qtyAvailable: '5', unit: 'EA' } },
+    { id: 'othergrade', locationId: 'b1', gradeId: 'g2', status: 'AVAILABLE', inventory: { qtyAvailable: '500', unit: 'LB' } },
+    { id: 'held', locationId: 'b1', gradeId: 'g1', status: 'HOLD', inventory: { qtyAvailable: '500', unit: 'LB' } },
+    { id: 'empty', locationId: 'b1', gradeId: 'g1', status: 'ALLOCATED', inventory: { qtyAvailable: '0', unit: 'LB' } },
+    { id: 'moving', locationId: 'b1', gradeId: 'g1', status: 'AVAILABLE', inventory: { qtyAvailable: '80', unit: 'LB', status: 'IN_TRANSIT' } },
+  ];
+  assert.deepEqual(stockChoices(line, stock, 'b1').map((c) => c.id), ['here', 'far']);
+  assert.equal(suggestedQty(line, stock[1]), 50);
+  assert.equal(suggestedQty(line, stock[0]), 60);
+  assert.equal(stockSummary({ lines: [line] }).ready, false);
+  assert.match(stockSummary({ lines: [line] }).text, /1 of 1 line still needs stock reserved/);
+  assert.equal(stockSummary({ lines: [{ ...line, allocations: [{ qtyAllocated: '100' }] }] }).ready, true);
+});

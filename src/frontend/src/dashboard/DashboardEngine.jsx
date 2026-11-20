@@ -412,10 +412,13 @@ function ThreeColumnLayout({ widgets, showAiPanel, role, data, loading, errors, 
 
 // Main Dashboard Engine Component
 export default function DashboardEngine({ 
-  role, 
-  locationId = 'FWA', 
-  division = 'METALS',
-  workCenterId = 'SAW-01'
+  role,
+  // The branch picked in the top bar; undefined means every branch the person may see. The server
+  // applies the same branch to every record whatever is sent here (lib/viewScope.js).
+  locationId,
+  branchName,
+  division,
+  workCenterId,
 }) {
   const config = DASHBOARD_CONFIG[role];
   const { data, loading, errors, refresh } = useDashboardData(role, locationId, division, workCenterId);
@@ -454,8 +457,8 @@ export default function DashboardEngine({
             {title || `${roleName} Dashboard`}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Chip label={locationId} size="small" variant="outlined" />
-            <Chip label={division} size="small" variant="outlined" />
+            {(branchName || locationId) && <Chip label={branchName || locationId} size="small" variant="outlined" data-testid="dashboard-branch" />}
+            {division && <Chip label={division} size="small" variant="outlined" />}
             <Typography variant="caption" color="text.secondary">
               {new Date().toLocaleTimeString()}
             </Typography>

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, Navigate, Link as RouterLink } from 'react-router-dom'
-import { Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Alert, Box, Button, Paper, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
-import { canAccessPath, homeFor, workspaceFor } from '../../config/roleAccess'
+import { canAccessPath, homeFor, roleLabel, workspaceFor } from '../../config/roleAccess'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import PrintQueueDrawer from './PrintQueueDrawer'
@@ -52,14 +52,27 @@ function usePageName(mainRef) {
 }
 
 // Shows the page only if the user's role can open it.
+// While an administrator previews another role, every page says so and offers the way back.
+function PreviewBanner() {
+  const { previewRole, realRole, setViewAsRole } = useAuth()
+  if (!previewRole) return null
+  return (
+    <Alert severity="info" variant="filled" sx={{ mb: 2 }} data-testid="preview-banner"
+      action={<Button color="inherit" size="small" onClick={() => setViewAsRole('')}>End preview</Button>}>
+      Previewing as {roleLabel(previewRole)}: this is the menu, pages and records that role sees. Nothing can be changed while previewing. Your own role is {roleLabel(realRole)}.
+    </Alert>
+  )
+}
+
 function RoleGate() {
   const location = useLocation()
-  const { user } = useAuth()
+  const { user, viewVersion } = useAuth()
   const role = user?.role
   // Straight after signing in, a person starts at the screen their job uses most.
   const start = workspaceFor(role)
   if (location.pathname === '/' && location.state?.justSignedIn && start !== '/') return <Navigate to={start} replace />
-  if (canAccessPath(role, location.pathname)) return <Outlet />
+  // A new branch or a role preview loads the page again with the new view.
+  if (canAccessPath(role, location.pathname)) return <Outlet key={viewVersion} />
   const home = homeFor(role)
   if (location.pathname === '/' && home !== '/') return <Navigate to={home} replace />
   return (
@@ -119,6 +132,7 @@ export default function AppLayout() {
             overflow: 'auto',
           }}
         >
+          <PreviewBanner />
           <RoleGate />
         </Box>
 

@@ -59,6 +59,8 @@ import { getQueue, getOperators } from '../../services/dispatchApi'
 import { startOperation, pauseOperation, completeOperation } from '../../services/operationsApi'
 import { activateOnKey } from '../../utils/activateOnKey'
 import { ask, tell } from '../../utils/ask'
+import { calendarDate } from '../../utils/calendarDate'
+import { jobTitle, customerOf, orderOf, thicknessOf, branchLabel } from './queueLabels'
 
 // Priority config
 const PRIORITY_CONFIG = {
@@ -143,18 +145,10 @@ function WorkCenterQueuePage() {
       const data = await getQueue(locationId, workCenterId)
       setQueueData(data)
       
-      // Auto-select first operation if none selected
-      if (!selectedOperation && data.operations?.length > 0) {
-        setSelectedOperation(data.operations[0])
-      } else if (selectedOperation) {
-        // Update selected operation with fresh data
-        const updated = data.operations?.find(op => op.id === selectedOperation.id)
-        if (updated) {
-          setSelectedOperation(updated)
-        } else {
-          setSelectedOperation(data.operations?.[0] || null)
-        }
-      }
+      // Keep the step the person has chosen, with fresh data; with none chosen (or it has left the queue), take the first.
+      // Decided from the selection at the moment the answer arrives, so a click made while the list was
+      // loading is not undone by it.
+      setSelectedOperation((chosen) => data.operations?.find((op) => op.id === chosen?.id) || data.operations?.[0] || null)
       
       setError(null)
     } catch (err) {
@@ -163,7 +157,7 @@ function WorkCenterQueuePage() {
     } finally {
       setLoading(false)
     }
-  }, [locationId, workCenterId, selectedOperation])
+  }, [locationId, workCenterId])
 
   // Load operators — qualified for this work center's type
   useEffect(() => {
@@ -273,7 +267,7 @@ function WorkCenterQueuePage() {
   return (
     <Box>
       {/* Page Header */}
-      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <IconButton aria-label="Back" onClick={() => navigate('/shopfloor')} sx={{ bgcolor: 'grey.100' }}>
             <BackIcon />
@@ -286,7 +280,7 @@ function WorkCenterQueuePage() {
               {queueData?.workCenterName || workCenterId}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {locationId} • {queueData?.operationCount || 0} operations
+              {[branchLabel(queueData, locationId), `${queueData?.operationCount || 0} operations`].filter(Boolean).join(' • ')}
             </Typography>
           </Box>
         </Box>
@@ -334,8 +328,8 @@ function WorkCenterQueuePage() {
 
         <Grid container spacing={2}>
           {/* Queue List - Left Side */}
-          <Grid item xs={12} md={6} lg={5}>
-            <Paper sx={{ height: 'calc(100vh - 180px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Grid item xs={12} md={6} lg={5} sx={{ order: { xs: 2, md: 1 } }}>
+            <Paper sx={{ height: { xs: 'auto', md: 'calc(100vh - 180px)' }, maxHeight: { xs: 420, md: 'none' }, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ p: 2, bgcolor: 'grey.100', borderBottom: 1, borderColor: 'divider' }}>
                 <Typography variant="h6" fontWeight={700}>
                   Job Queue
@@ -388,14 +382,14 @@ function WorkCenterQueuePage() {
                             <Box>
                               <Stack direction="row" spacing={0.5} alignItems="center">
                                 <Typography fontWeight={600} variant="body2">
-                                  {op.job?.id || op.jobId}
+                                  {jobTitle(op)}
                                 </Typography>
                                 {priority.icon && (
                                   <priority.icon sx={{ fontSize: 14, color: priority.color }} />
                                 )}
                               </Stack>
                               <Typography variant="caption" color="text.secondary">
-                                {op.name}
+                                {[customerOf(op), op.name].filter(Boolean).join(' · ')}
                               </Typography>
                             </Box>
                           </TableCell>
@@ -404,7 +398,7 @@ function WorkCenterQueuePage() {
                               {op.materialCode}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {op.thickness}" thick
+                              {Number(op.thickness) > 0 ? `${thicknessOf(op.thickness)} thick` : ''}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -438,9 +432,10 @@ function WorkCenterQueuePage() {
           </Grid>
 
           {/* Active Job Detail - Right Side */}
-          <Grid item xs={12} md={6} lg={7}>
+          {/* In a narrow window the columns stack; the job in hand and its buttons come first, the list after. */}
+          <Grid item xs={12} md={6} lg={7} sx={{ order: { xs: 1, md: 2 } }} data-testid="queue-detail">
             {selectedOperation ? (
-              <Card sx={{ height: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column' }}>
+              <Card sx={{ height: { xs: 'auto', md: 'calc(100vh - 180px)' }, display: 'flex', flexDirection: 'column' }}>
                 {/* Job Header */}
                 <Box
                   sx={{
@@ -454,8 +449,8 @@ function WorkCenterQueuePage() {
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography variant="h4" fontWeight={700}>
-                          {selectedOperation.job?.id || selectedOperation.jobId}
+                        <Typography variant="h4" fontWeight={700} data-testid="queue-job-title">
+                          {jobTitle(selectedOperation)}
                         </Typography>
                         {selectedOperation.job?.priority && selectedOperation.job.priority !== 'NORMAL' && (
                           <Chip
@@ -470,7 +465,7 @@ function WorkCenterQueuePage() {
                         )}
                       </Stack>
                       <Typography variant="h6" sx={{ opacity: 0.9, mt: 0.5 }}>
-                        {selectedOperation.name}
+                        {[customerOf(selectedOperation), selectedOperation.name].filter(Boolean).join(' · ')}
                       </Typography>
                       <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5 }}>
                         Sequence: {selectedOperation.sequence} • {selectedOperation.requiredWorkCenterType}
@@ -520,7 +515,7 @@ function WorkCenterQueuePage() {
                         Thickness
                       </Typography>
                       <Typography variant="h6" fontWeight={600}>
-                        {selectedOperation.thickness}"
+                        {thicknessOf(selectedOperation.thickness)}
                       </Typography>
                     </Grid>
                     <Grid item xs={6} md={3}>
@@ -540,9 +535,7 @@ function WorkCenterQueuePage() {
                         {formatDueDate(selectedOperation.job?.dueDate)}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {selectedOperation.job?.dueDate
-                          ? new Date(selectedOperation.job.dueDate).toLocaleDateString()
-                          : '—'}
+                        {calendarDate(selectedOperation.job?.dueDate)}
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -553,7 +546,7 @@ function WorkCenterQueuePage() {
                         Order
                       </Typography>
                       <Typography variant="body1" fontWeight={600}>
-                        {selectedOperation.job?.orderId || '—'}
+                        {orderOf(selectedOperation)}
                       </Typography>
                     </Grid>
                     <Grid item xs={6} md={3}>

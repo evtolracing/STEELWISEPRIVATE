@@ -9,6 +9,7 @@ import {
   PlayArrow, Refresh, PriorityHigh,
 } from '@mui/icons-material';
 import { getJobs, updateJobStatus } from '../../api/jobs';
+import { calendarDate } from '../../utils/calendarDate'
 
 const PackagingQueue = () => {
   const [jobs, setJobs] = useState([]);
@@ -125,7 +126,7 @@ const PackagingQueue = () => {
         </Typography>
         {job.dueDate && (
           <Typography variant="caption" color="text.secondary" display="block">
-            Due: {new Date(job.dueDate).toLocaleDateString()}
+            Due: {calendarDate(job.dueDate)}
           </Typography>
         )}
 

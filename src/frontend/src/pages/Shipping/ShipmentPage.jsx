@@ -340,7 +340,7 @@ export default function ShipmentPage() {
                         <TableCell align="right">{x.quantity} {x.unit}</TableCell>
                       </TableRow>
                     )))}
-                    {!papers.lines.some((l) => l.stock.length) && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>{papers.stage === 'BEFORE_DISPATCH' ? 'No stock is reserved for these lines yet.' : 'No stock movement names this shipment.'}</TableCell></TableRow>}
+                    {!papers.lines.some((l) => l.stock.length) && <TableRow><TableCell colSpan={6} align="center" sx={{ py: 3, color: 'text.secondary' }}>{papers.stage === 'BEFORE_DISPATCH' ? <>No stock is reserved for these lines yet. <Link component={RouterLink} to={`/orders/${shipment.order?.id}`} data-testid="reserve-on-order">Reserve it on the order</Link>, then dispatch.</> : 'No stock movement names this shipment.'}</TableCell></TableRow>}
                   </TableBody>
                 </Table>
               </TableContainer>

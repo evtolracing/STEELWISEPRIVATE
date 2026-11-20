@@ -76,8 +76,8 @@ router.get('/stats', async (req, res) => {
     ] = await Promise.all([
       // Jobs waiting for QC
       prisma.job.count({ where: { status: 'WAITING_QC' } }),
-      // Inspections in progress
-      prisma.jobInspection.count({ where: { status: 'IN_PROGRESS' } }),
+      // Inspections in hand: started with or without an inspector, and not yet decided
+      prisma.jobInspection.count({ where: { status: { in: OPEN_INSPECTION } } }),
       // Passed today
       prisma.jobInspection.count({
         where: {

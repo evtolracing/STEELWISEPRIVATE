@@ -10,6 +10,7 @@ import {
   Inventory2, Warning,
 } from '@mui/icons-material';
 import { getStagingData, shipJob } from '../../api/materialTracking';
+import { calendarDate } from '../../utils/calendarDate'
 
 const StagingLoading = () => {
   const [jobs, setJobs] = useState([]);
@@ -161,7 +162,7 @@ const StagingLoading = () => {
                     {job.dueDate ? (
                       <Typography variant="body2"
                         color={new Date(job.dueDate) < new Date() ? 'error.main' : 'text.primary'}>
-                        {new Date(job.dueDate).toLocaleDateString()}
+                        {calendarDate(job.dueDate)}
                       </Typography>
                     ) : '-'}
                   </TableCell>

@@ -384,7 +384,7 @@ export default function CSRIntakePage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <Typography component="h1" variant="h5" fontWeight={700}>CSR Order Intake</Typography>
         <OrderSourceChip source={source} />
-        {orderId && <Chip label={`Draft #${orderId}`} size="small" variant="outlined" />}
+        {orderId && <Chip label="Draft saved" size="small" variant="outlined" />}
         {overrides.length > 0 && <OverrideIndicator overrides={overrides} compact />}
         <Box sx={{ flex: 1 }} />
         <FormControlLabel

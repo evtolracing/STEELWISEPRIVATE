@@ -33,6 +33,7 @@ import { getOverridesForOrder } from '../../services/overrideApi'
 import OverrideIndicator from '../../components/orders/OverrideIndicator'
 import AuditLogViewer from '../../components/orders/AuditLogViewer'
 import OrderCloseoutPanel from '../../components/orders/OrderCloseoutPanel'
+import OrderStockPanel from '../../components/orders/OrderStockPanel'
 import { ReleaseHoldDialog } from './CreditHoldsPage'
 import { getJobs } from '../../api/jobs'
 
@@ -357,6 +358,8 @@ export default function OrderDetailPage() {
           />
 
           {!['DRAFT', 'SUBMITTED', 'PENDING'].includes(order.status) && <OrderCloseoutPanel orderId={order.id} refreshKey={order.status} />}
+
+          {!editing && <OrderStockPanel orderId={order.id} refreshKey={order.status} onChanged={(msg) => setSnack({ open: true, msg, severity: 'success' })} />}
 
           <Paper variant="outlined" sx={{ p: 2, mt: 3, borderRadius: 2 }}>
             <Typography variant="subtitle2" fontWeight={600} gutterBottom>Actions</Typography>

@@ -17,17 +17,17 @@ import {
 import {
   ExpandLess,
   ExpandMore,
-  PlayCircle as DemoPlayIcon,
+  // PlayCircle as DemoPlayIcon,  // Alro Demo launcher hidden
 } from '@mui/icons-material'
 
-import { useDemo } from '../../contexts/DemoContext'
+// import { useDemo } from '../../contexts/DemoContext'  // Alro Demo launcher hidden
 import { useAuth } from '../../hooks/useAuth'
 import { canAccessPath } from '../../config/roleAccess'
 import { navSections, navItemFor } from '../../config/navigation'
 
 export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
   const location = useLocation()
-  const { isActive, startDemo, stopDemo } = useDemo()
+  // const { isActive, startDemo, stopDemo } = useDemo()  // Alro Demo launcher hidden
   const { user } = useAuth()
   const role = user?.role
   const permissions = user?.permissions
@@ -93,7 +93,8 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
 
       <Divider />
 
-      {/* Demo Launcher */}
+      {/* Alro Demo launcher hidden from the sidebar on request (2026-11-20). Restore by removing this comment block.
+      {/* Demo Launcher * /}
       <Box sx={{ px: 2, py: 1.5 }}>
         {!isActive ? (
           <Button
@@ -136,6 +137,7 @@ export default function Sidebar({ drawerWidth, mobileOpen, onMobileClose }) {
       </Box>
 
       <Divider />
+      */}
 
       {/* Navigation */}
       <Box sx={{ flex: 1, overflowY: 'auto', py: 1 }}>

@@ -55,8 +55,9 @@ import {
   updateWorkCenterType,
   deleteWorkCenterType,
   runDispatch,
-  getDispatchStats,
 } from '../../services/dispatchApi'
+import { getProductionOverview } from '../../services/productionApi'
+import { startingBranch } from '../../components/production/productionView'
 import { ICON_MAP, resolveIcon } from './iconMap'
 import { useAuth } from '../../hooks/useAuth'
 import CreateWorkCenterDialog from './CreateWorkCenterDialog'
@@ -66,7 +67,8 @@ import { dispatchMessage } from './dispatchMessage'
 
 function WorkCenterSelectPage() {
   const { user } = useAuth()
-  const homeRef = useRef(user?.homeLocationId || null)
+  // The branch picked in the top bar comes first, then the person's own (read once, when the screen opens).
+  const homeRef = useRef({ topBarBranchId: user?.branchId || '', homeLocationId: user?.homeLocationId || null })
   const navigate = useNavigate()
   
   // Core data
@@ -76,6 +78,7 @@ function WorkCenterSelectPage() {
   const [workCenterTypes, setWorkCenterTypesState] = useState([])
   const [divisionsData, setDivisionsData] = useState([])
   const [stats, setStats] = useState(null)
+  const [divisionFilter, setDivisionFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [dispatching, setDispatching] = useState(false)
   const [error, setError] = useState(null)
@@ -110,11 +113,10 @@ function WorkCenterSelectPage() {
         setLocations(locsData)
         setWorkCenterTypesState(typesData)
         setDivisionsData(divsData)
-        if (locsData.length > 0) {
-          // Start at the person's own branch. It used to start at the first branch of the list, whoever was signed in.
-          const home = homeRef.current
-          setSelectedLocation((locsData.find((l) => l.id === home) || locsData[0]).id)
-        }
+        // Start at the branch picked in the top bar, else the person's own. With no branch at all there is nothing to load.
+        const start = startingBranch(locsData, homeRef.current)
+        if (start) setSelectedLocation(start)
+        else setLoading(false)
       } catch (err) {
         console.error('Failed to load initial data:', err)
         setError(err.message)
@@ -127,16 +129,14 @@ function WorkCenterSelectPage() {
 
   // Load work centers and stats when location changes
   const loadData = useCallback(async () => {
-    if (!selectedLocation) {
-      setLoading(false)
-      return
-    }
+    // Still waiting for the list of branches: keep showing the spinner, not "No work centers".
+    if (!selectedLocation) return
     setLoading(true)
     setError(null)
     try {
       const [wcData, statsData] = await Promise.all([
         getWorkCenters(selectedLocation),
-        getDispatchStats(selectedLocation),
+        getProductionOverview({ locationId: selectedLocation, division: divisionFilter }),
       ])
       setWorkCentersState(wcData)
       setStats(statsData)
@@ -146,7 +146,7 @@ function WorkCenterSelectPage() {
     } finally {
       setLoading(false)
     }
-  }, [selectedLocation])
+  }, [selectedLocation, divisionFilter])
 
   useEffect(() => {
     loadData()
@@ -247,11 +247,17 @@ function WorkCenterSelectPage() {
     return typeMap[type]?.color || '#666'
   }
 
+  // Per machine, from the production overview: steps queued and running now, steps finished today.
+  const machineStats = useMemo(() => Object.fromEntries((stats?.workCenters || []).map((m) => [m.id, m])), [stats])
   const getQueueCount = (wcId) => {
-    if (!stats?.byWorkCenter?.[wcId]) return 0
-    const wc = stats.byWorkCenter[wcId]
-    return (wc.scheduled || 0) + (wc.inProcess || 0)
+    const m = machineStats[wcId]
+    return m ? (m.queued || 0) + (m.running || 0) : 0
   }
+  // The division picked narrows the machines too.
+  const shownWorkCenters = useMemo(
+    () => (divisionFilter ? workCenters.filter((wc) => wc.division === divisionFilter) : workCenters),
+    [workCenters, divisionFilter],
+  )
 
   // Active types only for the legend
   const activeTypes = useMemo(
@@ -330,6 +336,21 @@ function WorkCenterSelectPage() {
               ))}
             </Select>
           </FormControl>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel id="shopfloor-division-label">Division</InputLabel>
+            <Select
+              labelId="shopfloor-division-label"
+              value={divisionFilter}
+              label="Division"
+              onChange={(e) => setDivisionFilter(e.target.value)}
+              data-testid="shopfloor-division"
+            >
+              <MenuItem value="">All divisions</MenuItem>
+              {divisionsData.filter((d) => d.isActive !== false).map((d) => (
+                <MenuItem key={d.id} value={d.id}>{d.label || d.id}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Button
             variant="contained"
             startIcon={dispatching ? <CircularProgress size={20} color="inherit" /> : <StartIcon />}
@@ -342,36 +363,35 @@ function WorkCenterSelectPage() {
       </Box>
 
       <Box>
-        {/* Stats Summary */}
+        {/* Jobs at this branch, by how far they have got. Counted on the server the same way as the
+            Planning page and the workflow board (GET /api/jobs/overview). */}
         {stats && (
-          <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)', color: 'white' }}>
+          <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)', color: 'white' }} data-testid="shopfloor-summary">
             <CardContent>
               <Grid container spacing={3}>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Total Operations</Typography>
-                  <Typography variant="h4" fontWeight={700}>{stats.summary?.total || 0}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Pending</Typography>
-                  <Typography variant="h4" fontWeight={700} color="warning.light">{stats.summary?.pending || 0}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Scheduled</Typography>
-                  <Typography variant="h4" fontWeight={700} color="info.light">{stats.summary?.scheduled || 0}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>In Process</Typography>
-                  <Typography variant="h4" fontWeight={700} color="success.light">{stats.summary?.inProcess || 0}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Complete</Typography>
-                  <Typography variant="h4" fontWeight={700}>{stats.summary?.complete || 0}</Typography>
-                </Grid>
-                <Grid item xs={6} sm={2}>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Unassigned</Typography>
-                  <Typography variant="h4" fontWeight={700} color="error.light">{stats.summary?.unassigned || 0}</Typography>
-                </Grid>
+                {[
+                  ['In production', stats.counts?.inProduction, 'inherit', 'Jobs at this branch not yet through their steps'],
+                  ['Not planned', stats.counts?.NOT_PLANNED, 'warning.light', 'No route yet: plan them on the Order Board'],
+                  ['Waiting for a machine', stats.counts?.NO_MACHINE, 'error.light', 'Planned, next step on no machine: Run Dispatch'],
+                  ['Queued', stats.counts?.QUEUED, 'info.light', 'Next step waiting at a machine'],
+                  ['Running', stats.counts?.RUNNING, 'success.light', 'A step is being worked now'],
+                  ['Steps done today', stats.stepsDoneToday, 'inherit', 'Steps finished on these machines since midnight'],
+                ].map(([label, value, color, hint]) => (
+                  <Grid item xs={6} sm={4} md={2} key={label}>
+                    <Tooltip title={hint}>
+                      <Box>
+                        <Typography variant="caption" sx={{ opacity: 0.85 }}>{label}</Typography>
+                        <Typography variant="h4" fontWeight={700} color={color}>{value ?? 0}</Typography>
+                      </Box>
+                    </Tooltip>
+                  </Grid>
+                ))}
               </Grid>
+              {stats.counts && (stats.counts.WAITING_QC + stats.counts.PACKAGING + stats.counts.READY_TO_SHIP + stats.counts.ON_HOLD) > 0 && (
+                <Typography variant="caption" sx={{ display: 'block', mt: 1.5, opacity: 0.85 }}>
+                  Past the floor: {stats.counts.WAITING_QC} waiting QC, {stats.counts.PACKAGING} in packaging, {stats.counts.READY_TO_SHIP} ready to ship{stats.counts.ON_HOLD ? `, ${stats.counts.ON_HOLD} on hold` : ''}.
+                </Typography>
+              )}
             </CardContent>
           </Card>
         )}
@@ -396,11 +416,11 @@ function WorkCenterSelectPage() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <CircularProgress size={48} />
           </Box>
-        ) : workCenters.length === 0 ? (
+        ) : shownWorkCenters.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <FactoryIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              No work centers at this location
+              {divisionFilter ? 'No work centers of this division here' : 'No work centers at this location'}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Create your first work center to start managing production
@@ -418,10 +438,10 @@ function WorkCenterSelectPage() {
           </Box>
         ) : (
           <Grid container spacing={2}>
-            {workCenters.map((wc) => {
+            {shownWorkCenters.map((wc) => {
               const queueCount = getQueueCount(wc.id)
               const color = getWCColor(wc.workCenterType)
-              const wcStats = stats?.byWorkCenter?.[wc.id]
+              const wcStats = machineStats[wc.id]
               const typeLabel = typeMap[wc.workCenterType]?.label || wc.workCenterType
               
               return (
@@ -512,30 +532,30 @@ function WorkCenterSelectPage() {
                           <Grid item xs={4}>
                             <Box sx={{ textAlign: 'center' }}>
                               <Typography variant="h5" fontWeight={700} color="warning.main">
-                                {wcStats?.scheduled || 0}
+                                {wcStats?.queued || 0}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                Scheduled
+                                Queued
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={4}>
                             <Box sx={{ textAlign: 'center' }}>
                               <Typography variant="h5" fontWeight={700} color="success.main">
-                                {wcStats?.inProcess || 0}
+                                {wcStats?.running || 0}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                Active
+                                Running
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={4}>
                             <Box sx={{ textAlign: 'center' }}>
                               <Typography variant="h5" fontWeight={700} color="text.secondary">
-                                {wcStats?.complete || 0}
+                                {wcStats?.doneToday || 0}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                Done
+                                Done today
                               </Typography>
                             </Box>
                           </Grid>
@@ -553,7 +573,7 @@ function WorkCenterSelectPage() {
                             }}
                           >
                             <Typography variant="body2" fontWeight={600} color="text.primary">
-                              {queueCount} job{queueCount !== 1 ? 's' : ''} in queue
+                              {queueCount} step{queueCount !== 1 ? 's' : ''} in queue
                             </Typography>
                           </Box>
                         )}

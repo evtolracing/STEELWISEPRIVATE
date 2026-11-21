@@ -8,6 +8,7 @@ import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
 import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
+import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -133,6 +134,12 @@ async function editJob(req, res) {
 // GET /jobs - List jobs with optional filters
 // List limits. With no status filter the list is every open job plus the most
 // recently finished ones; ask for a status (or an order) to page through history.
+/** A job is at a branch by its plan; with no plan, by its machine; with neither, by the order that sold it. */
+export const jobAtBranch = (locationId) => ({ OR: [
+  { dispatchJob: { locationId } },
+  { dispatchJob: { is: null }, workCenter: { locationId } },
+  { dispatchJob: { is: null }, workCenterId: null, order: { locationId } },
+] });
 const JOB_LIST_DEFAULT = 1000;
 const JOB_LIST_MAX = 5000;
 const JOB_LIST_RECENT_FINISHED = 200;
@@ -154,10 +161,9 @@ router.get('/', async (req, res) => {
         where.status = status;
       }
     }
-    // Filter by work center location
-    if (locationId) {
-      where.workCenter = { locationId };
-    }
+    // By branch: the branch of the job's plan; before it is planned, its machine's; before that, the order's.
+    // (It used to match only jobs with the old machine field set, so most jobs fell out of every branch.)
+    if (locationId) where.AND = [...(where.AND || []), jobAtBranch(String(locationId))];
     if (workCenterId) where.workCenterId = workCenterId;
     if (orderId) where.orderId = orderId;
     // Jobs scheduled to start inside a window (the Schedule screen asks for one day).
@@ -183,6 +189,10 @@ router.get('/', async (req, res) => {
         select: { id: true, firstName: true, lastName: true },
       },
     };
+    // The Schedule books a job on the machine of the step it is on, so it needs the steps.
+    if (scheduled) {
+      include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, assignedWorkCenterId: true } } } };
+    }
     const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
     // The reply is capped so a board never downloads the whole job history.
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || JOB_LIST_DEFAULT, 1), JOB_LIST_MAX);
@@ -214,11 +224,81 @@ router.get('/', async (req, res) => {
     res.setHeader('X-Total-Count', String(total));
     if (jobs.length < total) res.setHeader('X-Result-Limited', 'true');
 
-    const mapped = jobs.map(mapJobForFrontend);
+    const mapped = jobs.map((job) => {
+      if (!scheduled) return mapJobForFrontend(job);
+      const { dispatchJob, ...rest } = job;
+      return { ...mapJobForFrontend(rest), bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
+    });
     res.json(mapped);
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+});
+
+// GET /jobs/overview?locationId=&division=&workCenterId=&since=
+// Every open job with where it is (branch, division, machine of its current step) and how far it has got, the
+// counts by stage, and per machine the steps queued, running and finished since `since` (the start of the
+// viewer's day). The shop floor, planning page and workflow board all read this, so they count the same way.
+const OVERVIEW_MAX = 5000;
+router.get('/overview', async (req, res) => {
+  try {
+    const { locationId, division, workCenterId } = req.query;
+    let since = null;
+    if (req.query.since !== undefined && req.query.since !== '') {
+      since = new Date(String(req.query.since));
+      if (Number.isNaN(since.getTime())) return res.status(400).json({ error: 'since is not a valid date' });
+    }
+    const place = { select: { id: true, name: true } };
+    const machine = { select: { id: true, name: true, locationId: true, capabilities: true, location: place } };
+    const [jobs, openTotal] = await Promise.all([
+      prisma.job.findMany({
+        where: { status: { notIn: PRODUCTION_CLOSED } },
+        orderBy: [{ priority: 'desc' }, { scheduledEnd: 'asc' }, { id: 'asc' }],
+        take: OVERVIEW_MAX,
+        select: {
+          id: true, jobNumber: true, status: true, priority: true, scheduledStart: true, scheduledEnd: true, operationType: true, orderId: true,
+          order: { select: { orderNumber: true, locationId: true, notes: true, location: place, buyer: { select: { name: true } } } },
+          workCenter: machine,
+          dispatchJob: { select: { locationId: true, division: true, customerName: true, location: place, operations: { select: { name: true, sequence: true, status: true, assignedWorkCenterId: true, assignedWorkCenter: machine } } } },
+        },
+      }),
+      prisma.job.count({ where: { status: { notIn: PRODUCTION_CLOSED } } }),
+    ]);
+    const all = jobs.map(productionRow);
+    const rows = filterRows(all, { locationId, division, workCenterId });
+
+    const machines = await prisma.workCenter.findMany({
+      where: { isActive: true, ...(locationId ? { locationId: String(locationId) } : {}) },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, code: true, type: true, locationId: true, capabilities: true, location: place },
+    });
+    const shown = machines
+      .map((m) => ({ id: m.id, name: m.name, code: m.code, type: m.type, locationId: m.locationId, locationName: m.location?.name || null, division: (m.capabilities && !Array.isArray(m.capabilities) && m.capabilities.division) || null }))
+      .filter((m) => !division || m.division === division);
+    const steps = shown.length ? await prisma.dispatchOperation.findMany({
+      where: {
+        assignedWorkCenterId: { in: shown.map((m) => m.id) },
+        OR: [{ status: { in: ['SCHEDULED', 'IN_PROCESS'] } }, ...(since ? [{ status: 'COMPLETE', actualEnd: { gte: since } }] : [])],
+      },
+      select: { assignedWorkCenterId: true, status: true, actualEnd: true, dispatchJob: { select: { job: { select: { status: true } } } } },
+    }) : [];
+    const perMachine = machineCounts(shown, steps.map((s) => ({ ...s, jobStatus: s.dispatchJob?.job?.status })), since);
+    const stepsDoneToday = Object.values(perMachine).reduce((sum, m) => sum + m.doneToday, 0);
+
+    res.json({
+      asOf: new Date(),
+      since,
+      limited: jobs.length < openTotal,
+      counts: stageCounts(rows),
+      stages: STAGES,
+      stepsDoneToday,
+      jobs: rows,
+      workCenters: shown.map((m) => ({ ...m, ...perMachine[m.id] })),
+    });
+  } catch (error) {
+    console.error('Error building the production overview:', error);
+    res.status(500).json({ error: 'The production overview could not be loaded' });
   }
 });
 
@@ -235,10 +315,7 @@ router.get('/sla-risk', async (req, res) => {
       status: { in: UNFINISHED_JOB_STATUSES },
       scheduledEnd: { not: null },
     };
-    // Filter by work center location
-    if (locationId) {
-      where.workCenter = { locationId };
-    }
+    if (locationId) where.AND = [jobAtBranch(String(locationId))];
 
     // Only jobs due inside the window are read, and only the columns the list shows:
     // a branch with thousands of open jobs is not loaded whole to find the late ones.

@@ -30,20 +30,8 @@ import { WORK_CENTER_STATUS } from '../constants/processingTypes'
 import { JOB_STATUSES } from '../constants/jobStatuses'
 import { PRIORITY_LEVELS } from '../constants/materials'
 import { activateOnKey } from '../utils/activateOnKey'
+import { bookedShare, scheduleMachineId } from '../components/production/productionView'
 
-const DAY_START_HOUR = 6
-const DAY_HOURS = 10 // the grid shows 6 AM to 4 PM
-
-/** Hours of the shown day a work center is booked for, as a share of the day. */
-function bookedShare(jobs) {
-  const minutes = jobs.reduce((sum, j) => {
-    if (!j.scheduledStart) return sum
-    const start = new Date(j.scheduledStart)
-    const end = j.scheduledEnd ? new Date(j.scheduledEnd) : new Date(start.getTime() + 2 * 3600000)
-    return sum + Math.max(0, (end - start) / 60000)
-  }, 0)
-  return Math.min(100, Math.round((minutes / (DAY_HOURS * 60)) * 100))
-}
 
 const SchedulePage = () => {
   const navigate = useNavigate()
@@ -65,13 +53,17 @@ const SchedulePage = () => {
         getWorkCenters({ isActive: true }),
         getJobs({ scheduledFrom: from.toISOString(), scheduledTo: to.toISOString(), limit: 2000 }),
       ])
-      const dayJobs = (Array.isArray(jobs) ? jobs : []).filter((j) => j.status !== 'CANCELLED')
+      // A job sits on the machine of the step it is on (the plan's machine), as on the shop floor.
+      // The old machine field on the job counts only for a job with no plan yet.
+      const dayJobs = (Array.isArray(jobs) ? jobs : [])
+        .filter((j) => j.status !== 'CANCELLED')
+        .map((j) => ({ ...j, workCenterId: scheduleMachineId(j) }))
       setScheduledJobs(dayJobs)
-      // "Booked" is the share of the shown day with a job scheduled on the work center.
+      // "Booked" is the share of the shown day's grid with a job scheduled on the work center.
       setWorkCenters((Array.isArray(wcs) ? wcs : []).map((wc) => ({
         ...wc,
         status: wc.isActive ? 'ACTIVE' : 'DOWN',
-        utilization: bookedShare(dayJobs.filter((j) => j.workCenterId === wc.id)),
+        utilization: bookedShare(dayJobs.filter((j) => j.workCenterId === wc.id), from),
       })))
     } catch (error) {
       console.error('Failed to load schedule:', error)
@@ -165,7 +157,7 @@ const SchedulePage = () => {
 
       {!loading && scheduledJobs.some((j) => !j.workCenterId) && (
         <Alert severity="warning" sx={{ mx: 3, mt: 2 }}>
-          {scheduledJobs.filter((j) => !j.workCenterId).length} job(s) scheduled for this day have no work center, so they are not on the grid. Plan them on the Order Board.
+          {scheduledJobs.filter((j) => !j.workCenterId).length} job(s) scheduled for this day are on no machine yet, so they are not on the grid. Plan them on the Order Board, or run Dispatch for a planned job.
         </Alert>
       )}
       {/* Stats Bar */}
@@ -225,7 +217,7 @@ const SchedulePage = () => {
               </Avatar>
               <Box>
                 <Typography variant="caption" color="text.secondary">Average booked</Typography>
-                <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }}>{stats.avgUtilization}%</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#7b1fa2' }} data-testid="schedule-avg-booked">{stats.avgUtilization}%</Typography>
               </Box>
             </Box>
           </Stack>
@@ -284,7 +276,7 @@ const SchedulePage = () => {
                   <Typography variant="subtitle1" fontWeight={700}>
                     {wc.name} - {wc.type}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" data-testid="schedule-booked">
                     Status: {wc.status} | Booked: {wc.utilization}%
                   </Typography>
                   <Box sx={{ mt: 1.5 }}>

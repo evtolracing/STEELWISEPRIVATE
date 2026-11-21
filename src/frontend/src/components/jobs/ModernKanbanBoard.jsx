@@ -48,6 +48,7 @@ import {
 import { KANBAN_COLUMNS, JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import ModernJobCard from './ModernJobCard'
 import { COLUMN_PAGE } from './KanbanBoard'
+import { boardCounts, isOverdue } from '../production/productionView'
 
 // Modern Kanban Column
 const ModernKanbanColumn = ({
@@ -106,7 +107,7 @@ const ModernKanbanColumn = ({
 
   // Stats
   const hotJobs = columnJobs.filter(j => j.priority === 'HOT').length
-  const overdueJobs = columnJobs.filter(j => j.dueDate && new Date(j.dueDate) < new Date()).length
+  const overdueJobs = columnJobs.filter((j) => isOverdue(j)).length
 
   return (
     <Paper
@@ -339,10 +340,8 @@ const ModernKanbanBoard = ({
   const activeFilterCount = Object.values(activeFilters).flat().length
   
   // Quick stats
-  const totalJobs = filteredJobs.length
-  const hotJobs = filteredJobs.filter(j => j.priority === 'HOT').length
-  const overdueJobs = filteredJobs.filter(j => j.dueDate && new Date(j.dueDate) < new Date()).length
-  const inProgressJobs = filteredJobs.filter(j => j.status === 'IN_PROCESS').length
+  // Open jobs apart from the recently finished ones the Completed column also shows.
+  const { open: totalJobs, finished: finishedJobs, hot: hotJobs, overdue: overdueJobs, inProgress: inProgressJobs } = boardCounts(filteredJobs)
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -440,11 +439,15 @@ const ModernKanbanBoard = ({
 
         {/* Quick Stats */}
         <Stack direction="row" spacing={1}>
-          <Chip 
-            label={`${totalJobs} total`} 
-            size="small" 
+          <Chip
+            label={`${totalJobs} open`}
+            size="small"
+            data-testid="board-job-count"
             sx={{ fontWeight: 600, bgcolor: alpha('#1976d2', 0.1), color: 'primary.main' }}
           />
+          {finishedJobs > 0 && (
+            <Chip label={`${finishedJobs} recently finished`} size="small" variant="outlined" />
+          )}
           {hotJobs > 0 && (
             <Chip 
               icon={<FireIcon sx={{ fontSize: '14px !important' }} />}

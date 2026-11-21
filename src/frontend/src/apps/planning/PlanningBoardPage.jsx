@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
@@ -20,62 +20,29 @@ import {
   CalendarMonth as CalendarIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { getJobs, getWorkCenters } from '../../api/planning';
+import ProductionFilterBar from '../../components/production/ProductionFilterBar';
+import { useProductionOverview } from '../../components/production/useProductionOverview';
+
+
+// The cards, in the order work moves. Counted on the server the same way as the shop floor and the workflow board.
+const CARDS = [
+  ['NOT_PLANNED', 'Not planned', 'warning.main'],
+  ['NO_MACHINE', 'Waiting for a machine', 'error.main'],
+  ['QUEUED', 'Queued', 'primary'],
+  ['RUNNING', 'Running', 'success.main'],
+  ['WAITING_QC', 'Waiting QC', 'text.primary'],
+  ['PACKAGING', 'Packaging', 'info.main'],
+  ['READY_TO_SHIP', 'Ready to ship', 'success.main'],
+  ['ON_HOLD', 'On hold', 'text.secondary'],
+];
 
 function PlanningBoardPage() {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState([]);
-  const [workCenters, setWorkCenters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, loading, error, filters, setFilters, reload } = useProductionOverview();
+  const workCenters = data?.workCenters || [];
+  const counts = data?.counts || {};
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      
-      const [jobsData, wcData] = await Promise.all([
-        getJobs(),
-        getWorkCenters(),
-      ]);
-      setJobs(jobsData);
-      setWorkCenters(wcData);
-      console.log('Loaded planning data from database:', jobsData.length, 'jobs');
-      
-      setError(null);
-    } catch (err) {
-      console.error('Failed to load data:', err);
-      setError('Failed to load planning data');
-      setJobs([]);
-      setWorkCenters([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusCounts = () => {
-    const counts = {
-      ORDERED: 0,
-      SCHEDULED: 0,
-      IN_PROCESS: 0,
-      WAITING_QC: 0,
-      PACKAGING: 0,
-      READY_TO_SHIP: 0,
-    };
-    jobs.forEach((job) => {
-      if (counts[job.status] !== undefined) {
-        counts[job.status]++;
-      }
-    });
-    return counts;
-  };
-
-  const statusCounts = getStatusCounts();
-
-  if (loading) {
+  if (loading && !data) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
         <CircularProgress />
@@ -89,9 +56,10 @@ function PlanningBoardPage() {
         <Typography component="h1" variant="h5" fontWeight={600}>
           Planning & Scheduling
         </Typography>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+          <ProductionFilterBar locationId={filters.locationId} division={filters.division} onChange={setFilters} />
           <Tooltip title="Refresh">
-            <IconButton onClick={loadData}>
+            <IconButton onClick={reload} aria-label="Refresh">
               <RefreshIcon />
             </IconButton>
           </Tooltip>
@@ -114,134 +82,59 @@ function PlanningBoardPage() {
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          The production figures could not be loaded, so none are shown. {error}
         </Alert>
       )}
 
-      {/* Summary Cards */}
-      <Grid container spacing={2} mb={3}>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Ordered
-              </Typography>
-              <Typography variant="h4" fontWeight={600}>
-                {statusCounts.ORDERED}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Scheduled
-              </Typography>
-              <Typography variant="h4" fontWeight={600} color="primary">
-                {statusCounts.SCHEDULED}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                In Process
-              </Typography>
-              <Typography variant="h4" fontWeight={600} color="warning.main">
-                {statusCounts.IN_PROCESS}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Waiting QC
-              </Typography>
-              <Typography variant="h4" fontWeight={600} color="text.primary">
-                {statusCounts.WAITING_QC}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Packaging
-              </Typography>
-              <Typography variant="h4" fontWeight={600} color="info.main">
-                {statusCounts.PACKAGING}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Ready to Ship
-              </Typography>
-              <Typography variant="h4" fontWeight={600} color="success.main">
-                {statusCounts.READY_TO_SHIP}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+      {/* Summary Cards: jobs by how far they have got */}
+      <Grid container spacing={2} mb={1} data-testid="planning-counts">
+        {CARDS.map(([key, label, color]) => (
+          <Grid item xs={6} sm={3} md={1.5} key={key}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">{label}</Typography>
+                <Typography variant="h4" fontWeight={600} color={color}>{data ? counts[key] ?? 0 : '—'}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
+      {data?.limited && (
+        <Alert severity="info" sx={{ mb: 2 }}>Only the first 5,000 open jobs are counted. Pick a branch to see all of one branch.</Alert>
+      )}
+      <Typography variant="caption" color="text.secondary" display="block" mb={3}>
+        {data ? `${counts.open ?? 0} open jobs. Steps done today on these machines: ${data.stepsDoneToday ?? 0}.` : ''}
+      </Typography>
 
       {/* Work Centers */}
       <Typography variant="h6" mb={2} fontWeight={600}>
         Work Centers
       </Typography>
       <Grid container spacing={2}>
-        {workCenters.map((wc) => {
-          const wcJobs = jobs.filter((j) => j.workCenterId === wc.id);
-          const activeJobs = wcJobs.filter((j) => j.status === 'IN_PROCESS');
-          const queuedJobs = wcJobs.filter((j) => j.status === 'SCHEDULED');
-          
-          return (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={wc.id}>
-              <Paper sx={{ p: 2 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                  <Typography variant="subtitle1" fontWeight={600}>
-                    {wc.name}
-                  </Typography>
-                  <Chip
-                    size="small"
-                    label={wc.isActive ? 'Active' : 'Inactive'}
-                    color={wc.isActive ? 'success' : 'default'}
-                  />
-                </Stack>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-                  {wc.code} · {wc.location?.name || 'No Location'}
+        {workCenters.map((wc) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={wc.id}>
+            <Paper sx={{ p: 2 }} data-testid="planning-machine">
+              <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography variant="subtitle1" fontWeight={600}>
+                  {wc.name}
                 </Typography>
-                <Stack direction="row" spacing={1}>
-                  <Chip
-                    size="small"
-                    label={`${activeJobs.length} Active`}
-                    color="warning"
-                    variant="outlined"
-                  />
-                  <Chip
-                    size="small"
-                    label={`${queuedJobs.length} Queued`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Stack>
-              </Paper>
-            </Grid>
-          );
-        })}
+                {wc.division && <Chip size="small" variant="outlined" label={wc.division} />}
+              </Stack>
+              <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+                {wc.code} · {wc.locationName || 'No branch'}
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                <Chip size="small" label={`${wc.running} Running`} color="warning" variant="outlined" />
+                <Chip size="small" label={`${wc.queued} Queued`} color="primary" variant="outlined" />
+                <Chip size="small" label={`${wc.doneToday} Done today`} variant="outlined" />
+              </Stack>
+            </Paper>
+          </Grid>
+        ))}
         {workCenters.length === 0 && (
           <Grid item xs={12}>
             <Typography color="text.secondary" textAlign="center" py={4}>
-              No work centers configured.
+              {data ? 'No work centers here.' : ''}
             </Typography>
           </Grid>
         )}

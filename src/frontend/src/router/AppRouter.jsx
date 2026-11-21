@@ -152,8 +152,6 @@ const RemnantCategoryPage = lazy(() => import('../pages/Ecommerce/RemnantCategor
 const PlanningSchedulingApp = lazy(() => import('../apps/planning/PlanningSchedulingApp'))
 
 // Production Workflow
-const ProductionWorkflowBoard = lazy(() => import('../components/production/ProductionWorkflowBoard'))
-const ShopFloorScreen = lazy(() => import('../components/production/ShopFloorScreen'))
 const ShippingScreen = lazy(() => import('../components/production/ShippingScreen'))
 
 // New App Pages
@@ -773,25 +771,18 @@ const router = createBrowserRouter([
       // ============================================
 
       // Production Workflow Board
+      // The old production board showed made-up branch, machine and division lists and moved jobs past their
+      // checks; the workflow board shows the same jobs from the records (owner's audit, 2026-11-21).
       {
         path: 'production',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ProductionWorkflowBoard />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
+        element: <Navigate to="/planning/workflow" replace />,
       },
 
       // Production Shop Floor Screen
+      // The old shop floor screen started and finished whole jobs, bypassing their steps: the shop floor is /shopfloor.
       {
         path: 'production/shop-floor',
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ShopFloorScreen />
-          </Suspense>
-        ),
-        errorElement: <RouteErrorPage />,
+        element: <Navigate to="/shopfloor" replace />,
       },
 
       // Production Shipping Screen

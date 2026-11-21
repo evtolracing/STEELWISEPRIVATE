@@ -42,6 +42,7 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
   const job = ((await api(`/api/jobs?orderId=${orderId}`)).body || [])[0];
   check('set-up: the order is submitted with its work order', sub.status === 200 && Boolean(job), `create ${made.status} submit ${sub.status} ${JSON.stringify(sub.body).slice(0, 200)}`);
   if (!job) throw new Error(`No job for the order: ${failed.join(' | ')}`);
+  check('the job number follows the order: line 1 of SO-NNNNN is JOB-NNNNN-1', job.jobNumber === `JOB-${String(orderNumber).replace(/^SO-/, '')}-1`, `${orderNumber} gave ${job.jobNumber}`);
   const planned = await api(`/api/jobs/${job.id}/plan`, 'POST', { operations: [{ workCenterType: type.id, name: `${type.label || type.id} step` }], division: 'METALS', dueDate: due, locationId: branch.id });
   const ran = await api('/api/v1/dispatch/run', 'POST', { locationId: branch.id });
   const step = ((await api(`/api/jobs/${job.id}/plan`)).body?.operations || [])[0];

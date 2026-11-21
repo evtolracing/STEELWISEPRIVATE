@@ -403,7 +403,7 @@ export default function OrderDetailPage() {
             <Box>
               <Alert severity="success" sx={{ mb: 2 }}>Created {woResult.workOrders?.length || 0} work order(s)</Alert>
               {woResult.workOrders?.map((wo, i) => (
-                <Chip key={i} label={wo.jobNumber || `JOB-${i + 1}`} sx={{ mr: 1, mb: 1 }} color="primary" variant="outlined" />
+                <Chip key={i} label={wo.jobNumber || `Job ${i + 1}`} sx={{ mr: 1, mb: 1 }} color="primary" variant="outlined" />
               ))}
             </Box>
           )}

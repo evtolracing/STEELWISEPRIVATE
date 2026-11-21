@@ -219,3 +219,50 @@ Not changed: there is no screen to correct a wrong entry (a clock left running o
 | J Documentation | CONDITIONAL | This report. The manual was not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 5, 2026-11-21: job numbers follow the order number
+
+The owner reported that sales order and job numbers did not match (SO-00078 made JOB-00075), which confused tracking, and chose the format below.
+
+### What changed
+
+| Case | Before | Now |
+|---|---|---|
+| Line 1 of SO-00078 | JOB-00075 (its own counter) | JOB-00078-1 |
+| Line 2 of the same order | JOB-00076 | JOB-00078-2 |
+| A second job for a line (after a cancellation, or a split) | next counter number | JOB-00078-1B, then 1C |
+| A job for the order with no line | next counter number | the number after its lines and jobs, JOB-00078-3 |
+| An order that is not SO- | next counter number | its whole number is kept, JOB-TO-00012-1 |
+| A job with no order | JOB-NNNNN | its own series, JS-00012 |
+
+`src/backend/src/lib/jobNumbers.js`, used by both places a job is made (`routes/intakeOrders.js` Create Work Orders, `routes/jobs.js` POST /api/jobs). The Ops Cockpit Expedite action finds old and new numbers. Jobs numbered before this keep their numbers: the old ones never end in "-line", so they cannot collide with the new ones. No database change.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 379 of 379 (8 new in `test/jobNumbers.test.js`) |
+| `qa/sim/ui-floor-to-ship.cjs` | 27 of 27 (new check: the job made from SO-NNNNN is JOB-NNNNN-1) |
+| `qa/sim/ui-time-tracking.cjs` | 18 of 18 |
+| `qa/sim/phase7-manufacturing.mjs --only 1` | 15 of 15 (the job number now must start with the order's digits) |
+| `qa/sim/phase9-ui.cjs --cat MAKE` | 24 of 26. The two failures (schedule Today button, schedule Queue View) fail the same way with this change taken out, so they are not caused by it |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | One module makes every job number |
+| B Functional completeness | PASS | Both creation paths covered; old numbers kept on purpose |
+| C Cross-layer integrity | PASS | Browser suite checks the number from intake to the shop floor |
+| D Data integrity | PASS | The unique rule on the job number still decides; a refusal for another reason is not hidden |
+| E Security | NOT ASSESSED | No access rule changed |
+| F Reliability | PASS | A taken number moves to the next letter |
+| G Performance | NOT ASSESSED | A job with no line reads its order's lines and jobs once |
+| H User experience | PASS | The order is readable from the job number |
+| I Regression | CONDITIONAL | Four suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual was not updated |
+
+Readiness: CONDITIONAL.

@@ -208,7 +208,7 @@ if (want(1)) {
     const row = await jobOf(j.id);
     ok('tied to the order and the line', row.orderId === j.order.id && row.orderLineId === j.line.id);
     ok('opened by the signed-in person, not an id sent in', row.createdById === pm1.user.id);
-    ok('waiting, with a job number', row.status === 'ORDERED' && /^JOB-\d+/.test(row.jobNumber));
+    ok('waiting, with a job number', row.status === 'ORDERED' && /^JOB-\d+-\d+[A-Z]?$/.test(row.jobNumber) && row.jobNumber.startsWith(`JOB-${j.order.orderNumber.replace(/^SO-/, '')}-`));
     const forged = await pm1.call('POST', '/api/jobs', { orderId: j.order.id, instructions: 'x', createdById: users.admin.id, jobNumber: 'JOB-FORGED' });
     ok('a job number or creator sent in the request is ignored', forged.status === 201 && (await jobOf(forged.body.id)).createdById === pm1.user.id && forged.body.jobNumber !== 'JOB-FORGED');
   });

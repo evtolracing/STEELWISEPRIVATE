@@ -60,6 +60,7 @@ import { startOperation, pauseOperation, completeOperation } from '../../service
 import { activateOnKey } from '../../utils/activateOnKey'
 import { ask, tell } from '../../utils/ask'
 import { calendarDate } from '../../utils/calendarDate'
+import { clockSeconds } from '../../pages/timeTrackingRules'
 import { jobTitle, customerOf, orderOf, thicknessOf, branchLabel } from './queueLabels'
 
 // Priority config
@@ -98,25 +99,18 @@ function formatDueDate(isoDate) {
   return `${diffDays}d`
 }
 
-// Running timer component
-function RunningTimer({ startTime }) {
-  const [elapsed, setElapsed] = useState(0)
-  
+// Running timer component: the time already on the step plus the time since the open clock started.
+function RunningTimer({ clock }) {
+  const [now, setNow] = useState(() => Date.now())
+
   useEffect(() => {
-    if (!startTime) return
-    
-    const start = new Date(startTime).getTime()
-    const interval = setInterval(() => {
-      const now = Date.now()
-      setElapsed(Math.floor((now - start) / 1000))
-    }, 1000)
-    
+    const interval = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(interval)
-  }, [startTime])
-  
+  }, [])
+
   return (
-    <Typography variant="h4" fontWeight={700} color="success.main" sx={{ fontFamily: 'monospace' }}>
-      {formatTime(elapsed)}
+    <Typography variant="h4" fontWeight={700} color="success.main" sx={{ fontFamily: 'monospace' }} data-testid="running-clock">
+      {formatTime(clockSeconds(clock, now))}
     </Typography>
   )
 }
@@ -477,7 +471,7 @@ function WorkCenterQueuePage() {
                           <Typography variant="caption" sx={{ opacity: 0.8 }}>
                             RUNNING
                           </Typography>
-                          <RunningTimer startTime={selectedOperation.timeSpent?.lastStartAt || new Date().toISOString()} />
+                          <RunningTimer clock={selectedOperation.timeSpent || { runningSince: selectedOperation.actualStart }} />
                         </Box>
                       ) : (
                         <Chip

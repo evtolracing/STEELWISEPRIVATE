@@ -3,7 +3,7 @@
  * Shows all logged work times across operations, operators, and work centers
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   Box,
   Container,
@@ -28,11 +28,8 @@ import {
   TableRow,
   Paper,
   TextField,
-  IconButton,
-  Tooltip,
   LinearProgress,
   alpha,
-  Divider,
   Tab,
   Tabs,
   Avatar,
@@ -42,41 +39,18 @@ import {
   Timer as TimerIcon,
   Person as PersonIcon,
   Factory as WorkCenterIcon,
-  Assignment as JobIcon,
-  CalendarMonth as CalendarIcon,
   Download as DownloadIcon,
   PauseCircle as PauseIcon,
   PlayCircle as RunningIcon,
   CheckCircle as CompleteIcon,
   Warning as WarningIcon,
-  TrendingUp as TrendingIcon,
   AccessTime as ClockIcon,
-  AutoAwesome as AIIcon,
 } from '@mui/icons-material'
-import { getOperations, getOperationTimeLogs, getLongRunningEntries } from '../services/operationsApi'
-import { getWorkCenters, getOperators, getLocations } from '../services/dispatchApi'
+import { Link as RouterLink } from 'react-router-dom'
+import { getTimeEntries, getLongRunningEntries } from '../services/operationsApi'
+import { formatDuration, entrySeconds, dayRange, localDay, filterEntries, summarize, choices, csvText } from './timeTrackingRules'
 
-// Format seconds to display
-function formatDuration(seconds) {
-  if (!seconds || seconds < 0) return '—'
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  const s = Math.floor(seconds % 60)
-  if (h > 0) return `${h}h ${m}m ${s}s`
-  if (m > 0) return `${m}m ${s}s`
-  return `${s}s`
-}
-
-// Format date for display
-function formatDate(isoDate) {
-  if (!isoDate) return '—'
-  return new Date(isoDate).toLocaleString()
-}
-
-// Format date for input
-function formatDateForInput(date) {
-  return date.toISOString().split('T')[0]
-}
+const clockTime = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '')
 
 // Status colors
 const STATUS_CONFIG = {
@@ -120,11 +94,11 @@ function SummaryCard({ title, value, subtitle, icon: Icon, color = 'primary' }) 
           >
             <Icon sx={{ fontSize: 24 }} />
           </Avatar>
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
               {title}
             </Typography>
-            <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+            <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
               {value}
             </Typography>
             {subtitle && (
@@ -142,167 +116,70 @@ function SummaryCard({ title, value, subtitle, icon: Icon, color = 'primary' }) 
 function TimeTrackingPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [timeLogs, setTimeLogs] = useState([])
-  const [operations, setOperations] = useState([])
-  const [workCenters, setWorkCentersState] = useState([])
-  const [operators, setOperatorsState] = useState([])
-  const [locations, setLocationsState] = useState([])
-  
+  const [entries, setEntries] = useState([])
+  const [limited, setLimited] = useState(null)
+  // Clocks left running a long time, for the supervisor to check. A list only: nothing is stopped.
+  const [longRunning, setLongRunning] = useState(null)
+  const [now, setNow] = useState(() => Date.now())
+
   // Filters
   const [locationFilter, setLocationFilter] = useState('')
   const [workCenterFilter, setWorkCenterFilter] = useState('')
   const [operatorFilter, setOperatorFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date()
-    d.setDate(d.getDate() - 7) // Last 7 days
-    return formatDateForInput(d)
-  })
-  const [dateTo, setDateTo] = useState(() => formatDateForInput(new Date()))
-  
+  const [dateFrom, setDateFrom] = useState(() => localDay(7)) // Last 7 days
+  const [dateTo, setDateTo] = useState(() => localDay(0))
+
   const [tabValue, setTabValue] = useState(0)
 
-  // Load data
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true)
+    getLongRunningEntries().then(setLongRunning).catch(() => setLongRunning(null))
     try {
-      const [locsData, wcsData, opsData, operationsData] = await Promise.all([
-        getLocations(),
-        getWorkCenters(),
-        getOperators(),
-        getOperations(),
-      ])
-      
-      setLocationsState(locsData || [])
-      setWorkCentersState(wcsData || [])
-      setOperatorsState(opsData || [])
-      setOperations(operationsData || [])
-      
-      // Extract time logs from operations
-      const allLogs = []
-      for (const op of (operationsData || [])) {
-        if (op.timeLogs && Array.isArray(op.timeLogs)) {
-          op.timeLogs.forEach(log => {
-            allLogs.push({
-              ...log,
-              operationName: op.name,
-              jobId: op.jobId,
-              materialCode: op.materialCode,
-            })
-          })
-        }
-      }
-      setTimeLogs(allLogs)
+      const range = dayRange(dateFrom, dateTo)
+      if (!range.from || !range.to) throw new Error('Pick a From and a To date.')
+      if (range.from > range.to) throw new Error('The From date is after the To date.')
+      const result = await getTimeEntries(range)
+      setEntries(result.data || [])
+      setLimited(result.limited ? { shown: (result.data || []).length, total: result.total } : null)
+      setNow(Date.now())
       setError(null)
     } catch (err) {
       console.error('Failed to load time tracking data:', err)
-      setError(err.response?.data?.error || err.message)
+      setError(err.message)
       // Show nothing rather than made-up hours: these figures feed payroll and job costing.
-      setLocationsState([])
-      setWorkCentersState([])
-      setOperatorsState([])
-      setOperations([])
-      setTimeLogs([])
+      setEntries([])
+      setLimited(null)
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateFrom, dateTo])
 
   useEffect(() => {
     loadData()
-  }, [])
+  }, [loadData])
 
-  // Clocks left running a long time, for the supervisor to check. A list only: nothing is stopped.
-  const [longRunning, setLongRunning] = useState(null)
+  // While a clock is running its time counts up on screen.
+  const anyRunning = entries.some((e) => e.running)
   useEffect(() => {
-    getLongRunningEntries().then(setLongRunning).catch(() => setLongRunning(null))
-  }, [])
+    if (!anyRunning) return undefined
+    const timer = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(timer)
+  }, [anyRunning])
 
-  // Filter logs
-  const filteredLogs = useMemo(() => {
-    return timeLogs.filter(log => {
-      if (locationFilter) {
-        const wc = workCenters.find(w => w.id === log.workCenterId)
-        if (!wc || wc.locationId !== locationFilter) return false
-      }
-      if (workCenterFilter && log.workCenterId !== workCenterFilter) return false
-      if (operatorFilter && log.operatorId !== operatorFilter) return false
-      if (statusFilter && log.status !== statusFilter) return false
-      if (dateFrom) {
-        const logDate = new Date(log.startAt)
-        const fromDate = new Date(dateFrom)
-        if (logDate < fromDate) return false
-      }
-      if (dateTo) {
-        const logDate = new Date(log.startAt)
-        const toDate = new Date(dateTo)
-        toDate.setHours(23, 59, 59, 999)
-        if (logDate > toDate) return false
-      }
-      return true
-    })
-  }, [timeLogs, locationFilter, workCenterFilter, operatorFilter, statusFilter, dateFrom, dateTo, workCenters])
+  const locations = useMemo(() => choices(entries, 'locationId', 'locationName'), [entries])
+  const workCenters = useMemo(() => choices(locationFilter ? entries.filter((e) => e.locationId === locationFilter) : entries, 'workCenterId', 'workCenterName'), [entries, locationFilter])
+  const operators = useMemo(() => choices(entries, 'operatorId', 'operatorName'), [entries])
 
-  // Calculate summaries
-  const summaries = useMemo(() => {
-    const totalTime = filteredLogs.reduce((sum, log) => sum + (log.durationSeconds || 0), 0)
-    const completedOps = filteredLogs.filter(l => l.status === 'COMPLETE').length
-    const runningOps = filteredLogs.filter(l => l.status === 'RUNNING').length
-    const pausedOps = filteredLogs.filter(l => l.status === 'PAUSED').length
-    const downtimeLogs = filteredLogs.filter(l => l.downtimeReason)
-    const downtimeTime = downtimeLogs.reduce((sum, log) => sum + (log.durationSeconds || 0), 0)
-    
-    // Group by operator
-    const byOperator = {}
-    filteredLogs.forEach(log => {
-      if (!byOperator[log.operatorId]) {
-        byOperator[log.operatorId] = { time: 0, count: 0 }
-      }
-      byOperator[log.operatorId].time += log.durationSeconds || 0
-      byOperator[log.operatorId].count++
-    })
-    
-    // Group by work center
-    const byWorkCenter = {}
-    filteredLogs.forEach(log => {
-      if (!byWorkCenter[log.workCenterId]) {
-        byWorkCenter[log.workCenterId] = { time: 0, count: 0 }
-      }
-      byWorkCenter[log.workCenterId].time += log.durationSeconds || 0
-      byWorkCenter[log.workCenterId].count++
-    })
-    
-    return {
-      totalTime,
-      completedOps,
-      runningOps,
-      pausedOps,
-      downtimeTime,
-      downtimeCount: downtimeLogs.length,
-      byOperator,
-      byWorkCenter,
-      avgOpTime: completedOps > 0 ? Math.round(totalTime / completedOps) : 0,
-    }
-  }, [filteredLogs])
+  const filteredLogs = useMemo(
+    () => filterEntries(entries, { locationId: locationFilter, workCenterId: workCenterFilter, operatorId: operatorFilter, status: statusFilter }),
+    [entries, locationFilter, workCenterFilter, operatorFilter, statusFilter],
+  )
+  const summaries = useMemo(() => summarize(filteredLogs, now), [filteredLogs, now])
 
   // Export to CSV
   const exportToCSV = () => {
-    const headers = ['Date', 'Job', 'Operation', 'Work Center', 'Operator', 'Status', 'Start', 'End', 'Duration', 'Downtime Reason']
-    const rows = filteredLogs.map(log => [
-      new Date(log.startAt).toLocaleDateString(),
-      log.jobId,
-      log.operationName,
-      log.workCenterId,
-      operators.find(o => o.id === log.operatorId)?.name || log.operatorId,
-      log.status,
-      formatDate(log.startAt),
-      formatDate(log.endAt),
-      formatDuration(log.durationSeconds),
-      log.downtimeReason || '',
-    ])
-    
-    const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
+    const blob = new Blob([csvText(filteredLogs, Date.now())], { type: 'text/csv;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -311,8 +188,51 @@ function TimeTrackingPage() {
     URL.revokeObjectURL(url)
   }
 
-  const getOperatorName = (id) => operators.find(o => o.id === id)?.name || id
-  const getWorkCenterName = (id) => workCenters.find(w => w.id === id)?.name || id
+  const summaryTable = (rows, label, Icon, color) => (
+    <TableContainer>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>{label}</TableCell>
+            <TableCell align="right">Steps</TableCell>
+            <TableCell align="right">Entries</TableCell>
+            <TableCell align="right">Total Time</TableCell>
+            <TableCell align="right">Avg per Step</TableCell>
+            <TableCell>Share of Time</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                <Typography color="text.secondary">No time logs found</Typography>
+              </TableCell>
+            </TableRow>
+          )}
+          {rows.map((row) => (
+            <TableRow key={row.id || 'none'} hover>
+              <TableCell>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Icon fontSize="small" color="action" />
+                  <Typography fontWeight={600}>{row.name}</Typography>
+                </Stack>
+              </TableCell>
+              <TableCell align="right">{row.steps}</TableCell>
+              <TableCell align="right">{row.entries}</TableCell>
+              <TableCell align="right">{formatDuration(row.seconds)}</TableCell>
+              <TableCell align="right">{formatDuration(row.steps > 0 ? Math.round(row.seconds / row.steps) : 0)}</TableCell>
+              <TableCell sx={{ width: 200 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LinearProgress variant="determinate" value={row.share} color={color} sx={{ flex: 1, height: 8, borderRadius: 1 }} aria-label={`${row.name}: ${row.share}% of the time shown`} />
+                  <Typography variant="caption">{row.share}%</Typography>
+                </Box>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
 
   return (
     <Box sx={{ 
@@ -332,7 +252,7 @@ function TimeTrackingPage() {
         boxShadow: '0 4px 20px rgba(30, 58, 95, 0.3)',
       }}>
         <Container maxWidth="xl" disableGutters>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Avatar sx={{ 
                 width: 56, 
@@ -346,12 +266,9 @@ function TimeTrackingPage() {
                 <Typography component="h1" variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
                   Time Tracking Report
                 </Typography>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <AIIcon sx={{ fontSize: 16, opacity: 0.8 }} />
-                  <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                    Track operator time, work center utilization, and job durations
-                  </Typography>
-                </Stack>
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  Time clocked on the shop floor, by job, operator and work center
+                </Typography>
               </Box>
             </Box>
             <Stack direction="row" spacing={1}>
@@ -359,6 +276,7 @@ function TimeTrackingPage() {
                 variant="outlined"
                 startIcon={<DownloadIcon />}
                 onClick={exportToCSV}
+                disabled={filteredLogs.length === 0}
                 sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.4)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
               >
                 Export CSV
@@ -379,11 +297,16 @@ function TimeTrackingPage() {
 
       <Container maxWidth="xl">
 
-        {loading && <LinearProgress sx={{ mb: 2 }} />}
+        {loading && <LinearProgress sx={{ mb: 2 }} aria-label="Loading time records" />}
         
         {error && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             Time records could not be loaded, so nothing is shown. {error}
+          </Alert>
+        )}
+        {limited && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Showing the newest {limited.shown.toLocaleString()} of {limited.total.toLocaleString()} entries in these dates. Pick a shorter range to see them all.
           </Alert>
         )}
         {longRunning && longRunning.data.length > 0 && (
@@ -406,11 +329,12 @@ function TimeTrackingPage() {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Location</InputLabel>
+                  <InputLabel id="tt-location">Location</InputLabel>
                   <Select
+                    labelId="tt-location"
                     value={locationFilter}
                     label="Location"
-                    onChange={(e) => setLocationFilter(e.target.value)}
+                    onChange={(e) => { setLocationFilter(e.target.value); setWorkCenterFilter('') }}
                   >
                     <MenuItem value="">All Locations</MenuItem>
                     {locations.map(loc => (
@@ -421,23 +345,25 @@ function TimeTrackingPage() {
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Work Center</InputLabel>
+                  <InputLabel id="tt-work-center">Work Center</InputLabel>
                   <Select
+                    labelId="tt-work-center"
                     value={workCenterFilter}
                     label="Work Center"
                     onChange={(e) => setWorkCenterFilter(e.target.value)}
                   >
                     <MenuItem value="">All Work Centers</MenuItem>
                     {workCenters.map(wc => (
-                      <MenuItem key={wc.id} value={wc.id}>{wc.name || wc.id}</MenuItem>
+                      <MenuItem key={wc.id} value={wc.id}>{wc.name}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Operator</InputLabel>
+                  <InputLabel id="tt-operator">Operator</InputLabel>
                   <Select
+                    labelId="tt-operator"
                     value={operatorFilter}
                     label="Operator"
                     onChange={(e) => setOperatorFilter(e.target.value)}
@@ -451,8 +377,9 @@ function TimeTrackingPage() {
               </Grid>
               <Grid item xs={12} sm={6} md={2}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Status</InputLabel>
+                  <InputLabel id="tt-status">Status</InputLabel>
                   <Select
+                    labelId="tt-status"
                     value={statusFilter}
                     label="Status"
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -491,61 +418,58 @@ function TimeTrackingPage() {
         </Card>
 
         {/* Summary Cards */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={6} sm={4} md={2}>
+        <Grid container spacing={2} sx={{ mb: 3 }} data-testid="time-summary">
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
               title="Total Time"
-              value={formatDuration(summaries.totalTime)}
-              subtitle={`${filteredLogs.length} entries`}
+              value={formatDuration(summaries.totalSeconds)}
+              subtitle={`${summaries.entryCount} ${summaries.entryCount === 1 ? 'entry' : 'entries'}`}
               icon={ClockIcon}
               color="primary"
             />
           </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
-              title="Completed"
-              value={summaries.completedOps}
-              subtitle={`Avg: ${formatDuration(summaries.avgOpTime)}`}
+              title="Steps Finished"
+              value={summaries.finishedSteps}
+              subtitle={summaries.finishedSteps > 0 ? `Avg: ${formatDuration(summaries.averageFinishedSeconds)}` : `${summaries.stepCount} worked on`}
               icon={CompleteIcon}
               color="success"
             />
           </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
-              title="In Progress"
-              value={summaries.runningOps}
-              subtitle="Currently running"
+              title="Running Now"
+              value={summaries.runningCount}
+              subtitle="Clocks running"
               icon={RunningIcon}
               color="primary"
             />
           </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
-              title="Paused"
-              value={summaries.pausedOps}
-              subtitle="On hold"
+              title="On Hold"
+              value={summaries.onHoldCount}
+              subtitle="Paused, not finished"
               icon={PauseIcon}
               color="warning"
             />
           </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
-              title="Downtime"
-              value={formatDuration(summaries.downtimeTime)}
-              subtitle={`${summaries.downtimeCount} incidents`}
+              title="Stops"
+              value={summaries.stopCount}
+              subtitle="Pauses with a reason"
               icon={WarningIcon}
               color="error"
             />
           </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          <Grid item xs={6} sm={4} lg={2}>
             <SummaryCard
-              title="Utilization"
-              value={summaries.totalTime > 0 
-                ? `${Math.round((summaries.totalTime - summaries.downtimeTime) / summaries.totalTime * 100)}%`
-                : '—'
-              }
-              subtitle="Active time"
-              icon={TrendingIcon}
+              title="Operators"
+              value={summaries.operatorCount}
+              subtitle="Clocked time here"
+              icon={PersonIcon}
               color="success"
             />
           </Grid>
@@ -562,51 +486,60 @@ function TimeTrackingPage() {
           {/* Time Log Details Tab */}
           {tabValue === 0 && (
             <TableContainer sx={{ maxHeight: 500 }}>
-              <Table size="small" stickyHeader>
+              <Table size="small" stickyHeader data-testid="time-entries">
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
                     <TableCell>Job</TableCell>
-                    <TableCell>Operation</TableCell>
+                    <TableCell>Step</TableCell>
                     <TableCell>Work Center</TableCell>
                     <TableCell>Operator</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Duration</TableCell>
-                    <TableCell>Notes</TableCell>
+                    <TableCell>Stop Reason</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredLogs.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                        <Typography color="text.secondary">No time logs found</Typography>
+                        <Typography color="text.secondary">
+                          {loading ? 'Loading time records' : entries.length > 0 ? 'No time logs match these filters' : 'No time logs found in these dates'}
+                        </Typography>
                       </TableCell>
                     </TableRow>
                   )}
                   {filteredLogs.map((log) => {
-                    const statusConfig = STATUS_CONFIG[log.status] || STATUS_CONFIG.COMPLETE
+                    const statusConfig = STATUS_CONFIG[log.running ? 'RUNNING' : log.status] || STATUS_CONFIG.COMPLETE
                     const StatusIcon = statusConfig.icon
                     return (
-                      <TableRow key={log.id} hover>
+                      <TableRow key={log.id} hover data-testid="time-entry">
                         <TableCell>
                           <Typography variant="body2">
                             {new Date(log.startAt).toLocaleDateString()}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {new Date(log.startAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {clockTime(log.startAt)}{log.endAt ? ` to ${clockTime(log.endAt)}` : ''}
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" fontWeight={600}>
-                            {log.jobId}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {log.materialCode}
+                          {log.jobId ? (
+                            <Typography component={RouterLink} to={`/jobs/${log.jobId}`} variant="body2" fontWeight={600} sx={{ color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+                              {log.jobNumber || 'Job'}
+                            </Typography>
+                          ) : (
+                            <Typography variant="body2" fontWeight={600}>{log.jobNumber || 'No job'}</Typography>
+                          )}
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            {[log.orderNumber, log.customerName].filter(Boolean).join(' · ')}
                           </Typography>
                         </TableCell>
-                        <TableCell>{log.operationName}</TableCell>
-                        <TableCell>{getWorkCenterName(log.workCenterId)}</TableCell>
-                        <TableCell>{getOperatorName(log.operatorId)}</TableCell>
+                        <TableCell>{log.operationName || ''}</TableCell>
+                        <TableCell>
+                          <Typography variant="body2">{log.workCenterName || 'Not recorded'}</Typography>
+                          <Typography variant="caption" color="text.secondary">{log.locationName || ''}</Typography>
+                        </TableCell>
+                        <TableCell>{log.operatorName || 'Not recorded'}</TableCell>
                         <TableCell>
                           <Chip
                             size="small"
@@ -617,17 +550,17 @@ function TimeTrackingPage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <Typography fontWeight={600}>
-                            {log.status === 'RUNNING' ? 'Active' : formatDuration(log.durationSeconds)}
+                          <Typography fontWeight={600} sx={{ whiteSpace: 'nowrap' }}>
+                            {formatDuration(entrySeconds(log, now))}
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          {log.downtimeReason && (
+                          {log.stopReason && (
                             <Chip
                               size="small"
                               variant="outlined"
                               color="warning"
-                              label={log.downtimeReason}
+                              label={log.stopReason}
                             />
                           )}
                         </TableCell>
@@ -639,94 +572,8 @@ function TimeTrackingPage() {
             </TableContainer>
           )}
 
-          {/* By Operator Tab */}
-          {tabValue === 1 && (
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Operator</TableCell>
-                    <TableCell align="right">Operations</TableCell>
-                    <TableCell align="right">Total Time</TableCell>
-                    <TableCell align="right">Avg per Operation</TableCell>
-                    <TableCell>Utilization</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(summaries.byOperator).map(([opId, data]) => (
-                    <TableRow key={opId} hover>
-                      <TableCell>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <PersonIcon fontSize="small" color="action" />
-                          <Typography fontWeight={600}>{getOperatorName(opId)}</Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="right">{data.count}</TableCell>
-                      <TableCell align="right">{formatDuration(data.time)}</TableCell>
-                      <TableCell align="right">{formatDuration(Math.round(data.time / data.count))}</TableCell>
-                      <TableCell sx={{ width: 200 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <LinearProgress
-                            variant="determinate"
-                            value={Math.min((data.time / summaries.totalTime) * 100, 100)}
-                            sx={{ flex: 1, height: 8, borderRadius: 1 }}
-                          />
-                          <Typography variant="caption">
-                            {Math.round((data.time / summaries.totalTime) * 100)}%
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-
-          {/* By Work Center Tab */}
-          {tabValue === 2 && (
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Work Center</TableCell>
-                    <TableCell align="right">Operations</TableCell>
-                    <TableCell align="right">Total Time</TableCell>
-                    <TableCell align="right">Avg per Operation</TableCell>
-                    <TableCell>Utilization</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Object.entries(summaries.byWorkCenter).map(([wcId, data]) => (
-                    <TableRow key={wcId} hover>
-                      <TableCell>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <WorkCenterIcon fontSize="small" color="action" />
-                          <Typography fontWeight={600}>{getWorkCenterName(wcId)}</Typography>
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="right">{data.count}</TableCell>
-                      <TableCell align="right">{formatDuration(data.time)}</TableCell>
-                      <TableCell align="right">{formatDuration(Math.round(data.time / data.count))}</TableCell>
-                      <TableCell sx={{ width: 200 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <LinearProgress
-                            variant="determinate"
-                            value={Math.min((data.time / summaries.totalTime) * 100, 100)}
-                            sx={{ flex: 1, height: 8, borderRadius: 1 }}
-                            color="secondary"
-                          />
-                          <Typography variant="caption">
-                            {Math.round((data.time / summaries.totalTime) * 100)}%
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+          {tabValue === 1 && summaryTable(summaries.byOperator, 'Operator', PersonIcon, 'primary')}
+          {tabValue === 2 && summaryTable(summaries.byWorkCenter, 'Work Center', WorkCenterIcon, 'secondary')}
         </Card>
       </Container>
     </Box>

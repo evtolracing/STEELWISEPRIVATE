@@ -132,3 +132,20 @@ export default {
   getOperationTimeLogs,
   reassignOperation,
 }
+
+/**
+ * The clock records for the Time Tracking screen: newest first, with names.
+ * from and to are instants (ISO). Returns { data, total, limited, asOf }.
+ */
+export async function getTimeEntries({ from, to, limit } = {}) {
+  const params = new URLSearchParams()
+  if (from) params.append('from', from)
+  if (to) params.append('to', to)
+  if (limit) params.append('limit', limit)
+  const response = await fetch(`${API_BASE}/v1/operations/time-entries?${params}`)
+  if (!response.ok) {
+    const problem = await response.json().catch(() => ({}))
+    throw new Error(problem.error || 'The time records could not be loaded')
+  }
+  return response.json()
+}

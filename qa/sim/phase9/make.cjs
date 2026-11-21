@@ -193,7 +193,7 @@ module.exports = async (s) => {
     const open1 = jobs.filter((j) => ['SCHEDULED', 'IN_PROCESS', 'WAITING_QC', 'PACKAGING'].includes(j.status)).slice(0, 5);
     t.check('open jobs sent are on the board', open1.length > 0 && open1.every((j) => body.includes(j.jobNumber)), open1.map((j) => j.jobNumber).join(','));
     const counts = {}; for (const j of jobs) counts[j.status] = (counts[j.status] || 0) + 1;
-    t.check('the stage headings are there', /Scheduled/i.test(body) && /In Process/i.test(body) && /QC/i.test(body));
+    t.check('the stage headings are there', /Not planned/i.test(body) && /Running/i.test(body) && /QC/i.test(body));
     t.check('no page error', page.errors.length === 0, page.errors[0]); void counts;
   });
 

@@ -266,3 +266,68 @@ NOT VERIFIED: the full gate suite; the live site.
 | J Documentation | CONDITIONAL | This report. The manual was not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 6, 2026-11-21: shop floor, planning and workflow board counts
+
+The owner reported that the shop floor figures were wrong (Total Operations 20, Pending 1, Scheduled 1, In Process 0, Complete 18, Unassigned 0), that the division filters were wrong and the job counts wrong, and asked for a full audit of the shop floor screens.
+
+### What was found (live site, read only, 2026-11-21)
+
+| # | Screen | Problem | Severity |
+|---|---|---|---|
+| 1 | Shop Floor | The header counted steps, not jobs, and "Complete" was every step ever finished. The live branch had 26 open jobs; the header showed 2 open steps | P1 |
+| 2 | Shop Floor | "Done" on each machine card was every step ever finished there | P2 |
+| 3 | Shop Floor | It ignored the branch picked in the top bar, and while loading said "No work centers at this location" with 0 types | P2 |
+| 4 | Shop Floor | No division filter | P2 |
+| 5 | GET /api/jobs?locationId= | Matched only jobs with the old machine field set, which planning never fills: a branch's new jobs were missing from every branch filter (also the late-jobs list) | P1 |
+| 6 | Planning | Machine Active and Queued looked at that old field, so almost every machine showed 0; counts were by job status only (a SCHEDULED job with no route looked scheduled) | P2 |
+| 7 | Workflow board (/planning/workflow) | Branch list was made up (Phoenix, Denver, Riverside); every job showed "No WC" | P1 |
+| 8 | /production | Branch, machine and division lists were made up (Location 1, Cutting, Division A); "No customer" on every card; "Move to" buttons outside the job's checks | P1 |
+| 9 | /production/shop-floor | Started and finished whole jobs, bypassing their steps | P1 |
+
+Data seen on the live site, not changed: nine demonstration jobs (J-DEMO-001 to 010, J-C2007) are SCHEDULED with no route and orders with no branch. They now show as Not planned under All branches only.
+
+### What was changed
+
+One rule for every production screen, in `src/backend/src/lib/productionView.js`: a job's branch is its plan's branch, else its machine's, else the selling branch; its division likewise; its machine is the machine of its current step; its stage is Not planned, Waiting for a machine, Queued, Running, Steps done, Waiting QC, Packaging, Ready to ship or On hold. New `GET /api/jobs/overview?locationId=&division=&since=` returns the open jobs with these, the counts, and per machine the steps queued, running and done since the start of the viewer's day. The branch boundary applies to it as to every read.
+
+- Shop Floor: header is In production, Not planned, Waiting for a machine, Queued, Running, Steps done today, with a line for jobs past the floor; machine cards show Queued, Running, Done today; a Division filter from the divisions on file; starts at the top bar's branch; keeps the spinner until its branch is known.
+- Planning: counts by stage and machine cards from the overview, with Branch and Division pickers.
+- Workflow board: columns by stage, real Branch and Division pickers, each card with order, customer, step, machine, branch, division and due date, and a link to the job.
+- /production opens the workflow board; /production/shop-floor opens the Shop Floor.
+- GET /api/jobs and /api/jobs/sla-risk find a job at a branch by the same rule.
+
+No database change.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 389 of 389 (10 new in `test/productionView.test.js`) |
+| `qa/sim/ui-production-overview.cjs` (new, added to the gate script) | 24 of 24, run twice: a new job is found at its selling branch; the overview stages it Not planned, Queued, Running, then past the floor with a step done today; the Shop Floor, Planning and workflow board figures equal the server's; division filter; real branch and division lists; old addresses redirect |
+| `qa/sim/phase7-manufacturing.mjs --only 7` | 22 of 22, with 3 new checks: the overview agrees with the queue; another branch's manager sees no machines and only jobs of its own orders |
+| `ui-floor-to-ship`, `ui-time-tracking`, `ui-phase7`, `phase12-ui` | 27 of 27, 18 of 18, 39 of 39, 5 of 5 |
+| `ui-shop` | 30 of 31. The failing check (order board: clicking a job opens its screen) fails the same way with this change taken out |
+| `phase9-ui --cat MAKE` | 24 of 26. The two schedule failures fail the same way without this change; the production board scenario was updated to the new stage names |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site after merge; phones.
+
+Not changed, for the owner: the Schedule screen still places jobs by the old machine field (its "Booked" share reads 0%); the Order Board header total counts recently shipped jobs as well as open ones.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | One server rule and one endpoint feed three screens |
+| B Functional completeness | CONDITIONAL | Schedule and Order Board header not changed |
+| C Cross-layer integrity | PASS | Browser suite compares each screen figure with the server's |
+| D Data integrity | PASS | Read only; no schema change |
+| E Security | PASS | Branch boundary checked for the new endpoint (phase 7 scenario) |
+| F Reliability | PASS | A failed load says so and shows no figures |
+| G Performance | NOT ASSESSED | One read of up to 5,000 open jobs with their steps |
+| H User experience | CONDITIONAL | Checked at 1400 wide only |
+| I Regression | CONDITIONAL | Eight suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual was not updated |
+
+Readiness: CONDITIONAL.

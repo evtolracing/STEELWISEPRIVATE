@@ -2136,6 +2136,17 @@ if (want(7)) {
     ok('the branch totals equal the records', Math.abs(s.pending - pending) <= 0 && s.scheduled === scheduled && s.inProcess === running && s.complete === complete && s.unassigned === unassigned && s.total === pending + scheduled + running + complete, JSON.stringify({ s, db: [pending, scheduled, running, complete, unassigned] }));
     const other = await pm2.call('GET', `/api/v1/dispatch/stats?locationId=${L1.id}`);
     ok('another branch\'s manager asking for this branch gets none of its figures', other.status !== 200 || (other.body.data.summary.total === 0 && Object.keys(other.body.data.byWorkCenter).length === 0), `${other.status} ${other.body?.data?.summary?.total}`);
+    // The production overview the shop floor reads now (owner's audit, 2026-11-21): the same machine, by jobs.
+    const since = new Date(Date.now() - 3600000).toISOString();
+    const ov = await A.get(`/api/jobs/overview?locationId=${L1.id}&since=${encodeURIComponent(since)}`);
+    const m = ov.body?.workCenters?.find((w) => w.id === c.wc.id);
+    ok('the overview agrees: one running, one queued and one done today on this machine', ov.status === 200 && m?.running === 1 && m?.queued === 1 && m?.doneToday === 1, JSON.stringify(m));
+    const stageOf = (id) => ov.body.jobs.find((j) => j.id === id)?.stage;
+    ok('and each job is in its stage: running, queued, past the floor, and the cancelled one not listed', stageOf(live.id) === 'RUNNING' && stageOf(wait.id) === 'QUEUED' && ['WAITING_QC', 'PACKAGING'].includes(stageOf(done.id)) && stageOf(dead.id) === undefined, JSON.stringify([stageOf(live.id), stageOf(wait.id), stageOf(done.id), stageOf(dead.id)]));
+    const otherOv = await pm2.call('GET', `/api/jobs/overview?locationId=${L1.id}`);
+    // A job belongs to the branch that sold its order as well as the one making it: the other branch sees only its own orders' jobs here.
+    const seen = otherOv.status === 200 ? await prisma.job.findMany({ where: { id: { in: otherOv.body.jobs.map((j) => j.id) } }, select: { order: { select: { locationId: true } } } }) : [];
+    ok('another branch\'s manager asking for this branch\'s overview gets no machines, and only jobs of its own orders', otherOv.status !== 200 || (otherOv.body.workCenters.length === 0 && seen.every((j) => j.order?.locationId === L2.id)), `${otherOv.status} ${otherOv.body?.jobs?.length} jobs, ${otherOv.body?.workCenters?.length} machines; orders at ${seen.map((j) => j.order?.locationId === L2.id ? 'own' : 'OTHER').join(',')}`);
   });
   await scenario(G7, 'expediting a job raises its priority; moving work between work centers only happens between like machines at one branch', async (ok) => {
     const c = await cell({ wcs: 2 });

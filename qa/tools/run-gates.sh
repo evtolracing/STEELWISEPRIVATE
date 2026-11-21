@@ -46,6 +46,7 @@ echo "== role matrix"; node qa/sim/roles.mjs --base http://localhost:3011 | tail
 echo "== new order to dispatch"; node qa/sim/ui-order-flow.cjs 2>&1 | tail -6
 echo "== shop floor to shipping"; node qa/sim/ui-floor-to-ship.cjs 2>&1 | tail -6
 echo "== time tracking"; node qa/sim/ui-time-tracking.cjs 2>&1 | tail -6
+echo "== production screens"; node qa/sim/ui-production-overview.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
 echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out qa/results/ui-audit.json > "$LOGS/ui-audit.log" 2>&1; node qa/tools/ui-audit-gate.cjs qa/results/ui-audit.json

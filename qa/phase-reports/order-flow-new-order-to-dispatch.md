@@ -167,3 +167,55 @@ NOT VERIFIED: the full gate suite; `ui-shipping` and the QC suites on a fresh da
 | J Documentation | CONDITIONAL | This report. The manual was not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 4, 2026-11-21: Time Tracking showed nothing
+
+The owner reported that Time Tracking is not working and should be fully functional.
+
+### What was wrong
+
+| # | Problem | Severity | Fix |
+|---|---|---|---|
+| 1 | The Time Tracking screen was always empty. It looked for the clock records inside the list of operations, and that list never carried them. Checked read-only on the live site: 20 operations, 18 with time on them, 0 records reaching the screen | P1 | New read-only endpoint `GET /api/v1/operations/time-entries` (`lib/timeEntries.js`) returns the clock records, newest first, with the job, order, customer, step, work center, branch and operator by name. The screen reads it |
+| 2 | Had records arrived, the screen would have shown record ids for the job and work center, and no duration (the records carry no stored duration) | P2 | Names from the server; the duration is worked out from start and end; a running clock counts up on screen |
+| 3 | The From and To dates were read as London midnight, so a day could start or end hours off | P2 | The whole of both days in the viewer's own time zone (`pages/timeTrackingRules.js`); the server filters by those instants |
+| 4 | "Downtime" and "Utilization" were sums that do not mean what the labels said (time worked before a pause was counted as downtime) | P2 | Replaced by figures the records support: steps finished, clocks running now, steps on hold, pauses with a reason, operators. The share bars are labelled Share of Time |
+| 5 | The CSV file broke on a name with a quote in it and carried ids | P3 | Quotes kept inside the cell, names, hours as a number, cells that look like formulas are not run |
+| 6 | The running clock on the work center queue always read 0s: it asked for a field the server never sent, and restarted on every refresh | P2 | The queue sends the step's clock (time already closed, and when the open entry started); the screen counts on from there, so pausing and opening the screen again keep the time |
+
+Filter lists (branch, work center, operator) now come from the records in the chosen dates, so someone who has since left still appears. The job number opens the job. A list cut short at 1,000 entries says so.
+
+No database change. No access rule changed: the new endpoint sits in the same router as the other operations reads.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 371 of 371 (11 new in `test/timeTracking.test.js`: entry and clock seconds, the address filter and its refusals, rows by name, date range in local time, card sums, filters, CSV) |
+| `qa/sim/ui-time-tracking.cjs` (new, added to the gate script) | 18 of 18, run twice: the queue clock counts and carries on after reopening, a running entry is listed and counts, pause with a reason and completion give two entries, no record ids, Total Time above zero, Status and Operator filters, By Operator, By Work Center, the CSV file, To set to yesterday, bad date refused |
+| `qa/sim/ui-floor-to-ship.cjs` | 26 of 26 |
+| `qa/sim/ui-shop.cjs` | 31 of 31 |
+| `qa/sim/ui-phase7.cjs` | 39 of 39 (includes the long-running clock notice on Time Tracking) |
+| `qa/sim/phase12-ui.cjs` | 5 of 5 (includes: when records cannot be loaded the screen says so and shows no hours) |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings (effects 38 of 38, click-only rows 0); build succeeds |
+
+NOT VERIFIED: the full gate suite; the new screen on the live site (it reaches the live site only after merge); phones; a branch with more than 1,000 entries in the chosen dates.
+
+Not changed: there is no screen to correct a wrong entry (a clock left running overnight can only be closed by pausing or completing the step); time is tracked per step, not as attendance (clock in and out for a shift).
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | One read endpoint; sums in pure modules on both sides |
+| B Functional completeness | CONDITIONAL | Entries cannot be corrected from a screen |
+| C Cross-layer integrity | PASS | The browser suite starts, pauses and completes a step and reads it back on the screen |
+| D Data integrity | PASS | Read only; no schema change |
+| E Security | NOT ASSESSED | No access rule changed; the route sweep was not re-run |
+| F Reliability | PASS | A failed load shows a notice and no hours (phase 12 scenario) |
+| G Performance | NOT ASSESSED | One query capped at 1,000 rows by default, 5,000 at most; `startAt` has no index |
+| H User experience | CONDITIONAL | Checked at 1280 wide only |
+| I Regression | CONDITIONAL | Five browser suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual was not updated |
+
+Readiness: CONDITIONAL.

@@ -9,6 +9,7 @@ import prisma from '../lib/db.js'
 import { changeJobStatusTx, afterProduction } from '../lib/jobGates.js'
 import { getSetting } from '../lib/settings.js'
 import { lockedOut } from '../lib/workCenterGuard.js'
+import { timeEntryQuery, timeEntryRow, clockOf } from '../lib/timeEntries.js'
 import { operationStartError, operationCompleteError, operationPauseError, workCenterEligibility, operatorEligibility, concurrentStepError } from '../lib/productionRules.js'
 
 const router = express.Router()
@@ -41,10 +42,13 @@ function calculateTimeFromLogs(logs) {
     const end = log.endAt ? new Date(log.endAt).getTime() : Date.now()
     totalMs += end - start
   }
+  const clock = clockOf(logs)
   return {
     totalSeconds: Math.round(totalMs / 1000),
     totalMinutes: Math.round(totalMs / 60000),
     formattedTime: formatDuration(totalMs),
+    closedSeconds: clock.closedSeconds,
+    runningSince: clock.runningSince,
   }
 }
 
@@ -167,6 +171,38 @@ router.get('/long-running', async (req, res) => {
   } catch (error) {
     console.error('Error listing long-running time entries:', error)
     res.status(500).json({ success: false, error: 'The list could not be loaded' })
+  }
+})
+
+/**
+ * GET /v1/operations/time-entries?from=&to=&locationId=&workCenterId=&operatorId=&status=&limit=
+ * The clock records themselves, newest first, with the job, step, operator and work center by name.
+ * This is what the Time Tracking screen reads. Read only.
+ */
+router.get('/time-entries', async (req, res) => {
+  try {
+    const asked = timeEntryQuery(req.query)
+    if (asked.error) return res.status(400).json({ success: false, error: asked.error })
+    const [rows, total] = await Promise.all([
+      prisma.dispatchTimeLog.findMany({
+        where: asked.where,
+        orderBy: [{ startAt: 'desc' }, { id: 'asc' }],
+        take: asked.limit,
+        include: { dispatchOperation: { select: { id: true, name: true, sequence: true, status: true, materialCode: true, dispatchJob: { select: { jobId: true, jobNumber: true, locationId: true, customerName: true, materialCode: true, location: { select: { name: true } }, order: { select: { orderNumber: true } } } } } } },
+      }),
+      prisma.dispatchTimeLog.count({ where: asked.where }),
+    ])
+    const ids = (key) => [...new Set(rows.map((r) => r[key]).filter(Boolean))]
+    const [operators, workCenters] = await Promise.all([
+      ids('operatorId').length ? prisma.operator.findMany({ where: { id: { in: ids('operatorId') } }, select: { id: true, firstName: true, lastName: true } }) : [],
+      ids('workCenterId').length ? prisma.workCenter.findMany({ where: { id: { in: ids('workCenterId') } }, select: { id: true, name: true } }) : [],
+    ])
+    const now = new Date()
+    res.setHeader('X-Total-Count', String(total))
+    res.json({ success: true, asOf: now, total, limited: rows.length < total, data: rows.map((r) => timeEntryRow(r, { operators, workCenters }, now)) })
+  } catch (error) {
+    console.error('Error listing time entries:', error)
+    res.status(500).json({ success: false, error: 'The time records could not be loaded' })
   }
 })
 

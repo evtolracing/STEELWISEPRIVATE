@@ -8,7 +8,7 @@ import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
 import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
-import { productionRow, filterRows, stageCounts, machineCounts, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
+import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -189,6 +189,10 @@ router.get('/', async (req, res) => {
         select: { id: true, firstName: true, lastName: true },
       },
     };
+    // The Schedule books a job on the machine of the step it is on, so it needs the steps.
+    if (scheduled) {
+      include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, assignedWorkCenterId: true } } } };
+    }
     const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
     // The reply is capped so a board never downloads the whole job history.
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || JOB_LIST_DEFAULT, 1), JOB_LIST_MAX);
@@ -220,7 +224,11 @@ router.get('/', async (req, res) => {
     res.setHeader('X-Total-Count', String(total));
     if (jobs.length < total) res.setHeader('X-Result-Limited', 'true');
 
-    const mapped = jobs.map(mapJobForFrontend);
+    const mapped = jobs.map((job) => {
+      if (!scheduled) return mapJobForFrontend(job);
+      const { dispatchJob, ...rest } = job;
+      return { ...mapJobForFrontend(rest), bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
+    });
     res.json(mapped);
   } catch (error) {
     console.error('Error fetching jobs:', error);

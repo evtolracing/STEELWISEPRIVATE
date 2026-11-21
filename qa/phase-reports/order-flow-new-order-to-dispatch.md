@@ -331,3 +331,44 @@ Not changed, for the owner: the Schedule screen still places jobs by the old mac
 | J Documentation | CONDITIONAL | This report. The manual was not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 7: Schedule, Order Board totals and the demo jobs (2026-11-21)
+
+The owner asked to fix the three items Addendum 6 left open ("yes fix anythng you find") and chose to cancel the demo jobs.
+
+### What changed
+
+- Schedule: a job is booked on the machine of the step it is on (its last step's machine once all are done; the old machine field only for a job with no plan). `GET /api/jobs?scheduledFrom&scheduledTo` returns `bookedWorkCenterId`. "Booked" counts only the part of each job inside the 6 AM to 4 PM grid, so a job spanning days no longer fills every day.
+- Order Board: the header says Open jobs and counts open jobs only. Hot, Overdue and In progress skip the recently finished jobs the Completed column also shows, and a shipped job is never counted overdue. The toolbar shows "N open" and "M recently finished" apart.
+- Database update `20261121200000_cancel_demo_jobs` (SQL Editor file made with `npm run db:sql-editor`): cancels J-DEMO-* and J-C2007 jobs that are open with no plan, with a note. On the live data that is 11 jobs (10 Scheduled, 1 In process), read through the live API without changes. The owner applies it.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 392 of 392 (3 new) |
+| `qa/sim/ui-production-overview.cjs` | 28 of 28; the 4 new checks fail with the code change taken out (server restarted on the old code) |
+| `qa/sim/db-cancel-demo-jobs.sh` (new, in the gate script) | 5 of 5 on a copy of the QA database: run twice, open demo jobs with no plan cancelled, shipped and planned ones and every other job unchanged, recorded once. It fails 4 of 5 with the update emptied |
+| `ui-floor-to-ship` | 27 of 27 |
+| `ui-shop` | 30 of 31, same pre-existing failure |
+| `phase9-ui --cat MAKE` | 25 of 26; scenario 144 (two Today buttons on the Schedule) fails the same way as before |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site after merge; the database update on the live database (the owner runs it).
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | The Schedule uses the same current-step rule as the other production screens |
+| B Functional completeness | PASS | The three open items are done |
+| C Cross-layer integrity | PASS | Browser checks compare the Schedule and Order Board figures with the server's |
+| D Data integrity | PASS | The update is narrow, idempotent and tested twice on a copy |
+| E Security | PASS | No new access; branch scope unchanged |
+| F Reliability | PASS | No new failure paths |
+| G Performance | NOT ASSESSED | The day's schedule now reads each job's steps |
+| H User experience | CONDITIONAL | Checked at 1400 wide only |
+| I Regression | CONDITIONAL | Five suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual was not updated |
+
+Readiness: CONDITIONAL.

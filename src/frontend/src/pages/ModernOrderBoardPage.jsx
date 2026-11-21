@@ -45,6 +45,7 @@ import ModernKanbanBoard from '../components/jobs/ModernKanbanBoard'
 import { KANBAN_COLUMNS, JOB_STATUSES, canTransitionTo } from '../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../constants/processingTypes'
 import { PRIORITY_LEVELS } from '../constants/materials'
+import { boardCounts } from '../components/production/productionView'
 import { getJobs, createJob, updateJobStatus, updateJob, planJob, getJobPlan } from '../services/jobsApi'
 import JobPlanningDialog from '../components/jobs/JobPlanningDialog'
 
@@ -195,12 +196,8 @@ const ModernOrderBoardPage = () => {
   }
 
   // Quick stats for header
-  const stats = {
-    total: jobs.length,
-    hot: jobs.filter(j => j.priority === 'HOT').length,
-    overdue: jobs.filter(j => j.dueDate && new Date(j.dueDate) < new Date()).length,
-    inProgress: jobs.filter(j => j.status === 'IN_PROCESS').length,
-  }
+  // Open jobs only: the Completed column also shows the most recently finished jobs, which are not work to do.
+  const stats = boardCounts(jobs)
 
   return (
     <Box sx={{ 
@@ -247,8 +244,8 @@ const ModernOrderBoardPage = () => {
               border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 2,
             }}>
-              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>Total Jobs</Typography>
-              <Typography variant="h6" fontWeight={700}>{stats.total}</Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>Open jobs</Typography>
+              <Typography variant="h6" fontWeight={700} data-testid="board-open-jobs">{stats.open}</Typography>
             </Paper>
             {stats.hot > 0 && (
               <Paper sx={{ 

@@ -1,8 +1,8 @@
 // Production screens: where a job is, how far it has got, and the counts (owner's audit, 2026-11-21).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, STAGES } from '../src/lib/productionView.js';
-import { byStage, startingBranch, stepText, startOfLocalDay } from '../../frontend/src/components/production/productionView.js';
+import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES } from '../src/lib/productionView.js';
+import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue } from '../../frontend/src/components/production/productionView.js';
 import { jobAtBranch } from '../src/routes/jobs.js';
 
 const step = (sequence, status, wc = null) => ({ sequence, status, name: `Step ${sequence}`, assignedWorkCenterId: wc?.id || null, assignedWorkCenter: wc });
@@ -134,4 +134,45 @@ test('screen helpers: columns by stage, the starting branch, the step text, the 
   assert.equal(stepText({ stepCount: 2, stepName: null }), 'All 2 steps done');
   const start = new Date(startOfLocalDay(new Date(2026, 10, 21, 15, 30)));
   assert.equal(start.getTime(), new Date(2026, 10, 21).getTime());
+});
+
+test('the Schedule books a job on the machine of its current step, not the old field on the job', () => {
+  const job = { workCenterId: 'OLD' };
+  assert.equal(bookedMachineId(job, []), 'OLD', 'no plan yet: the old field');
+  assert.equal(bookedMachineId(job, [step(1, 'COMPLETE', SAW), step(2, 'SCHEDULED', ROUTER)]), 'w2');
+  assert.equal(bookedMachineId(job, [step(1, 'IN_PROCESS', SAW), step(2, 'PENDING')]), 'w1');
+  assert.equal(bookedMachineId(job, [step(1, 'COMPLETE', SAW), step(2, 'PENDING')]), null, 'next step on no machine');
+  assert.equal(bookedMachineId(job, [step(1, 'COMPLETE', SAW), step(2, 'COMPLETE', ROUTER)]), 'w2', 'all done: the last machine');
+  assert.equal(scheduleMachineId({ workCenterId: 'OLD', bookedWorkCenterId: 'w2' }), 'w2');
+  assert.equal(scheduleMachineId({ workCenterId: 'OLD', bookedWorkCenterId: null }), null);
+  assert.equal(scheduleMachineId({ workCenterId: 'OLD' }), 'OLD');
+});
+
+test('booked share counts only the part of a job inside the day grid (6 AM to 4 PM)', () => {
+  const day = new Date(2026, 10, 21);
+  const at = (h, d = 21) => new Date(2026, 10, d, h).toISOString();
+  assert.equal(bookedShare([{ scheduledStart: at(8), scheduledEnd: at(13) }], day), 50);
+  assert.equal(bookedShare([{ scheduledStart: at(8) }], day), 20, 'no end: two hours');
+  assert.equal(bookedShare([{ scheduledStart: at(0, 20), scheduledEnd: at(0, 25) }], day), 100, 'a long job fills the grid, no more');
+  assert.equal(bookedShare([{ scheduledStart: at(17), scheduledEnd: at(20) }], day), 0, 'after the grid');
+  assert.equal(bookedShare([{ scheduledStart: at(5), scheduledEnd: at(7) }], day), 10, 'only the hour inside');
+  assert.equal(bookedShare([{}], day), 0);
+});
+
+test('the Order Board counts open jobs apart from the recently finished ones it shows', () => {
+  const now = new Date('2026-11-21T12:00:00Z');
+  const late = '2026-11-01T00:00:00Z';
+  const jobs = [
+    { status: 'ORDERED', priority: 'HOT', dueDate: late },
+    { status: 'SCHEDULED' },
+    { status: 'IN_PROCESS', dueDate: '2026-12-01T00:00:00Z' },
+    { status: 'SHIPPED', priority: 'HOT', dueDate: late },
+    { status: 'COMPLETED', dueDate: late },
+    { status: 'CANCELLED' },
+    { status: 'ON_HOLD', dueDate: late },
+  ];
+  assert.deepEqual(boardCounts(jobs, now), { open: 4, finished: 3, hot: 1, overdue: 2, inProgress: 1 });
+  assert.deepEqual(boardCounts([], now), { open: 0, finished: 0, hot: 0, overdue: 0, inProgress: 0 });
+  assert.equal(isOverdue({ status: 'SHIPPED', dueDate: late }, now), false, 'a shipped job is never late');
+  assert.equal(isOverdue({ status: 'ORDERED', dueDate: late }, now), true);
 });

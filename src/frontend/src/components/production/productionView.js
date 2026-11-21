@@ -32,3 +32,51 @@ export function stepText(row) {
   if (!row.stepName) return `All ${row.stepCount} steps done`
   return `${row.stepName}, step ${row.stepSequence ?? ''} of ${row.stepCount}`.replace(' step  of', ' step of')
 }
+
+/** The machine a job is on for the Schedule: the server's booking (its current step's machine), else the old field. */
+export function scheduleMachineId(job) {
+  return job && Object.prototype.hasOwnProperty.call(job, 'bookedWorkCenterId') ? job.bookedWorkCenterId : job?.workCenterId || null
+}
+
+export const SCHEDULE_DAY_START_HOUR = 6
+export const SCHEDULE_DAY_HOURS = 10 // the grid shows 6 AM to 4 PM
+
+/**
+ * The share of the shown day's grid (6 AM to 4 PM) a machine is booked for, in percent. Only the part of each job
+ * inside the grid counts, so a job running over several days does not fill every day it touches. A job with a
+ * start and no end counts two hours.
+ */
+export function bookedShare(jobs = [], day = new Date()) {
+  const from = new Date(day.getFullYear(), day.getMonth(), day.getDate(), SCHEDULE_DAY_START_HOUR).getTime()
+  const to = from + SCHEDULE_DAY_HOURS * 3600000
+  const minutes = jobs.reduce((sum, j) => {
+    if (!j.scheduledStart) return sum
+    const start = new Date(j.scheduledStart).getTime()
+    const end = j.scheduledEnd ? new Date(j.scheduledEnd).getTime() : start + 2 * 3600000
+    return sum + Math.max(0, (Math.min(end, to) - Math.max(start, from)) / 60000)
+  }, 0)
+  return Math.min(100, Math.round((minutes / (SCHEDULE_DAY_HOURS * 60)) * 100))
+}
+
+const FINISHED = ['SHIPPED', 'COMPLETED', 'CANCELLED']
+const isOpen = (j) => !FINISHED.includes(j?.status)
+
+/** Late: still open and past its due date. A shipped job is never late, whatever its due date was. */
+export function isOverdue(job, now = new Date()) {
+  return isOpen(job) && Boolean(job.dueDate) && new Date(job.dueDate) < now
+}
+
+/**
+ * The Order Board's figures. The board also shows the most recently finished jobs (its Completed column), which are
+ * not work to do, so they are counted apart and left out of hot, overdue and in progress.
+ */
+export function boardCounts(jobs = [], now = new Date()) {
+  const open = jobs.filter(isOpen)
+  return {
+    open: open.length,
+    finished: jobs.length - open.length,
+    hot: open.filter((j) => j.priority === 'HOT').length,
+    overdue: open.filter((j) => isOverdue(j, now)).length,
+    inProgress: open.filter((j) => j.status === 'IN_PROCESS').length,
+  }
+}

@@ -97,6 +97,19 @@ export function productionRow(job) {
   };
 }
 
+/**
+ * The machine a job is booked on for the Schedule: the machine of its current step; when every step is
+ * finished, the machine of its last step; before it is planned, the old machine field on the job.
+ * `steps` are { sequence, status, assignedWorkCenterId }.
+ */
+export function bookedMachineId(job, steps = []) {
+  if (!steps.length) return job?.workCenterId || null;
+  const now = currentStep(steps);
+  if (now) return now.assignedWorkCenterId || null;
+  const last = [...steps].sort(bySequence).pop();
+  return last?.assignedWorkCenterId || null;
+}
+
 export function filterRows(rows, { locationId, division, workCenterId } = {}) {
   return rows.filter((r) => (!locationId || r.locationId === locationId)
     && (!division || r.division === division)

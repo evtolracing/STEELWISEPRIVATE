@@ -117,6 +117,42 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
   await page.waitForTimeout(1500);
   check('the shop floor Steps done today figure is the server\'s', (await figure('shopfloor-summary', 'Steps done today')) === ov.stepsDoneToday, `${await figure('shopfloor-summary', 'Steps done today')} vs ${ov.stepsDoneToday}`);
 
+  // ── The Schedule books the job on its plan's machine (it used to look only at the old machine field) ──
+  const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(dayStart); dayEnd.setDate(dayEnd.getDate() + 1);
+  const hour = (h) => { const d = new Date(dayStart); d.setHours(h); return d.toISOString(); };
+  await api(`/api/jobs/${job.id}`, 'PATCH', { scheduledStart: hour(8), scheduledEnd: hour(12) });
+  const dayJobs = (await api(`/api/jobs?scheduledFrom=${encodeURIComponent(dayStart.toISOString())}&scheduledTo=${encodeURIComponent(dayEnd.toISOString())}&limit=2000`)).body || [];
+  const booked = dayJobs.find((j) => j.id === job.id);
+  check('the day\'s jobs say which machine each is booked on: its plan\'s machine', booked?.bookedWorkCenterId === machine.id && !booked?.dispatchJob, JSON.stringify(booked && { bookedWorkCenterId: booked.bookedWorkCenterId, workCenterId: booked.workCenterId }));
+  await page.goto(`${APP}/schedule`);
+  await page.getByRole('tab', { name: /Queue View/ }).click();
+  const wcPaper = page.locator('.MuiPaper-root', { hasText: `${machine.name} - ` }).filter({ has: page.locator('[data-testid="schedule-booked"]') }).first();
+  await wcPaper.waitFor({ timeout: 15000 }).catch(() => {});
+  const wcPaperText = await wcPaper.innerText().catch(() => '');
+  const bookedPct = Number((/Booked: (\d+)%/.exec(wcPaperText) || [])[1]);
+  // The expected share, worked out here from the server's bookings: the part of each job inside 6 AM to 4 PM.
+  const gridFrom = new Date(dayStart).setHours(6); const gridTo = gridFrom + 10 * 3600000;
+  const onMachine = dayJobs.filter((j) => j.status !== 'CANCELLED' && j.bookedWorkCenterId === machine.id);
+  const minutes = onMachine.reduce((sum, j) => { if (!j.scheduledStart) return sum; const a = new Date(j.scheduledStart).getTime(); const b = j.scheduledEnd ? new Date(j.scheduledEnd).getTime() : a + 7200000; return sum + Math.max(0, (Math.min(b, gridTo) - Math.max(a, gridFrom)) / 60000); }, 0);
+  const expectedPct = Math.min(100, Math.round((minutes / 600) * 100));
+  check('the Schedule counts the jobs booked on that machine, ours included, as the server books them', onMachine.some((j) => j.id === job.id) && bookedPct === expectedPct && expectedPct >= 40, `${bookedPct}% vs ${expectedPct}% from ${onMachine.length} jobs; ${wcPaperText.replace(/\n/g, ' | ').slice(0, 200)}`);
+
+  // ── The Order Board counts open jobs apart from the recently finished ones it also shows ──
+  const boardJobs = (await api('/api/jobs')).body || [];
+  const openOnBoard = boardJobs.filter((j) => !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)).length;
+  await page.goto(`${APP}/order-board`);
+  await page.locator('[data-testid="board-open-jobs"]').waitFor({ timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(1000);
+  const headerOpen = await page.locator('[data-testid="board-open-jobs"]').innerText().catch(() => '');
+  const boardCount = await page.locator('[data-testid="board-job-count"]').innerText().catch(() => '');
+  check('the Order Board header and toolbar count the open jobs, not the finished ones it also shows', Number(headerOpen) === openOnBoard && boardCount === `${openOnBoard} open`, `${headerOpen} / ${boardCount} vs ${openOnBoard} open of ${boardJobs.length}`);
+  const lateShipped = boardJobs.filter((j) => ['SHIPPED', 'COMPLETED'].includes(j.status) && j.dueDate && new Date(j.dueDate) < new Date()).length;
+  const lateOpen = boardJobs.filter((j) => !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status) && j.dueDate && new Date(j.dueDate) < new Date()).length;
+  const overdueChip = await page.getByText(/^\d+ overdue$/).first().innerText().catch(() => '0 overdue');
+  check('overdue counts only open jobs past due, never a shipped one', Number(overdueChip.split(' ')[0]) === lateOpen, `${overdueChip} vs ${lateOpen} open late (${lateShipped} shipped jobs past their due date)`);
+  await openFloor();
+
   // ── Division filter on the shop floor: only real divisions, and it narrows the machines ──
   const divisions = ((await api('/api/v1/dispatch/divisions')).body?.data || []).filter((d) => d.isActive !== false);
   await page.locator('[data-testid="shopfloor-division"]').click();

@@ -7,6 +7,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { AIProviderService } from '../services/ai/AIProviderService.js';
+import { JOB_NUMBER_PATTERN } from '../lib/jobNumbers.js';
 
 const router = Router();
 const aiService = new AIProviderService();
@@ -623,9 +624,9 @@ router.post('/recommendations/accept', async (req, res) => {
       }
     } else if (recommendation.title?.includes('Expedite')) {
       // Expedite: bump priority of the specific job
-      const jobMatch = recommendation.title.match(/(JOB-\d+)/);
+      const jobMatch = recommendation.title.match(JOB_NUMBER_PATTERN);
       if (jobMatch) {
-        const job = await prisma.job.findFirst({ where: { jobNumber: jobMatch[1] } });
+        const job = await prisma.job.findFirst({ where: { jobNumber: jobMatch[0] } });
         if (job) {
           // Priority runs from 1 (low) to 5 (hot), so expediting raises the number. (It used to lower it, which pushed the job back.)
           const newPriority = Math.min(5, (job.priority || 3) + 1);

@@ -18,6 +18,7 @@ import { can } from '../lib/roleStore.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { createNumbered, padded } from '../lib/numbering.js';
+import { createJobNumbered } from '../lib/jobNumbers.js';
 import { money } from '../lib/billingRules.js';
 import { orderMoveError, positiveQty } from '../lib/workflowRules.js';
 import { releaseAllocations } from './orders.js';
@@ -624,7 +625,8 @@ async function workOrdersFor(orderId, user) {
         ? processes.map(p => p.name || p.type || p).join(' + ')
         : 'PROCESSING';
 
-      const job = already || await createNumbered({ count: () => prisma.job.count(), format: padded('JOB'), create: (jobNumber) => prisma.job.create({
+      // The job number follows the order and the line: SO-00078 line 1 makes JOB-00078-1.
+      const job = already || await createJobNumbered({ client: prisma, order, lineNumber: line.lineNumber, create: (jobNumber) => prisma.job.create({
         data: {
           jobNumber,
           orderId: order.id,

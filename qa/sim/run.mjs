@@ -856,7 +856,7 @@ async function main() {
   const tally = scenarios.reduce((t, s) => ({ ...t, [s.result]: (t[s.result] || 0) + 1 }), {});
   const failedSteps = {}; const failedChecks = {};
   for (const s of scenarios) {
-    for (const st of s.steps.filter((x) => !x.ok)) { const k = st.name.replace(/[A-Z]+-L\d+-S\d+|JOB-\d+|SHP-\d+|\d+ lb|QA-L\d+(-\w+)?/g, '…'); (failedSteps[k] ||= []).push(`${s.id}: ${st.status} ${st.body || ''}`.slice(0, 220)); }
+    for (const st of s.steps.filter((x) => !x.ok)) { const k = st.name.replace(/[A-Z]+-L\d+-S\d+|(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?|SHP-\d+|\d+ lb|QA-L\d+(-\w+)?/g, '…'); (failedSteps[k] ||= []).push(`${s.id}: ${st.status} ${st.body || ''}`.slice(0, 220)); }
     for (const c of s.invariants.filter((x) => !x.ok)) { const k = c.name.replace(/QA-L\d+-S\d+|line \d+/g, '…'); (failedChecks[k] ||= []).push(`${s.id}: ${c.detail}`); }
   }
   const clean = !tally.FAIL && !tally.ERROR && report.concurrency.pass && report.reconciliation.pass;

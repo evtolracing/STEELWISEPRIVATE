@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
-import { createNumbered, padded } from '../lib/numbering.js';
+import { createJobNumbered } from '../lib/jobNumbers.js';
 import { JOB_STATUSES, UNFINISHED_JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 import { shipForJob } from './shipments.js';
 import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
@@ -411,9 +411,12 @@ router.post('/', async (req, res) => {
     if (scheduledStart) data.scheduledStart = new Date(scheduledStart);
     if (scheduledEnd) data.scheduledEnd = new Date(scheduledEnd);
     
-    const job = await createNumbered({
-      count: () => prisma.job.count(),
-      format: padded('JOB'),
+    // The job number follows the order and its line (JOB-00078-1); a job with no order is numbered JS-00012.
+    const lineNumber = data.orderLineId ? (await prisma.orderLine.findUnique({ where: { id: data.orderLineId }, select: { lineNumber: true } }))?.lineNumber : null;
+    const job = await createJobNumbered({
+      client: prisma,
+      order: order ? { id: data.orderId, orderNumber: order.orderNumber } : null,
+      lineNumber,
       create: (jobNumber) => prisma.job.create({ data: { ...data, jobNumber } }),
     });
 

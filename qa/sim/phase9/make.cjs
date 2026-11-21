@@ -58,7 +58,7 @@ module.exports = async (s) => {
     t.check('work centres were sent', centres.length > 0, centres.length);
     t.check('none belongs to another branch', foreign === 0, `${foreign} of ${centres.length}`);
     const body = await text(page, 'main'); t.check('each is a row of the schedule', centres.slice(0, 5).every((x) => body.includes(x.name) || body.includes(x.code)), centres.slice(0, 5).map((x) => x.name).join(','));
-    const jobs = sent(page, 'jobNumber'); const on = [...new Set([...body.matchAll(/JOB-\d{4,}/g)].map((m) => m[0]))];
+    const jobs = sent(page, 'jobNumber'); const on = [...new Set([...body.matchAll(/\b(?:JOB-\d{4,}(?:-\d+[A-Z]?)?|JS-\d{4,})/g)].map((m) => m[0]))];
     t.check('every job on the schedule is one the server sent for the day', on.every((n) => jobs.some((j) => j.jobNumber === n)), on.filter((n) => !jobs.some((j) => j.jobNumber === n)).join(','));
   });
 
@@ -79,10 +79,10 @@ module.exports = async (s) => {
     const c = await ctx(P.planner); const page = await open(c, '/schedule'); await settle(page, 600);
     const tab = page.getByRole('tab', { name: 'Queue View' }); await tab.focus(); await page.keyboard.press('Enter'); await settle(page, 800);
     // The list is drawn after the tab changes; wait for it, not for a fixed time (it failed once under load in the Phase 12 gate).
-    await page.locator('main').getByText(/JOB-\d+|No jobs|empty|nothing/i).first().waitFor({ timeout: 10000 }).catch(() => {});
+    await page.locator('main').getByText(/\b(?:JOB|JS)-\d+|No jobs|empty|nothing/i).first().waitFor({ timeout: 10000 }).catch(() => {});
     t.check('the tab is selected', (await tab.getAttribute('aria-selected')) === 'true');
-    const body = await text(page, 'main'); t.check('it lists jobs or says the queue is empty', /JOB-\d+/.test(body) || /No jobs|empty|nothing/i.test(body), body.slice(-300));
-    const numbers = [...new Set([...body.matchAll(/JOB-\d{4,}/g)].map((m) => m[0]))].slice(0, 30); const known = await prisma.job.count({ where: { jobNumber: { in: numbers } } });
+    const body = await text(page, 'main'); t.check('it lists jobs or says the queue is empty', /\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/.test(body) || /No jobs|empty|nothing/i.test(body), body.slice(-300));
+    const numbers = [...new Set([...body.matchAll(/\b(?:JOB-\d{4,}(?:-\d+[A-Z]?)?|JS-\d{4,})/g)].map((m) => m[0]))].slice(0, 30); const known = await prisma.job.count({ where: { jobNumber: { in: numbers } } });
     t.check('every job number shown is a real job', known === numbers.length, `${known} of ${numbers.length}`);
   });
 
@@ -97,7 +97,7 @@ module.exports = async (s) => {
 
   await sc('MAKE', 'a job card opens with Enter and shows the stored customer and operation, and Escape closes it', async (t) => {
     const c = await ctx(P.planner); const page = await open(c, '/order-board'); await settle(page, 1500);
-    const card = page.locator('main [role="button"]', { hasText: /JOB-\d+/ }).first(); const label = (await card.innerText()).match(/JOB-\d+/)[0];
+    const card = page.locator('main [role="button"]', { hasText: /\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/ }).first(); const label = (await card.innerText()).match(/\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/)[0];
     await card.focus(); await page.keyboard.press('Enter'); const dialog = page.getByRole('dialog'); t.check('Enter opens the job', await shown(dialog, 5000));
     const db = await prisma.job.findFirst({ where: { jobNumber: label } }); const body = await dialog.innerText();
     t.check('it is that job', body.includes(label));
@@ -108,9 +108,9 @@ module.exports = async (s) => {
   await sc('MAKE', 'the order board search narrows the cards to jobs matching the text', async (t) => {
     const c = await ctx(P.planner); const page = await open(c, '/order-board'); await settle(page, 1500);
     const jobs = sent(page, 'jobNumber', /^\/jobs/).filter((j) => !['SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)); const target = jobs[0].jobNumber;
-    const before = await page.locator('main [role="button"]', { hasText: /JOB-\d+/ }).count();
+    const before = await page.locator('main [role="button"]', { hasText: /\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/ }).count();
     await page.getByLabel('Search jobs, customers, materials').fill(target); await settle(page, 600);
-    const cards = await page.locator('main [role="button"]', { hasText: /JOB-\d+/ }).allInnerTexts();
+    const cards = await page.locator('main [role="button"]', { hasText: /\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/ }).allInnerTexts();
     t.check('fewer cards', cards.length >= 1 && cards.length < before, `${cards.length} of ${before}`);
     t.check('all matching', cards.every((x) => x.includes(target)), cards.slice(0, 3).join(' / '));
   });
@@ -173,7 +173,7 @@ module.exports = async (s) => {
     const other = await prisma.workCenter.findFirst({ where: { locationId: w.L2.id } }); if (other) t.check('a work centre of another branch is not', !body.includes(other.name) || other.name === wc1.name);
     const page2 = await open(c, `/shopfloor/${wc1.id}`); await settle(page2, 1000);
     t.check('its queue opens with the centre named in the heading', new RegExp(wc1.code.split('-')[0], 'i').test(await text(page2, 'main h1')) || (await text(page2, 'main h1')).includes(wc1.name), await text(page2, 'main h1'));
-    const numbers = [...new Set([...(await text(page2, 'main')).matchAll(/JOB-\d{4,}/g)].map((m) => m[0]))]; const mine = numbers.filter((n) => mineList.some((j) => j.jobNumber === n)).length;
+    const numbers = [...new Set([...(await text(page2, 'main')).matchAll(/\b(?:JOB-\d{4,}(?:-\d+[A-Z]?)?|JS-\d{4,})/g)].map((m) => m[0]))]; const mine = numbers.filter((n) => mineList.some((j) => j.jobNumber === n)).length;
     t.check('every job in its queue is a real job of this branch', mine === numbers.length, `${mine} of ${numbers.length}`);
   });
 
@@ -242,7 +242,7 @@ module.exports = async (s) => {
   });
   await sc('MAKE', 'a full column on the order board draws its first cards and offers the rest', async (t) => {
     const c = await ctx(boss); const page = await open(c, '/order-board'); await settle(page, 2000);
-    const jobs = sent(page, 'jobNumber', /^\/jobs/); const cards = () => page.locator('main [role="button"]', { hasText: /JOB-\d+/ }).count();
+    const jobs = sent(page, 'jobNumber', /^\/jobs/); const cards = () => page.locator('main [role="button"]', { hasText: /\b(?:JOB|JS)-\d+(?:-\d+[A-Z]?)?/ }).count();
     const more = page.getByTestId('column-show-more'); const first = await cards(); const offered = await more.count();
     if (jobs.length <= 30 * 8) { t.na('this database has too few jobs to fill a column'); await c.close(); return; }
     t.check('not every job is drawn at once', first > 0 && first < jobs.length, `${first} cards for ${jobs.length} jobs`);

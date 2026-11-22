@@ -1,6 +1,6 @@
 # Permissions matrix
 
-Generated 2026-11-20 by `qa/tools/excellence-docs.mjs` at commit 15e91bb. Do not edit by hand: change the source and rerun.
+Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not edit by hand: change the source and rerun.
 
 How access is decided today, read from `src/backend/src/middleware/apiGate.js`, `lib/roleAccess.js`, `lib/customerScope.js` and the route guards, and checked by the sweep and the baseline probe.
 
@@ -65,7 +65,7 @@ Any staff login that is not read-only can change these. Measured with a saw-oper
 | Processing recipes | 4 | /api/processing-recipes |
 | Work centers | 2 | /api/work-centers |
 | Staff, skills and shifts | 9 | /api/staff |
-| Dispatch set-up and queue | 9 | /api/v1/dispatch |
+| Dispatch set-up and queue | 8 | /api/v1/dispatch |
 | Shop-floor operations | 4 | /api/v1/operations |
 | Bills of material | 7 | /api/v1/bom |
 | Assets | 4 | /api/assets |
@@ -104,10 +104,10 @@ Found in Phase 9 and not fixed: `GET /api/v1/dispatch/work-centers?locationId=` 
 
 | Check | Result |
 |---|---|
-| Read-only roles cannot change anything | 632 write calls as auditor and data analyst, 0 not refused |
+| Read-only roles cannot change anything | 642 write calls as auditor and data analyst, 0 not refused |
 | A second address follows the same department rules | 4 checks, 0 problems |
-| Write routes sent an empty body do not crash | 321 write routes, 0 answered with a server error (allowed: 0), 4 saved a record from nothing |
-| Branch to branch access (reported, not judged) | a login whose home branch is P12NTAGE read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
+| Write routes sent an empty body do not crash | 326 write routes, 0 answered with a server error (allowed: 0), 4 saved a record from nothing |
+| Branch to branch access (reported, not judged) | a login whose home branch is DEMO-GR read 0 stock rows of another branch → 200; the same login listed orders of every branch → 200; it opened one order by id → 404; it placed a hold on a stock item at the other branch → 400; rows that assign users to branches (UserLocation): 246; to divisions (UserDivision): 0 |
 
 ## Decisions needed from the owner
 

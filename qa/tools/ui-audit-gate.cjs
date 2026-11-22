@@ -15,7 +15,9 @@ const now = {
   screensWiderThanTheWindow: r.filter((x) => x.overflowX > 1).length,
   smallTargetsOnAPhone: sum(r.filter((x) => x.viewport === 'phone'), (x) => (x.smallTargets || []).length),
   screensWithAPageError: r.filter((x) => (x.pageErrors || []).length).length,
-  screensSharingATitle: (() => { const t = {}; for (const x of d) t[x.title] = (t[x.title] || 0) + 1; return Object.values(t).filter((n) => n > 1).reduce((s, n) => s + n, 0); })(),
+  // An old address that only sends the person on to the screen's real address is that same screen, not a second
+  // screen with the same title, so it is not counted (2026-11-22; the ceiling was lowered with this change).
+  screensSharingATitle: (() => { const t = {}; for (const x of d) { if (!x.hasParam && x.landedOn && x.landedOn !== x.route) continue; t[x.title] = (t[x.title] || 0) + 1; } return Object.values(t).filter((n) => n > 1).reduce((s, n) => s + n, 0); })(),
 };
 if (process.argv.includes('--set')) { const { screens, ...ceil } = now; fs.writeFileSync(CEIL, JSON.stringify({ note: 'Ceilings for qa/tools/ui-audit-gate.cjs. Lower them when a count falls; never raise one to pass.', screensMeasured: screens, ceilings: ceil }, null, 1)); console.log('ceilings written', JSON.stringify(ceil)); process.exit(0); }
 const { ceilings } = JSON.parse(fs.readFileSync(CEIL)); let bad = 0;

@@ -16,7 +16,9 @@ trap 'dropdb -h "$HOST" -U "$USER_" --if-exists "$COPY"' EXIT
 pg_dump -h "$HOST" -U "$USER_" "$SRC" | $P >/dev/null 2>&1
 LISTED="'SO-00001','SO-00002','SO-00003','SO-00004','SO-00005','SO-00006','SO-000001','SO-00008','SO-00067','SO-00068','SO-00069','SO-00070','SO-00071','SO-00072','SO-00073','SO-00074','SO-00075','SO-00076','SO-P1001','SO-P1002','SO-P1003','SO-P1004','SO-P1005','SO-DEMO-001','SO-DEMO-002','SO-DEMO-003','SO-DEMO-004','SO-C2007'"
 CODES="'DEMO-DET','DEMO-GR','DEMO-JAX','DEMO-KZO','DET-A','DET-B','GR-YARD','JAX-WH','WH-MAIN'"
-$P -c "DELETE FROM _prisma_migrations WHERE migration_name='20261122213000_retire_test_orders_and_demo_locations';" >/dev/null
+# Both updates are taken off the copy's applied list: a database built after them has them recorded (and, built
+# empty, has no Charlotte yet), and a recorded update skips itself.
+$P -c "DELETE FROM _prisma_migrations WHERE migration_name IN ('20261122213000_retire_test_orders_and_demo_locations', '20261122100000_first_five_locations');" >/dev/null
 $P -f "$DIR/20261122100000_first_five_locations.sql" >/dev/null 2>&1
 # The starting point: placeholder locations switched on with a machine; listed orders open, one finished, and one
 # made after the update was written; an open and a shipped job; shipments of a listed order, from a placeholder
@@ -32,8 +34,10 @@ INSERT INTO "Job" (id, "jobNumber", status, "orderId", "updatedAt")
   UNION ALL SELECT 't-shipped', 'T-RETIRE-2', 'SHIPPED'::"JobStatus", id, now() FROM "Order" WHERE "orderNumber" = 'SO-P1001'
   UNION ALL SELECT 't-kept', 'T-RETIRE-3', 'SCHEDULED'::"JobStatus", id, now() FROM "Order" WHERE "orderNumber" = 'SO-C2007';
 UPDATE "Shipment" SET status = 'DELIVERED' WHERE "fromLocationId" IN (SELECT id FROM "Location" WHERE code IN ($CODES)) OR "orderId" IN (SELECT id FROM "Order" WHERE "orderNumber" IN ('SO-000001','SO-P1001','SO-DEMO-001'));
-CREATE TEMP TABLE pick AS SELECT id, row_number() OVER (ORDER BY id) n FROM "Shipment" WHERE status = 'IN_TRANSIT' AND "createdAt" < '2026-11-22' LIMIT 3;
+CREATE TEMP TABLE pick AS SELECT id, row_number() OVER (ORDER BY id) n FROM "Shipment" WHERE status = 'IN_TRANSIT' LIMIT 3;
 CREATE TABLE t_ship AS SELECT * FROM pick;
+-- Dated before the update was written, whenever this QA database was built.
+UPDATE "Shipment" SET "createdAt" = '2026-03-01' WHERE id IN (SELECT id FROM t_ship);
 UPDATE "Shipment" SET "orderId" = (SELECT id FROM "Order" WHERE "orderNumber" = 'SO-P1001') WHERE id = (SELECT id FROM t_ship WHERE n = 1);
 UPDATE "Shipment" SET "fromLocationId" = (SELECT id FROM "Location" WHERE code = 'DEMO-JAX') WHERE id = (SELECT id FROM t_ship WHERE n = 2);
 UPDATE "User" SET "homeLocationId" = (SELECT id FROM "Location" WHERE code = 'WH-MAIN') WHERE email = 'qa-branch-b@qa.test';

@@ -23,7 +23,8 @@ NOTE='Cancelled: test data cleared before the real locations (2026-11-22).'
 $P >/dev/null <<SQL
 CREATE TABLE t_coil AS SELECT i."coilId" AS id, row_number() OVER (ORDER BY i."coilId") n FROM "Inventory" i
   WHERE i."qtyAllocated" = 0 AND i."qtyAvailable" >= 100 AND NOT EXISTS (SELECT 1 FROM "OrderLineAllocation" a WHERE a."coilId" = i."coilId") LIMIT 3;
-CREATE TABLE t_ord AS SELECT id, row_number() OVER (ORDER BY id) n FROM "Order" WHERE "orderType" = 'SO' AND status = 'CONFIRMED' LIMIT 3;
+CREATE TABLE t_ord AS SELECT o.id, row_number() OVER (ORDER BY o.id) n FROM "Order" o WHERE o."orderType" = 'SO' AND o.status = 'CONFIRMED'
+  AND NOT EXISTS (SELECT 1 FROM "OrderLine" ol JOIN "OrderLineAllocation" a ON a."orderLineId" = ol.id WHERE ol."orderId" = o.id) LIMIT 3; -- orders holding nothing of their own
 UPDATE "Order" SET status = 'CANCELLED', notes = 'kept note' || E'\n' || '$NOTE' WHERE id = (SELECT id FROM t_ord WHERE n = 1);
 UPDATE "Order" SET status = 'CANCELLED', notes = 'Customer changed their mind' WHERE id = (SELECT id FROM t_ord WHERE n = 3);
 INSERT INTO "OrderLine" (id, "orderId", "lineNumber", "qtyOrdered", "updatedAt") SELECT 't-line-' || n, id, 900 + n, 100, now() FROM t_ord;

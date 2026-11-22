@@ -69,8 +69,10 @@ async function main() {
     const code = `QA-L${String(n).padStart(2, '0')}`;
     const kind = BRANCH_KINDS[(n - 1) % BRANCH_KINDS.length];
     const loc = await prisma.location.upsert({
-      where: { code }, update: {},
-      create: { code, name: `QA Branch ${n} (${kind})`, type: 'WAREHOUSE', ownerId: tenant.id, city: `City ${n}`, state: STATES[n % STATES.length], hasCrane: kind !== 'PLASTICS' },
+      // isBranch is said out loud: a location is a storage area unless marked a branch (20261122090000_location_details),
+      // and a database built after that update would otherwise hold 80 test branches that no branch list shows.
+      where: { code }, update: { isBranch: true },
+      create: { code, name: `QA Branch ${n} (${kind})`, type: 'WAREHOUSE', isBranch: true, ownerId: tenant.id, city: `City ${n}`, state: STATES[n % STATES.length], hasCrane: kind !== 'PLASTICS' },
     });
     const wcTypes = kind === 'PLASTICS' ? PLASTIC_WC : kind === 'MIXED' ? [...METAL_WC.slice(0, 3), ...PLASTIC_WC.slice(0, 2)] : kind === 'OUTLET' ? ['SAW'] : METAL_WC.slice(0, 2 + (n % 4));
     for (const t of wcTypes) {

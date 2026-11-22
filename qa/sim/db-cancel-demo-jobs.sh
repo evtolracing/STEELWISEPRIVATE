@@ -12,6 +12,8 @@ dropdb -h "$HOST" -U "$USER_" --if-exists "$COPY"
 createdb -h "$HOST" -U "$USER_" "$COPY"
 trap 'dropdb -h "$HOST" -U "$USER_" --if-exists "$COPY"' EXIT
 pg_dump -h "$HOST" -U "$USER_" "$SRC" | $P >/dev/null 2>&1
+# A database built after this update already has it recorded as applied; the copy must not, or the file skips itself.
+$P -c "DELETE FROM _prisma_migrations WHERE migration_name='20261121200000_cancel_demo_jobs';" >/dev/null
 $P -c "DELETE FROM \"Job\" WHERE \"jobNumber\" LIKE 'J-DEMO-%' OR \"jobNumber\" = 'J-C2007';
   INSERT INTO \"Job\" (id, \"jobNumber\", status, \"updatedAt\") VALUES
    ('t-d1','J-DEMO-001','SCHEDULED',now()), ('t-d6','J-DEMO-006','IN_PROCESS',now()), ('t-c','J-C2007','SCHEDULED',now()),

@@ -15,7 +15,7 @@
 import { authenticate, roleAllowed } from './auth.js';
 import { apiRoleDenial } from '../lib/roleAccess.js';
 import { apiDenial } from '../lib/permissions.js';
-import { previewWriteDenial } from '../lib/viewScope.js';
+import { previewWriteDenial, TOP_ROLES } from '../lib/viewScope.js';
 
 const PUBLIC = new Set(['POST /api/auth/login', 'POST /api/auth/register', 'GET /api/health', 'HEAD /api/health']);
 const PARTNER_PREFIXES = ['/api/v1/partner/auth', '/api/v1/partner/customer', '/api/v1/partner/supplier', '/api/v1/partner/carrier', '/api/v1/partner/webhooks'];
@@ -42,13 +42,17 @@ export const ADMIN_AREA_ROLES = [
   [['/api/admin/catalog', '/api/admin/online-settings'], ['INVENTORY_MANAGER']],
   [['/api/admin/integrations', '/api/v1/admin/partners'], ['INTEGRATION_ADMIN']],
 ];
+// Adding a location, switching one off or on, and deleting one are for the two top roles only
+// (owner, 2026-11-22); the admin may change a location's details.
+export const topOnlyChange = (path, method) => under(path, '/api/admin/locations') && (method === 'POST' || method === 'DELETE');
 export const adminAreaRoles = (path) => (ADMIN_AREA_ROLES.find(([prefixes]) => prefixes.some((p) => under(path, p))) || [[], []])[1];
 
 /** What the built-in rules say to a refused request: the gate's own sentence, or the plain one for the admin areas. */
 function builtinDenial(user, path, method) {
   const told = apiRoleDenial(user, path, method);
   if (told) return told;
-  return !READ_METHODS.has(method) && ADMIN_PREFIXES.some((p) => under(path, p)) && !roleAllowed(user?.role, adminAreaRoles(path)) ? 'Insufficient permissions' : null;
+  if (!READ_METHODS.has(method) && ADMIN_PREFIXES.some((p) => under(path, p)) && !roleAllowed(user?.role, adminAreaRoles(path))) return 'Insufficient permissions';
+  return topOnlyChange(path, method) && !TOP_ROLES.has(user?.role) ? 'Adding, switching off and deleting a location is for the super admin or the tenant owner.' : null;
 }
 
 export function apiGate(req, res, next) {

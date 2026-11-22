@@ -31,6 +31,7 @@ import ledgerRoutes from './routes/ledger.js';
 import quickSaleRoutes from './routes/quickSale.js';
 import returnRoutes from './routes/returns.js';
 import taxRateRoutes from './routes/taxRates.js';
+import adminLocationRoutes from './routes/adminLocations.js';
 import overrideRoutes from './routes/overrides.js';
 import salesDashboardRoutes from './routes/salesDashboard.js';
 import dashboardRoutes from './routes/dashboard.js';
@@ -302,6 +303,7 @@ app.use('/api/executive', executiveRoutes);
 app.use('/api/admin/catalog', adminCatalogRouter);
 app.use('/api/admin/online-settings', onlineSettingsRoutes);
 app.use('/api/admin/integrations', integrationRoutes);
+app.use('/api/admin/locations', adminLocationRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Drop Tag Engine

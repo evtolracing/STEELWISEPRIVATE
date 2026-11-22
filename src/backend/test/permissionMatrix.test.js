@@ -91,8 +91,13 @@ test('"everything" is exactly what the rules give the two top roles, and only th
     assert.deepEqual(role(name).ruled, PERMISSIONS, name);
   }
   for (const r of BUILTIN_ROLES.filter((x) => !['SUPER_ADMIN', 'TENANT_OWNER'].includes(x.name))) assert.ok(!r.grants.includes('*'), r.name);
-  // An administrator has everything except starting and stopping the books (routes/ledger.js).
-  assert.deepEqual(PERMISSIONS.filter((p) => !role('ADMIN').grants.includes(p)), ['finance:activate']);
+  // An administrator has everything except starting and stopping the books (routes/ledger.js), and adding
+  // or removing a location, which is for the two top roles (owner, 2026-11-22). It may change a location's details.
+  assert.deepEqual(PERMISSIONS.filter((p) => !role('ADMIN').grants.includes(p)), ['finance:activate', 'locations:add', 'locations:remove']);
+  assert.ok(role('ADMIN').grants.includes('locations:edit'));
+  for (const p of ['locations:add', 'locations:edit', 'locations:remove']) {
+    assert.deepEqual(BUILTIN_ROLES.filter((r) => has(r.grants, p)).map((r) => r.name).sort(), p === 'locations:edit' ? ['ADMIN', 'SUPER_ADMIN', 'TENANT_OWNER'] : ['SUPER_ADMIN', 'TENANT_OWNER'], p);
+  }
   // Who may edit roles (owner, 2026-11-20): super admin, tenant owner and admin. Nobody else.
   assert.deepEqual(BUILTIN_ROLES.filter((r) => has(r.grants, 'roles:edit')).map((r) => r.name).sort(), ['ADMIN', 'SUPER_ADMIN', 'TENANT_OWNER']);
 });

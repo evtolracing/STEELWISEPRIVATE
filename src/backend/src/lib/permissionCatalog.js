@@ -125,6 +125,11 @@ export const AREAS = [
     ['report', 'Read the integrations health report'],
   ]),
   area('taxRates', 'Tax rates', 'Administration', null, CRUD),
+  area('locations', 'Locations', 'Administration', null, [], [
+    ['add', 'Add a location', true],
+    ['edit', 'Change a location\'s details'],
+    ['remove', 'Switch a location off or on, or delete one that was never used', true],
+  ]),
   area('admin', 'System settings and audit log', 'Administration', 'admin', ['view', 'create'], [
     ['retention', 'Read the record retention report'],
     ['preview', 'Preview what another role sees (View as)', true],
@@ -144,12 +149,14 @@ export const PERMISSION_SET = new Set(PERMISSIONS);
  * database update.
  *
  * Version 2 (phase 5): the rights the routes used to decide by fixed lists of role names.
+ * Version 3 (2026-11-22): managing locations. Adding and removing is for the two top roles; the admin may change details.
  */
-export const CATALOG_VERSION = 2;
+export const CATALOG_VERSION = 3;
 export const ADDED_IN = {
   'sales:editProducts': 2, 'sales:editGrades': 2, 'sales:setListPrice': 2, 'sales:approveOverride': 2,
   'customers:setCredit': 2, 'orders:releaseCreditHold': 2, 'inventory:adjust': 2, 'jobs:releaseQualityHold': 2,
   'staff:viewPay': 2, 'dropTags:override': 2,
+  'locations:add': 3, 'locations:edit': 3, 'locations:remove': 3,
 };
 /** The permissions a role saved under `version` has not been asked about. */
 export const addedSince = (version) => Object.keys(ADDED_IN).filter((p) => ADDED_IN[p] > version);
@@ -218,6 +225,9 @@ const CHANGES = [
   [(p) => under(p, '/api/qc'), 'quality'],
   [(p) => under(p, '/api/ops-cockpit'), 'opsCockpit'],
 
+  [(p, m) => under(p, '/api/admin/locations') && (m === 'DELETE' || /\/(deactivate|reactivate)$/.test(p)), 'locations', 'remove'],
+  [(p, m) => under(p, '/api/admin/locations') && m === 'POST', 'locations', 'add'],
+  [(p) => under(p, '/api/admin/locations'), 'locations', 'edit'],
   [(p) => any(p, ['/api/admin/catalog', '/api/admin/online-settings']), 'ecommerceAdmin'],
   [(p) => any(p, ['/api/admin/integrations', '/api/v1/admin/partners']), 'adminIntegrations'],
   [(p) => any(p, ['/api/admin', '/api/v1/admin']), 'admin'],

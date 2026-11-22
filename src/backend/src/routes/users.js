@@ -1,4 +1,4 @@
-import { userChangeDenial } from '../lib/userAdminRules.js';
+import { userChangeDenial, visibleUsersWhere } from '../lib/userAdminRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { hashPassword } from '../lib/passwords.js';
@@ -83,6 +83,10 @@ router.get('/', authenticate, async (req, res) => {
       ];
     }
 
+    // A person held to branches sees the people of those branches only.
+    const seen = visibleUsersWhere(req.user);
+    if (seen) where.AND = [seen];
+
     if (role) where.role = role;
     if (isActive !== undefined) where.isActive = isActive === 'true';
     
@@ -150,7 +154,8 @@ router.get('/:id', authenticate, async (req, res, next) => {
     const user = await prisma.user.findFirst({
       where: {
         id: req.params.id,
-        organizationId: req.user.organizationId
+        organizationId: req.user.organizationId,
+        AND: [visibleUsersWhere(req.user) || {}],
       },
       include: {
         organization: true,

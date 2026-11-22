@@ -47,7 +47,7 @@ check('a regional manager opens orders of each assigned branch', (await A.get(`/
 check('a regional manager cannot open an order of a branch outside the group', (await A.get(`/api/orders/${named.body.id}`, 'regional')).status === 404);
 
 // ── Stock ──
-const stockAt = (id) => prisma.coil.findFirst({ where: { locationId: id, status: 'AVAILABLE', inventory: { is: { qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0 } } }, include: { inventory: true } });
+const stockAt = (id) => prisma.coil.findFirst({ where: { locationId: id, status: 'AVAILABLE', inventory: { is: { qtyAllocated: 0, qtyOnHold: 0, qtyInTransit: 0, unit: 'LB', qtyAvailable: { gte: 10 } } } }, include: { inventory: true } });
 const c1 = await stockAt(L1), c2 = await stockAt(L2), c4 = await stockAt(L4);
 for (const url of ['/api/coils?limit=500', '/api/inventory?limit=500']) {
   const list = rows((await A.get(url, 'branchWh')).body);
@@ -117,6 +117,32 @@ const mine = await A.get('/api/ecom/my-orders', 'custA');
 check('a customer login still reaches the store and its own orders', mine.status === 200, `${mine.status}`);
 const numbers = [oA, oB, named].map((o) => o.body.orderNumber);
 check('order numbers stay unique across branches', new Set(numbers).size === 3, numbers.join(','));
+
+// ── A job sold at one branch and planned at another (2026-11-22) ──
+const sfx = Date.now().toString(36);
+const planned = await prisma.job.create({ data: { jobNumber: `QA-BB-${sfx}`, status: 'SCHEDULED', orderId: oA.body.id } });
+await prisma.dispatchJob.create({ data: { jobId: planned.id, jobNumber: planned.jobNumber, orderId: oA.body.id, locationId: L2 } });
+const far = await prisma.job.create({ data: { jobNumber: `QA-BB4-${sfx}`, status: 'SCHEDULED', orderId: named.body.id } });
+await prisma.dispatchJob.create({ data: { jobId: far.id, jobNumber: far.jobNumber, orderId: named.body.id, locationId: L4 } });
+check('the branch that plans a job opens it, though another branch sold it', (await A.get(`/api/jobs/${planned.id}`, 'branchB')).status === 200);
+check('the branch that sold the job still opens it', (await A.get(`/api/jobs/${planned.id}`, 'branchA')).status === 200);
+check('a job sold and planned at other branches stays out of sight', (await A.get(`/api/jobs/${far.id}`, 'branchB')).status === 404 && (await A.get(`/api/jobs/${far.id}`, 'branchA')).status === 404);
+await prisma.job.deleteMany({ where: { id: { in: [planned.id, far.id] } } });
+
+// ── People: a person held to branches sees the people of those branches (owner's decision, 2026-11-22) ──
+const people = async (who) => (await A.get('/api/users?limit=500', who)).body?.users || [];
+const meOf = async (who) => (await prisma.user.findUnique({ where: { email: QA_USERS[who] } })).id;
+for (const [who, allowed] of [['branchA', [L1]], ['regional', [L1, L2, L3]]]) {
+  const list = await people(who); const self = await meOf(who);
+  const outside = list.filter((u) => u.id !== self && ![u.homeLocationId, ...(u.userLocations || []).map((l) => l.locationId)].some((b) => allowed.includes(b)));
+  check(`${who} lists only the people of their own branches`, list.length > 0 && outside.length === 0 && list.some((u) => u.id === self), `${list.length} people, ${outside.length} from elsewhere`);
+}
+const everyone = await people('admin');
+check('head office lists people of every branch and people with no branch', new Set(everyone.map((u) => u.homeLocationId)).size > 3 && everyone.some((u) => !u.homeLocationId), `${everyone.length}`);
+const idA = await meOf('branchA'), idB = await meOf('branchB');
+check('opening a person of another branch is refused as not found', (await A.get(`/api/users/${idB}`, 'branchA')).status === 404);
+check('opening yourself and a colleague of your branch works', (await A.get(`/api/users/${idA}`, 'branchA')).status === 200 && (await A.get(`/api/users/${await meOf('branchWh')}`, 'branchA')).status === 200);
+check('a regional manager opens a person of each assigned branch', (await A.get(`/api/users/${idA}`, 'regional')).status === 200 && (await A.get(`/api/users/${idB}`, 'regional')).status === 200);
 
 const pass = findings.length === 0;
 fs.writeFileSync(OUT, JSON.stringify({ base: BASE, at: new Date().toISOString(), pass, checks, findings }, null, 1));

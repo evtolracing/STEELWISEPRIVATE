@@ -32,7 +32,11 @@ test('records reached through a parent are held to the parent\'s branch', () => 
   assert.deepEqual(scopedArgs('Shipment', 'findMany', {}, held).where.AND, [seen]);
   // A print job with no branch on file is seen by every branch; one with a branch only by that branch (N-015).
   assert.deepEqual(scopedArgs('PrintQueueJob', 'findMany', {}, held).where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }]);
-  assert.equal(scopedArgs('Job', 'findMany', {}, held).where.AND[0].OR.length, 3);
+  // A job is seen by the branch that sold it, the branch that plans it, and the branch of its machine.
+  const job = scopedArgs('Job', 'findMany', {}, held).where.AND[0].OR;
+  assert.equal(job.length, 4);
+  assert.deepEqual(job[1], { dispatchJob: { locationId: { in: [A] } } }, 'the plan\'s branch sees the job');
+  assert.deepEqual(scopedArgs('JobInspection', 'findMany', {}, held).where.AND[0].job.OR[1], { dispatchJob: { locationId: { in: [A] } } });
 });
 
 test('head office, requests with no user, shared records and other operations are left alone', () => {

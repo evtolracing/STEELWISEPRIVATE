@@ -469,3 +469,38 @@ NOT VERIFIED: the full gate suite; the live site; either database update on the 
 | J Documentation | CONDITIONAL | This report |
 
 Readiness: CONDITIONAL.
+
+## Addendum 10: Clean-up of the test orders and placeholder locations (2026-11-22)
+
+The owner chose "Cancel and switch off, keep history" for the 28 open test orders and 9 placeholder locations found on the live site (`live-data-audit-2026-11-22.md`).
+
+### What changed
+
+Database update `20261122213000_retire_test_orders_and_demo_locations`, for the owner to run after the first five locations are added:
+
+- The 28 listed orders are cancelled while still open, with their open jobs and open shipments. Each says why in its notes.
+- The 9 placeholder locations are switched off, with their machines. Open shipments leaving from them are cancelled.
+- People whose home or assigned branch was a placeholder location move to Charlotte (CT), when CT is on file and switched on. Otherwise they stay where they are.
+- Nothing is deleted. Stock records at the placeholder locations stay on file, at locations that are now switched off.
+- Only records made before 2026-11-22 21:30 UTC are touched, so a real order that later takes one of the numbers is safe.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| `qa/sim/db-retire-test-data.sh` (new, in the gate script) | 6 of 6: runs the SQL Editor file twice on a copy; a finished listed order, a listed order made after the cut-off, a shipped job and an unrelated shipment are left alone; row counts of eight tables are unchanged. With the file emptied, the check fails |
+
+NOT VERIFIED: the update on the live database; the live site afterwards; the full gate suite (no application code changed).
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| D Data integrity | PASS | Nothing deleted; exact numbers and codes; same result on a second run |
+| I Regression | CONDITIONAL | One new check; no sim reads the placeholder codes (searched `qa/sim`, `qa/tools`) |
+| J Documentation | CONDITIONAL | This report |
+| A, B, C, E, F, G, H | NOT ASSESSED | A data update only |
+
+Known limit: stock reserved for a cancelled order is not released by this update. The stock sits at locations that are switched off.
+
+Readiness: CONDITIONAL, on the owner running the update.

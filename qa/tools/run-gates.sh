@@ -50,8 +50,14 @@ echo "== production screens"; node qa/sim/ui-production-overview.cjs 2>&1 | tail
 echo "== cancel demo jobs (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-cancel-demo-jobs.sh 2>&1 | tail -6
 echo "== first five locations (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-first-five-locations.sh 2>&1 | tail -8
 echo "== retire test data (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-retire-test-data.sh 2>&1 | tail -8
+echo "== release stock of cancelled test orders (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-release-test-stock.sh 2>&1 | tail -8
 echo "== store on real branches"; node qa/sim/store-branches.mjs --base http://localhost:3011 2>&1 | tail -6; node qa/sim/ui-store-branches.cjs 2>&1 | tail -6
 echo "== freight screens on real shipments"; node qa/sim/ui-freight.cjs 2>&1 | tail -6
+echo "== staff with no branch"; node qa/sim/ui-staff-no-branch.cjs 2>&1 | tail -6
+echo "== failed reads on the real-data screens"; node qa/sim/ui-failed-reads.cjs 2>&1 | tail -6
+echo "== real-data screens at three sizes"; node qa/sim/ui-real-data-sizes.cjs 2>&1 | tail -6
+echo "== who may ask the real-data routes"; node qa/sim/real-data-access.mjs --base http://localhost:3011 2>&1 | tail -6
+echo "== response times of the real-data routes"; node qa/sim/perf-real-data-routes.mjs --base http://localhost:3011 2>&1 | tail -15
 echo "== locations"; node qa/sim/ui-locations.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8

@@ -29,6 +29,7 @@ export default function OnlineSettingsPage() {
   const [rules, setRules] = useState(null)
   const [processes, setProcesses] = useState({})
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [saving, setSaving] = useState(false)
   const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' })
 
@@ -50,8 +51,10 @@ export default function OnlineSettingsPage() {
       const allRules = crRes.data || []
       setCutoffRules(allRules)
       if (allRules.length > 0 && !selectedLocId) setSelectedLocId(allRules[0].locationId)
-    } catch {
-      // swallow
+      setLoadError(null)
+    } catch (e) {
+      // Said out loud: with nothing loaded the page would otherwise read as "no branch sells online".
+      setLoadError(e?.message || 'The online settings could not be loaded.')
     } finally {
       setLoading(false)
     }
@@ -136,6 +139,7 @@ export default function OnlineSettingsPage() {
 
   return (
     <Container maxWidth="lg">
+      {loadError && <Alert severity="error" sx={{ mb: 2 }} data-testid="online-settings-error" action={<Button color="inherit" size="small" onClick={loadAll}>Try again</Button>}>{loadError} Nothing shown below is from the server.</Alert>}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink component={Link} to="/" underline="hover" color="inherit">Home</MuiLink>
         <Typography color="text.primary">Online Settings</Typography>
@@ -223,7 +227,7 @@ export default function OnlineSettingsPage() {
               ))}
             </TextField>
 
-            {cutoffRules.length === 0 && (
+            {!loadError && cutoffRules.length === 0 && (
               <Alert severity="info" data-testid="cutoff-no-branches">No branch is set up to sell from yet. Add one under Admin, Locations.</Alert>
             )}
             {selectedRules && (

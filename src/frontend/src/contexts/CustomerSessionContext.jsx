@@ -56,12 +56,16 @@ export function CustomerSessionProvider({ children }) {
 
   // The branches the store sells from, from the server. Asked for once someone is signed in.
   const [locations, setLocations] = useState([])
+  const [locationsError, setLocationsError] = useState(null)
   const userId = user?.id
   const homeLocationId = user?.homeLocationId
   useEffect(() => {
     if (!userId) return
     let live = true
-    getStoreBranches().then((res) => { if (live) setLocations(res.data || []) }).catch(() => { if (live) setLocations([]) })
+    getStoreBranches()
+      .then((res) => { if (live) { setLocations(res.data || []); setLocationsError(null) } })
+      // A failed read is said out loud: an empty list alone would read as "no branch sells online".
+      .catch(() => { if (live) { setLocations([]); setLocationsError('The branch list could not be loaded. Refresh the page to try again.') } })
     return () => { live = false }
   }, [userId])
   // A session with no branch, or with one that is no longer sold from, takes the person's home branch or the first.
@@ -125,14 +129,14 @@ export function CustomerSessionProvider({ children }) {
 
   const value = useMemo(() => {
     const v = {
-      ...session, locations, preferences, prefBadges,
+      ...session, locations, locationsError, preferences, prefBadges,
       setLocation, setDivision, setShipTo, addRecentConfig, loadPreferences,
     }
     // Most store pages read `const { session } = useCustomerSession()`, so expose
     // the same object under `session` as well as flat.
     v.session = v
     return v
-  }, [session, locations, setLocation, setDivision, setShipTo, addRecentConfig, loadPreferences, preferences, prefBadges])
+  }, [session, locations, locationsError, setLocation, setDivision, setShipTo, addRecentConfig, loadPreferences, preferences, prefBadges])
 
   return <CustomerSessionContext.Provider value={value}>{children}</CustomerSessionContext.Provider>
 }

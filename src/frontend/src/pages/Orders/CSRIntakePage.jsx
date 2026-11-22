@@ -104,6 +104,7 @@ export default function CSRIntakePage() {
   // ── fulfillment suggestions ──
   const [fulfillmentSuggestions, setFulfillmentSuggestions] = useState([])
   const [fulfillmentLoading, setFulfillmentLoading] = useState(false)
+  const [fulfillmentError, setFulfillmentError] = useState(null)
   const { logOverride } = useFulfillmentOverride('CSR_INTAKE')
 
   // ── customer preference memory ──
@@ -131,8 +132,8 @@ export default function CSRIntakePage() {
       division: division || 'METALS',
       requiredProcessing: requiredOps.length > 0 ? requiredOps : undefined,
     })
-      .then(res => setFulfillmentSuggestions(res.suggestions || []))
-      .catch(() => setFulfillmentSuggestions([]))
+      .then(res => { setFulfillmentSuggestions(res.suggestions || []); setFulfillmentError(null) })
+      .catch(() => { setFulfillmentSuggestions([]); setFulfillmentError('The branches could not be compared just now. The order can still be placed at the branch chosen.') })
       .finally(() => setFulfillmentLoading(false))
   }, [division, location, lines])
 
@@ -525,6 +526,7 @@ export default function CSRIntakePage() {
             <FulfillmentSuggestionPanel
               suggestions={fulfillmentSuggestions}
               loading={fulfillmentLoading}
+              error={fulfillmentError}
               currentLocationId={branches.find((b) => b.code === location)?.id || null}
               onSelectBranch={handleFulfillmentBranchSelect}
             />

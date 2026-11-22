@@ -37,6 +37,16 @@ const covered = new Set(chapters.flatMap((c) => c.routes));
 const uncovered = audit.rows.filter((r) => r.verdict === 'REAL' && r.onMenu && !covered.has(`/${r.route}`) && !chapters.some((c) => c.routes.some((x) => `/${r.route}`.startsWith(`${x}/`)))).map((r) => r.route);
 ok('every real screen on the menu has a chapter', uncovered.length === 0, uncovered.join(', '));
 for (const need of ['finance-ledger', 'purchasing', 'transfers', 'work-orders', 'invoices-returns', 'when-something-goes-wrong']) ok(`required chapter present: ${need}`, chapters.some((c) => c.id === need));
+// 2026-11-22: the screens rebuilt on real data are documented as they now work, section by section.
+const section = (chapter, id) => (manual.find((m) => m.moduleId === chapter)?.sections || []).find((x) => x.id === id);
+const says = (chapter, id, pattern) => pattern.test(JSON.stringify(section(chapter, id) || ''));
+ok('admin-settings: adding, changing and switching off a location is described', says('admin-settings', 'configure-locations', /Add location/) && says('admin-settings', 'configure-locations', /Switch off/));
+ok('admin-settings: staff with no branch is described', says('admin-settings', 'staff-with-no-branch', /Show them/));
+ok('admin-settings: cut-off times point to Online Settings, not to a screen that does not exist', says('admin-settings', 'set-cutoff-times', /Online Settings/) && !says('admin-settings', 'set-cutoff-times', /Locations → select/));
+ok('online settings: says a branch with no times promises nothing', [...manual].some((m) => /promises nothing/.test(JSON.stringify((m.sections || []).find((x) => x.id === 'online-settings') || ''))));
+ok('freight: the planner, board, inbox and proof of delivery are described from real records', says('freight-delivery', 'shipment-planner', /Plan shipment/) && says('freight-delivery', 'tracking-board', /Show more/) && says('freight-delivery', 'exception-inbox', /no proof of delivery/) && Boolean(section('freight-delivery', 'proof-of-delivery')));
+ok('freight: no carrier scan events, live rates or customer emails are promised', !/carrier scan events|Send Update to Customer|queries connected carriers/.test(JSON.stringify(manual.find((m) => m.moduleId === 'freight-delivery'))));
+ok('demand shaping: how busy a branch is, is explained', /active machines times 10 hours/.test(JSON.stringify(manual)));
 const text = JSON.stringify(manual);
 for (const [bad, why] of [[/Alro/i, 'another company\'s name'], [/lorem ipsum/i, 'placeholder text'], [/\bTODO\b|\bTBD\b/, 'unfinished text']]) ok(`no ${why} in the manual`, !bad.test(text), (text.match(bad) || [''])[0]);
 

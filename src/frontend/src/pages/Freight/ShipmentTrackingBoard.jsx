@@ -10,6 +10,7 @@ import { Refresh as RefreshIcon, WarningAmber as LateIcon } from '@mui/icons-mat
 import client from '../../api/client'
 import { BOARD_COLUMNS, boardColumns, exceptionRows, isLate, routeLine } from './freightView'
 
+const COLUMN_PAGE = 50
 const day = (d) => (d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null)
 
 export function useShipments() {
@@ -17,7 +18,7 @@ export function useShipments() {
   const load = useCallback(async () => {
     setState((s) => ({ ...s, loading: true, error: null }))
     try {
-      const res = await client.get('/shipments', { params: { limit: 200 } })
+      const res = await client.get('/shipments', { params: { scope: 'board' } })
       setState({ shipments: Array.isArray(res.data) ? res.data : [], total: Number(res.headers?.['x-total-count']) || 0, loading: false, error: null })
     } catch (e) {
       // A failed load shows no shipments and says so; nothing is invented.
@@ -40,6 +41,9 @@ export default function ShipmentTrackingBoard() {
     return shipments.filter((s) => [s.shipmentNumber, s.order?.orderNumber, s.order?.buyer?.name, s.carrierName, s.bolNumber].some((v) => String(v || '').toLowerCase().includes(q)))
   }, [shipments, search])
   const columns = boardColumns(shown, now)
+  // A column draws its first 50 cards, late ones first, and more on request: a long column stays quick to open,
+  // and the count at the top is always the whole column.
+  const [pages, setPages] = useState({})
   const attention = exceptionRows(shipments, now).length
 
   return (
@@ -77,7 +81,7 @@ export default function ShipmentTrackingBoard() {
                   <Chip size="small" label={columns[col.key].length} data-testid={`freight-count-${col.key}`} />
                 </Stack>
                 {columns[col.key].length === 0 && <Typography variant="body2" color="text.secondary">None.</Typography>}
-                {columns[col.key].map((s) => (
+                {[...columns[col.key]].sort((a, b) => Number(isLate(b, now)) - Number(isLate(a, now))).slice(0, COLUMN_PAGE * (pages[col.key] || 1)).map((s) => (
                   <Card key={s.id} variant="outlined" sx={{ mb: 1 }} data-testid="freight-card">
                     <CardActionArea onClick={() => navigate(`/shipping/${s.id}`)} aria-label={`Open shipment ${s.shipmentNumber}`}>
                       <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
@@ -95,6 +99,11 @@ export default function ShipmentTrackingBoard() {
                     </CardActionArea>
                   </Card>
                 ))}
+                {columns[col.key].length > COLUMN_PAGE * (pages[col.key] || 1) && (
+                  <Button fullWidth size="small" onClick={() => setPages((p) => ({ ...p, [col.key]: (p[col.key] || 1) + 1 }))} data-testid={`freight-more-${col.key}`}>
+                    Show {Math.min(COLUMN_PAGE, columns[col.key].length - COLUMN_PAGE * (pages[col.key] || 1))} more ({columns[col.key].length - COLUMN_PAGE * (pages[col.key] || 1)} not shown)
+                  </Button>
+                )}
               </Paper>
             </Grid>
           ))}

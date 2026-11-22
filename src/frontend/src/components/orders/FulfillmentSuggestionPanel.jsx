@@ -178,7 +178,7 @@ function BranchCard({ suggestion, isCurrent, onSelect, compact, readOnly }) {
 }
 
 export default function FulfillmentSuggestionPanel({
-  suggestions, loading, currentLocationId, onSelectBranch, compact = false, readOnly = false,
+  suggestions, loading, currentLocationId, onSelectBranch, compact = false, readOnly = false, error = null,
 }) {
   if (loading) {
     return (
@@ -194,6 +194,8 @@ export default function FulfillmentSuggestionPanel({
     )
   }
 
+  // A comparison that failed says so: an empty panel would read as "no branch can fill this".
+  if (error) return <Alert severity="warning" data-testid="branch-comparison-error">{error}</Alert>
   if (!suggestions || suggestions.length === 0) return null
 
   const best = suggestions[0]

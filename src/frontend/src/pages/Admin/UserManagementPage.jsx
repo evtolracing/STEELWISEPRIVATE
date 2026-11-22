@@ -84,6 +84,9 @@ export default function UserManagementPage() {
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  // Staff held to branches with no branch on file: counted by the server, listed on request.
+  const [noBranchCount, setNoBranchCount] = useState(0);
+  const [noBranchOnly, setNoBranchOnly] = useState(false);
   
   // Menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -99,7 +102,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     loadUsers();
-  }, [page, rowsPerPage, searchTerm, roleFilter, statusFilter]);
+  }, [page, rowsPerPage, searchTerm, roleFilter, statusFilter, noBranchOnly]);
 
   const loadRoleEnums = async () => {
     try {
@@ -121,10 +124,12 @@ export default function UserManagementPage() {
       if (searchTerm) params.search = searchTerm;
       if (roleFilter) params.role = roleFilter;
       if (statusFilter !== 'all') params.isActive = statusFilter === 'active';
+      if (noBranchOnly) params.noBranch = true;
 
       const result = await getUsers(params);
       setUsers(result.users || []);
       setTotalUsers(result.pagination?.total || 0);
+      setNoBranchCount(result.noBranchCount || 0);
     } catch (err) {
       console.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
@@ -273,6 +278,15 @@ export default function UserManagementPage() {
         </Tabs>
       </Paper>
 
+      {(noBranchCount > 0 || noBranchOnly) && (
+        <Alert severity={noBranchCount > 0 ? 'warning' : 'success'} sx={{ mb: 2 }} data-testid="users-no-branch"
+          action={<Button color="inherit" size="small" onClick={() => { setPage(0); setNoBranchOnly((v) => !v); }} data-testid="users-no-branch-toggle">{noBranchOnly ? 'Show everyone' : 'Show them'}</Button>}>
+          {noBranchCount > 0
+            ? `${noBranchCount} active staff ${noBranchCount === 1 ? 'login has' : 'logins have'} no branch. They can sign in but see nothing that belongs to a branch. Edit each one and choose a home branch.`
+            : 'Every active staff login now has a branch.'}
+        </Alert>
+      )}
+
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -412,6 +426,8 @@ export default function UserManagementPage() {
                               {user.homeLocation.code}
                             </Typography>
                           </Box>
+                        ) : user.noBranch ? (
+                          <Chip label="No branch" size="small" color="warning" data-testid="user-no-branch" />
                         ) : (
                           <Typography variant="caption" color="text.secondary">—</Typography>
                         )}

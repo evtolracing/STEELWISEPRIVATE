@@ -1,4 +1,4 @@
-import { userChangeDenial, visibleUsersWhere } from '../lib/userAdminRules.js';
+import { userChangeDenial, visibleUsersWhere, noBranchWhere, hasNoBranch } from '../lib/userAdminRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { hashPassword } from '../lib/passwords.js';
@@ -86,6 +86,9 @@ router.get('/', authenticate, async (req, res) => {
     // A person held to branches sees the people of those branches only.
     const seen = visibleUsersWhere(req.user);
     if (seen) where.AND = [seen];
+    // Staff with no branch, counted among everyone this person may see (not among the page or the search).
+    const lost = { organizationId: req.user.organizationId, AND: [...(seen ? [seen] : []), noBranchWhere()] };
+    if (req.query.noBranch === 'true') where.AND = [...(where.AND || []), noBranchWhere()];
 
     if (role) where.role = role;
     if (isActive !== undefined) where.isActive = isActive === 'true';
@@ -97,7 +100,7 @@ router.get('/', authenticate, async (req, res) => {
       };
     }
 
-    const [users, total] = await Promise.all([
+    const [users, total, noBranchCount] = await Promise.all([
       prisma.user.findMany({
         where,
         include: {
@@ -124,14 +127,16 @@ router.get('/', authenticate, async (req, res) => {
         skip: (parseInt(page) - 1) * parseInt(limit),
         take: parseInt(limit),
       }),
-      prisma.user.count({ where })
+      prisma.user.count({ where }),
+      prisma.user.count({ where: lost }),
     ]);
 
     // Remove password hash from response
-    const sanitizedUsers = users.map((u) => forViewer(u, req.user, can(req, 'adminUsers:edit')));
+    const sanitizedUsers = users.map((u) => ({ ...forViewer(u, req.user, can(req, 'adminUsers:edit')), noBranch: hasNoBranch(u) }));
 
     res.json({
       users: sanitizedUsers,
+      noBranchCount,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

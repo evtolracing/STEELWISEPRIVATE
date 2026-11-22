@@ -43,6 +43,7 @@ export default function CheckoutPage() {
   // Branch fulfillment suggestions
   const [fulfillmentSuggestions, setFulfillmentSuggestions] = useState([])
   const [fulfillmentLoading, setFulfillmentLoading] = useState(false)
+  const [fulfillmentError, setFulfillmentError] = useState(null)
   const { logOverride } = useFulfillmentOverride('ECOMMERCE_CHECKOUT')
 
   // Demand shaping suggestions (never blocks checkout)
@@ -68,8 +69,8 @@ export default function CheckoutPage() {
       requiredProcessing,
       shipTo: session?.shipTo ? { lat: session.shipTo.lat, lng: session.shipTo.lng } : undefined,
     })
-      .then(res => setFulfillmentSuggestions(res.suggestions || []))
-      .catch(() => setFulfillmentSuggestions([]))
+      .then(res => { setFulfillmentSuggestions(res.suggestions || []); setFulfillmentError(null) })
+      .catch(() => { setFulfillmentSuggestions([]); setFulfillmentError('The branches could not be compared just now. The order can still be placed at the branch chosen.') })
       .finally(() => setFulfillmentLoading(false))
   }, [items, session?.division, session?.locationId, session?.shipTo])
 
@@ -160,6 +161,7 @@ export default function CheckoutPage() {
 
   return (
     <Container maxWidth="lg">
+      {session?.locationsError && <Alert severity="error" sx={{ mb: 2 }} data-testid="store-branches-error">{session.locationsError}</Alert>}
       <Breadcrumbs sx={{ mb: 2 }}>
         <MuiLink component={Link} to="/" underline="hover" color="inherit">Home</MuiLink>
         <MuiLink component={Link} to="/shop" underline="hover" color="inherit">Shop</MuiLink>
@@ -254,6 +256,7 @@ export default function CheckoutPage() {
               <FulfillmentSuggestionPanel
                 suggestions={fulfillmentSuggestions}
                 loading={fulfillmentLoading}
+                error={fulfillmentError}
                 currentLocationId={session?.locationId}
                 onSelectBranch={handleBranchSwitch}
                 compact

@@ -12,6 +12,7 @@
  * branch boundary (lib/branchScope.js).
  */
 import { ALL_BRANCH_ROLES, branchesOf } from './branchScope.js';
+import { EXTERNAL_ROLES } from './roleAccess.js';
 
 const TOP = new Set(['SUPER_ADMIN', 'TENANT_OWNER']);
 const ABOVE_BRANCH = new Set([...ALL_BRANCH_ROLES, 'BRANCH_MANAGER']);
@@ -60,4 +61,18 @@ export function visibleUsersWhere(actor) {
     { homeLocationId: { in: mine } },
     { userLocations: { some: { locationId: { in: mine } } } },
   ] };
+}
+
+/**
+ * Staff held to branches who have no branch at all: they can sign in and then see nothing that belongs to a
+ * branch, which reads to them as a broken system. The Users screen counts and lists them so head office can
+ * give each one a branch. Customer and partner logins, and roles that see every branch, are never counted.
+ */
+const BRANCH_HELD_EXEMPT = [...EXTERNAL_ROLES, ...ALL_BRANCH_ROLES];
+export function noBranchWhere() {
+  return { isActive: true, role: { notIn: BRANCH_HELD_EXEMPT }, homeLocationId: null, userLocations: { none: {} } };
+}
+export function hasNoBranch(user) {
+  return Boolean(user) && user.isActive !== false && !BRANCH_HELD_EXEMPT.includes(user.role)
+    && !user.homeLocationId && !(user.userLocations || []).length;
 }

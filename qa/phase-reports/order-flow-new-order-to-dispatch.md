@@ -595,3 +595,50 @@ NOT VERIFIED: the full gate suite; the live site.
 | J Documentation | CONDITIONAL | This report |
 
 Readiness: CONDITIONAL. The load rule is a judgement from what is on file; the owner may want a different measure.
+
+## Addendum 13: Freight screens on real shipments (2026-11-22)
+
+Round 3 of the rebuild on real data.
+
+### What was found
+
+- The Shipment Planner, the Tracking Board and the Exception Inbox showed made-up shipments, carriers and customers under a sample banner. None of them read a record.
+- Four other freight screens (rate comparison, route view, proof of delivery viewer) have no data source: no carrier is connected, so there are no rates, truck positions or tracking events on file. They stay marked as samples. Nothing was invented for them.
+
+### What changed
+
+- `GET /api/shipments/ready-orders`: sales orders that can ship, have at least one job ready to ship, and have no shipment waiting on the dock or loading. Held to the asker's branches by the existing branch wall.
+- `pages/Freight/freightView.js`: the rules, kept pure. Board columns are On the dock, Loading, On the road, and Delivered in the last 7 days. A shipment is late when it has not left and its scheduled day is before today. Exceptions, worst first: lost, marked as an exception, late, delivered with no proof of delivery and no reason on file.
+- Tracking Board: real shipments by status, search, a count of those needing attention, each card opens the shipment.
+- Exception Inbox: the shipments the rule above picks, with the reason and a link to the shipment.
+- Shipment Planner: orders ready to ship with customer, town, selling branch, promise date and how much work is ready. "Plan shipment" opens the New shipment form on that order (`/shipping?order=<number>`).
+- The sample banner is removed from these three routes only.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 422 of 422 (5 new in `freightView.test.js`) |
+| `qa/sim/ui-freight.cjs` (new, in `run-gates.sh`) | 22 of 22: column counts, exception rows and planner rows equal the server's lists; each kind of exception shown with its reason; an old delivery is off the board; a card opens the shipment; Plan shipment opens the form on the order; an order with a dock shipment leaves the planner; a person at another branch sees neither the order nor shipments outside their branch |
+| `phase8-fulfillment.mjs` | 155 of 155 scenarios, 519 checks (the sample-screen scenario now expects three real and four sample freight routes) |
+| `ui-shipping`, `ui-phase8` | 29 of 29, 56 of 56 (`ui-shipping` now looks its test customer up by code; it could not find one among the first 50 before any change here) |
+| Lint (both), build, ratchets | 0 errors; built; effects ratchet 38 of 38 |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules in one pure file, shared by the three screens |
+| B Functional completeness | CONDITIONAL | The boards read the newest 200 shipments. Four freight screens stay samples because no carrier data exists |
+| C Cross-layer integrity | PASS | The sim compares each screen with the server and the database |
+| D Data integrity | PASS | Read-only screens; no record is written |
+| E Security | PASS | Branch wall checked on the new route and the shipment list with two branch logins |
+| F Reliability | NOT ASSESSED | A failed read shows an error, checked by eye only |
+| G Performance | NOT ASSESSED | |
+| H User experience | CONDITIONAL | Walked in a browser by the sim; not reviewed by the owner |
+| I Regression | CONDITIONAL | Four suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report; the user manual is not updated |
+
+Readiness: CONDITIONAL.

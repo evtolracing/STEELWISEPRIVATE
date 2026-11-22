@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-22T21:43:27.715Z",
+ "generated": "2026-11-22T21:55:19.946Z",
  "commit": "ref: refs/heads/claude/project-thread-1fcpg9",
  "schema": {
   "models": [
@@ -23865,7 +23865,7 @@
     "mock": 0
    },
    "src/backend/src/routes/shipments.js": {
-    "lines": 619,
+    "lines": 646,
     "routers": [
      "router"
     ],
@@ -23898,8 +23898,33 @@
      {
       "router": "router",
       "method": "GET",
-      "path": "/shippable",
+      "path": "/ready-orders",
       "line": 156,
+      "lines": 24,
+      "guards": [],
+      "models": [
+       "Order"
+      ],
+      "writes": 0,
+      "transaction": false,
+      "findMany": 1,
+      "bounded": 1,
+      "listsNoTake": 0,
+      "validates": false,
+      "tryCatch": false,
+      "raw": false,
+      "usesUser": false,
+      "scopesOrg": false,
+      "scopesLocation": false,
+      "scopesCustomer": false,
+      "audit": false,
+      "inMemory": false
+     },
+     {
+      "router": "router",
+      "method": "GET",
+      "path": "/shippable",
+      "line": 179,
       "lines": 31,
       "guards": [],
       "models": [
@@ -23924,7 +23949,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 186,
+      "line": 209,
       "lines": 27,
       "guards": [],
       "models": [
@@ -23951,7 +23976,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 212,
+      "line": 235,
       "lines": 41,
       "guards": [],
       "models": [
@@ -23977,7 +24002,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 252,
+      "line": 275,
       "lines": 8,
       "guards": [],
       "models": [
@@ -24002,7 +24027,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/items",
-      "line": 259,
+      "line": 282,
       "lines": 7,
       "guards": [],
       "models": [
@@ -24028,7 +24053,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/items",
-      "line": 265,
+      "line": 288,
       "lines": 10,
       "guards": [],
       "models": [
@@ -24053,7 +24078,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id/items/:itemId",
-      "line": 274,
+      "line": 297,
       "lines": 264,
       "guards": [],
       "models": [
@@ -24089,7 +24114,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/dispatch",
-      "line": 537,
+      "line": 560,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24112,7 +24137,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/deliver",
-      "line": 541,
+      "line": 564,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24135,7 +24160,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/lost",
-      "line": 545,
+      "line": 568,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24158,7 +24183,7 @@
       "router": "router",
       "method": "PATCH",
       "path": "/:id/status",
-      "line": 549,
+      "line": 572,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -24181,7 +24206,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/documents",
-      "line": 556,
+      "line": 579,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -31672,8 +31697,38 @@
    {
     "router": "router",
     "method": "GET",
-    "path": "/shippable",
+    "path": "/ready-orders",
     "line": 156,
+    "lines": 24,
+    "guards": [],
+    "models": [
+     "Order"
+    ],
+    "writes": 0,
+    "transaction": false,
+    "findMany": 1,
+    "bounded": 1,
+    "listsNoTake": 0,
+    "validates": false,
+    "tryCatch": false,
+    "raw": false,
+    "usesUser": false,
+    "scopesOrg": false,
+    "scopesLocation": false,
+    "scopesCustomer": false,
+    "audit": false,
+    "inMemory": false,
+    "full": "/api/shipments/ready-orders",
+    "key": "GET /api/shipments/ready-orders",
+    "file": "src/backend/src/routes/shipments.js",
+    "mount": "/api/shipments",
+    "exercised": null
+   },
+   {
+    "router": "router",
+    "method": "GET",
+    "path": "/shippable",
+    "line": 179,
     "lines": 31,
     "guards": [],
     "models": [
@@ -31707,7 +31762,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 186,
+    "line": 209,
     "lines": 27,
     "guards": [],
     "models": [
@@ -31743,7 +31798,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 212,
+    "line": 235,
     "lines": 41,
     "guards": [],
     "models": [
@@ -31778,7 +31833,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 252,
+    "line": 275,
     "lines": 8,
     "guards": [],
     "models": [
@@ -31812,7 +31867,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/items",
-    "line": 259,
+    "line": 282,
     "lines": 7,
     "guards": [],
     "models": [
@@ -31847,7 +31902,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/items",
-    "line": 265,
+    "line": 288,
     "lines": 10,
     "guards": [],
     "models": [
@@ -31881,7 +31936,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id/items/:itemId",
-    "line": 274,
+    "line": 297,
     "lines": 264,
     "guards": [],
     "models": [
@@ -31926,7 +31981,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/dispatch",
-    "line": 537,
+    "line": 560,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -31958,7 +32013,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/deliver",
-    "line": 541,
+    "line": 564,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -31990,7 +32045,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/lost",
-    "line": 545,
+    "line": 568,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -32022,7 +32077,7 @@
     "router": "router",
     "method": "PATCH",
     "path": "/:id/status",
-    "line": 549,
+    "line": 572,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -32054,7 +32109,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/documents",
-    "line": 556,
+    "line": 579,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -56438,15 +56493,15 @@
    },
    {
     "file": "pages/Freight/ExceptionInbox.jsx",
-    "lines": 582,
+    "lines": 65,
     "reachable": true,
-    "useState": 5,
+    "useState": 0,
     "useEffect": 0,
     "ts": false,
-    "dialogs": 2,
-    "tables": 0,
-    "forms": 2,
-    "ariaLabels": 0,
+    "dialogs": 0,
+    "tables": 1,
+    "forms": 0,
+    "ariaLabels": 1,
     "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
@@ -56510,16 +56565,16 @@
    },
    {
     "file": "pages/Freight/ShipmentPlanner.jsx",
-    "lines": 652,
+    "lines": 98,
     "reachable": true,
-    "useState": 6,
-    "useEffect": 0,
+    "useState": 2,
+    "useEffect": 1,
     "ts": false,
-    "dialogs": 1,
-    "tables": 0,
-    "forms": 7,
+    "dialogs": 0,
+    "tables": 1,
+    "forms": 1,
     "ariaLabels": 1,
-    "iconButtons": 1,
+    "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -56528,16 +56583,34 @@
    },
    {
     "file": "pages/Freight/ShipmentTrackingBoard.jsx",
-    "lines": 538,
+    "lines": 106,
     "reachable": true,
-    "useState": 3,
-    "useEffect": 0,
+    "useState": 2,
+    "useEffect": 1,
     "ts": false,
     "dialogs": 0,
     "tables": 0,
     "forms": 1,
-    "ariaLabels": 1,
-    "iconButtons": 1,
+    "ariaLabels": 2,
+    "iconButtons": 0,
+    "consoleLog": 0,
+    "todo": 0,
+    "alerts": 0,
+    "timers": 0,
+    "clears": 0
+   },
+   {
+    "file": "pages/Freight/freightView.js",
+    "lines": 67,
+    "reachable": true,
+    "useState": 0,
+    "useEffect": 0,
+    "ts": false,
+    "dialogs": 0,
+    "tables": 0,
+    "forms": 0,
+    "ariaLabels": 0,
+    "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -57698,7 +57771,7 @@
    },
    {
     "file": "pages/Shipping/ShippingPage.jsx",
-    "lines": 237,
+    "lines": 243,
     "reachable": true,
     "useState": 15,
     "useEffect": 3,
@@ -59329,6 +59402,12 @@
     "mocks": 0
    },
    {
+    "file": "src/backend/test/freightView.test.js",
+    "tests": 5,
+    "importsDb": false,
+    "mocks": 0
+   },
+   {
     "file": "src/backend/test/jobHistory.test.js",
     "tests": 8,
     "importsDb": false,
@@ -59821,7 +59900,7 @@
    },
    {
     "file": "qa/sim/phase8-fulfillment.mjs",
-    "lines": 1755,
+    "lines": 1759,
     "checks": 0
    },
    {
@@ -59975,6 +60054,11 @@
     "checks": 27
    },
    {
+    "file": "qa/sim/ui-freight.cjs",
+    "lines": 143,
+    "checks": 22
+   },
+   {
     "file": "qa/sim/ui-integration.cjs",
     "lines": 338,
     "checks": 33
@@ -60036,7 +60120,7 @@
    },
    {
     "file": "qa/sim/ui-shipping.cjs",
-    "lines": 218,
+    "lines": 219,
     "checks": 28
    },
    {

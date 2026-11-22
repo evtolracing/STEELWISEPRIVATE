@@ -179,6 +179,33 @@ router.get('/', handle('fetch shipments', async (req, res) => {
 }));
 
 /**
+ * Orders with finished work and nothing on the dock yet: a confirmed order with at least one job ready to ship
+ * and no open shipment. The Shipment Planner lists these (it showed made-up orders before, 2026-11-22).
+ * Held to the person's branches by the branch boundary, like every order list.
+ */
+router.get('/ready-orders', handle('list orders ready to ship', async (req, res) => {
+  const orders = await prisma.order.findMany({
+    where: {
+      orderType: 'SO', status: { in: SHIPPABLE_ORDER_STATUSES },
+      jobs: { some: { status: 'READY_TO_SHIP' } },
+      shipments: { none: { status: { in: OPEN } } },
+    },
+    select: {
+      id: true, orderNumber: true, status: true, promisedDate: true, requiredDate: true, shipToCity: true, shipToState: true,
+      buyer: BUYER, location: { select: { id: true, code: true, name: true } },
+      jobs: { select: { status: true } },
+    },
+    orderBy: [{ promisedDate: { sort: 'asc', nulls: 'last' } }, { orderNumber: 'asc' }],
+    take: LIST_MAX,
+  });
+  res.json(orders.map(({ jobs, ...o }) => ({
+    ...o,
+    jobsReady: jobs.filter((j) => j.status === 'READY_TO_SHIP').length,
+    jobsStillOpen: jobs.filter((j) => !['READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED'].includes(j.status)).length,
+  })));
+}));
+
+/**
  * What can still be shipped on an order: each line with what is left after
  * what has shipped and what other open shipments already hold, and anything
  * that would stop it going out. The New shipment form is built from this.

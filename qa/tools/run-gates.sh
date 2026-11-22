@@ -51,6 +51,7 @@ echo "== cancel demo jobs (database update, on a copy)"; PGPASSWORD=${PGPASSWORD
 echo "== first five locations (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-first-five-locations.sh 2>&1 | tail -8
 echo "== retire test data (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-retire-test-data.sh 2>&1 | tail -8
 echo "== store on real branches"; node qa/sim/store-branches.mjs --base http://localhost:3011 2>&1 | tail -6; node qa/sim/ui-store-branches.cjs 2>&1 | tail -6
+echo "== freight screens on real shipments"; node qa/sim/ui-freight.cjs 2>&1 | tail -6
 echo "== locations"; node qa/sim/ui-locations.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8

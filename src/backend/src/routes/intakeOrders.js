@@ -350,7 +350,7 @@ router.get('/branches', async (req, res) => {
   try {
     const allowed = branchesOf(req.user);
     const rows = await prisma.location.findMany({
-      where: { isActive: true, ...(allowed && { id: { in: allowed } }) },
+      where: { isActive: true, isBranch: true, sellsFrom: true, ...(allowed && { id: { in: allowed } }) },
       select: { id: true, code: true, name: true, city: true, state: true }, orderBy: { code: 'asc' }, take: 500,
     });
     const home = req.user?.homeLocationId && rows.some((r) => r.id === req.user.homeLocationId) ? req.user.homeLocationId : rows[0]?.id || null;

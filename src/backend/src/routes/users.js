@@ -607,6 +607,7 @@ router.get('/locations', authenticate, async (req, res) => {
     const locations = await prisma.location.findMany({
       where: { 
         isActive: true,
+        isBranch: true,
         ownerId: req.user.organizationId
       },
       select: { id: true, code: true, name: true, type: true },

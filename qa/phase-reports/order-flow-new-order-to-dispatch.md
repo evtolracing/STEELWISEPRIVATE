@@ -372,3 +372,53 @@ NOT VERIFIED: the full gate suite; the live site after merge; the database updat
 | J Documentation | CONDITIONAL | This report. The manual was not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 8: Locations a person can manage (2026-11-22)
+
+The owner asked for real locations that can be added, changed and removed at any time with all their information, adding to be a super admin right, and people at each location to see only what they need. He reviewed the plan and decided: add and remove for the super admin and the tenant owner; details for those two and the admin; customers stay shared; a branch manager sees only their own people; older screens included. This addendum is the first step (plan steps 2 to 4). The visibility gaps, the clean-up of live data and the older screens follow.
+
+### What was found
+
+- No screen managed locations. The only way to add one was `POST /api/v1/dispatch/locations`, open to a production manager, scheduler or work center lead, with a name alone. No screen called it.
+- A location held a code, name, type, one address line, city, state, postal code, country and three flags.
+- Nothing told a branch from a storage area, so every active location was offered in every branch list.
+
+### What changed
+
+- Database update `20261122090000_location_details` (SQL Editor file made with `npm run db:sql-editor`): phone, fax, email, second address line, time zone, hours, manager, divisions, processes, floor area, sells from, ships from, notes, the day it was switched off, and a mark for a real branch. Existing top-level warehouses and yards, and any top-level location with orders, people, machines or plans, are marked as branches. **The owner applies it, before or with the deploy: the new code reads the new columns.**
+- `/api/admin/locations`: list, read (with what is open there and whether it was ever used), history, add, change, switch off, switch on, delete. Rules in `lib/locationRules.js`.
+  - A location is switched off only when nothing is open there (orders, jobs, stock, shipments, transfers, active machines, people, storage areas). Its people can be moved to another branch in the same step.
+  - A location that was ever used is never deleted, only switched off.
+  - Every change is written to the audit log.
+- Permissions (catalog version 3): `locations:add` and `locations:remove` for the super admin and tenant owner; `locations:edit` for those and the admin. They show on the Roles screen. The dispatch add route is removed.
+- Admin > Locations screen.
+- Branch lists (top bar, order entry, dispatch and shop floor, users, stock) offer only active branches. Order entry also needs "sells from here".
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 401 of 401 (9 new in `test/locations.test.js`; two role matrix expectations updated for the new rights) |
+| `qa/sim/ui-locations.cjs` (new, in the gate script) | 40 of 40: who may add, change and remove at the server and on the screen; branch lists before and after; a storage area is in none; switch-off blocked with reasons, then done with people moved; a used location is not deleted, an unused one is; audit history |
+| Database update | Run twice on a copy with the columns removed first: same result both times, recorded once; a rack inside a branch and a loose bin are not marked as branches |
+| `ui-roles`, `ui-role-rights`, `ui-user-access`, `ui-production-overview` | 24 of 24, 19 of 19, 17 of 17, 28 of 28 |
+| Lint, screen ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site; the database update on the live database; phones.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules in one pure module; permissions through the existing catalog and gate |
+| B Functional completeness | CONDITIONAL | Steps 5 and 6 of the plan and the live clean-up are not in this change |
+| C Cross-layer integrity | PASS | Browser checks compare the screen with the server and every branch list |
+| D Data integrity | PASS | No delete of a used location; switch-off only when nothing is open; update tested twice |
+| E Security | PASS | Open add route closed; rights checked at the gate for five roles |
+| F Reliability | PASS | A failed load says so and shows no rows |
+| G Performance | NOT ASSESSED | The list reads up to 2,000 locations with three grouped counts |
+| H User experience | CONDITIONAL | Checked at 1500 wide only |
+| I Regression | CONDITIONAL | Five suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report. The manual lists the new page; no manual chapter yet |
+
+Readiness: CONDITIONAL. Deploy order matters: the database update first.

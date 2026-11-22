@@ -35,7 +35,7 @@ const LEGACY = {
 };
 import { ALL_BRANCH_ROLES } from '../src/lib/branchScope.js';
 import { SYSTEM_ADMIN_ROLES, TOP_ROLES } from '../src/lib/viewScope.js';
-import { adminAreaRoles, isPublicApi } from '../src/middleware/apiGate.js';
+import { adminAreaRoles, isPublicApi, topOnlyChange } from '../src/middleware/apiGate.js';
 import { AREAS, OPEN_PAGES_PERMISSION, PERMISSIONS, permissionFor } from '../src/lib/permissionCatalog.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -104,6 +104,7 @@ function routeAllows(role, e) {
 export function todayAllows(role, e, user = { role }) {
   if (apiRoleDenial(user, e.url, e.method)) return false;
   if (!READ_METHODS.has(e.method) && ['/api/admin', '/api/v1/admin'].some((p) => under(e.url, p)) && !roleAllowed(role, adminAreaRoles(e.url))) return false;
+  if (topOnlyChange(e.url, e.method) && !TOP_ROLES.has(role)) return false;
   return routeAllows(role, e);
 }
 

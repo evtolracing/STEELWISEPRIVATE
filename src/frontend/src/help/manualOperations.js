@@ -259,7 +259,7 @@ const manualOperations = [
     icon: 'AdminPanelSettings',
     roles: ['ADMIN', 'SUPER_ADMIN', 'TENANT_OWNER', 'INTEGRATION_ADMIN', 'CFO', 'OPS_MANAGER', 'BRANCH_MANAGER'],
     divisions: ALL,
-    routes: ['/admin/integrations', '/admin/tax-rates', '/admin/staff'],
+    routes: ['/admin/integrations', '/admin/tax-rates', '/admin/locations', '/admin/staff'],
     sections: [
       { id: 'integrations', title: 'Integrations: What Needs Action', blocks: [
         { type: 'text', value: 'The Integrations screen answers three questions: what is this system connected to, what has failed, and what has shipped without an invoice.' },

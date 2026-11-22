@@ -188,6 +188,7 @@ const UserManagementPage = lazy(() => import('../pages/Admin/UserManagementPage'
 const IntegrationsPage = lazy(() => import('../pages/Admin/IntegrationsPage'))
 const AuditLogPage = lazy(() => import('../pages/Admin/AuditLogPage'))
 const TaxRatesPage = lazy(() => import('../pages/Admin/TaxRatesPage'))
+const LocationsPage = lazy(() => import('../pages/Admin/LocationsPage'))
 const RolesPage = lazy(() => import('../pages/Admin/RolesPage'))
 const RecipeEditorPage = lazy(() => import('../pages/Admin/RecipeEditorPage'))
 const StaffManagementPage = lazy(() => import('../pages/Admin/StaffManagementPage'))
@@ -1375,6 +1376,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <RolesPage />
+          </Suspense>
+        ),
+        errorElement: <RouteErrorPage />,
+      },
+      {
+        path: 'admin/locations',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <LocationsPage />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

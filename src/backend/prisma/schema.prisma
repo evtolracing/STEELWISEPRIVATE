@@ -163,6 +163,7 @@ model User {
   organization        Organization             @relation(fields: [organizationId], references: [id])
   customer            Organization?            @relation("CustomerLogins", fields: [customerId], references: [id])
   homeLocation        Location?                @relation("UserHomeLocation", fields: [homeLocationId], references: [id])
+  managedLocations    Location[]               @relation("LocationManager")
   userRoles           UserRoleAssignment[]
   permissionOverrides UserPermissionOverride[]
   primaryRole         UserPrimaryRole?
@@ -539,6 +540,24 @@ model Location {
   isOutdoor       Boolean            @default(false)
   hasCrane        Boolean            @default(false)
   isActive        Boolean            @default(true)
+  // A real branch (a place that sells, makes or ships), as opposed to a storage area inside one.
+  // Only branches are offered where a person picks "which branch".
+  isBranch        Boolean            @default(false)
+  addressLine2    String?
+  phone           String?
+  fax             String?
+  email           String?
+  timezone        String             @default("America/Detroit")
+  hours           String?
+  managerId       String?
+  divisions       String[]           @default([])
+  processes       String[]           @default([])
+  squareFeet      Int?
+  sellsFrom       Boolean            @default(true)
+  shipsFrom       Boolean            @default(true)
+  notes           String?
+  deactivatedAt   DateTime?
+  manager         User?              @relation("LocationManager", fields: [managerId], references: [id], onDelete: SetNull)
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
   coils           Coil[]
@@ -568,6 +587,7 @@ model Location {
 
   @@index([ownerId])
   @@index([parentId])
+  @@index([managerId])
 }
 
 model Inventory {

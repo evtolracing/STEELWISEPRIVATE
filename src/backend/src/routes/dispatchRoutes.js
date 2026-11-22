@@ -481,8 +481,9 @@ router.delete('/work-centers/:id', async (req, res) => {
  */
 router.get('/locations', async (req, res) => {
   try {
+    // Branches only: a storage area inside a branch is not a place work is dispatched from.
     const locs = await prisma.location.findMany({
-      where: { isActive: true },
+      where: { isActive: true, isBranch: true },
       orderBy: { name: 'asc' },
     })
     res.json({
@@ -495,48 +496,8 @@ router.get('/locations', async (req, res) => {
   }
 })
 
-/**
- * POST /v1/dispatch/locations
- * Create a new location in Supabase
- */
-router.post('/locations', async (req, res) => {
-  try {
-    const { id, code, name, address, type } = req.body
-    if (!name) {
-      return res.status(400).json({ success: false, error: 'name is required' })
-    }
-
-    const locCode = code || id || name.toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)
-
-    // Check duplicate code
-    const existing = await prisma.location.findUnique({ where: { code: locCode } })
-    if (existing) {
-      return res.status(409).json({ success: false, error: `Location code '${locCode}' already exists` })
-    }
-
-    // Get org for ownerId
-    const org = await prisma.organization.findFirst()
-    if (!org) {
-      return res.status(500).json({ success: false, error: 'No organization found. Seed the database first.' })
-    }
-
-    const loc = await prisma.location.create({
-      data: {
-        code: locCode,
-        name: name.trim(),
-        type: type || 'WAREHOUSE',
-        ownerId: org.id,
-        addressLine1: address || null,
-        isActive: true,
-      },
-    })
-
-    res.status(201).json({ success: true, data: mapPrismaLocation(loc) })
-  } catch (error) {
-    console.error('Error creating location:', error)
-    res.status(500).json({ success: false, error: 'Failed to create location' })
-  }
-})
+// Adding a location moved to Admin > Locations (POST /api/admin/locations), for the super admin and the tenant
+// owner only (owner, 2026-11-22). A production role could add one here with a name alone.
 
 /**
  * GET /v1/dispatch/work-centers

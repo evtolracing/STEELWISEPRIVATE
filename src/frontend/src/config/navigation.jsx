@@ -2,6 +2,7 @@
 // the top bar finds pages in it, and the page title comes from it. One list, so the three cannot differ.
 import {
   Dashboard as DashboardIcon,
+  Business as LocationsIcon,
   Thermostat as HeatIcon,
   ViewModule as UnitsIcon,
   Inventory2 as InventoryIcon,
@@ -302,6 +303,7 @@ export const navSections = [
     items: [
       { path: '/admin/users', label: 'User Management', icon: UsersIcon },
       { path: '/admin/roles', label: 'Roles & Permissions', icon: PermitIcon },
+      { path: '/admin/locations', label: 'Locations', icon: LocationsIcon },
       { path: '/admin/staff', label: 'Staff & Operators', icon: StaffIcon },
       { path: '/admin/partners', label: 'Partner API', icon: PartnerApiIcon },
       { path: '/admin/integrations', label: 'Integrations', icon: PartnerApiIcon },

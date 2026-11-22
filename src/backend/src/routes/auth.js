@@ -214,7 +214,7 @@ router.get('/me', authenticate, async (req, res, next) => {
     const allBranches = !external && (real.branchScope ? real.branchScope === 'ALL' : ALL_BRANCH_ROLES.has(real.role));
     const own = [...new Set([real.homeLocationId, ...(real.userLocations || []).map((l) => l.locationId)].filter(Boolean))];
     const branches = external ? [] : await prisma.location.findMany({
-      where: allBranches ? { isActive: true } : { id: { in: own } },
+      where: allBranches ? { isActive: true, isBranch: true } : { id: { in: own }, isActive: true },
       select: { id: true, code: true, name: true },
       orderBy: { code: 'asc' },
     });

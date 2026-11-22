@@ -14,7 +14,7 @@ const NEW = Object.keys(ADDED_IN);
 const row = (name, grants, more = {}) => ({ id: name, name, grants, isSystem: true, isActive: true, baseRole: name, ...more });
 
 test('every permission added after the first catalog is a real permission with a version', () => {
-  assert.equal(CATALOG_VERSION, 2);
+  assert.equal(CATALOG_VERSION, 3);
   for (const p of NEW) { assert.ok(PERMISSION_SET.has(p), p); assert.ok(ADDED_IN[p] > 1 && ADDED_IN[p] <= CATALOG_VERSION, p); }
   assert.deepEqual(addedSince(1).sort(), [...NEW].sort());
   assert.deepEqual(addedSince(CATALOG_VERSION), []);

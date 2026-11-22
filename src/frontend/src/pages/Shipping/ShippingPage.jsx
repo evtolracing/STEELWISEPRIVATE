@@ -4,7 +4,7 @@
  * A new shipment is built from what is still open on a confirmed order.
  */
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Box, Typography, Paper, Button, TextField, MenuItem, Alert, LinearProgress, Chip, Grid,
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Dialog, DialogTitle, DialogContent, DialogActions,
@@ -21,7 +21,7 @@ const errorText = (e, fallback) => e.response?.data?.error || fallback
 const LIMIT = 100
 
 /** Find a confirmed order, choose what goes on the truck, create the shipment. */
-function NewShipmentDialog({ open, onClose, onCreated }) {
+function NewShipmentDialog({ open, onClose, onCreated, startWith = '' }) {
   const [orderNumber, setOrderNumber] = useState('')
   const [order, setOrder] = useState(null)
   const [qty, setQty] = useState({})
@@ -30,16 +30,10 @@ function NewShipmentDialog({ open, onClose, onCreated }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  useEffect(() => {
-    if (!open) return
-    setOrderNumber(''); setOrder(null); setQty({}); setError(''); setForm({ fromLocationId: '', carrierName: '', bolNumber: '' })
-    client.get('/inventory/locations').then((r) => setLocations(Array.isArray(r.data) ? r.data : (r.data?.data || []))).catch(() => setError('The list of locations could not be loaded.'))
-  }, [open])
-
-  const find = async () => {
+  const lookUp = useCallback(async (number) => {
     setBusy(true); setError(''); setOrder(null)
     try {
-      const { data } = await client.get('/shipments/shippable', { params: { orderNumber: orderNumber.trim() } })
+      const { data } = await client.get('/shipments/shippable', { params: { orderNumber: String(number).trim() } })
       setOrder(data)
       setQty(Object.fromEntries(data.lines.map((l) => [l.orderLineId, l.waitingOn.length ? '' : (l.qtyOpen > 0 ? String(l.qtyOpen) : '')])))
       setForm((f) => ({ ...f, fromLocationId: data.suggestedLocationId || f.fromLocationId }))
@@ -48,7 +42,16 @@ function NewShipmentDialog({ open, onClose, onCreated }) {
     } finally {
       setBusy(false)
     }
-  }
+  }, [])
+  const find = () => lookUp(orderNumber)
+
+  useEffect(() => {
+    if (!open) return
+    setOrderNumber(startWith); setOrder(null); setQty({}); setError(''); setForm({ fromLocationId: '', carrierName: '', bolNumber: '' })
+    // Opened for one order (the Shipment Planner's "Plan shipment"): look it up straight away.
+    if (startWith) lookUp(startWith)
+    client.get('/inventory/locations').then((r) => setLocations(Array.isArray(r.data) ? r.data : (r.data?.data || []))).catch(() => setError('The list of locations could not be loaded.'))
+  }, [open, startWith, lookUp])
 
   const items = order ? order.lines.filter((l) => Number(qty[l.orderLineId]) > 0).map((l) => ({ orderLineId: l.orderLineId, qtyShipped: Number(qty[l.orderLineId]) })) : []
   const create = async () => {
@@ -143,7 +146,10 @@ export default function ShippingPage() {
   const [typed, setTyped] = useState('')
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
-  const [creating, setCreating] = useState(false)
+  // ?order=SO-00012 opens the new shipment form on that order.
+  const [params, setParams] = useSearchParams()
+  const startWith = params.get('order') || ''
+  const [creating, setCreating] = useState(Boolean(startWith))
 
   useEffect(() => {
     const t = setTimeout(() => setSearch(typed.trim()), 300)
@@ -230,7 +236,7 @@ export default function ShippingPage() {
         </Box>
       </Paper>
 
-      <NewShipmentDialog open={creating} onClose={() => setCreating(false)} onCreated={(s) => { setCreating(false); navigate(`/shipping/${s.id}`) }} />
+      <NewShipmentDialog open={creating} startWith={startWith} onClose={() => { setCreating(false); if (startWith) setParams({}, { replace: true }) }} onCreated={(s) => { setCreating(false); navigate(`/shipping/${s.id}`) }} />
     </Box>
   )
 }

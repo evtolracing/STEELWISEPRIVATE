@@ -5,7 +5,7 @@
  * capacity notes, and suggested alternatives — all in a card layout
  * with large tap targets.
  */
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -39,14 +39,9 @@ import {
   TipsAndUpdates as TipIcon,
 } from '@mui/icons-material'
 import { evaluatePromise } from '../../services/promiseApi'
+import { getStoreBranches } from '../../services/cutoffRulesApi'
 import useMobileMode from '../../hooks/useMobileMode'
 
-const LOCATIONS = [
-  { id: 'loc-1', label: 'Jackson', key: 'JACKSON' },
-  { id: 'loc-2', label: 'Detroit', key: 'DETROIT' },
-  { id: 'loc-3', label: 'Kalamazoo', key: 'KALAMAZOO' },
-  { id: 'loc-4', label: 'Grand Rapids', key: 'GRAND_RAPIDS' },
-]
 const DIVISIONS = ['METALS', 'PLASTICS', 'SUPPLIES']
 
 const STATUS_MAP = {
@@ -63,7 +58,16 @@ function formatDate(d) {
 export default function MobilePromisePreview() {
   const { isOnline } = useMobileMode()
 
-  const [locationId, setLocationId] = useState('loc-1')
+  const [branches, setBranches] = useState([])
+  const [branchError, setBranchError] = useState(null)
+  const [locationId, setLocationId] = useState('')
+  useEffect(() => {
+    let live = true
+    getStoreBranches()
+      .then((res) => { if (!live) return; const list = res.data || []; setBranches(list); setLocationId((id) => id || list[0]?.id || '') })
+      .catch((e) => { if (live) setBranchError(e.message) })
+    return () => { live = false }
+  }, [])
   const [division, setDivision] = useState('METALS')
   const [requestedDate, setRequestedDate] = useState('')
   const [loading, setLoading] = useState(false)
@@ -95,17 +99,22 @@ export default function MobilePromisePreview() {
         <ShipIcon sx={{ verticalAlign: 'bottom', mr: 0.5 }} /> Promise Preview
       </Typography>
       <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
-        This is an estimate from standard cutoff times for four branches. It does not look at live stock or shop load, so confirm with the branch before promising a date.
+        This is an estimate from each branch's cut-off times. It does not look at live stock or shop load, so confirm with the branch before promising a date.
       </Alert>
+
+      {branchError && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{branchError}</Alert>}
+      {!branchError && branches.length === 0 && locationId === '' && (
+        <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }} data-testid="promise-no-branches">No branch is set up to sell from yet.</Alert>
+      )}
 
       {/* ── Inputs ──────────────────────────────────────────── */}
       <Paper elevation={0} sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <FormControl fullWidth>
-              <InputLabel>Branch</InputLabel>
-              <Select value={locationId} onChange={e => setLocationId(e.target.value)} label="Branch" sx={{ minHeight: 52 }}>
-                {LOCATIONS.map(l => <MenuItem key={l.id} value={l.id}>{l.label}</MenuItem>)}
+              <InputLabel id="promise-branch-label">Branch</InputLabel>
+              <Select labelId="promise-branch-label" value={locationId} onChange={e => setLocationId(e.target.value)} label="Branch" sx={{ minHeight: 52 }}>
+                {branches.map(l => <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>)}
               </Select>
             </FormControl>
           </Grid>
@@ -136,7 +145,7 @@ export default function MobilePromisePreview() {
           variant="contained"
           size="large"
           onClick={handleEvaluate}
-          disabled={loading}
+          disabled={loading || !locationId}
           startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CutoffIcon />}
           sx={{ mt: 2, minHeight: 52, fontWeight: 700, borderRadius: 3 }}
         >
@@ -266,9 +275,6 @@ export default function MobilePromisePreview() {
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
           • Rush / Hot priority may have tighter cutoff windows
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-          • Kalamazoo typically has the earliest cutoff (1:00 PM ET)
         </Typography>
         <Typography variant="body2" color="text.secondary">
           • Check branch load in Demand Shaping for best availability

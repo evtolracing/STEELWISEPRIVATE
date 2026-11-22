@@ -19,6 +19,10 @@
  */
 import { Router } from 'express';
 import * as store from '../services/ecomService.js';
+import prisma from '../lib/db.js';
+import { acrossBranches } from '../lib/branchScope.js';
+import { compareBranches } from '../lib/branchComparison.js';
+import { branchCutoffRules } from './onlineSettings.js';
 import { isCustomerLogin, requireLinkedCustomer } from '../lib/customerScope.js';
 import { customerPriceLevel } from '../lib/customerPricing.js';
 
@@ -47,6 +51,49 @@ const wrap = (label, fn) => async (req, res) => {
 };
 
 const router = Router();
+// The branches the store sells from, and each one's cut-off rule: read by the store, the promise check and the
+// cut-off clock. Location is not a branch-owned record, so every signed-in person gets the same list.
+router.get('/branches', wrap('load branches', async () => ({
+  data: await prisma.location.findMany({
+    where: { isActive: true, isBranch: true, sellsFrom: true },
+    select: { id: true, code: true, name: true, city: true, state: true, timezone: true },
+    orderBy: { name: 'asc' },
+  }),
+})));
+// Which branch suits an order best. Stock is counted at every branch, also for a person held to their own:
+// the answer is a count per branch, never a stock record, and choosing where to fill an order needs all of them.
+router.post('/branch-comparison', wrap('compare branches', async (req) => {
+  const { division = 'METALS', requiredProcessing, shipTo, excludeLocationId } = req.body || {};
+  const [branches, rules] = await Promise.all([
+    prisma.location.findMany({
+      where: { isActive: true, isBranch: true, sellsFrom: true },
+      select: { id: true, code: true, name: true, lat: true, lng: true, processes: true, workCenters: { where: { isActive: true }, select: { type: true } } },
+    }),
+    branchCutoffRules(),
+  ]);
+  const stock = await acrossBranches(() => prisma.inventory.groupBy({
+    by: ['locationId', 'unit'],
+    where: { status: 'ACTIVE', qtyAvailable: { gt: 0 }, locationId: { in: branches.map((b) => b.id) }, coil: { status: 'AVAILABLE', product: { division: String(division) } } },
+    _count: { _all: true }, _sum: { qtyAvailable: true },
+  }));
+  const stockAt = (id) => stock.filter((r) => r.locationId === id).reduce((t, r) => ({
+    items: t.items + r._count._all,
+    weightLb: t.weightLb + (r.unit === 'LB' ? Number(r._sum.qtyAvailable || 0) : 0),
+  }), { items: 0, weightLb: 0 });
+  return compareBranches({
+    branches: branches.map((b) => ({
+      id: b.id, code: b.code, name: b.name, lat: b.lat, lng: b.lng,
+      capabilities: [...b.processes, ...b.workCenters.map((w) => w.type).filter(Boolean)],
+      stock: stockAt(b.id), rule: rules.find((r) => r.locationId === b.id),
+    })),
+    division: String(division),
+    requiredProcessing: Array.isArray(requiredProcessing) ? requiredProcessing.map(String) : [],
+    shipTo: shipTo && typeof shipTo === 'object' ? shipTo : null,
+    excludeLocationId: excludeLocationId ? String(excludeLocationId) : null,
+  });
+}));
+router.get('/cutoff-rules', wrap('load cut-off rules', async () => ({ data: await branchCutoffRules() })));
+router.get('/cutoff-rules/:locationId', wrap('load cut-off rules', async (req) => ({ data: (await branchCutoffRules(req.params.locationId))[0] || null })));
 router.get('/catalog', wrap('search catalog', (req) => store.searchCatalog(req.query)));
 router.get('/catalog/divisions', wrap('load divisions', async () => {
   const { facets } = await store.searchCatalog({ limit: 1 });

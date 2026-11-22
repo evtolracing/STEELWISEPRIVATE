@@ -469,3 +469,178 @@ NOT VERIFIED: the full gate suite; the live site; either database update on the 
 | J Documentation | CONDITIONAL | This report |
 
 Readiness: CONDITIONAL.
+
+## Addendum 10: Clean-up of the test orders and placeholder locations (2026-11-22)
+
+The owner chose "Cancel and switch off, keep history" for the 28 open test orders and 9 placeholder locations found on the live site (`live-data-audit-2026-11-22.md`).
+
+### What changed
+
+Database update `20261122213000_retire_test_orders_and_demo_locations`, for the owner to run after the first five locations are added:
+
+- The 28 listed orders are cancelled while still open, with their open jobs and open shipments. Each says why in its notes.
+- The 9 placeholder locations are switched off, with their machines. Open shipments leaving from them are cancelled.
+- People whose home or assigned branch was a placeholder location move to Charlotte (CT), when CT is on file and switched on. Otherwise they stay where they are.
+- Nothing is deleted. Stock records at the placeholder locations stay on file, at locations that are now switched off.
+- Only records made before 2026-11-22 21:30 UTC are touched, so a real order that later takes one of the numbers is safe.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| `qa/sim/db-retire-test-data.sh` (new, in the gate script) | 6 of 6: runs the SQL Editor file twice on a copy; a finished listed order, a listed order made after the cut-off, a shipped job and an unrelated shipment are left alone; row counts of eight tables are unchanged. With the file emptied, the check fails |
+
+NOT VERIFIED: the update on the live database; the live site afterwards; the full gate suite (no application code changed).
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| D Data integrity | PASS | Nothing deleted; exact numbers and codes; same result on a second run |
+| I Regression | CONDITIONAL | One new check; no sim reads the placeholder codes (searched `qa/sim`, `qa/tools`) |
+| J Documentation | CONDITIONAL | This report |
+| A, B, C, E, F, G, H | NOT ASSESSED | A data update only |
+
+Known limit: stock reserved for a cancelled order is not released by this update. The stock sits at locations that are switched off.
+
+Readiness: CONDITIONAL, on the owner running the update.
+
+## Addendum 11: The web store, promise dates, cut-off settings and branch comparison on real branches (2026-11-22)
+
+The owner chose "Rebuild everything on real data" for the older screens that showed made-up locations. This is round 1 of 4.
+
+### What was found
+
+- The web store, the promise check, the cut-off settings and the CSR branch comparison ran on four made-up locations (`loc-1` Jackson, `loc-2` Detroit, `loc-3` Kalamazoo, `loc-4` Grand Rapids).
+- The cut-off rules lived in the browser. A change on Online Settings was lost on reload and never reached another person.
+- The branch comparison scored made-up stock numbers and made-up machine lists.
+- A second, simpler cut-off list for the same four made-up locations was saved on the server and read by nothing.
+
+### What changed
+
+- **Cut-off rules on the server** (`lib/cutoffRules.js`): one rule per branch the store sells from, saved in the settings document `online.cutoffRules`. A branch with nothing saved gets a blank rule marked not set, with next-day shipping off. No time is invented: the promise check says the times are not set and promises nothing. Saving needs the web shop admin right and goes to the audit log.
+- **Routes:** `GET /api/ecom/branches`, `GET /api/ecom/cutoff-rules[/:locationId]`, `POST /api/ecom/branch-comparison`, `GET` and `PUT /api/admin/online-settings/cutoff-rules[/:locationId]`. The old `/cutoffs` list is removed.
+- **Branch comparison on the server** (`lib/branchComparison.js`): real selling branches scored on stock items of the division on file, the saved cut-off, the machines and processes at the branch, and distance when both positions are known. Stock is counted across branches for this one answer (counts only).
+- **Screens:** the store session, store pages, checkout, CSR intake, Online Settings, the cut-off clock and the mobile promise preview read real branches. A store session saved with a made-up location moves to the person's home branch or the first selling branch.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 411 of 411 (9 new in `cutoffRules.test.js` and `branchComparison.test.js`) |
+| `qa/sim/store-branches.mjs` (new, in the gate script) | 24 of 24: branch list against the database; who may save; refusals; saved rule read back; audit log; comparison counts against the database, same for a person held to one branch |
+| `qa/sim/ui-store-branches.cjs` (new, in the gate script) | 11 of 11: settings picker lists real branches, save survives a reload, a stale made-up session moves to a real branch, the store asks nothing about `loc-N`, promise preview at phone width |
+| `phase5-sales.mjs`, `ui-sales`, `ui-phase5` | 76 of 76 scenarios, 24 of 24, 14 of 14 |
+| Lint (both), ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules and scoring are pure modules; the screens hold no copy |
+| B Functional completeness | CONDITIONAL | Demand shaping still reads made-up branch load (round 2). Freight and Executive screens are rounds 3 and 4 |
+| C Cross-layer integrity | PASS | Both sims compare answers with the database |
+| D Data integrity | PASS | No invented cut-off time; a rule is checked before it is saved |
+| E Security | PASS | Three roles refused on save, with nothing written |
+| F Reliability | CONDITIONAL | A failed branch load shows a message on the promise preview; the store session falls back to no branch |
+| G Performance | NOT ASSESSED | One grouped count per comparison |
+| H User experience | CONDITIONAL | Checked at 1500 wide, and the promise preview at 414 wide |
+| I Regression | CONDITIONAL | Five suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report; the manual's Online Settings chapter still describes the old list |
+
+Readiness: CONDITIONAL. The owner sets each branch's cut-off times on Online Settings; until then no next-day date is promised.
+
+## Addendum 12: Demand shaping on real branch load (2026-11-22)
+
+Round 2 of the rebuild on real data.
+
+### What was found
+
+- Demand shaping offered customers a later date, another branch or an off-peak window from load figures typed into a settings document for four made-up locations (Jackson 82%, Detroit 94%, Kalamazoo 55%, Grand Rapids 71%).
+- A branch the server did not know was treated as the first branch on the list, so a made-up or mistyped branch could be called busy.
+- An order with no branch on file was shown on order entry as "JACKSON".
+
+### What changed
+
+- `lib/branchLoad.js`: a branch's load is worked out from its plan each time it is asked. Booked hours are the unfinished plan steps with a start and an end inside the next 7 days, at no more than 10 hours a day each. Capacity is the branch's active machines x 10 hours x 5 working days, the same day the Schedule screen uses. A branch with no active machine has no load figure and nothing is suggested from it.
+- `routes/demandShaping.js`: suggestions and `GET /config` use the real selling branches by code. A `branches` table sent to `PUT /config` is ignored and never saved; the discount tables stay settings. A branch not on file is never called busy.
+- Checkout sends the real branch id. An intake order with no branch says none.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 417 of 417 (6 new in `branchLoad.test.js`, one of them the unknown-branch case that was wrong before) |
+| `qa/sim/store-branches.mjs` | 31 of 31 (7 new): branches by code against the database; machines on file; ten booked hours raise booked hours by ten; a hand-sent load table is not saved; a made-up branch gets no load-based suggestion |
+| `phase5-sales.mjs`, `ui-sales`, `ui-store-branches` | 76 of 76 scenarios, 24 of 24, 11 of 11 |
+| Lint (both) | 0 errors |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | One pure rule, used by suggestions and the config read |
+| B Functional completeness | CONDITIONAL | Steps with no times on file are not counted in load (they are counted and reported as unscheduled). Freight and Executive screens are rounds 3 and 4 |
+| C Cross-layer integrity | PASS | The sim checks the figures against the database |
+| D Data integrity | PASS | No load figure is saved or typed |
+| E Security | NOT ASSESSED | No change to who may ask; a customer login is still refused suggestions by the existing gate |
+| F Reliability | NOT ASSESSED | |
+| G Performance | NOT ASSESSED | One read of open plan steps per asking |
+| H User experience | NOT ASSESSED | No screen changed |
+| I Regression | CONDITIONAL | Four suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report |
+
+Readiness: CONDITIONAL. The load rule is a judgement from what is on file; the owner may want a different measure.
+
+## Addendum 13: Freight screens on real shipments (2026-11-22)
+
+Round 3 of the rebuild on real data.
+
+### What was found
+
+- The Shipment Planner, the Tracking Board and the Exception Inbox showed made-up shipments, carriers and customers under a sample banner. None of them read a record.
+- The proof of delivery viewer showed a made-up delivery, while the shipment record holds the real one (who signed, an image, or the reason none was taken).
+- Rate comparison and the route view have no data source: no carrier is connected, so there are no rates, truck positions or tracking events on file. They stay marked as samples. Nothing was invented for them.
+
+### What changed
+
+- `GET /api/shipments/ready-orders`: sales orders that can ship, have at least one job ready to ship, and have no shipment waiting on the dock or loading. Held to the asker's branches by the existing branch wall.
+- `pages/Freight/freightView.js`: the rules, kept pure. Board columns are On the dock, Loading, On the road, and Delivered in the last 7 days. A shipment is late when it has not left and its scheduled day is before today. Exceptions, worst first: lost, marked as an exception, late, delivered with no proof of delivery and no reason on file.
+- Tracking Board: real shipments by status, search, a count of those needing attention, each card opens the shipment.
+- Exception Inbox: the shipments the rule above picks, with the reason and a link to the shipment.
+- Shipment Planner: orders ready to ship with customer, town, selling branch, promise date and how much work is ready. "Plan shipment" opens the New shipment form on that order (`/shipping?order=<number>`).
+- Proof of delivery (`/freight/pod/:shipmentId`): delivered time, who signed, the stored image, or the reason given, with the status history. A delivery with nothing on file says so. The Exception Inbox links to it.
+- The sample banner is removed from these four routes only.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 423 of 423 (6 new in `freightView.test.js`) |
+| `qa/sim/ui-freight.cjs` (new, in `run-gates.sh`) | 30 of 30: column counts, exception rows and planner rows equal the server's lists; each kind of exception shown with its reason; an old delivery is off the board; a card opens the shipment; Plan shipment opens the form on the order; an order with a dock shipment leaves the planner; a person at another branch sees neither the order nor shipments outside their branch; proof of delivery shows the name, the reason, or that nothing is on file, and a person at another branch cannot read it |
+| `phase8-fulfillment.mjs` | 155 of 155 scenarios, 519 checks (the sample-screen scenario now expects four real and three sample freight routes) |
+| `ui-shipping`, `ui-phase8` | 29 of 29, 56 of 56 (`ui-shipping` now looks its test customer up by code; it could not find one among the first 50 before any change here) |
+| Lint (both), build, ratchets | 0 errors; built; effects ratchet 38 of 38 |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules in one pure file, shared by the three screens |
+| B Functional completeness | CONDITIONAL | The boards read the newest 200 shipments. Rate comparison and route view stay samples because no carrier data exists |
+| C Cross-layer integrity | PASS | The sim compares each screen with the server and the database |
+| D Data integrity | PASS | Read-only screens; no record is written |
+| E Security | PASS | Branch wall checked on the new route and the shipment list with two branch logins |
+| F Reliability | NOT ASSESSED | A failed read shows an error, checked by eye only |
+| G Performance | NOT ASSESSED | |
+| H User experience | CONDITIONAL | Walked in a browser by the sim; not reviewed by the owner |
+| I Regression | CONDITIONAL | Four suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report; the user manual is not updated |
+
+Readiness: CONDITIONAL.

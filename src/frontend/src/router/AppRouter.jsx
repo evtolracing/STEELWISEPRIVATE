@@ -929,7 +929,7 @@ const router = createBrowserRouter([
         path: 'freight/planner',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ShipmentPlanner /></SampleScreen>
+            <ShipmentPlanner />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -965,7 +965,7 @@ const router = createBrowserRouter([
         path: 'freight/tracking',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ShipmentTrackingBoard /></SampleScreen>
+            <ShipmentTrackingBoard />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -974,7 +974,7 @@ const router = createBrowserRouter([
         path: 'freight/exceptions',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><ExceptionInbox /></SampleScreen>
+            <ExceptionInbox />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,
@@ -983,7 +983,7 @@ const router = createBrowserRouter([
         path: 'freight/pod/:shipmentId',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><PODViewer /></SampleScreen>
+            <PODViewer />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

@@ -3,12 +3,15 @@
  * the processes customers may pick per division.
  *
  *   GET/PUT /api/admin/online-settings/rules
- *   GET/PUT /api/admin/online-settings/cutoffs
+ *   GET     /api/admin/online-settings/cutoff-rules                one rule per branch the store sells from
+ *   PUT     /api/admin/online-settings/cutoff-rules/:locationId
  *   GET     /api/admin/online-settings/processes?division=METALS   (no division: all)
  *   PUT     /api/admin/online-settings/processes?division=METALS   body: ["SAW-CUT", ...]
  */
 import { Router } from 'express';
+import prisma from '../lib/db.js';
 import { getSetting, putSetting } from '../lib/settings.js';
+import { CUTOFF_SETTING, cutoffRuleInput, ruleFor } from '../lib/cutoffRules.js';
 
 const router = Router();
 
@@ -21,7 +24,6 @@ const RULE_FIELDS = {
   defaultOwnership: 'string',
   enableBackorder: 'boolean',
 };
-const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 router.get('/rules', async (req, res, next) => {
   try { res.json({ data: await getSetting('online.checkoutRules') }); } catch (e) { next(e); }
@@ -47,19 +49,38 @@ router.put('/rules', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-router.get('/cutoffs', async (req, res, next) => {
-  try { res.json({ data: await getSetting('online.cutoffs') }); } catch (e) { next(e); }
+// The branches the store sells from, each with its cut-off rule (blank and marked isSet: false until saved).
+export async function branchCutoffRules(onlyId) {
+  const [branches, saved] = await Promise.all([
+    prisma.location.findMany({
+      where: { isActive: true, isBranch: true, sellsFrom: true, ...(onlyId ? { id: String(onlyId) } : {}) },
+      select: { id: true, code: true, name: true, timezone: true },
+      orderBy: { name: 'asc' },
+    }),
+    getSetting(CUTOFF_SETTING),
+  ]);
+  return branches.map((b) => ruleFor(b, saved?.[b.id]));
+}
+
+router.get('/cutoff-rules', async (req, res, next) => {
+  try { res.json({ data: await branchCutoffRules() }); } catch (e) { next(e); }
 });
 
-router.put('/cutoffs', async (req, res, next) => {
+router.put('/cutoff-rules/:locationId', async (req, res, next) => {
   try {
-    const list = Array.isArray(req.body) ? req.body : req.body?.cutoffs;
-    if (!Array.isArray(list)) return res.status(400).json({ error: 'Send a list of cutoffs' });
-    for (const c of list) {
-      if (!c?.locationId) return res.status(400).json({ error: 'Each cutoff needs a locationId' });
-      if (!TIME.test(String(c.cutoffTime || ''))) return res.status(400).json({ error: `Cutoff time for ${c.locationName || c.locationId} must be HH:MM` });
-    }
-    res.json({ data: await putSetting('online.cutoffs', list), success: true });
+    const [current] = await branchCutoffRules(req.params.locationId);
+    if (!current) return res.status(404).json({ error: 'That branch is not on file, or the store does not sell from it' });
+    const checked = cutoffRuleInput(req.body || {});
+    if (checked.error) return res.status(400).json({ error: checked.error });
+    const saved = { ...((await getSetting(CUTOFF_SETTING)) || {}), [current.locationId]: checked.data };
+    await prisma.$transaction(async (tx) => {
+      await tx.appSetting.upsert({ where: { key: CUTOFF_SETTING }, update: { value: saved }, create: { key: CUTOFF_SETTING, value: saved } });
+      await tx.auditLog.create({ data: {
+        tenantId: req.user.organizationId, category: 'DATA', eventType: 'UPDATE', userId: req.user.id,
+        resourceType: 'Location', resourceId: current.locationId, action: 'cutoffRules.update', details: checked.data,
+      } });
+    });
+    res.json({ data: (await branchCutoffRules(current.locationId))[0], success: true });
   } catch (e) { next(e); }
 });
 

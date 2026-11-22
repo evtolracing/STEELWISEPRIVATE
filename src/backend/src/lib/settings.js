@@ -14,12 +14,8 @@ export const SETTING_DEFAULTS = {
     defaultOwnership: 'HOUSE',
     enableBackorder: true,
   },
-  'online.cutoffs': [
-    { locationId: 'loc-1', locationName: 'Jackson', cutoffTime: '14:00', timezone: 'America/Detroit', sameDayProcessing: true, active: true },
-    { locationId: 'loc-2', locationName: 'Detroit', cutoffTime: '13:00', timezone: 'America/Detroit', sameDayProcessing: true, active: true },
-    { locationId: 'loc-3', locationName: 'Kalamazoo', cutoffTime: '14:00', timezone: 'America/Detroit', sameDayProcessing: false, active: true },
-    { locationId: 'loc-4', locationName: 'Grand Rapids', cutoffTime: '12:00', timezone: 'America/Detroit', sameDayProcessing: false, active: true },
-  ],
+  // Cut-off rules for each real branch, keyed by location id (lib/cutoffRules.js). Empty until the owner sets them.
+  'online.cutoffRules': {},
   'online.allowedProcesses': {
     METALS: ['SAW-CUT', 'SHEAR', 'PLASMA', 'DRILL', 'DEBURR'],
     PLASTICS: ['PLAS-SAW', 'PLAS-ROUTE'],
@@ -27,12 +23,7 @@ export const SETTING_DEFAULTS = {
     OUTLET: [],
   },
   'demandShaping.config': {
-    branches: {
-      JACKSON: { id: 'loc-1', name: 'Jackson', load: 0.82, queueDays: 2.5 },
-      DETROIT: { id: 'loc-2', name: 'Detroit', load: 0.94, queueDays: 4.0 },
-      KALAMAZOO: { id: 'loc-3', name: 'Kalamazoo', load: 0.55, queueDays: 1.0 },
-      GRAND_RAPIDS: { id: 'loc-4', name: 'Grand Rapids', load: 0.71, queueDays: 1.5 },
-    },
+    // Branch load is worked out from the plan (lib/branchLoad.js), never saved here.
     highLoadThreshold: 0.8,
     dateShiftDiscounts: [
       { daysLater: 1, pct: 2, label: '+1 day' },

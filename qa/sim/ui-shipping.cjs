@@ -38,7 +38,7 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
 
   // A real confirmed order to ship: 4 pieces at 25.00, with tax.
   const tag = `UI-SHIP-${Date.now().toString(36).toUpperCase()}`;
-  const customers = (await api('GET', '/api/customers?limit=50', clerk)).body;
+  const customers = (await api('GET', '/api/customers?limit=50&search=QA-C', clerk)).body;
   const customer = (Array.isArray(customers) ? customers : customers?.data || []).find((c) => /^QA-C/.test(c.code || ''));
   const locations = (await api('GET', '/api/inventory/locations', clerk)).body;
   const branch = locations[0];
@@ -200,7 +200,8 @@ const OUT = arg('out', 'qa/results/ui-shipping.json');
     const text = await body(page);
     check('all orders: real orders are listed with no sample fallback', found && !/Sample screen/.test(text), text.slice(0, 300));
     await page.close();
-    for (const url of ['/freight/planner', '/freight/tracking', '/logistics/dispatch']) {
+    // The Shipment Planner and Tracking Board left this list on 2026-11-22: they read real shipments (qa/sim/ui-freight.cjs).
+    for (const url of ['/freight/comparison', '/logistics/dispatch']) {
       const p = await open(office, url);
       const says = await has(p, /Sample screen: these are example figures/);
       check(`${url}: says it is a sample screen and points to Shipping`, says && (await has(p, /Shipping screen/)), (await body(p)).slice(0, 200));

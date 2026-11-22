@@ -158,11 +158,11 @@ export async function evaluatePromise({ locationId, division, requestedShipDate,
   // ── Client-side evaluation ───────────────────────────────────────────
   const rulesRes = await getLocationCutoffRules(locationId)
   const rules = rulesRes.data
-  if (!rules) {
+  if (!rules || rules.isSet === false) {
     return {
       data: {
         status: 'YELLOW',
-        message: 'No cutoff rules configured for this location',
+        message: rules ? `Cut-off times are not set for ${rules.locationName} yet. Confirm the date with the branch.` : 'No cutoff rules configured for this location',
         cutoffLocal: null,
         cutoffMet: null,
         nowLocal: new Date().toISOString(),

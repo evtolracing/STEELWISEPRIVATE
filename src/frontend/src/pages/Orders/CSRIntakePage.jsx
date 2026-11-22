@@ -30,7 +30,7 @@ import OwnershipToggle from '../../components/orders/OwnershipToggle'
 
 import { createIntakeOrder, updateIntakeOrder, submitOrder } from '../../services/intakeOrdersApi'
 import { estimateTax, getContractPricing } from '../../services/intakePricingApi'
-import { compareBranches, csrKeyToLocationId, locationIdToCsrKey } from '../../services/branchComparisonApi'
+import { compareBranches } from '../../services/branchComparisonApi'
 import FulfillmentSuggestionPanel from '../../components/orders/FulfillmentSuggestionPanel'
 import useFulfillmentOverride from '../../hooks/useFulfillmentOverride'
 import OverrideDialog from '../../components/orders/OverrideDialog'
@@ -147,7 +147,7 @@ export default function CSRIntakePage() {
       selectedScore: fulfillmentSuggestions.find(s => s.locationId === locId)?.score,
       meta: { division, orderId },
     })
-    chooseBranch(locationIdToCsrKey(locId) || locId)
+    chooseBranch(locId)
   }, [fulfillmentSuggestions, logOverride, division, orderId, chooseBranch])
 
   // Tax rate for this customer and branch, as the order will be saved.
@@ -525,7 +525,7 @@ export default function CSRIntakePage() {
             <FulfillmentSuggestionPanel
               suggestions={fulfillmentSuggestions}
               loading={fulfillmentLoading}
-              currentLocationId={csrKeyToLocationId(location)}
+              currentLocationId={branches.find((b) => b.code === location)?.id || null}
               onSelectBranch={handleFulfillmentBranchSelect}
             />
           </Box>

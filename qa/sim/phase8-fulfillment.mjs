@@ -771,12 +771,16 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
     ok('what exists instead: a carrier may report status to us through the partner API (verified above and in Phase 4)', true);
     ok('parcel, LTL and truckload booking are therefore NOT APPLICABLE; no carrier capability was invented', true);
   }, NA);
-  await scenario(G3, 'the six freight planning screens are marked as sample screens, not connected to records', async (ok) => {
+  await scenario(G3, 'the freight screens with no data behind them are marked as sample screens; the four on real shipments are not', async (ok) => {
     const router = fs.readFileSync('src/frontend/src/router/AppRouter.jsx', 'utf8');
     const blocks = router.split(/\n\s*\{\n\s*path: '/).filter((b) => b.startsWith('freight/'));
     ok('seven freight routes exist', blocks.length === 7, String(blocks.length));
-    ok('every one is wrapped in the sample-screen notice', blocks.every((b) => /<SampleScreen /.test(b)), blocks.filter((b) => !/<SampleScreen /.test(b)).map((b) => b.slice(0, 30)).join());
-    ok('connecting them to real shipments is deferred to Phase 9 (U-035); nothing on them is counted as working', true);
+    // 2026-11-22: the Shipment Planner, Tracking Board, Exception Inbox and proof of delivery read real shipments (qa/sim/ui-freight.cjs).
+    const real = ['freight/planner', 'freight/tracking', 'freight/exceptions', 'freight/pod/:shipmentId'];
+    const isReal = (b) => real.some((r) => b.startsWith(`${r}'`));
+    ok('the four on real shipments carry no sample notice', blocks.filter(isReal).length === 4 && blocks.filter(isReal).every((b) => !/<SampleScreen /.test(b)));
+    ok('every other one is wrapped in the sample-screen notice', blocks.filter((b) => !isReal(b)).every((b) => /<SampleScreen /.test(b)), blocks.filter((b) => !isReal(b) && !/<SampleScreen /.test(b)).map((b) => b.slice(0, 30)).join());
+    ok('nothing on a sample screen is counted as working', true);
   }, NA);
   await scenario(G3, 'the bill of lading and packing list are drawn from the shipment, with nothing invented (N-014)', async (ok) => {
     const r = await B.readyToShip(300);

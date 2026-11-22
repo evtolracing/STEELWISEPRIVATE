@@ -165,7 +165,10 @@ export function setBranchScope(user, view) {
 
 /**
  * Runs one deliberate step across branches: the receiving side of a transfer, where the
- * sender has already been checked against their own branch. Use it for that and nothing else.
+ * sender has already been checked against their own branch, and the few other steps that are the
+ * company's and not one branch's (numbering, the ledger, closing an order out). Counting available
+ * stock per branch to suggest where an order is best filled (routes/ecom.js) is one of them: counts
+ * only, no stock record of another branch leaves the server. Use it for nothing a person could browse.
  */
 export async function acrossBranches(work) {
   const scope = currentScope();

@@ -7,7 +7,7 @@
  *   POST /api/demand-shaping/accept        { suggestionId, orderId? }
  *   POST /api/demand-shaping/dismiss       { suggestionId, reason? }
  *   GET  /api/demand-shaping/analytics?period=LAST_30|LAST_90|LAST_YEAR
- *   GET/PUT /api/demand-shaping/config     branch load and discount tables
+ *   GET/PUT /api/demand-shaping/config     discount tables (saved) and branch load (worked out from the plan)
  *
  * Every suggestion shown is logged, so acceptance rates come from real use.
  */
@@ -15,6 +15,8 @@ import { Router } from 'express';
 import { randomUUID } from 'node:crypto';
 import prisma from '../lib/db.js';
 import { getSetting, putSetting } from '../lib/settings.js';
+import { acrossBranches } from '../lib/branchScope.js';
+import { branchLoad, branchKeyFor } from '../lib/branchLoad.js';
 
 const router = Router();
 const DAY = 86400000;
@@ -54,9 +56,11 @@ export function buildSuggestions(ctx, cfg, consolidation, now = new Date()) {
   const out = [];
   const subtotal = estimateSubtotal(ctx.lines);
   const id = () => `ds-${randomUUID()}`;
+  // Branch load comes from the plan (lib/branchLoad.js). A branch that is not on file, or has no load figure,
+  // is never called busy and nothing is suggested from it.
   const branches = cfg.branches || {};
-  const branchKey = branches[ctx.branchKey] ? ctx.branchKey : Object.keys(branches)[0];
-  const current = branches[branchKey];
+  const branchKey = branches[ctx.branchKey] ? ctx.branchKey : null;
+  const current = branchKey && branches[branchKey].load !== null ? branches[branchKey] : null;
   const isHighLoad = current ? current.load >= (cfg.highLoadThreshold ?? 0.8) : false;
   const shifts = cfg.dateShiftDiscounts || [];
 
@@ -80,7 +84,7 @@ export function buildSuggestions(ctx, cfg, consolidation, now = new Date()) {
   }
 
   if (isHighLoad) {
-    const best = Object.entries(branches).filter(([k]) => k !== branchKey).sort((a, b) => a[1].load - b[1].load)[0];
+    const best = Object.entries(branches).filter(([k, b]) => k !== branchKey && b.load !== null).sort((a, b) => a[1].load - b[1].load)[0];
     if (best && best[1].load < current.load - 0.1) {
       const [key, b] = best;
       const daysSaved = Math.max(0, current.queueDays - b.queueDays);
@@ -136,7 +140,9 @@ export function buildSuggestions(ctx, cfg, consolidation, now = new Date()) {
 router.post('/suggestions', async (req, res, next) => {
   try {
     const ctx = req.body || {};
-    const cfg = await getSetting('demandShaping.config');
+    const real = await realBranchLoads();
+    ctx.branchKey = branchKeyFor(real.list, ctx.branchKey);
+    const cfg = { ...(await getSetting('demandShaping.config')), branches: real.branches };
     const consolidation = ctx.source === 'CSR' ? await findConsolidation(ctx.customerId) : null;
     const data = buildSuggestions(ctx, cfg, consolidation);
     if (data.length) {
@@ -150,6 +156,25 @@ router.post('/suggestions', async (req, res, next) => {
     res.json({ data });
   } catch (e) { next(e); }
 });
+
+/** Every branch the store sells from, by code, with its load from the plan. */
+export async function realBranchLoads(now = new Date()) {
+  const branches = await prisma.location.findMany({
+    where: { isActive: true, isBranch: true, sellsFrom: true },
+    select: { id: true, code: true, name: true, _count: { select: { workCenters: { where: { isActive: true } } } } },
+    orderBy: { name: 'asc' },
+  });
+  // The plan of every branch is read for this one figure per branch; no step leaves the server.
+  const steps = await acrossBranches(() => prisma.dispatchOperation.findMany({
+    where: { status: { not: 'COMPLETE' }, dispatchJob: { locationId: { in: branches.map((b) => b.id) }, job: { status: { notIn: ['SHIPPED', 'COMPLETED', 'CANCELLED'] } } } },
+    select: { status: true, scheduledStart: true, scheduledEnd: true, dispatchJob: { select: { locationId: true } } },
+  }));
+  const out = {};
+  for (const b of branches) {
+    out[b.code] = { id: b.id, name: b.name, ...branchLoad({ machines: b._count.workCenters, steps: steps.filter((s) => s.dispatchJob.locationId === b.id), now }) };
+  }
+  return { branches: out, list: branches };
+}
 
 async function record(req, res, next, action) {
   try {
@@ -227,21 +252,20 @@ router.get('/analytics', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// The discount tables are settings. Branch load is not: it is worked out from the plan each time, and a
+// `branches` list sent here is ignored.
+const tables = (cfg) => { const { branches: _old, ...rest } = cfg || {}; return rest; };
+
 router.get('/config', async (req, res, next) => {
-  try { res.json({ data: await getSetting('demandShaping.config') }); } catch (e) { next(e); }
+  try { res.json({ data: { ...tables(await getSetting('demandShaping.config')), branches: (await realBranchLoads()).branches } }); } catch (e) { next(e); }
 });
 
 router.put('/config', async (req, res, next) => {
   try {
-    const body = req.body || {};
-    const current = await getSetting('demandShaping.config');
-    const merged = { ...current, ...body };
-    for (const [k, b] of Object.entries(merged.branches || {})) {
-      if (!(b?.load >= 0 && b.load <= 1.5) || !(b?.queueDays >= 0) || !b?.name) {
-        return res.status(400).json({ error: `Branch ${k} needs a name, a load between 0 and 1.5, and queueDays ≥ 0` });
-      }
-    }
-    res.json({ data: await putSetting('demandShaping.config', merged), success: true });
+    const merged = tables({ ...(await getSetting('demandShaping.config')), ...(req.body || {}) });
+    const threshold = merged.highLoadThreshold;
+    if (!(threshold > 0 && threshold <= 1.5)) return res.status(400).json({ error: 'The busy threshold must be a share between 0 and 1.5' });
+    res.json({ data: { ...(await putSetting('demandShaping.config', merged)), branches: (await realBranchLoads()).branches }, success: true });
   } catch (e) { next(e); }
 });
 

@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   const { logOverride } = useFulfillmentOverride('ECOMMERCE_CHECKOUT')
 
   // Demand shaping suggestions (never blocks checkout)
-  const demandCtx = { branchKey: session?.locationName?.toUpperCase().replace(/ /g, '_') || '', priority: 'STANDARD', division: session?.division || 'METALS', lines: items, source: 'ECOMMERCE' }
+  const demandCtx = { branchKey: session?.locationId || '', priority: 'STANDARD', division: session?.division || 'METALS', lines: items, source: 'ECOMMERCE' }
   const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
     onApply: ({ field, value }) => {
       // Ecommerce: session-level changes only

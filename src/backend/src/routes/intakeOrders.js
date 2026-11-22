@@ -86,7 +86,7 @@ function mapOrderForIntake(order) {
     status: order.status === 'PENDING' ? 'SUBMITTED' : order.status,
     source: meta.source || 'PHONE',
     division: meta.division || 'METALS',
-    location: meta.location || 'JACKSON',
+    location: meta.location || '', // an order with no branch on file says none, not a made-up one
     priority: meta.priority || 'STANDARD',
     ownership: meta.ownership || 'HOUSE',
     poNumber: order.poReference || '',

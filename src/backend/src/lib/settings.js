@@ -23,12 +23,7 @@ export const SETTING_DEFAULTS = {
     OUTLET: [],
   },
   'demandShaping.config': {
-    branches: {
-      JACKSON: { id: 'loc-1', name: 'Jackson', load: 0.82, queueDays: 2.5 },
-      DETROIT: { id: 'loc-2', name: 'Detroit', load: 0.94, queueDays: 4.0 },
-      KALAMAZOO: { id: 'loc-3', name: 'Kalamazoo', load: 0.55, queueDays: 1.0 },
-      GRAND_RAPIDS: { id: 'loc-4', name: 'Grand Rapids', load: 0.71, queueDays: 1.5 },
-    },
+    // Branch load is worked out from the plan (lib/branchLoad.js), never saved here.
     highLoadThreshold: 0.8,
     dateShiftDiscounts: [
       { daysLater: 1, pct: 2, label: '+1 day' },

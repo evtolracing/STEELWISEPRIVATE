@@ -551,3 +551,47 @@ NOT VERIFIED: the full gate suite; the live site.
 | J Documentation | CONDITIONAL | This report; the manual's Online Settings chapter still describes the old list |
 
 Readiness: CONDITIONAL. The owner sets each branch's cut-off times on Online Settings; until then no next-day date is promised.
+
+## Addendum 12: Demand shaping on real branch load (2026-11-22)
+
+Round 2 of the rebuild on real data.
+
+### What was found
+
+- Demand shaping offered customers a later date, another branch or an off-peak window from load figures typed into a settings document for four made-up locations (Jackson 82%, Detroit 94%, Kalamazoo 55%, Grand Rapids 71%).
+- A branch the server did not know was treated as the first branch on the list, so a made-up or mistyped branch could be called busy.
+- An order with no branch on file was shown on order entry as "JACKSON".
+
+### What changed
+
+- `lib/branchLoad.js`: a branch's load is worked out from its plan each time it is asked. Booked hours are the unfinished plan steps with a start and an end inside the next 7 days, at no more than 10 hours a day each. Capacity is the branch's active machines x 10 hours x 5 working days, the same day the Schedule screen uses. A branch with no active machine has no load figure and nothing is suggested from it.
+- `routes/demandShaping.js`: suggestions and `GET /config` use the real selling branches by code. A `branches` table sent to `PUT /config` is ignored and never saved; the discount tables stay settings. A branch not on file is never called busy.
+- Checkout sends the real branch id. An intake order with no branch says none.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 417 of 417 (6 new in `branchLoad.test.js`, one of them the unknown-branch case that was wrong before) |
+| `qa/sim/store-branches.mjs` | 31 of 31 (7 new): branches by code against the database; machines on file; ten booked hours raise booked hours by ten; a hand-sent load table is not saved; a made-up branch gets no load-based suggestion |
+| `phase5-sales.mjs`, `ui-sales`, `ui-store-branches` | 76 of 76 scenarios, 24 of 24, 11 of 11 |
+| Lint (both) | 0 errors |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | One pure rule, used by suggestions and the config read |
+| B Functional completeness | CONDITIONAL | Steps with no times on file are not counted in load (they are counted and reported as unscheduled). Freight and Executive screens are rounds 3 and 4 |
+| C Cross-layer integrity | PASS | The sim checks the figures against the database |
+| D Data integrity | PASS | No load figure is saved or typed |
+| E Security | NOT ASSESSED | No change to who may ask; a customer login is still refused suggestions by the existing gate |
+| F Reliability | NOT ASSESSED | |
+| G Performance | NOT ASSESSED | One read of open plan steps per asking |
+| H User experience | NOT ASSESSED | No screen changed |
+| I Regression | CONDITIONAL | Four suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report |
+
+Readiness: CONDITIONAL. The load rule is a judgement from what is on file; the owner may want a different measure.

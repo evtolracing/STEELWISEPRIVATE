@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-22T21:40:07.336Z",
+ "generated": "2026-11-22T21:43:27.715Z",
  "commit": "ref: refs/heads/claude/project-thread-1fcpg9",
  "schema": {
   "models": [
@@ -10120,7 +10120,7 @@
     "mock": 0
    },
    "src/backend/src/routes/demandShaping.js": {
-    "lines": 249,
+    "lines": 273,
     "routers": [
      "router"
     ],
@@ -10129,17 +10129,19 @@
       "router": "router",
       "method": "POST",
       "path": "/suggestions",
-      "line": 124,
-      "lines": 37,
+      "line": 128,
+      "lines": 58,
       "guards": [],
       "models": [
-       "DemandSuggestionEvent"
+       "DemandSuggestionEvent",
+       "Location",
+       "DispatchOperation"
       ],
       "writes": 2,
       "transaction": false,
-      "findMany": 0,
+      "findMany": 2,
       "bounded": 0,
-      "listsNoTake": 0,
+      "listsNoTake": 2,
       "validates": true,
       "tryCatch": true,
       "raw": false,
@@ -10154,7 +10156,7 @@
       "router": "router",
       "method": "POST",
       "path": "/accept",
-      "line": 160,
+      "line": 185,
       "lines": 2,
       "guards": [],
       "models": [],
@@ -10177,7 +10179,7 @@
       "router": "router",
       "method": "POST",
       "path": "/dismiss",
-      "line": 161,
+      "line": 186,
       "lines": 6,
       "guards": [],
       "models": [],
@@ -10200,8 +10202,8 @@
       "router": "router",
       "method": "GET",
       "path": "/analytics",
-      "line": 166,
-      "lines": 53,
+      "line": 191,
+      "lines": 56,
       "guards": [],
       "models": [
        "DemandSuggestionEvent"
@@ -10225,7 +10227,7 @@
       "router": "router",
       "method": "GET",
       "path": "/config",
-      "line": 218,
+      "line": 246,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -10248,8 +10250,8 @@
       "router": "router",
       "method": "PUT",
       "path": "/config",
-      "line": 222,
-      "lines": 16,
+      "line": 250,
+      "lines": 11,
       "guards": [],
       "models": [],
       "writes": 0,
@@ -10270,7 +10272,9 @@
     ],
     "imports": [
      "src/backend/src/lib/db.js",
-     "src/backend/src/lib/settings.js"
+     "src/backend/src/lib/settings.js",
+     "src/backend/src/lib/branchScope.js",
+     "src/backend/src/lib/branchLoad.js"
     ],
     "moduleLevelState": [],
     "usesPrisma": true,
@@ -30119,17 +30123,19 @@
     "router": "router",
     "method": "POST",
     "path": "/suggestions",
-    "line": 124,
-    "lines": 37,
+    "line": 128,
+    "lines": 58,
     "guards": [],
     "models": [
-     "DemandSuggestionEvent"
+     "DemandSuggestionEvent",
+     "Location",
+     "DispatchOperation"
     ],
     "writes": 2,
     "transaction": false,
-    "findMany": 0,
+    "findMany": 2,
     "bounded": 0,
-    "listsNoTake": 0,
+    "listsNoTake": 2,
     "validates": true,
     "tryCatch": true,
     "raw": false,
@@ -30153,7 +30159,7 @@
     "router": "router",
     "method": "POST",
     "path": "/accept",
-    "line": 160,
+    "line": 185,
     "lines": 2,
     "guards": [],
     "models": [],
@@ -30185,7 +30191,7 @@
     "router": "router",
     "method": "POST",
     "path": "/dismiss",
-    "line": 161,
+    "line": 186,
     "lines": 6,
     "guards": [],
     "models": [],
@@ -30217,8 +30223,8 @@
     "router": "router",
     "method": "GET",
     "path": "/analytics",
-    "line": 166,
-    "lines": 53,
+    "line": 191,
+    "lines": 56,
     "guards": [],
     "models": [
      "DemandSuggestionEvent"
@@ -30251,7 +30257,7 @@
     "router": "router",
     "method": "GET",
     "path": "/config",
-    "line": 218,
+    "line": 246,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -30283,8 +30289,8 @@
     "router": "router",
     "method": "PUT",
     "path": "/config",
-    "line": 222,
-    "lines": 16,
+    "line": 250,
+    "lines": 11,
     "guards": [],
     "models": [],
     "writes": 0,
@@ -50008,6 +50014,7 @@
      "src/backend/src/routes/auth.js",
      "src/backend/src/routes/coils.js",
      "src/backend/src/routes/compressionMetrics.js",
+     "src/backend/src/routes/demandShaping.js",
      "src/backend/src/routes/dispatchRoutes.js",
      "src/backend/src/routes/ecom.js",
      "src/backend/src/routes/intakeOrders.js",
@@ -50246,6 +50253,7 @@
    "DispatchOperation": {
     "read": [
      "src/backend/src/lib/workCenterGuard.js",
+     "src/backend/src/routes/demandShaping.js",
      "src/backend/src/routes/dispatchRoutes.js",
      "src/backend/src/routes/jobs.js",
      "src/backend/src/routes/operationsRoutes.js",
@@ -59279,6 +59287,12 @@
     "mocks": 0
    },
    {
+    "file": "src/backend/test/branchLoad.test.js",
+    "tests": 6,
+    "importsDb": false,
+    "mocks": 0
+   },
+   {
     "file": "src/backend/test/branchScope.test.js",
     "tests": 11,
     "importsDb": false,
@@ -59942,8 +59956,8 @@
    },
    {
     "file": "qa/sim/store-branches.mjs",
-    "lines": 89,
-    "checks": 22
+    "lines": 120,
+    "checks": 29
    },
    {
     "file": "qa/sim/ui-audit.cjs",

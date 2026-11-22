@@ -15,6 +15,7 @@ const same = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].s
 for (const who of ['admin', 'csr', 'branchA', 'custA']) await A.login(who);
 const SETTING = 'online.cutoffRules';
 const before = await prisma.appSetting.findUnique({ where: { key: SETTING } });
+const shapingBefore = await prisma.appSetting.findUnique({ where: { key: 'demandShaping.config' } });
 const selling = await prisma.location.findMany({ where: { isActive: true, isBranch: true, sellsFrom: true } });
 const sfx = Date.now().toString(36);
 const owner = selling[0].ownerId;
@@ -76,10 +77,40 @@ try {
   const without = await A.post('/api/ecom/branch-comparison', { division: 'METALS', excludeLocationId: target.id, requiredProcessing: ['NO-SUCH-PROCESS'] }, 'csr');
   check('a branch can be left out, and a process no branch has is reported missing', !without.body.suggestions.some((s) => s.locationId === target.id) && without.body.suggestions.every((s) => s.processing.capable === false && s.processing.missingOps[0] === 'NO-SUCH-PROCESS'));
   check('the old simple cut-off list is gone', (await A.get('/api/admin/online-settings/cutoffs')).status === 404);
+  // ── Demand shaping: branch load from the plan, never typed in ──
+  const cfg = await A.get('/api/demand-shaping/config');
+  const loads = cfg.body?.data?.branches || {};
+  check('demand shaping lists the real selling branches by code', cfg.status === 200 && same(Object.keys(loads), selling.map((b) => b.code)), `${cfg.status} ${Object.keys(loads).length}`);
+  check('no made-up branch is in the load table', !['JACKSON', 'DETROIT', 'KALAMAZOO', 'GRAND_RAPIDS'].some((k) => loads[k]?.id?.startsWith('loc-')) && Object.values(loads).every((b) => selling.some((x) => x.id === b.id)));
+  const machines = async (id) => prisma.workCenter.count({ where: { locationId: id, isActive: true } });
+  const some = Object.values(loads).slice(0, 6);
+  const onFile = await Promise.all(some.map((b) => machines(b.id)));
+  check('each branch shows the machines on file, and no load figure where it has none', some.every((b, i) => b.machines === onFile[i] && (onFile[i] > 0 ? b.load !== null && b.load >= 0 : b.load === null && b.queueDays === null)), `${some.map((b) => b.machines)} vs ${onFile}`);
+  // Book one machine's whole week at a branch and the figure moves by exactly that much.
+  const busy = Object.values(loads).find((b) => b.machines > 0);
+  if (busy) {
+    const start = new Date(Date.now() + 3600000);
+    const job = await prisma.job.create({ data: { jobNumber: `QA-SB-${sfx}`, status: 'SCHEDULED' } });
+    const plan = await prisma.dispatchJob.create({ data: { jobId: job.id, jobNumber: job.jobNumber, locationId: busy.id } });
+    await prisma.dispatchOperation.create({ data: { dispatchJobId: plan.id, sequence: 1, name: 'Sim cut', requiredWorkCenterType: 'SAW', scheduledStart: start, scheduledEnd: new Date(start.getTime() + 10 * 3600000) } });
+    const now2 = (await A.get('/api/demand-shaping/config')).body.data.branches;
+    const mine = Object.values(now2).find((b) => b.id === busy.id);
+    check('ten booked hours raise the branch\'s booked hours by ten', Math.abs(mine.bookedHours - busy.bookedHours - 10) < 0.2, `${busy.bookedHours} -> ${mine.bookedHours}`);
+    check('load is booked hours over machines x 50', Math.abs(mine.load - Math.round((mine.bookedHours / (mine.machines * 50)) * 100) / 100) <= 0.01, `${mine.load}`);
+    await prisma.job.delete({ where: { id: job.id } });
+  }
+  const put = await A.put('/api/demand-shaping/config', { highLoadThreshold: 0.8, branches: { FAKE: { id: 'loc-9', name: 'Fake', load: 1, queueDays: 9 } } });
+  const kept = await prisma.appSetting.findUnique({ where: { key: 'demandShaping.config' } });
+  check('a load table sent by hand is ignored and never saved', put.status === 200 && !put.body.data.branches.FAKE && !kept?.value?.branches, `${put.status}`);
+  const made = await A.post('/api/demand-shaping/suggestions', { branchKey: 'loc-2', priority: 'STANDARD', division: 'METALS', lines: [], source: 'CSR' }, 'csr');
+  check('a made-up branch gets no load-based suggestion', made.status === 200 && !made.body.data.some((s) => ['ALT_BRANCH', 'OFF_PEAK'].includes(s.type)), `${made.status} ${made.body?.data?.map((s) => s.type)}`);
 } finally {
   await prisma.location.deleteMany({ where: { id: { in: hidden.map((h) => h.id) } } });
   await prisma.appSetting.deleteMany({ where: { key: SETTING } });
   if (before) await prisma.appSetting.create({ data: { key: SETTING, value: before.value } });
+  await prisma.appSetting.deleteMany({ where: { key: 'demandShaping.config' } });
+  if (shapingBefore) await prisma.appSetting.create({ data: { key: 'demandShaping.config', value: shapingBefore.value } });
+  await prisma.job.deleteMany({ where: { jobNumber: `QA-SB-${sfx}` } });
   await prisma.auditLog.deleteMany({ where: { action: 'cutoffRules.update', details: { path: ['notes'], equals: 'sim' } } }).catch(() => {});
   await prisma.$disconnect();
 }

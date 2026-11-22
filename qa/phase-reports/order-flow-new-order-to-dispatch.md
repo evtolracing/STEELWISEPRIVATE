@@ -422,3 +422,50 @@ NOT VERIFIED: the full gate suite; the live site; the database update on the liv
 | J Documentation | CONDITIONAL | This report. The manual lists the new page; no manual chapter yet |
 
 Readiness: CONDITIONAL. Deploy order matters: the database update first.
+
+## Addendum 9: The first five locations, and two gaps in what a branch sees (2026-11-22)
+
+The owner chose five locations to start: CT Charlotte, PV Potterville, L2 Lansing Steel, BC Battle Creek, JX Jackson Steel.
+
+### What was found
+
+- A job sold at one branch and planned at another was hidden from the branch that makes it: the branch boundary (`lib/branchScope.js`) looked at the order's branch and the machine's branch, but not the plan's branch. The job list's own filter already used the plan's branch, so the two disagreed.
+- The users list and a user's record were open to every signed-in person in the company, whatever their branch. The owner's decision 4: a person held to branches sees only the people of those branches.
+- `qa/sim/branch-boundary.mjs` failed 4 checks on the current QA data before any change here: it picked a stock item counted in pieces to reserve for a line counted in pounds.
+
+### What changed
+
+- Database update `20261122100000_first_five_locations`: adds the five as active branches that sell and ship, with the published name, address, phone and fax. A code already on file is left as it is. Email, hours and manager are left blank.
+- `jobIn` in `lib/branchScope.js` now also matches the plan's branch (`dispatchJob.locationId`). Inspections follow, since they use the same rule.
+- `visibleUsersWhere` in `lib/userAdminRules.js`, used by `GET /api/users` and `GET /api/users/:id`: head office sees everyone; anyone else sees the people of their branches and themselves. A login with no branch is seen by head office only.
+- The sim now reserves stock counted in pounds.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| `qa/sim/db-first-five-locations.sh` (new, in the gate script) | 7 of 7: runs the SQL Editor file twice on a copy. With the file emptied, 5 of 7 fail |
+| `qa/sim/branch-boundary.mjs` | 48 of 48 (9 new). On the code before the fix: 4 of the new checks fail (the planning branch cannot open the job; branch A lists 480 people from elsewhere; a regional manager 466; another branch's person opens by id) |
+| Backend unit tests | 402 of 402 (1 new, 1 widened) |
+| `roles.mjs`, `user-access.mjs` | 43 of 43, 48 of 48 |
+| `ui-user-access`, `ui-locations`, `ui-production-overview` | 17 of 17, 40 of 40, 28 of 28 |
+| Backend lint | 0 errors |
+
+NOT VERIFIED: the full gate suite; the live site; either database update on the live database.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Both rules sit where the existing rules are; no route carries its own copy |
+| B Functional completeness | CONDITIONAL | Still open: staff with no branch are not flagged on a screen; the older screens with made-up location lists; the live clean-up |
+| C Cross-layer integrity | PASS | The sim checks each answer against the database |
+| D Data integrity | PASS | The update adds rows only, and is the same on a second run |
+| E Security | PASS | Two cross-branch reads closed, each with a check that fails without the fix |
+| F Reliability | NOT ASSESSED | No change to failure handling |
+| G Performance | NOT ASSESSED | One more OR branch on job reads; not measured |
+| H User experience | NOT ASSESSED | No screen changed |
+| I Regression | CONDITIONAL | Seven suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report |
+
+Readiness: CONDITIONAL.

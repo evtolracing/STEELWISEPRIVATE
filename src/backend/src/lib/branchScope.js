@@ -19,7 +19,7 @@
  *   Invoice, InvoiceLine, Payment   the order invoiced
  *   Inventory, Coil  the branch the stock is at
  *   Shipment, ShipmentItem          the branch it ships from
- *   Job              the branch of its order, or of the work center it runs on
+ *   Job              the branch of its order, of its plan, or of the work center it runs on
  *   WorkCenter, DispatchJob, DispatchOperation   the branch of the work center
  *   WorkOrder        the branch its source stock item is at
  *   MaterialMovement the branch it left or the branch it arrived at
@@ -58,8 +58,11 @@ const direct = (field, moves = false) => ({ field, moves, where: (ids) => ({ [fi
 const through = (where) => ({ where });
 const orderIn = (ids) => ({ locationId: { in: ids } });
 // Owned by a branch once someone has taken it; until then every branch sees it.
+// The branch that makes a job (its plan's branch) sees it too, as well as the branch that sold it:
+// an order sold at one branch and planned at another is real work for both.
 const jobIn = (ids) => ({ OR: [
   { order: orderIn(ids) },
+  { dispatchJob: { locationId: { in: ids } } },
   { workCenter: { locationId: { in: ids } } },
   { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
 ] });

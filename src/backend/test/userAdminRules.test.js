@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { userChangeDenial } from '../src/lib/userAdminRules.js';
+import { userChangeDenial, visibleUsersWhere } from '../src/lib/userAdminRules.js';
 
 const A = 'branch-a', B = 'branch-b';
 const superAdmin = { id: 's', role: 'SUPER_ADMIN' };
@@ -46,4 +46,18 @@ test('a branch manager manages only the staff of their own branches', () => {
   assert.ok(userChangeDenial(manager, { id: 'x', role: 'CSR', userLocations: [] }, {}), 'a login with no branch');
   assert.ok(userChangeDenial(manager, admin, {}), 'a login with a higher role');
   assert.ok(userChangeDenial(manager, { id: 'r', role: 'CSR', homeLocationId: A, userLocations: [{ locationId: B }] }, {}), 'a login that also works at another branch');
+});
+
+test('a person held to branches sees the people of those branches and themselves; head office sees everyone', () => {
+  assert.equal(visibleUsersWhere(superAdmin), null);
+  assert.equal(visibleUsersWhere(admin), null);
+  assert.deepEqual(visibleUsersWhere(manager), { OR: [
+    { id: 'm' },
+    { homeLocationId: { in: [A] } },
+    { userLocations: { some: { locationId: { in: [A] } } } },
+  ] });
+  const regional = { id: 'r', role: 'BRANCH_MANAGER', homeLocationId: A, userLocations: [{ locationId: B }] };
+  assert.deepEqual(visibleUsersWhere(regional).OR[1].homeLocationId.in.sort(), [A, B]);
+  // No branch on file: only their own login.
+  assert.deepEqual(visibleUsersWhere({ id: 'n', role: 'CSR' }).OR[1], { homeLocationId: { in: [] } });
 });

@@ -45,3 +45,19 @@ export function userChangeDenial(actor, target, change = {}) {
   if (!inMine(change.homeLocationId) || (change.locationIds || []).some((b) => !mine.includes(b))) return 'You can assign only your own branches.';
   return null;
 }
+
+/**
+ * Which logins a person may see (owner's decision 4 of 2026-11-22): someone held to branches sees the
+ * people of those branches and themselves; head office sees everyone. A login with no branch on file is
+ * seen by head office only, who are the ones able to give it one.
+ * Returns a filter to add to the search, or null for "no limit".
+ */
+export function visibleUsersWhere(actor) {
+  const mine = branchesOf(actor);
+  if (mine === null) return null;
+  return { OR: [
+    { id: actor.id },
+    { homeLocationId: { in: mine } },
+    { userLocations: { some: { locationId: { in: mine } } } },
+  ] };
+}

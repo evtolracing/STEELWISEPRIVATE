@@ -9,12 +9,6 @@ export async function getCheckoutRules() {
   return res.json()
 }
 
-export async function getCutoffTimes() {
-  const res = await fetch(`${API_BASE}/admin/online-settings/cutoffs`)
-  if (!res.ok) throw new Error('Failed to fetch cutoffs')
-  return res.json()
-}
-
 export async function getAllowedProcesses(division) {
   const res = await fetch(`${API_BASE}/admin/online-settings/processes?division=${encodeURIComponent(division)}`)
   if (!res.ok) throw new Error('Failed to fetch allowed processes')
@@ -29,10 +23,3 @@ export async function updateCheckoutRules(rules) {
   return res.json()
 }
 
-export async function updateCutoffTimes(cutoffs) {
-  const res = await fetch(`${API_BASE}/admin/online-settings/cutoffs`, {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cutoffs),
-  })
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Failed to update cutoffs')
-  return res.json()
-}

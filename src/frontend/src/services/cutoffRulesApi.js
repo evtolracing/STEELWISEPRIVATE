@@ -1,123 +1,44 @@
 /**
- * cutoffRulesApi.js — Per-location cutoff rules for next-day promise evaluation.
+ * Order cut-off rules for each real branch, kept on the server (backend lib/cutoffRules.js).
  *
- * Shape: LocationCutoffRules
+ * Shape of one rule:
  * {
- *   locationId, timezone,
+ *   locationId, locationCode, locationName, timezone,
+ *   isSet,             false until someone saves the rule: nothing is promised from a rule that is not set
  *   divisionRules: { METALS: { cutoffLocal, nextDayEnabled, shipDays, pickupSameDayEnabled }, ... },
  *   blackoutWindows: [{ start, end, reason }],
  *   notes
  * }
  */
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
-const USE_MOCK = window.__USE_MOCK_RULES__ !== false // default true
 
-// ── Mock data for 4 locations ──────────────────────────────────────────────
-const MOCK_RULES_DB = {
-  'loc-1': {
-    locationId: 'loc-1',
-    locationName: 'Jackson',
-    timezone: 'America/Detroit',
-    divisionRules: {
-      METALS:   { cutoffLocal: '15:30', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-      PLASTICS: { cutoffLocal: '14:30', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-      SUPPLIES: { cutoffLocal: '16:00', nextDayEnabled: true, shipDays: [1,2,3,4,5,6], pickupSameDayEnabled: true },
-      OUTLET:   { cutoffLocal: '17:00', nextDayEnabled: true, shipDays: [1,2,3,4,5,6], pickupSameDayEnabled: true },
-    },
-    blackoutWindows: [
-      { start: '2026-02-15', end: '2026-02-16', reason: 'President\'s Day Maintenance' },
-      { start: '2026-07-03', end: '2026-07-04', reason: 'Independence Day' },
-    ],
-    notes: 'Cutoff times are local to branch (Eastern)',
-  },
-  'loc-2': {
-    locationId: 'loc-2',
-    locationName: 'Detroit',
-    timezone: 'America/Detroit',
-    divisionRules: {
-      METALS:   { cutoffLocal: '14:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-      PLASTICS: { cutoffLocal: '13:30', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-      SUPPLIES: { cutoffLocal: '15:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-      OUTLET:   { cutoffLocal: '15:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-    },
-    blackoutWindows: [
-      { start: '2026-02-15', end: '2026-02-16', reason: 'President\'s Day Maintenance' },
-    ],
-    notes: 'Detroit branch — Eastern time',
-  },
-  'loc-3': {
-    locationId: 'loc-3',
-    locationName: 'Kalamazoo',
-    timezone: 'America/Detroit',
-    divisionRules: {
-      METALS:   { cutoffLocal: '15:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-      PLASTICS: { cutoffLocal: '14:00', nextDayEnabled: false, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-      SUPPLIES: { cutoffLocal: '15:30', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-      OUTLET:   { cutoffLocal: '16:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-    },
-    blackoutWindows: [],
-    notes: 'Kalamazoo branch — Eastern time',
-  },
-  'loc-4': {
-    locationId: 'loc-4',
-    locationName: 'Grand Rapids',
-    timezone: 'America/Detroit',
-    divisionRules: {
-      METALS:   { cutoffLocal: '14:30', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: true },
-      PLASTICS: { cutoffLocal: '13:00', nextDayEnabled: true, shipDays: [1,2,3,4,5], pickupSameDayEnabled: false },
-      SUPPLIES: { cutoffLocal: '15:00', nextDayEnabled: true, shipDays: [1,2,3,4,5,6], pickupSameDayEnabled: true },
-      OUTLET:   { cutoffLocal: '16:00', nextDayEnabled: true, shipDays: [1,2,3,4,5,6], pickupSameDayEnabled: true },
-    },
-    blackoutWindows: [
-      { start: '2026-12-24', end: '2026-12-25', reason: 'Christmas Eve / Christmas' },
-    ],
-    notes: 'Grand Rapids branch — Eastern time',
-  },
+const read = async (res, fallback) => {
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.error || fallback)
+  return body
 }
 
-/**
- * Get cutoff rules for a specific location.
- * Returns { data: LocationCutoffRules }
- */
+/** The rule for one branch. Returns { data: rule } or { data: null } when the store does not sell from it. */
 export async function getLocationCutoffRules(locationId) {
-  if (USE_MOCK) {
-    const rules = MOCK_RULES_DB[locationId]
-    if (!rules) return { data: null, error: `No rules found for location ${locationId}` }
-    // Return deep clone so mutations don't affect mock DB during editing
-    return { data: JSON.parse(JSON.stringify(rules)) }
-  }
-  const res = await fetch(`${API_BASE}/cutoff-rules/${encodeURIComponent(locationId)}`)
-  if (!res.ok) throw new Error(`Failed to fetch cutoff rules for ${locationId}`)
-  return res.json()
+  if (!locationId) return { data: null }
+  return read(await fetch(`${API_BASE}/ecom/cutoff-rules/${encodeURIComponent(locationId)}`), 'The cut-off rules could not be loaded')
 }
 
-/**
- * Get cutoff rules for ALL locations (admin usage).
- * Returns { data: LocationCutoffRules[] }
- */
+/** The rules for every branch the store sells from. Returns { data: rule[] } */
 export async function getAllLocationCutoffRules() {
-  if (USE_MOCK) {
-    return { data: Object.values(MOCK_RULES_DB).map(r => JSON.parse(JSON.stringify(r))) }
-  }
-  const res = await fetch(`${API_BASE}/cutoff-rules`)
-  if (!res.ok) throw new Error('Failed to fetch all cutoff rules')
-  return res.json()
+  return read(await fetch(`${API_BASE}/ecom/cutoff-rules`), 'The cut-off rules could not be loaded')
 }
 
-/**
- * Update cutoff rules for a specific location (admin).
- * Returns { data: LocationCutoffRules, success: true }
- */
+/** Save the rule for one branch (web shop administrators). Returns { data: rule, success: true } */
 export async function updateLocationCutoffRules(locationId, payload) {
-  if (USE_MOCK) {
-    MOCK_RULES_DB[locationId] = { ...MOCK_RULES_DB[locationId], ...payload, locationId }
-    return { data: JSON.parse(JSON.stringify(MOCK_RULES_DB[locationId])), success: true }
-  }
-  const res = await fetch(`${API_BASE}/cutoff-rules/${encodeURIComponent(locationId)}`, {
+  return read(await fetch(`${API_BASE}/admin/online-settings/cutoff-rules/${encodeURIComponent(locationId)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-  })
-  if (!res.ok) throw new Error('Failed to update cutoff rules')
-  return res.json()
+  }), 'The cut-off rules could not be saved')
+}
+
+/** The branches the store sells from. Returns { data: [{ id, code, name, city, state, timezone }] } */
+export async function getStoreBranches() {
+  return read(await fetch(`${API_BASE}/ecom/branches`), 'The branches could not be loaded')
 }

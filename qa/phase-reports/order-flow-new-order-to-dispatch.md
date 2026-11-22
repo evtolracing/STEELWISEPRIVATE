@@ -504,3 +504,50 @@ NOT VERIFIED: the update on the live database; the live site afterwards; the ful
 Known limit: stock reserved for a cancelled order is not released by this update. The stock sits at locations that are switched off.
 
 Readiness: CONDITIONAL, on the owner running the update.
+
+## Addendum 11: The web store, promise dates, cut-off settings and branch comparison on real branches (2026-11-22)
+
+The owner chose "Rebuild everything on real data" for the older screens that showed made-up locations. This is round 1 of 4.
+
+### What was found
+
+- The web store, the promise check, the cut-off settings and the CSR branch comparison ran on four made-up locations (`loc-1` Jackson, `loc-2` Detroit, `loc-3` Kalamazoo, `loc-4` Grand Rapids).
+- The cut-off rules lived in the browser. A change on Online Settings was lost on reload and never reached another person.
+- The branch comparison scored made-up stock numbers and made-up machine lists.
+- A second, simpler cut-off list for the same four made-up locations was saved on the server and read by nothing.
+
+### What changed
+
+- **Cut-off rules on the server** (`lib/cutoffRules.js`): one rule per branch the store sells from, saved in the settings document `online.cutoffRules`. A branch with nothing saved gets a blank rule marked not set, with next-day shipping off. No time is invented: the promise check says the times are not set and promises nothing. Saving needs the web shop admin right and goes to the audit log.
+- **Routes:** `GET /api/ecom/branches`, `GET /api/ecom/cutoff-rules[/:locationId]`, `POST /api/ecom/branch-comparison`, `GET` and `PUT /api/admin/online-settings/cutoff-rules[/:locationId]`. The old `/cutoffs` list is removed.
+- **Branch comparison on the server** (`lib/branchComparison.js`): real selling branches scored on stock items of the division on file, the saved cut-off, the machines and processes at the branch, and distance when both positions are known. Stock is counted across branches for this one answer (counts only).
+- **Screens:** the store session, store pages, checkout, CSR intake, Online Settings, the cut-off clock and the mobile promise preview read real branches. A store session saved with a made-up location moves to the person's home branch or the first selling branch.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Backend unit tests | 411 of 411 (9 new in `cutoffRules.test.js` and `branchComparison.test.js`) |
+| `qa/sim/store-branches.mjs` (new, in the gate script) | 24 of 24: branch list against the database; who may save; refusals; saved rule read back; audit log; comparison counts against the database, same for a person held to one branch |
+| `qa/sim/ui-store-branches.cjs` (new, in the gate script) | 11 of 11: settings picker lists real branches, save survives a reload, a stale made-up session moves to a real branch, the store asks nothing about `loc-N`, promise preview at phone width |
+| `phase5-sales.mjs`, `ui-sales`, `ui-phase5` | 76 of 76 scenarios, 24 of 24, 14 of 14 |
+| Lint (both), ratchets, build | 0 errors; ratchets at their ceilings; build succeeds |
+
+NOT VERIFIED: the full gate suite; the live site.
+
+### Directive gates for this addendum
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules and scoring are pure modules; the screens hold no copy |
+| B Functional completeness | CONDITIONAL | Demand shaping still reads made-up branch load (round 2). Freight and Executive screens are rounds 3 and 4 |
+| C Cross-layer integrity | PASS | Both sims compare answers with the database |
+| D Data integrity | PASS | No invented cut-off time; a rule is checked before it is saved |
+| E Security | PASS | Three roles refused on save, with nothing written |
+| F Reliability | CONDITIONAL | A failed branch load shows a message on the promise preview; the store session falls back to no branch |
+| G Performance | NOT ASSESSED | One grouped count per comparison |
+| H User experience | CONDITIONAL | Checked at 1500 wide, and the promise preview at 414 wide |
+| I Regression | CONDITIONAL | Five suites and unit tests, not the full suite |
+| J Documentation | CONDITIONAL | This report; the manual's Online Settings chapter still describes the old list |
+
+Readiness: CONDITIONAL. The owner sets each branch's cut-off times on Online Settings; until then no next-day date is promised.

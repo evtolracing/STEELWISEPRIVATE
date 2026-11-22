@@ -12,14 +12,14 @@ import {
   Accordion, AccordionSummary, AccordionDetails,
 } from '@mui/material'
 import {
-  Save, Settings, Schedule, Build, Refresh, ExpandMore, Delete, Add,
+  Save, Settings, Build, Refresh, ExpandMore, Delete, Add,
   LocalShipping,
 } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 
 import {
-  getCheckoutRules, getCutoffTimes, getAllowedProcesses,
-  updateCheckoutRules, updateCutoffTimes,
+  getCheckoutRules, getAllowedProcesses,
+  updateCheckoutRules,
 } from '../../services/onlineEventsApi'
 import {
   getAllLocationCutoffRules, updateLocationCutoffRules,
@@ -27,7 +27,6 @@ import {
 
 export default function OnlineSettingsPage() {
   const [rules, setRules] = useState(null)
-  const [cutoffs, setCutoffs] = useState([])
   const [processes, setProcesses] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -40,15 +39,13 @@ export default function OnlineSettingsPage() {
   const loadAll = async () => {
     setLoading(true)
     try {
-      const [rRes, cRes, pMetals, pPlastics, crRes] = await Promise.all([
+      const [rRes, pMetals, pPlastics, crRes] = await Promise.all([
         getCheckoutRules(),
-        getCutoffTimes(),
         getAllowedProcesses('METALS'),
         getAllowedProcesses('PLASTICS'),
         getAllLocationCutoffRules(),
       ])
       setRules(rRes.data || {})
-      setCutoffs(cRes.data || [])
       setProcesses({ METALS: pMetals.data || [], PLASTICS: pPlastics.data || [] })
       const allRules = crRes.data || []
       setCutoffRules(allRules)
@@ -74,20 +71,7 @@ export default function OnlineSettingsPage() {
     }
   }
 
-  const handleSaveCutoffs = async () => {
-    setSaving(true)
-    try {
-      await updateCutoffTimes(cutoffs)
-      setSnack({ open: true, msg: 'Cutoff times saved', severity: 'success' })
-    } catch {
-      setSnack({ open: true, msg: 'Failed to save cutoffs', severity: 'error' })
-    } finally {
-      setSaving(false)
-    }
-  }
-
   const updateRule = (key, val) => setRules(r => ({ ...r, [key]: val }))
-  const updateCutoff = (idx, key, val) => setCutoffs(c => c.map((item, i) => i === idx ? { ...item, [key]: val } : item))
 
   // --- Cutoff Rules helpers ---
   const selectedRules = cutoffRules.find(r => r.locationId === selectedLocId)
@@ -130,10 +114,11 @@ export default function OnlineSettingsPage() {
     if (!selectedRules) return
     setSaving(true)
     try {
-      await updateLocationCutoffRules(selectedLocId, selectedRules)
+      const saved = await updateLocationCutoffRules(selectedLocId, selectedRules)
+      setCutoffRules(prev => prev.map(r => r.locationId === selectedLocId ? saved.data : r))
       setSnack({ open: true, msg: `Cutoff rules saved for ${selectedRules.locationName}`, severity: 'success' })
-    } catch {
-      setSnack({ open: true, msg: 'Failed to save cutoff rules', severity: 'error' })
+    } catch (e) {
+      setSnack({ open: true, msg: e.message || 'Failed to save cutoff rules', severity: 'error' })
     } finally {
       setSaving(false)
     }
@@ -217,51 +202,6 @@ export default function OnlineSettingsPage() {
           </Paper>
         </Grid>
 
-        {/* Cutoff Times (legacy) */}
-        <Grid item xs={12} md={6}>
-          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Schedule fontSize="small" /> Simple Cutoff Times
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-              Legacy basic cutoff times. Use the detailed Cutoff Rules editor below for per-division settings.
-            </Typography>
-
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Location</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Same-Day Cutoff</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }} align="center">Active</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {cutoffs.map((c, idx) => (
-                  <TableRow key={c.locationId || idx}>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight={500}>{c.locationName}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <TextField inputProps={{ 'aria-label': `Cutoff time for ${c.locationName}` }} size="small" type="time" value={c.cutoffTime || '14:00'}
-                        onChange={e => updateCutoff(idx, 'cutoffTime', e.target.value)}
-                        sx={{ width: 130 }} />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Switch inputProps={{ 'aria-label': `Cutoff active for ${c.locationName}` }} size="small" checked={c.active !== false}
-                        onChange={e => updateCutoff(idx, 'active', e.target.checked)} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            <Button variant="contained" startIcon={<Save />} onClick={handleSaveCutoffs}
-              disabled={saving} sx={{ mt: 2 }} fullWidth>
-              Save Cutoff Times
-            </Button>
-          </Paper>
-        </Grid>
-
         {/* ─── Per-Location / Per-Division Cutoff Rules Editor ─── */}
         <Grid item xs={12}>
           <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
@@ -279,12 +219,20 @@ export default function OnlineSettingsPage() {
               sx={{ minWidth: 250, mb: 2 }}
             >
               {cutoffRules.map(r => (
-                <MenuItem key={r.locationId} value={r.locationId}>{r.locationName} ({r.timezone})</MenuItem>
+                <MenuItem key={r.locationId} value={r.locationId}>{r.locationName} ({r.timezone}){r.isSet ? '' : ', not set yet'}</MenuItem>
               ))}
             </TextField>
 
+            {cutoffRules.length === 0 && (
+              <Alert severity="info" data-testid="cutoff-no-branches">No branch is set up to sell from yet. Add one under Admin, Locations.</Alert>
+            )}
             {selectedRules && (
               <>
+                {!selectedRules.isSet && (
+                  <Alert severity="warning" sx={{ mb: 2 }} data-testid="cutoff-not-set">
+                    Cut-off times are not set for {selectedRules.locationName} yet. Until they are saved, no next-day date is promised from this branch.
+                  </Alert>
+                )}
                 {/* Per-division rules */}
                 {Object.entries(selectedRules.divisionRules || {}).map(([div, dr]) => (
                   <Accordion key={div} defaultExpanded variant="outlined" sx={{ mb: 1 }}>

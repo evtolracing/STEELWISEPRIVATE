@@ -46,13 +46,15 @@ export default function CheckoutPage() {
   const { logOverride } = useFulfillmentOverride('ECOMMERCE_CHECKOUT')
 
   // Demand shaping suggestions (never blocks checkout)
-  const demandCtx = { branchKey: session?.locationName?.toUpperCase().replace(/ /g, '_') || 'JACKSON', priority: 'STANDARD', division: session?.division || 'METALS', lines: items, source: 'ECOMMERCE' }
+  const demandCtx = { branchKey: session?.locationName?.toUpperCase().replace(/ /g, '_') || '', priority: 'STANDARD', division: session?.division || 'METALS', lines: items, source: 'ECOMMERCE' }
   const { suggestions: shapingSuggestions, loading: shapingLoading, handleAccept: handleShapingAccept, handleDismiss: handleShapingDismiss } = useDemandShaping(demandCtx, {
     onApply: ({ field, value }) => {
       // Ecommerce: session-level changes only
       if (field === 'location') {
-        const locMap = { JACKSON: 'loc-1', DETROIT: 'loc-2', KALAMAZOO: 'loc-3', GRAND_RAPIDS: 'loc-4' }
-        if (locMap[value]) session.setLocation?.(locMap[value])
+        // The suggestion names a branch by code, id or name; only a branch the store sells from is taken.
+        const key = String(value || '').toUpperCase().replace(/_/g, ' ')
+        const branch = (session?.locations || []).find(l => l.id === value || l.code?.toUpperCase() === key || l.name?.toUpperCase() === key)
+        if (branch) session.setLocation?.(branch.id)
       }
     },
   })

@@ -34,7 +34,7 @@ export default function ShopHomePage() {
     setLoading(true)
     try {
       const [prodRes, divRes] = await Promise.all([
-        searchProducts({ limit: 8, locationId: session?.locationId || 'loc-1' }),
+        searchProducts({ limit: 8, locationId: session?.locationId || undefined }),
         getDivisions(),
       ])
       setFeatured(prodRes.data || [])

@@ -14,12 +14,8 @@ export const SETTING_DEFAULTS = {
     defaultOwnership: 'HOUSE',
     enableBackorder: true,
   },
-  'online.cutoffs': [
-    { locationId: 'loc-1', locationName: 'Jackson', cutoffTime: '14:00', timezone: 'America/Detroit', sameDayProcessing: true, active: true },
-    { locationId: 'loc-2', locationName: 'Detroit', cutoffTime: '13:00', timezone: 'America/Detroit', sameDayProcessing: true, active: true },
-    { locationId: 'loc-3', locationName: 'Kalamazoo', cutoffTime: '14:00', timezone: 'America/Detroit', sameDayProcessing: false, active: true },
-    { locationId: 'loc-4', locationName: 'Grand Rapids', cutoffTime: '12:00', timezone: 'America/Detroit', sameDayProcessing: false, active: true },
-  ],
+  // Cut-off rules for each real branch, keyed by location id (lib/cutoffRules.js). Empty until the owner sets them.
+  'online.cutoffRules': {},
   'online.allowedProcesses': {
     METALS: ['SAW-CUT', 'SHEAR', 'PLASMA', 'DRILL', 'DEBURR'],
     PLASTICS: ['PLAS-SAW', 'PLAS-ROUTE'],

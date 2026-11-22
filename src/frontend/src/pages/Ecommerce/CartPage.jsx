@@ -50,7 +50,7 @@ export default function CartPage() {
       divisions.map(div => {
         const divItems = items.filter(i => (i.division || 'METALS') === div)
         return evaluatePromise({
-          locationId: session?.locationId || 'loc-1',
+          locationId: session?.locationId || undefined,
           division: div,
           requestedShipDate: tomorrowStr,
           itemsSummary: {

@@ -59,7 +59,7 @@ export default function ProductDetailPage() {
     setLoading(true)
     Promise.all([
       getProduct(id),
-      getAvailability(id, session?.locationId || 'loc-1'),
+      getAvailability(id, session?.locationId || undefined),
     ]).then(([pRes, aRes]) => {
       setProduct(pRes.data || null)
       setAvailability(aRes.data || null)
@@ -105,7 +105,7 @@ export default function ProductDetailPage() {
     tomorrow.setDate(tomorrow.getDate() + 1)
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
     evaluatePromise({
-      locationId: session?.locationId || 'loc-1',
+      locationId: session?.locationId || undefined,
       division,
       requestedShipDate: tomorrowStr,
       itemsSummary: {

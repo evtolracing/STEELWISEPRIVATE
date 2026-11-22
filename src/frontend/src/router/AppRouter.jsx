@@ -983,7 +983,7 @@ const router = createBrowserRouter([
         path: 'freight/pod/:shipmentId',
         element: (
           <Suspense fallback={<PageLoader />}>
-            <SampleScreen what="Freight planning" instead="Real shipments are created, dispatched and delivered on the Shipping screen."><PODViewer /></SampleScreen>
+            <PODViewer />
           </Suspense>
         ),
         errorElement: <RouteErrorPage />,

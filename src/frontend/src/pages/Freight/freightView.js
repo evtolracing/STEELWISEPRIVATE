@@ -64,3 +64,16 @@ export function daysToPromise(order, now = new Date()) {
   if (!order?.promisedDate) return null
   return Math.round((startOfDay(order.promisedDate) - startOfDay(now)) / DAY)
 }
+
+/**
+ * What is on file as proof of a delivery. `state` is NOT_DELIVERED, PROOF (a name or an image), REASON (no
+ * proof, with the reason someone gave) or MISSING (delivered with neither). Nothing is filled in.
+ */
+export function podSummary(s) {
+  if (!s || s.status !== 'DELIVERED') return { state: 'NOT_DELIVERED', signedBy: null, image: null, reason: null }
+  const signedBy = s.podSignature || null
+  const image = s.podImageUrl || null
+  if (signedBy || image) return { state: 'PROOF', signedBy, image, reason: null }
+  if (s.noPodReason) return { state: 'REASON', signedBy: null, image: null, reason: s.noPodReason }
+  return { state: 'MISSING', signedBy: null, image: null, reason: null }
+}

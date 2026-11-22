@@ -49,3 +49,12 @@ test('days to the promised date', () => {
   assert.equal(daysToPromise({ promisedDate: day(0) }, now), 0);
   assert.equal(daysToPromise({}, now), null);
 });
+
+test('proof of delivery says only what is on file', async () => {
+  const { podSummary } = await import('../../frontend/src/pages/Freight/freightView.js');
+  assert.equal(podSummary({ status: 'IN_TRANSIT', podSignature: 'x' }).state, 'NOT_DELIVERED');
+  assert.deepEqual(podSummary({ status: 'DELIVERED', podSignature: 'Pat Doe' }), { state: 'PROOF', signedBy: 'Pat Doe', image: null, reason: null });
+  assert.equal(podSummary({ status: 'DELIVERED', podImageUrl: 'https://x/y.jpg' }).image, 'https://x/y.jpg');
+  assert.deepEqual(podSummary({ status: 'DELIVERED', noPodReason: 'Left at gate' }), { state: 'REASON', signedBy: null, image: null, reason: 'Left at gate' });
+  assert.equal(podSummary({ status: 'DELIVERED' }).state, 'MISSING');
+});

@@ -52,7 +52,10 @@ export default function ExceptionInbox() {
                   <TableCell>{routeLine(s)}</TableCell>
                   <TableCell>{s.carrierName || 'None yet'}</TableCell>
                   <TableCell>{day(s.scheduledDate) || 'Not set'}</TableCell>
-                  <TableCell align="right"><Button size="small" onClick={() => navigate(`/shipping/${s.id}`)}>Open</Button></TableCell>
+                  <TableCell align="right">
+                    {s.status === 'DELIVERED' && <Button size="small" onClick={() => navigate(`/freight/pod/${s.id}`)}>Proof of delivery</Button>}
+                    <Button size="small" onClick={() => navigate(`/shipping/${s.id}`)}>Open</Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

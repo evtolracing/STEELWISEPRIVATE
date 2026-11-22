@@ -32,7 +32,8 @@ const DAY = 86400000;
     await mk(2, { status: 'EXCEPTION' }),
     await mk(3, { status: 'LOST' }),
     await mk(4, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - DAY), podCaptured: false }),
-    await mk(5, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - 20 * DAY), podCaptured: true }),
+    await mk(5, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - 20 * DAY), podCaptured: true, podSignature: 'Pat Receiver' }),
+    await mk(7, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - 2 * DAY), podCaptured: false, noPodReason: 'Left at the gate, nobody on site' }),
   ];
   const customer = await prisma.organization.findFirst({ where: { code: 'QA-C05' } });
   const branch = await prisma.location.findFirst({ where: { code: 'QA-L01' } });
@@ -123,6 +124,27 @@ const DAY = 86400000;
     const bShip = await b('/api/shipments?limit=200');
     const outside = await prisma.shipment.count({ where: { id: { in: bShip.map((x) => x.id) }, NOT: { OR: [{ fromLocation: { code: 'QA-L02' } }, { order: { location: { code: 'QA-L02' } } }] } } });
     check('and the shipments behind the board are held to their branch too', Array.isArray(bShip) && outside === 0, outside);
+    // ── Proof of delivery ──
+    const pod = async (id) => { await page.goto(`${APP}/freight/pod/${id}`); await page.getByTestId('pod-proof').waitFor({ timeout: 20000 }); return page.getByTestId('pod-proof'); };
+    let proof = await pod(made[4].id);
+    check('the sample banner is gone from the proof of delivery screen', (await page.getByText('Sample screen').count()) === 0);
+    check('a signed delivery shows the name on file', (await proof.getAttribute('data-state')) === 'PROOF' && (await page.getByTestId('pod-signed-by').innerText()) === 'Pat Receiver' && (await page.getByTestId('pod-shipment').innerText()) === made[4].shipmentNumber);
+    proof = await pod(made[5].id);
+    check('a delivery with no proof shows the reason given', (await proof.getAttribute('data-state')) === 'REASON' && (await page.getByTestId('pod-reason').innerText()) === 'Left at the gate, nobody on site');
+    proof = await pod(made[3].id);
+    check('a delivery with nothing on file says so and invents no name', (await proof.getAttribute('data-state')) === 'MISSING' && (await page.getByTestId('pod-signed-by').count()) === 0);
+    proof = await pod(made[0].id);
+    check('a shipment still on the dock has no proof of delivery', (await proof.getAttribute('data-state')) === 'NOT_DELIVERED');
+    await page.goto(`${APP}/freight/pod/no-such-shipment`);
+    await page.getByTestId('pod-error').waitFor({ timeout: 20000 });
+    check('a shipment that does not exist shows an error and no delivery', (await page.getByTestId('pod-proof').count()) === 0);
+    const other = await prisma.shipment.findFirst({ where: { fromLocation: { code: 'QA-L01' }, order: { location: { code: 'QA-L01' } } }, select: { id: true } });
+    const peek = other && await b(`/api/shipments/${other.id}`);
+    check('a person at another branch cannot read the shipment behind it', Boolean(other) && !peek?.shipmentNumber, peek);
+    await page.goto(`${APP}/freight/exceptions`);
+    await page.getByTestId('freight-exception-row').filter({ hasText: made[3].shipmentNumber }).getByRole('button', { name: 'Proof of delivery' }).click();
+    await page.waitForURL(new RegExp(`/freight/pod/${made[3].id}`), { timeout: 15000 });
+    check('the Exception Inbox opens the proof of delivery for a delivery with none', true);
     // An order with an open shipment leaves the planner.
     const dock = await prisma.shipment.create({ data: { shipmentNumber: `QF-${stamp}-6`, orderId: ready.id, fromLocationId: branch.id, status: 'PENDING' } });
     made.push(dock);

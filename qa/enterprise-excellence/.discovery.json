@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-22T21:55:19.946Z",
+ "generated": "2026-11-22T21:59:25.882Z",
  "commit": "ref: refs/heads/claude/project-thread-1fcpg9",
  "schema": {
   "models": [
@@ -56493,7 +56493,7 @@
    },
    {
     "file": "pages/Freight/ExceptionInbox.jsx",
-    "lines": 65,
+    "lines": 68,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -56529,16 +56529,16 @@
    },
    {
     "file": "pages/Freight/PODViewer.jsx",
-    "lines": 576,
+    "lines": 132,
     "reachable": true,
-    "useState": 3,
-    "useEffect": 0,
+    "useState": 2,
+    "useEffect": 1,
     "ts": false,
-    "dialogs": 1,
-    "tables": 0,
+    "dialogs": 0,
+    "tables": 1,
     "forms": 0,
     "ariaLabels": 1,
-    "iconButtons": 1,
+    "iconButtons": 0,
     "consoleLog": 0,
     "todo": 0,
     "alerts": 0,
@@ -56601,7 +56601,7 @@
    },
    {
     "file": "pages/Freight/freightView.js",
-    "lines": 67,
+    "lines": 80,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -59403,7 +59403,7 @@
    },
    {
     "file": "src/backend/test/freightView.test.js",
-    "tests": 5,
+    "tests": 6,
     "importsDb": false,
     "mocks": 0
    },
@@ -60055,8 +60055,8 @@
    },
    {
     "file": "qa/sim/ui-freight.cjs",
-    "lines": 143,
-    "checks": 22
+    "lines": 165,
+    "checks": 30
    },
    {
     "file": "qa/sim/ui-integration.cjs",

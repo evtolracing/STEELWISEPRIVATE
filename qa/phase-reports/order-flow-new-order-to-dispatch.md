@@ -603,7 +603,8 @@ Round 3 of the rebuild on real data.
 ### What was found
 
 - The Shipment Planner, the Tracking Board and the Exception Inbox showed made-up shipments, carriers and customers under a sample banner. None of them read a record.
-- Four other freight screens (rate comparison, route view, proof of delivery viewer) have no data source: no carrier is connected, so there are no rates, truck positions or tracking events on file. They stay marked as samples. Nothing was invented for them.
+- The proof of delivery viewer showed a made-up delivery, while the shipment record holds the real one (who signed, an image, or the reason none was taken).
+- Rate comparison and the route view have no data source: no carrier is connected, so there are no rates, truck positions or tracking events on file. They stay marked as samples. Nothing was invented for them.
 
 ### What changed
 
@@ -612,15 +613,16 @@ Round 3 of the rebuild on real data.
 - Tracking Board: real shipments by status, search, a count of those needing attention, each card opens the shipment.
 - Exception Inbox: the shipments the rule above picks, with the reason and a link to the shipment.
 - Shipment Planner: orders ready to ship with customer, town, selling branch, promise date and how much work is ready. "Plan shipment" opens the New shipment form on that order (`/shipping?order=<number>`).
-- The sample banner is removed from these three routes only.
+- Proof of delivery (`/freight/pod/:shipmentId`): delivered time, who signed, the stored image, or the reason given, with the status history. A delivery with nothing on file says so. The Exception Inbox links to it.
+- The sample banner is removed from these four routes only.
 
 ### Evidence (this session, local QA database only)
 
 | Check | Result |
 |---|---|
-| Backend unit tests | 422 of 422 (5 new in `freightView.test.js`) |
-| `qa/sim/ui-freight.cjs` (new, in `run-gates.sh`) | 22 of 22: column counts, exception rows and planner rows equal the server's lists; each kind of exception shown with its reason; an old delivery is off the board; a card opens the shipment; Plan shipment opens the form on the order; an order with a dock shipment leaves the planner; a person at another branch sees neither the order nor shipments outside their branch |
-| `phase8-fulfillment.mjs` | 155 of 155 scenarios, 519 checks (the sample-screen scenario now expects three real and four sample freight routes) |
+| Backend unit tests | 423 of 423 (6 new in `freightView.test.js`) |
+| `qa/sim/ui-freight.cjs` (new, in `run-gates.sh`) | 30 of 30: column counts, exception rows and planner rows equal the server's lists; each kind of exception shown with its reason; an old delivery is off the board; a card opens the shipment; Plan shipment opens the form on the order; an order with a dock shipment leaves the planner; a person at another branch sees neither the order nor shipments outside their branch; proof of delivery shows the name, the reason, or that nothing is on file, and a person at another branch cannot read it |
+| `phase8-fulfillment.mjs` | 155 of 155 scenarios, 519 checks (the sample-screen scenario now expects four real and three sample freight routes) |
 | `ui-shipping`, `ui-phase8` | 29 of 29, 56 of 56 (`ui-shipping` now looks its test customer up by code; it could not find one among the first 50 before any change here) |
 | Lint (both), build, ratchets | 0 errors; built; effects ratchet 38 of 38 |
 
@@ -631,7 +633,7 @@ NOT VERIFIED: the full gate suite; the live site.
 | Gate | Result | Evidence |
 |---|---|---|
 | A Architecture | PASS | Rules in one pure file, shared by the three screens |
-| B Functional completeness | CONDITIONAL | The boards read the newest 200 shipments. Four freight screens stay samples because no carrier data exists |
+| B Functional completeness | CONDITIONAL | The boards read the newest 200 shipments. Rate comparison and route view stay samples because no carrier data exists |
 | C Cross-layer integrity | PASS | The sim compares each screen with the server and the database |
 | D Data integrity | PASS | Read-only screens; no record is written |
 | E Security | PASS | Branch wall checked on the new route and the shipment list with two branch logins |

@@ -18,6 +18,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import OrderStatusTimeline from '../../components/ecommerce/OrderStatusTimeline'
 import { getMyOrderById, getMyOrderDocuments } from '../../services/customerOrdersApi'
 import { downloadDocument } from '../../services/customerAccountApi'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const SOURCE_COLOR = { CONTRACT: 'success', RETAIL: 'primary', REMNANT: 'warning', REVIEW_REQUIRED: 'error' }
 const DOC_ICON = { PACKING_LIST: Receipt, MTR: Description, INVOICE: Receipt, BOL: LocalShipping }
@@ -251,10 +252,10 @@ export default function MyOrderDetailPage() {
             statusHistory={order.statusHistory || []}
           />
 
-          {order.notes && (
+          {readableNotes(order.notes) && (
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, mt: 2 }}>
               <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>Order Notes</Typography>
-              <Typography variant="body2" color="text.secondary">{order.notes}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>{readableNotes(order.notes)}</Typography>
             </Paper>
           )}
         </Grid>

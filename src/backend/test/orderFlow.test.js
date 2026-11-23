@@ -137,3 +137,32 @@ test('reserving stock: what a line still needs and which stock is offered', () =
   assert.match(stockSummary({ lines: [line] }).text, /1 of 1 line still needs stock reserved/);
   assert.equal(stockSummary({ lines: [{ ...line, allocations: [{ qtyAllocated: '100' }] }] }).ready, true);
 });
+
+// Notes kept as data are shown in words on every screen (owner, 2026-11-22).
+const { readableNotes, processText } = await import('../../frontend/src/utils/readableNotes.js');
+test('a job\'s kept details read as words, with what each process was asked to do', () => {
+  const stored = '{"customerName":"Eli White","orderNumber":"SO-00079","lineNumber":1,"processes":[{"id":"proc-002","code":"SHEAR","name":"Shear to Size","type":"CUT","pricePerOp":8.5,"priceUnit":"CUT","estimatedMinutes":10,"params":{"width":"12","length":"16"},"estimatedCost":8.5},{"id":"proc-010","code":"DEBURR","name":"Deburr / Edge Finish","type":"FINISH","pricePerOp":6,"priceUnit":"EA","estimatedMinutes":15,"params":{},"estimatedCost":6}],"requirements":{"gradeOverride":"A36"}}';
+  const text = readableNotes(stored);
+  assert.equal(text, 'Customer: Eli White\nOrder: SO-00079, line 1\nProcessing: Shear to Size (width 12, length 16), Deburr / Edge Finish\nGrade: A36');
+  assert.doesNotMatch(text, /[{}[\]"]/);
+});
+test('an order line\'s list of processes reads as words', () => {
+  assert.equal(readableNotes('[{"code":"SHEAR","name":"Shear to Size","params":{"width":"12"}}]'), 'Processing: Shear to Size (width 12)');
+  assert.equal(readableNotes('[]'), '');
+  assert.equal(processText('Saw'), 'Saw');
+});
+test('an intake order shows only what the person typed', () => {
+  assert.equal(readableNotes('{"__intakeMeta__":{"division":"METALS","ownership":"OWNED"},"userNotes":"Call before delivery"}'), 'Call before delivery');
+  assert.equal(readableNotes('{"__intakeMeta__":{"division":"METALS"},"userNotes":""}'), '');
+});
+test('a rework note written in front of a job\'s details keeps its words and loses the code', () => {
+  const text = readableNotes('REWORK: recut the edge\n\n{"customerName":"Eli White","orderNumber":"SO-00079","lineNumber":1,"processes":[],"requirements":{}}');
+  assert.equal(text, 'REWORK: recut the edge\n\nCustomer: Eli White\nOrder: SO-00079, line 1');
+});
+test('plain notes, broken data and unknown data are never shown as code or lost', () => {
+  assert.equal(readableNotes('Handle with care'), 'Handle with care');
+  assert.equal(readableNotes('{not data'), '{not data');
+  assert.equal(readableNotes('Size [12 x 16] plate'), 'Size [12 x 16] plate');
+  assert.equal(readableNotes('{"heatLot":"H123","rush":true}'), 'Heat lot: H123\nRush: Yes');
+  assert.equal(readableNotes(null), '');
+});

@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import client from '../../api/client'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const usd = (n) => `$${(Number(n) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 const day = (d) => (d ? new Date(d).toLocaleDateString() : '')
@@ -80,7 +81,7 @@ function InvoiceDialog({ id, onClose, onChanged }) {
               {invoice.order?.poReference ? ` · PO ${invoice.order.poReference}` : ''} · Dated {day(invoice.invoiceDate)}
               {invoice.dueDate && !isCredit ? ` · Due ${day(invoice.dueDate)}` : ''}
             </Typography>
-            {invoice.notes && <Typography variant="body2" gutterBottom>{invoice.notes}</Typography>}
+            {readableNotes(invoice.notes) && <Typography variant="body2" gutterBottom sx={{ whiteSpace: 'pre-wrap' }}>{readableNotes(invoice.notes)}</Typography>}
             <Table size="small">
               <TableHead><TableRow><TableCell>Item</TableCell><TableCell align="right">Qty</TableCell><TableCell align="right">Amount</TableCell></TableRow></TableHead>
               <TableBody>

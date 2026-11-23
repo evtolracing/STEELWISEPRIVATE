@@ -43,6 +43,7 @@ import { createQuote, acceptQuote } from '../../services/quoteApi';
 import { createOrder } from '../../services/orderApi';
 import { quoteAssistant } from '../../services/aiOrderHubApi';
 import SpecOverridePanel from '../../components/shared/SpecOverridePanel';
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const statusColors = {
   NEW: 'info',
@@ -402,7 +403,7 @@ export default function RfqDetailPage() {
                           <Chip label={line.quantity} size="small" />
                         </TableCell>
                         <TableCell>
-                          <Typography variant="caption">{line.notes || '-'}</Typography>
+                          <Typography variant="caption">{readableNotes(line.notes) || '-'}</Typography>
                         </TableCell>
                         {showQuoteForm && (
                           <TableCell>

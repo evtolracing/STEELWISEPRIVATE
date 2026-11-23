@@ -64,6 +64,7 @@ import {
   conditionalPassInspection,
   getInspectors,
 } from '../../api/qc'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const resultColor = { PASS: 'success', FAIL: 'error', CONDITIONAL: 'warning' }
 
@@ -316,7 +317,7 @@ export default function QCInspectionPage() {
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="caption" color="text.secondary">Instructions:</Typography>
                 <Typography variant="body2" sx={{ mt: 0.5, whiteSpace: 'pre-wrap', fontSize: 12 }}>
-                  {job.instructions}
+                  {readableNotes(job.instructions)}
                 </Typography>
               </>
             )}

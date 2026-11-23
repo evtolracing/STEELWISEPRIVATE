@@ -1791,6 +1791,13 @@ const manualModules = [
           ]},
           { type: 'text', value: 'Some moves are refused, with the reason shown: a job that has not started cannot be marked shipped or completed, a job that is ready to ship cannot go back to scheduled, and a completed or cancelled job cannot be changed. A job for a customer order is marked shipped by its shipment, not by hand. The reason you type goes into the history. It does not replace the notes on the job.' },
           { type: 'text', value: 'Steps that happened before status changes were recorded with a name show only their times.' },
+          { type: 'text', value: 'Plan: the steps of the job in order, with the machine each one is on and whether it is finished, running or not started. A plan often has to change while the job is in production, for example when a machine goes down.' },
+          { type: 'steps', items: [
+            'To change the plan, click Change plan',
+            'Pick another machine for a step, rename it, move it up or down, remove it, or click Add a step',
+            'Type why the plan is changing and click Save the plan. The change is added to the history with your name',
+          ]},
+          { type: 'text', value: 'Finished steps are locked. A step that is running or has time recorded can move to another machine of the same kind: the time already recorded stays with the first machine and the clock carries on at the new one. Such a step cannot be removed or become another kind of work. A step put on a machine shows in that machine\'s queue straight away. Work center leads, schedulers, production managers, branch managers and administrators can change a plan; everyone else can view it.' },
         ],
       },
       {

@@ -8,6 +8,7 @@ import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
 import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates.js';
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
+import { planChange, mayChangePlan, hasWork, PLAN_CHANGED, PLAN_OPEN_JOB_STATUSES } from '../lib/planChange.js';
 import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
@@ -597,6 +598,118 @@ router.get('/:id/plan', async (req, res) => {
   } catch (error) {
     console.error('Error fetching job plan:', error);
     res.status(500).json({ error: 'Failed to fetch job plan', details: error.message });
+  }
+});
+
+/** A job's plan with what the change screen needs: each step's machine, whether work is recorded, and the machines to choose from. */
+async function planForChange(db, jobId) {
+  const plan = await db.dispatchJob.findUnique({
+    where: { jobId },
+    include: { operations: { orderBy: { sequence: 'asc' }, include: { assignedWorkCenter: { select: { id: true, name: true, code: true } }, _count: { select: { timeLogs: true } } } } },
+  });
+  if (!plan) return null;
+  const steps = plan.operations.map((op) => ({
+    id: op.id, sequence: op.sequence, name: op.name, status: op.status, requiredWorkCenterType: op.requiredWorkCenterType,
+    assignedWorkCenterId: op.assignedWorkCenterId, machineName: op.assignedWorkCenter?.name || null, timeLogCount: op._count.timeLogs,
+  }));
+  return { plan, steps };
+}
+
+// GET /api/jobs/:id/plan/change: the plan as it stands, with the machines and kinds of work it may be changed to.
+router.get('/:id/plan/change', async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, jobNumber: true, status: true } }).catch(() => null);
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const found = await planForChange(prisma, job.id);
+    if (!found) return res.json({ exists: false, jobNumber: job.jobNumber, status: job.status, steps: [], machines: [], kinds: [], mayChange: false, whyNot: 'This job has no plan yet. Plan it from the order board first.' });
+    const [machines, kinds, load] = await Promise.all([
+      prisma.workCenter.findMany({ where: { locationId: found.plan.locationId }, select: { id: true, name: true, code: true, type: true, isActive: true }, orderBy: { name: 'asc' } }),
+      prisma.workCenterType.findMany({ where: { isActive: true }, select: { id: true, label: true }, orderBy: { label: 'asc' } }),
+      // How much is waiting at each machine: steps not finished, of jobs still in production.
+      prisma.dispatchOperation.groupBy({ by: ['assignedWorkCenterId'], where: { assignedWorkCenterId: { not: null }, status: { not: 'COMPLETE' }, dispatchJob: { locationId: found.plan.locationId, job: { status: { in: PLAN_OPEN_JOB_STATUSES } } } }, _count: { _all: true } }),
+    ]);
+    const waiting = Object.fromEntries(load.map((l) => [l.assignedWorkCenterId, l._count._all]));
+    const open = PLAN_OPEN_JOB_STATUSES.includes(job.status);
+    const allowed = mayChangePlan(req.user?.role);
+    res.json({
+      exists: true, jobNumber: job.jobNumber, status: job.status, locationId: found.plan.locationId,
+      steps: found.steps.map((s) => ({ ...s, finished: s.status === 'COMPLETE', worked: hasWork(s) })),
+      machines: machines.map((m) => ({ ...m, stepsWaiting: waiting[m.id] || 0 })),
+      kinds,
+      mayChange: open && allowed,
+      whyNot: !open ? 'This job is through production, so its plan is closed.' : !allowed ? 'A work center lead, production manager, scheduler, branch manager or administrator can change a plan in production.' : null,
+    });
+  } catch (error) {
+    console.error('Error reading the plan to change:', error);
+    res.status(500).json({ error: 'The plan could not be loaded' });
+  }
+});
+
+// PUT /api/jobs/:id/plan/change: change the plan of a job in production. Body: { reason, steps: [{ id?, name?, workCenterType, workCenterId? }] }
+// with the steps still to do, in order. The rules are in lib/planChange.js.
+router.put('/:id/plan/change', async (req, res) => {
+  try {
+    if (!mayChangePlan(req.user?.role)) return res.status(403).json({ error: 'A work center lead, production manager, scheduler, branch manager or administrator can change a plan in production.' });
+    const { reason, steps: wanted } = req.body || {};
+    const out = await prisma.$transaction(async (tx) => {
+      // The job is locked for the change, so two people changing one plan take turns, and the second works from what the first left.
+      const locked = await tx.$queryRaw`SELECT id, "jobNumber", status::text AS status FROM "Job" WHERE id = ${req.params.id} FOR UPDATE`.catch(() => []);
+      const job = locked[0];
+      if (!job) return { status: 404, error: 'Job not found' };
+      if (!(await tx.job.findUnique({ where: { id: job.id }, select: { id: true } }))) return { status: 404, error: 'Job not found' }; // not at a branch this person works at
+      if (!PLAN_OPEN_JOB_STATUSES.includes(job.status)) return { status: 409, error: 'This job is through production, so its plan is closed.' };
+      const found = await planForChange(tx, job.id);
+      if (!found) return { status: 409, error: 'This job has no plan yet. Plan it from the order board first.' };
+      const [machines, kinds] = await Promise.all([
+        tx.workCenter.findMany({ where: { locationId: found.plan.locationId }, select: { id: true, name: true, type: true, isActive: true } }),
+        tx.workCenterType.findMany({ select: { id: true, label: true, isActive: true } }),
+      ]);
+      const change = planChange({ steps: found.steps, wanted, reason, machines, kinds });
+      if (change.error) return { status: /Nothing was changed/.test(change.error) ? 409 : 400, error: change.error };
+
+      if (change.remove.length) await tx.dispatchOperation.deleteMany({ where: { id: { in: change.remove }, dispatchJobId: found.plan.id } });
+      // The step numbers are unique within a plan, so the steps being kept step aside first and are then numbered in the new order.
+      for (const k of change.keep) await tx.dispatchOperation.update({ where: { id: k.id }, data: { sequence: 100000 + k.order } });
+      const now = new Date();
+      for (const k of change.keep) {
+        // A step not yet started that a person puts on a machine is scheduled there, so it shows in that machine's
+        // queue; taken off its machine, it waits to be dispatched again. The operator named for the old machine is dropped.
+        const before = found.plan.operations.find((o) => o.id === k.id);
+        const waiting = before && ['PENDING', 'SCHEDULED'].includes(before.status);
+        const movedWaiting = waiting && (k.workCenterId || null) !== (before.assignedWorkCenterId || null);
+        await tx.dispatchOperation.update({ where: { id: k.id }, data: {
+          sequence: change.firstSequence + k.order, name: k.name, requiredWorkCenterType: k.kind, assignedWorkCenterId: k.workCenterId,
+          ...(waiting ? { status: k.workCenterId ? 'SCHEDULED' : 'PENDING' } : {}), ...(movedWaiting ? { assignedOperatorId: null, scheduledStart: null } : {}),
+        } });
+        if (k.movedWhileWorked) {
+          // Time already recorded stays with the machine it was worked on. A clock still running is closed there and
+          // carried on at the new machine for the same operator, so no time is lost and none is counted twice.
+          const running = await tx.dispatchTimeLog.findMany({ where: { dispatchOperationId: k.id, endAt: null } });
+          for (const log of running) {
+            await tx.dispatchTimeLog.update({ where: { id: log.id }, data: { endAt: now, status: 'COMPLETE' } });
+            await tx.dispatchTimeLog.create({ data: { dispatchOperationId: k.id, jobId: log.jobId, operatorId: log.operatorId, workCenterId: k.workCenterId, status: log.status, startAt: now } });
+          }
+        }
+      }
+      const model = found.plan.operations[0];
+      for (const c of change.create) {
+        await tx.dispatchOperation.create({ data: {
+          dispatchJobId: found.plan.id, sequence: change.firstSequence + c.order, name: c.name, requiredWorkCenterType: c.kind, assignedWorkCenterId: c.workCenterId,
+          requiredDivision: model?.requiredDivision || found.plan.division || 'METALS', requiredSkillLevel: 'STANDARD', thickness: found.plan.thickness, materialCode: found.plan.materialCode, status: c.workCenterId ? 'SCHEDULED' : 'PENDING',
+        } });
+      }
+      await tx.auditLog.create({ data: {
+        category: 'WORKFLOW', eventType: PLAN_CHANGED, severity: 'INFO', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'Job', resourceId: job.id,
+        details: { jobNumber: job.jobNumber, reason: change.reason, changes: change.lines },
+      } });
+      return { status: 200, body: { success: true, changes: change.lines, ...(await planForChange(tx, job.id).then((p) => ({ steps: p.steps }))) } };
+    });
+    if (out.error) return res.status(out.status).json({ error: out.error });
+    res.json(out.body);
+  } catch (error) {
+    if (sendRefusal(res, error)) return;
+    console.error('Error changing the plan:', error);
+    res.status(500).json({ error: 'The plan could not be changed' });
   }
 });
 

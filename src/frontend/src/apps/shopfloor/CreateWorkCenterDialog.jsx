@@ -256,7 +256,7 @@ export default function CreateWorkCenterDialog({
                 onChange={handleChange('id')}
                 fullWidth
                 placeholder="Auto-generated"
-                helperText="Leave blank for auto-ID"
+                helperText="Leave blank for the next number. The location's code is put in front, so the same ID can be used at every location."
               />
             </Grid>
           )}

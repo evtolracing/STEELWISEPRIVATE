@@ -103,7 +103,7 @@ export async function build({ log = () => {} } = {}) {
     }
     for (let i = 1; i <= T.machines; i++) {
       const id = `P11WC-${loc.code.slice(3)}-${i}`;
-      const found = await prisma.workCenter.findFirst({ where: { OR: [{ id }, { code: id }] } }).catch(() => null);
+      const found = await prisma.workCenter.findFirst({ where: { OR: [{ id }, { code: id }, { code: `${loc.code}-${id}` }] } }).catch(() => null);
       if (found) { b.machines.push(found); continue; }
       const r = await A.post('/api/v1/dispatch/work-centers', { id, name: `P11 saw ${i} at ${loc.code}`, locationId: loc.id, workCenterType: WC_TYPE });
       if (r.status !== 201) throw new Error(`work center ${id}: ${r.status} ${JSON.stringify(r.body).slice(0, 200)}`);

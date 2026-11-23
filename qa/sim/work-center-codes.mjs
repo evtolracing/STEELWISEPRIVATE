@@ -40,8 +40,14 @@ try {
   check('every code is different', new Set(rows.map((r) => r.code)).size === rows.length, rows.map((r) => r.code).join(','));
   check('both branches hold several of the kind', rows.filter((r) => r.locationId === a.id).length >= 2 && rows.filter((r) => r.locationId === b.id).length >= 2);
   check('the one taken offline is kept, not deleted', rows.some((r) => r.name === 'QA machine 1' && r.isActive === false));
-  const dup = await call('POST', '/api/v1/dispatch/work-centers', { id: `${KIND}-HAND`, name: 'QA typed code', locationId: b.id, workCenterType: KIND }, b.id);
-  check('a typed code already in use at another branch is refused plainly, not with a server error', dup.status === 409 && /already exists/.test(dup.body?.error || ''), `${dup.status} ${dup.body?.error}`);
+  // Owner, 2026-11-22: "if I have Router 1 in one location I should be able to have Router 1 at other locations".
+  check('every code carries its branch in front', rows.filter((r) => !r.code.endsWith('-HAND')).every((r) => r.code.startsWith(`${r.locationId === a.id ? a.code : b.code}-${KIND}-`)), rows.map((r) => r.code).join(','));
+  check('each branch numbers its own from 01', rows.some((r) => r.code === `${a.code}-${KIND}-01`) && rows.some((r) => r.code === `${b.code}-${KIND}-01`), rows.map((r) => r.code).join(','));
+  const typed = async (loc, id, name) => { const r = await call('POST', '/api/v1/dispatch/work-centers', { id, name, locationId: loc.id, workCenterType: KIND }, loc.id); if (r.body?.data?.id) made.push(r.body.data.id); return r; };
+  const t1 = await typed(a, `${KIND}-R1`, 'Router 1'); const t2 = await typed(b, `${KIND}-R1`, 'Router 1');
+  check('the same typed ID and the same name are saved at two branches', t1.status === 201 && t2.status === 201, `${t1.status},${t2.status} ${t2.body?.error || ''}`);
+  const dup = await typed(a, `${KIND}-R1`, 'Router 1 again');
+  check('the same typed ID twice at one branch is refused plainly, not with a server error', dup.status === 409 && /already has a work center with the ID/.test(dup.body?.error || ''), `${dup.status} ${dup.body?.error}`);
 } finally {
   await prisma.workCenter.deleteMany({ where: { type: KIND } }); await prisma.workCenterType.deleteMany({ where: { id: KIND } }); await prisma.$disconnect();
 }

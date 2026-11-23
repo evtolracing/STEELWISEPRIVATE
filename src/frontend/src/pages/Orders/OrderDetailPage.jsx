@@ -36,6 +36,7 @@ import OrderCloseoutPanel from '../../components/orders/OrderCloseoutPanel'
 import OrderStockPanel from '../../components/orders/OrderStockPanel'
 import { ReleaseHoldDialog } from './CreditHoldsPage'
 import { getJobs } from '../../api/jobs'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const STATUS_COLOR = {
   DRAFT: 'default', HOLD: 'warning', SUBMITTED: 'primary', CONFIRMED: 'info', IN_PRODUCTION: 'warning',
@@ -319,7 +320,7 @@ export default function OrderDetailPage() {
                     {editing ? (
                       <TextField inputProps={{ 'aria-label': 'Notes' }} fullWidth multiline rows={3} value={notes} onChange={e => setNotes(e.target.value)} sx={{ mt: 0.5 }} />
                     ) : (
-                      <Typography variant="body2">{order.notes || '—'}</Typography>
+                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{readableNotes(order.notes) || '—'}</Typography>
                     )}
                   </Grid>
                 </Grid>

@@ -21,10 +21,17 @@ const effects = JSON.parse(report).flatMap((f) => f.messages.filter((m) => m.rul
 
 const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? (['mocks', 'node_modules'].includes(e.name) ? [] : walk(path.join(dir, e.name))) : /\.jsx?$/.test(e.name) ? [path.join(dir, e.name)] : []));
 const invented = [];
+// Notes kept as data (a job's details, an order line's processes, an intake order's details) are shown through
+// utils/readableNotes.js, never as stored (owner, 2026-11-22: "this should be human readable and anywhere else
+// should be also"). A screen that prints the notes or instructions of a job, order, order line, work order or
+// invoice straight from the record is counted here; the count must stay 0.
+const rawNotes = [];
+const RAW_NOTES = /(\{|secondary=\{|>\s*)\s*(job|selectedJob|order|selectedOrder|wo|workOrder|line|invoice)\??\.(notes|instructions)\s*(\|\|[^}]*)?\}/;
 const popups = []; // Phase 9 (B-015): the browser's own confirm(), alert() and prompt() boxes. utils/ask.js replaces them.
 for (const file of walk(path.join(root, 'src/frontend/src'))) {
   const text = fs.readFileSync(file, 'utf8');
   text.split('\n').forEach((line, i) => { if (!/^\s*(\/\/|\*)/.test(line) && /(^|[^a-zA-Z_.$])(window\.)?(confirm|alert|prompt)\(/.test(line)) popups.push(`${path.relative(root, file)}:${i + 1}`); });
+  if (/\.jsx$/.test(file)) text.split('\n').forEach((line, i) => { if (RAW_NOTES.test(line) && !/readableNotes|jobNotesText|value=/.test(line)) rawNotes.push(`${path.relative(root, file)}:${i + 1}`); });
   for (const m of text.matchAll(/catch\s*(\(\w*\))?\s*\{(?:[^{}]|\{[^{}]*\})*?set\w+\(\s*\[\s*\{\s*id:\s*['"`]/g)) invented.push(`${path.relative(root, file)}:${text.slice(0, m.index).split('\n').length}`);
 }
 const fe = path.join(root, "src/frontend");
@@ -41,9 +48,11 @@ const phase9 = {
   browserPopUpBoxes: popups.length,
 };
 const phase9Bad = phase9.iconButtonsWithNoName + phase9.fieldsWithNoName + phase9.pagesMissingAMainHeading + phase9.sampleButtonsWithNoActionAndNoNotice + phase9.clickOnlyRowsAndCards + phase9.browserPopUpBoxes > 0 || phase9.pagesWhereNoTitleCouldBeFound > MAX_NO_TITLE;
-fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, phase9 }, null, 1));
+fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, rawNotes, phase9 }, null, 1));
 console.log("phase 9 (each must be 0; pages with no title found, ceiling " + MAX_NO_TITLE + "): " + JSON.stringify(phase9));
 console.log(`effects that read a value they do not list: ${effects.length} (ceiling ${MAX_EFFECTS}); screens that invent a record when the server fails: ${invented.length} (ceiling ${MAX_INVENTED})`);
 for (const i of popups) console.log(`  browser pop-up box: ${i}`);
 for (const i of invented) console.log(`  invented record: ${i}`);
-process.exit(effects.length > MAX_EFFECTS || invented.length > MAX_INVENTED || phase9Bad ? 1 : 0);
+console.log(`screens that print notes kept as data without putting them in words: ${rawNotes.length} (must be 0)`);
+for (const i of rawNotes) console.log(`  notes printed as stored: ${i}`);
+process.exit(effects.length > MAX_EFFECTS || invented.length > MAX_INVENTED || rawNotes.length > 0 || phase9Bad ? 1 : 0);

@@ -63,6 +63,7 @@ import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 // Modern gradient backgrounds based on priority
 const PRIORITY_GRADIENTS = {
@@ -897,10 +898,10 @@ const ModernJobCard = ({
                 </Typography>
                 <Box sx={{ p: 2, borderRadius: 2, bgcolor: alpha('#B45309', 0.05), border: '1px solid', borderColor: alpha('#B45309', 0.2) }}>
                   {job.instructions && (
-                    <Typography variant="body2" sx={{ mb: job.notes ? 1 : 0 }}>{job.instructions}</Typography>
+                    <Typography variant="body2" sx={{ mb: job.notes ? 1 : 0, whiteSpace: 'pre-wrap' }}>{readableNotes(job.instructions)}</Typography>
                   )}
                   {job.notes && (
-                    <Typography variant="body2" color="text.secondary">{job.notes}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>{readableNotes(job.notes)}</Typography>
                   )}
                 </Box>
               </Box>

@@ -12,6 +12,7 @@ import {
 import { ArrowBack as BackIcon, PlayArrow as StartIcon, CheckCircle as CompleteIcon, Cancel as CancelIcon, Send as ReleaseIcon } from '@mui/icons-material'
 import client from '../../api/client'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 export const WO_TYPE_LABELS = { SLIT: 'Slitting', CTL: 'Cut to length', BLANK: 'Blanking', LEVELCUT: 'Level cut', MULTIBLANKING: 'Multi-blanking', SHEAR: 'Shearing' }
 export const WO_STATUS_LABELS = { DRAFT: 'Draft', READY: 'Ready', IN_PROGRESS: 'In progress', QC_HOLD: 'Quality hold', COMPLETE: 'Complete', CANCELLED: 'Cancelled' }
@@ -166,7 +167,7 @@ export default function WorkOrderDetailPage() {
               <Grid item xs={4}><Fact name="Good weight out">{pounds(wo.outputWeightLb)}</Fact></Grid>
               <Grid item xs={4}><Fact name="Scrap">{pounds(wo.scrapWeightLb)}</Fact></Grid>
               <Grid item xs={4}><Fact name="Yield">{wo.yieldPct == null ? '' : `${Number(wo.yieldPct)}%`}</Fact></Grid>
-              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{wo.notes}</span></Fact></Grid>
+              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{readableNotes(wo.notes)}</span></Fact></Grid>
             </Grid>
           </Paper>
         </Grid>

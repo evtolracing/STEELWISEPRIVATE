@@ -49,6 +49,7 @@ import { JOB_STATUS_CONFIG } from '../../constants/jobStatuses'
 import { PROCESSING_TYPES } from '../../constants/processingTypes'
 import { PRIORITY_LEVELS_CONFIG } from '../../constants/materials'
 import { activateOnKey } from '../../utils/activateOnKey'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const JobCard = ({
   job,
@@ -467,7 +468,7 @@ const JobCard = ({
                   <ListItemIcon><NotesIcon /></ListItemIcon>
                   <ListItemText 
                     primary="Notes" 
-                    secondary={job.notes} 
+                    secondary={<span style={{ whiteSpace: 'pre-wrap' }}>{readableNotes(job.notes)}</span>} 
                   />
                 </ListItem>
               </>
@@ -477,7 +478,7 @@ const JobCard = ({
                 <ListItemIcon><NotesIcon /></ListItemIcon>
                 <ListItemText 
                   primary="Instructions" 
-                  secondary={job.instructions} 
+                  secondary={readableNotes(job.instructions)} 
                 />
               </ListItem>
             )}

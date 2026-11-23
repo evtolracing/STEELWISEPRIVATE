@@ -38,6 +38,7 @@ import { useNavigate } from 'react-router-dom';
 import { listIntakeOrders, createWorkOrdersFromOrder } from '../../services/intakeOrdersApi';
 import { nextStepFor } from '../../pages/Orders/intakeChecks';
 import { calendarDate } from '../../utils/calendarDate'
+import { readableNotes } from '../../utils/readableNotes.js'
 
 const statusColors = {
   DRAFT: 'default',
@@ -373,13 +374,13 @@ function OrdersPage() {
                   </Stack>
                 </Box>
 
-                {selectedOrder.notes && (
+                {readableNotes(selectedOrder.notes) && (
                   <>
                     <Divider />
                     <Box>
                       <Typography variant="subtitle2" gutterBottom>Notes</Typography>
                       <Paper variant="outlined" sx={{ p: 1.5, bgcolor: 'grey.50' }}>
-                        <Typography variant="body2">{selectedOrder.notes}</Typography>
+                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{readableNotes(selectedOrder.notes)}</Typography>
                       </Paper>
                     </Box>
                   </>

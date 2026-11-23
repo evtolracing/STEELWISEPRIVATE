@@ -12,6 +12,7 @@ import {
 import { ArrowBack as BackIcon, SwapHoriz as MoveIcon, Refresh as RefreshIcon } from '@mui/icons-material'
 import client from '../api/client'
 import { JOB_STATUS_CONFIG } from '../constants/jobStatuses'
+import { readableNotes } from '../utils/readableNotes.js'
 
 export const jobStatusLabel = (status) => JOB_STATUS_CONFIG[status]?.label || String(status || '').replace(/_/g, ' ').toLowerCase()
 const when = (v) => (v ? new Date(v).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '')
@@ -148,9 +149,9 @@ export default function JobDetailPage() {
               <Grid item xs={12} sm={6}><Fact name="Work center">{job.workCenter ? `${job.workCenter.name} (${job.workCenter.code})` : ''}</Fact></Grid>
               <Grid item xs={12} sm={6}><Fact name="Assigned to">{person(job.assignedTo)}</Fact></Grid>
               <Grid item xs={12} sm={6}><Fact name="Created by">{person(job.createdBy)}</Fact></Grid>
-              <Grid item xs={12}><Fact name="Instructions">{job.instructions}</Fact></Grid>
+              <Grid item xs={12}><Fact name="Instructions">{readableNotes(job.instructions)}</Fact></Grid>
               {size && <Grid item xs={12}><Fact name="Finished size">{size}</Fact></Grid>}
-              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{job.notes}</span></Fact></Grid>
+              <Grid item xs={12}><Fact name="Notes"><span style={{ whiteSpace: 'pre-wrap' }}>{readableNotes(job.notes)}</span></Fact></Grid>
             </Grid>
           </Paper>
 

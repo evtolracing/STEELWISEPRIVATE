@@ -17,3 +17,18 @@ export function nextWorkCenterCode(kind, codesInUse = []) {
   }
   return `${prefix}${String(highest + 1).padStart(2, '0')}`;
 }
+
+/**
+ * A work center's code carries its branch in front: "CT-ROUTER-01" (owner, 2026-11-22: "if I have Router 1 in one
+ * location I should be able to have Router 1 at other locations"). Codes stay one list for the company, and each
+ * branch numbers its own machines from 01. Codes saved before this keep the form they have.
+ */
+export function branchWorkCenterCode(branchCode, kind, codesInUse = []) {
+  return nextWorkCenterCode(`${branchCode}-${kind}`, codesInUse);
+}
+
+/** A code typed by hand is kept under its branch the same way, so "ROUTER-1" can be typed at every branch. */
+export function typedWorkCenterCode(branchCode, typed) {
+  const code = String(typed || '').trim();
+  return code.toUpperCase().startsWith(`${branchCode}-`.toUpperCase()) ? code : `${branchCode}-${code}`;
+}

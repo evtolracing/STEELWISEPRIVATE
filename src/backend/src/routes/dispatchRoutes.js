@@ -15,7 +15,7 @@ import { changeError, lockedOut } from '../lib/workCenterGuard.js'
 import { planAssignments, SCHEDULABLE_JOB_STATUSES, PRIORITY_ORDER, SKILL_ORDER } from '../lib/dispatchPlan.js'
 
 import { currentScope, acrossBranches } from '../lib/branchScope.js'
-import { nextWorkCenterCode } from '../lib/workCenterCode.js'
+import { branchWorkCenterCode, typedWorkCenterCode } from '../lib/workCenterCode.js'
 import { Prisma } from '@prisma/client'
 import { readKindRules } from '../lib/workCenterKindRules.js'
 import { can } from '../lib/roleStore.js'
@@ -337,16 +337,18 @@ router.post('/work-centers', async (req, res) => {
       })
     }
 
-    // The code is one list for the whole company, so it is looked up at every branch, whichever branch the person
-    // is working in, and among work centers that are offline too (lib/workCenterCode.js). A branch may have as many
-    // work centers of one kind as it needs: each gets the next free number.
-    if (customId && await acrossBranches(() => prisma.workCenter.findUnique({ where: { code: customId }, select: { id: true } }))) {
-      return res.status(409).json({ success: false, error: `Work center code '${customId}' already exists` })
+    // The code carries the branch in front ("CT-ROUTER-01") and each branch numbers its own machines, so every branch
+    // can have a Router 1, and as many of one kind as it needs. Codes are still one list for the company, so the
+    // look-up is made at every branch, whichever branch the person is working in, and among work centers that are
+    // offline too (lib/workCenterCode.js).
+    const typed = customId ? typedWorkCenterCode(locExists.code, customId) : null
+    if (typed && await acrossBranches(() => prisma.workCenter.findFirst({ where: { code: { equals: typed, mode: 'insensitive' } }, select: { id: true } }))) {
+      return res.status(409).json({ success: false, error: `This location already has a work center with the ID '${customId}'. Give this one another ID, or leave the ID empty.` })
     }
     let wc = null
     for (let attempt = 0; !wc; attempt += 1) {
-      const inUse = customId ? [] : await acrossBranches(() => prisma.workCenter.findMany({ where: { code: { startsWith: `${workCenterType}-`, mode: 'insensitive' } }, select: { code: true } }))
-      const code = customId || nextWorkCenterCode(workCenterType, inUse.map((w) => w.code))
+      const inUse = typed ? [] : await acrossBranches(() => prisma.workCenter.findMany({ where: { code: { startsWith: `${locExists.code}-${workCenterType}-`, mode: 'insensitive' } }, select: { code: true } }))
+      const code = typed || branchWorkCenterCode(locExists.code, workCenterType, inUse.map((w) => w.code))
       try {
         wc = await prisma.workCenter.create({
           data: {
@@ -367,7 +369,7 @@ router.post('/work-centers', async (req, res) => {
       } catch (error) {
         // Someone else took the number in the same moment: take the next one. A typed code is not changed.
         if (error?.code !== 'P2002') throw error
-        if (customId) return res.status(409).json({ success: false, error: `Work center code '${customId}' already exists` })
+        if (typed) return res.status(409).json({ success: false, error: `This location already has a work center with the ID '${customId}'. Give this one another ID, or leave the ID empty.` })
         if (attempt >= 4) return res.status(409).json({ success: false, error: 'Another work center was being added at the same moment. Save again.' })
       }
     }

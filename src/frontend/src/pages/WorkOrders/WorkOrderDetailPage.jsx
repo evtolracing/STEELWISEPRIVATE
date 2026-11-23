@@ -141,8 +141,11 @@ export default function WorkOrderDetailPage() {
       </Box>
 
       {actionError && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError('')}>{actionError}</Alert>}
-      <Alert severity="info" sx={{ mb: 2 }}>
-        A work order records the plan and the weights. It does not yet change stock: the source item is not used up and the pieces made are not added to inventory by completing it.
+      <Alert severity="info" sx={{ mb: 2 }} data-testid="wo-how-it-works">
+        {wo.job
+          ? <>This work is job <Link component={RouterLink} to={`/jobs/${wo.job.id}`}>{wo.job.jobNumber}</Link>. The job is planned on the Order Board and run on the Shop Floor. </>
+          : 'This work order has no job, so it is not on the Order Board or the Shop Floor. '}
+        Completing the work order changes stock: the weight comes off the source item and the pieces made are added to inventory.
       </Alert>
 
       <Grid container spacing={3}>

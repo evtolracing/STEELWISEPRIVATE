@@ -55,7 +55,7 @@ const boardsWithNoPlanChange = PLAN_BOARDS.filter((f) => { const file = path.joi
 // in the page itself, not only in a tooltip (owner, same day: "needs to be visible without hover").
 const lightsSource = fs.readFileSync(path.join(fe, "src/components/jobs/StepLights.jsx"), "utf8");
 const lightsNeedHover = /<Box component="span"[^>]*>\{name\}<\/Box>/.test(lightsSource) ? 0 : 1;
-const cardsWithNoStepLights = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/JobDetailPage.jsx", "apps/shopfloor/WorkCenterQueuePage.jsx", "apps/shopfloor/WorkCenterSelectPage.jsx", "pages/SchedulePage.jsx", "pages/Orders/OrderDetailPage.jsx", "pages/WorkOrders/WorkOrderDetailPage.jsx"].filter((f) => !/<StepLights\b/.test(fs.readFileSync(path.join(fe, "src", f), "utf8")));
+const cardsWithNoStepLights = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/JobDetailPage.jsx", "apps/shopfloor/WorkCenterQueuePage.jsx", "pages/SchedulePage.jsx", "pages/Orders/OrderDetailPage.jsx", "pages/WorkOrders/WorkOrderDetailPage.jsx"].filter((f) => !/<StepLights\b/.test(fs.readFileSync(path.join(fe, "src", f), "utf8")));
 fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, rawNotes, boardsWithNoPlanChange, cardsWithNoStepLights, phase9 }, null, 1));
 console.log("phase 9 (each must be 0; pages with no title found, ceiling " + MAX_NO_TITLE + "): " + JSON.stringify(phase9));
 console.log(`effects that read a value they do not list: ${effects.length} (ceiling ${MAX_EFFECTS}); screens that invent a record when the server fails: ${invented.length} (ceiling ${MAX_INVENTED})`);

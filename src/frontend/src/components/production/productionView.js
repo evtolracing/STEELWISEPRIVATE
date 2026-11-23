@@ -102,15 +102,3 @@ export function lightsSummary(steps = []) {
   const step = steps[at]
   return `Step ${at + 1} of ${steps.length} ${stepLight(step).words.toLowerCase()}${step.name ? `: ${step.name}` : ''}`
 }
-
-/**
- * The jobs at a machine, for its card on the Shop Floor: the jobs whose current step is on this machine, the running
- * ones first, each with the steps on this machine marked `here`. `rows` are the overview's jobs.
- */
-export function machineJobs(rows = [], machineId) {
-  if (!machineId) return []
-  return rows
-    .filter((r) => r.workCenterId === machineId && (r.stage === 'RUNNING' || r.stage === 'QUEUED'))
-    .sort((a, b) => (a.stage === 'RUNNING' ? 0 : 1) - (b.stage === 'RUNNING' ? 0 : 1))
-    .map((r) => ({ ...r, planSteps: (r.planSteps || []).map((s) => ({ ...s, here: s.machineId === machineId && s.status !== 'COMPLETE' })) }))
-}

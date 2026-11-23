@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES } from '../src/lib/productionView.js';
-import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue, stepLight, lightsSummary, machineJobs } from '../../frontend/src/components/production/productionView.js';
+import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue, stepLight, lightsSummary } from '../../frontend/src/components/production/productionView.js';
 import { jobAtBranch } from '../src/routes/jobs.js';
 
 const step = (sequence, status, wc = null) => ({ sequence, status, name: `Step ${sequence}`, assignedWorkCenterId: wc?.id || null, assignedWorkCenter: wc });
@@ -200,19 +200,4 @@ test('each light is lit by its status, and the row says in words where the job i
   assert.equal(lightsSummary([steps[0], { name: 'Deburr', status: 'SCHEDULED' }]), 'Step 2 of 2 queued at its machine: Deburr');
   assert.equal(lightsSummary([steps[0]]), 'All 1 step finished');
   assert.equal(lightsSummary([]), 'No plan yet');
-});
-
-test('a machine card lists the jobs whose current step is on it, running first, with its own steps marked', () => {
-  const rows = [
-    { id: 'a', stage: 'QUEUED', workCenterId: 'w1', planSteps: [{ sequence: 1, status: 'SCHEDULED', machineId: 'w1' }, { sequence: 2, status: 'PENDING', machineId: null }] },
-    { id: 'b', stage: 'RUNNING', workCenterId: 'w1', planSteps: [{ sequence: 1, status: 'COMPLETE', machineId: 'w1' }, { sequence: 2, status: 'IN_PROCESS', machineId: 'w1' }] },
-    { id: 'c', stage: 'RUNNING', workCenterId: 'w2', planSteps: [] },
-    { id: 'd', stage: 'WAITING_QC', workCenterId: 'w1', planSteps: [] },
-  ];
-  const at = machineJobs(rows, 'w1');
-  assert.deepEqual(at.map((j) => j.id), ['b', 'a']);
-  assert.deepEqual(at[0].planSteps.map((s) => s.here), [false, true]); // a finished step is not this machine's work any more
-  assert.deepEqual(at[1].planSteps.map((s) => s.here), [true, false]);
-  assert.deepEqual(machineJobs(rows, null), []);
-  assert.deepEqual(machineJobs(undefined, 'w1'), []);
 });

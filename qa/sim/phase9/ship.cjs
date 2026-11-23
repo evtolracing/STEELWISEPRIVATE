@@ -2,7 +2,7 @@
 module.exports = async (s) => {
   const { sc, P, boss, clerk, dock, api, rowsOf, ctx, open, text, has, shown, gone, pathOf, settle, until, APP, w, B, prisma, run } = s;
   const { screenShows, sent, money } = require('./lists.cjs')(s);
-  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300);
+  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300 && !x.replayed); // an answer given again for a repeated request is not a second save
   const ship = (id) => prisma.shipment.findUnique({ where: { id } });
   /** A shipped order with its invoice, made through the server. */
   const shipped = async (qty = 300, price = 0.65) => { const m = await B.readyToShip(qty, { price }); const d = await B.dispatch(m.shipment); if (d.status > 299) throw new Error(`dispatch ${d.status}`); const [invoice] = await B.invoicesOf(m.order.id); return { ...m, invoice }; };

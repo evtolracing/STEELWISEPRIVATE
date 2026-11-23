@@ -34,6 +34,7 @@ const DAY = 86400000;
     await mk(4, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - DAY), podCaptured: false }),
     await mk(5, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - 20 * DAY), podCaptured: true, podSignature: 'Pat Receiver' }),
     await mk(7, { status: 'DELIVERED', deliveredAt: new Date(Date.now() - 2 * DAY), podCaptured: false, noPodReason: 'Left at the gate, nobody on site' }),
+    await mk(8, { status: 'PENDING', createdAt: new Date('2020-01-01') }),
   ];
   const customer = await prisma.organization.findFirst({ where: { code: 'QA-C05' } });
   const branch = await prisma.location.findFirst({ where: { code: 'QA-L01' } });
@@ -49,7 +50,7 @@ const DAY = 86400000;
   const page = await context.newPage();
 
   try {
-    const list = await get('/api/shipments?limit=200');
+    const list = await get('/api/shipments?scope=board');
     const weekAgo = Date.now() - 7 * DAY;
     const want = {
       PENDING: list.filter((s) => s.status === 'PENDING').length,
@@ -57,6 +58,14 @@ const DAY = 86400000;
       IN_TRANSIT: list.filter((s) => s.status === 'IN_TRANSIT').length,
       DELIVERED: list.filter((s) => s.status === 'DELIVERED' && s.deliveredAt && new Date(s.deliveredAt).getTime() >= weekAgo).length,
     };
+
+    // The board is given every open shipment, however old, not "the newest 200".
+    const inDb = async (st) => prisma.shipment.count({ where: { status: st } });
+    check('the server gives the board every shipment on the dock, loading and on the road', want.PENDING === await inDb('PENDING') && want.LOADING === await inDb('LOADING') && want.IN_TRANSIT === await inDb('IN_TRANSIT'), want);
+    const newer = await prisma.shipment.count({ where: { createdAt: { gt: new Date('2020-01-02') } } });
+    check('a shipment older than 200 newer ones is still on the board', newer > 200 && list.some((s) => s.id === made[6].id), `${newer} newer`);
+    check('an old delivery with its proof is not sent to the board', !list.some((s) => s.id === made[4].id));
+    check('an unknown scope is refused', (await get('/api/shipments?scope=everything')).error !== undefined);
 
     // ── Tracking Board ──
     await page.goto(`${APP}/freight/tracking`);
@@ -67,6 +76,17 @@ const DAY = 86400000;
     for (const k of Object.keys(want)) got[k] = Number(await page.getByTestId(`freight-count-${k}`).innerText());
     check('each column counts the shipments the server lists in that status', JSON.stringify(got) === JSON.stringify(want), { got, want });
     check('no made-up shipment is shown', (await page.getByText(/SHP-2026-00[0-9]{2}|FastFreight|Toledo Facility/).count()) === 0);
+    // A long column draws 50 cards and offers the rest; the count is still the whole column.
+    const drawn = await page.getByTestId('freight-column-IN_TRANSIT').getByTestId('freight-card').count();
+    check('a long column draws its first 50 cards and offers the rest', want.IN_TRANSIT <= 50 ? drawn === want.IN_TRANSIT : drawn === 50 && (await page.getByTestId('freight-more-IN_TRANSIT').innerText()).includes(`${want.IN_TRANSIT - 50} not shown`), `${drawn} drawn of ${want.IN_TRANSIT}`);
+    if (want.IN_TRANSIT > 50) {
+      await page.getByTestId('freight-more-IN_TRANSIT').click();
+      check('Show more draws the next 50', (await page.getByTestId('freight-column-IN_TRANSIT').getByTestId('freight-card').count()) === Math.min(100, want.IN_TRANSIT));
+    }
+    check('late shipments are drawn first', (await page.getByTestId('freight-column-PENDING').getByTestId('freight-card').first().getByText('Late').count()) === 1);
+    const find = page.getByPlaceholder('Shipment, order, customer, carrier');
+    await find.fill(`QF-${stamp}-`);
+    await page.waitForFunction(() => document.querySelectorAll('[data-testid="freight-card"]').length < 20, null, { timeout: 10000 });
     const lateCard = page.getByTestId('freight-card').filter({ hasText: made[0].shipmentNumber });
     check('a shipment past its scheduled day is marked late', (await lateCard.getByText('Late').count()) === 1);
     check('a delivery older than a week is not on the board, a recent one is', (await page.getByText(made[4].shipmentNumber).count()) === 0 && (await page.getByText(made[3].shipmentNumber).count()) === 1);
@@ -121,7 +141,7 @@ const DAY = 86400000;
     const bReady = await b('/api/shipments/ready-orders');
     check('the selling branch sees its order ready to ship', Array.isArray(aReady) && aReady.some((o) => o.id === ready.id), aReady);
     check('a person at another branch does not see it', Array.isArray(bReady) && !bReady.some((o) => o.id === ready.id) && bReady.every((o) => o.location?.code === 'QA-L02'), bReady);
-    const bShip = await b('/api/shipments?limit=200');
+    const bShip = await b('/api/shipments?scope=board');
     const outside = await prisma.shipment.count({ where: { id: { in: bShip.map((x) => x.id) }, NOT: { OR: [{ fromLocation: { code: 'QA-L02' } }, { order: { location: { code: 'QA-L02' } } }] } } });
     check('and the shipments behind the board are held to their branch too', Array.isArray(bShip) && outside === 0, outside);
     // ── Proof of delivery ──

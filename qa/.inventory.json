@@ -609,6 +609,10 @@
    "file": "src/backend/src/routes/shipments.js"
   },
   {
+   "ep": "GET /api/shipments/ready-orders",
+   "file": "src/backend/src/routes/shipments.js"
+  },
+  {
    "ep": "GET /api/shipments/shippable",
    "file": "src/backend/src/routes/shipments.js"
   },
@@ -1006,6 +1010,10 @@
   },
   {
    "ep": "GET /api/jobs",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
+   "ep": "GET /api/jobs/overview",
    "file": "src/backend/src/routes/jobs.js"
   },
   {
@@ -1589,6 +1597,10 @@
    "file": "src/backend/src/routes/jobs.js"
   },
   {
+   "ep": "GET /api/v1/jobs/overview",
+   "file": "src/backend/src/routes/jobs.js"
+  },
+  {
    "ep": "GET /api/v1/jobs/sla-risk",
    "file": "src/backend/src/routes/jobs.js"
   },
@@ -1721,10 +1733,6 @@
    "file": "src/backend/src/routes/dispatchRoutes.js"
   },
   {
-   "ep": "POST /api/v1/dispatch/locations",
-   "file": "src/backend/src/routes/dispatchRoutes.js"
-  },
-  {
    "ep": "GET /api/v1/dispatch/work-centers",
    "file": "src/backend/src/routes/dispatchRoutes.js"
   },
@@ -1750,6 +1758,10 @@
   },
   {
    "ep": "GET /api/v1/operations/long-running",
+   "file": "src/backend/src/routes/operationsRoutes.js"
+  },
+  {
+   "ep": "GET /api/v1/operations/time-entries",
    "file": "src/backend/src/routes/operationsRoutes.js"
   },
   {
@@ -2061,11 +2073,11 @@
    "file": "src/backend/src/routes/onlineSettings.js"
   },
   {
-   "ep": "GET /api/admin/online-settings/cutoffs",
+   "ep": "GET /api/admin/online-settings/cutoff-rules",
    "file": "src/backend/src/routes/onlineSettings.js"
   },
   {
-   "ep": "PUT /api/admin/online-settings/cutoffs",
+   "ep": "PUT /api/admin/online-settings/cutoff-rules/:locationId",
    "file": "src/backend/src/routes/onlineSettings.js"
   },
   {
@@ -2075,6 +2087,38 @@
   {
    "ep": "PUT /api/admin/online-settings/processes",
    "file": "src/backend/src/routes/onlineSettings.js"
+  },
+  {
+   "ep": "GET /api/admin/locations",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "GET /api/admin/locations/:id",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "GET /api/admin/locations/:id/history",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "POST /api/admin/locations",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "PUT /api/admin/locations/:id",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "POST /api/admin/locations/:id/deactivate",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "POST /api/admin/locations/:id/reactivate",
+   "file": "src/backend/src/routes/adminLocations.js"
+  },
+  {
+   "ep": "DELETE /api/admin/locations/:id",
+   "file": "src/backend/src/routes/adminLocations.js"
   },
   {
    "ep": "GET /api/admin/seed-demo",
@@ -2696,7 +2740,7 @@
   },
   {
    "name": "User",
-   "fields": 44,
+   "fields": 45,
    "fks": 3,
    "status": null
   },
@@ -2786,8 +2830,8 @@
   },
   {
    "name": "Location",
-   "fields": 40,
-   "fks": 2,
+   "fields": 56,
+   "fks": 3,
    "status": null
   },
   {
@@ -4642,6 +4686,7 @@
   "admin/users",
   "admin/partners",
   "admin/roles",
+  "admin/locations",
   "admin/tax-rates",
   "admin/audit-log",
   "admin/processing-recipes",
@@ -4664,8 +4709,6 @@
   "*"
  ],
  "mockServices": [
-  "branchComparisonApi.js",
-  "cutoffRulesApi.js",
   "intakeCustomersApi.js",
   "splitShipmentApi.js"
  ]

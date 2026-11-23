@@ -388,14 +388,17 @@ const manualModules = [
         id: 'online-settings',
         title: 'How to Configure Online Settings',
         blocks: [
+          { type: 'text', value: 'Online Settings holds two things: the checkout rules for the web store, and the order cut-off times of each branch the store sells from. Saving needs the web shop administration right.' },
           { type: 'steps', items: [
-            'Navigate to "Online Settings" in the E-Commerce sidebar section.',
-            'Here you can configure: minimum order amounts, shipping options, payment methods, and customer registration settings.',
-            'To change the minimum order amount, update the "Minimum Order $" field.',
-            'To enable/disable a payment method, toggle the switch next to it.',
-            'To update shipping zones and rates, click the "Shipping" tab.',
-            'Click "Save Settings" when done.',
+            'Open "Online Settings" in the E-Commerce section of the sidebar.',
+            'Checkout rules: set the auto-approve threshold, the amount above which a quote is required, the largest number of lines and quantity per line, guest checkout and whether account customers must give a PO number. Click the save button for the rules.',
+            'Cut-off times: pick a branch in "Select Location". The list holds the real branches marked "sells from" under Administration, Locations. A branch whose times have never been saved says "not set yet".',
+            'For each division, set the cut-off time in the branch\'s own time zone, whether next-day shipping is offered, the days it ships, and whether same-day pickup is offered.',
+            'Add a blackout window (start, end and reason) for days the branch does not ship, such as a holiday or stock count.',
+            'Save the branch. The change is recorded in the audit log with your name.',
           ]},
+          { type: 'warning', value: 'A branch with no cut-off times saved promises nothing: the store, the cut-off clock and the promise check say the times are not set, and no next-day date is offered. The system never fills in a time by itself.' },
+          { type: 'tip', value: 'If the page says the settings could not be loaded, nothing shown below that message is from the server. Use "Try again" before changing anything.' },
         ],
       },
       {
@@ -1384,7 +1387,7 @@ const manualModules = [
     icon: 'Settings',
     roles: ['ADMIN', 'BRANCH_MANAGER'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
-    routes: ['/admin/users', '/admin/roles', '/admin/partners', '/admin/audit-log', '/admin/processing-recipes'],
+    routes: ['/admin/users', '/admin/locations', '/admin/roles', '/admin/partners', '/admin/audit-log', '/admin/processing-recipes'],
     sections: [
       {
         id: 'what-it-does',
@@ -1419,6 +1422,20 @@ const manualModules = [
             'To deactivate a user (e.g., when they leave the company), toggle "Active" to off. Do not delete users — deactivate them to preserve audit history.',
           ]},
           { type: 'warning', value: 'Never share admin passwords. Each person should have their own account. This is critical for audit trails and accountability.' },
+        ],
+      },
+      {
+        id: 'staff-with-no-branch',
+        title: 'Staff With No Branch',
+        blocks: [
+          { type: 'text', value: 'Most staff are held to their branches: they see the orders, stock, jobs and shipments of the branches on their login and nothing else. A staff login with no branch at all can sign in but sees none of those records, which looks to that person like an empty or broken system.' },
+          { type: 'steps', items: [
+            'Open "User Management". If any active staff login has no branch, a yellow notice at the top says how many.',
+            'Click "Show them" to list only those logins. Each one is marked "No branch".',
+            'Open the three-dot menu on a row, choose "Edit User", pick a home branch (and any other branches the person works at) and save.',
+            'The login leaves the list and the count drops. When nobody is left, the notice says every active staff login has a branch.',
+          ]},
+          { type: 'tip', value: 'Customer and partner logins, and roles that see every branch (for example admin, executive and finance roles), are never counted: they do not need a branch. A branch manager does not see this notice, because people with no branch are outside every branch.' },
         ],
       },
       {
@@ -1458,33 +1475,35 @@ const manualModules = [
       },
       {
         id: 'configure-locations',
-        title: 'How to Configure a Location',
+        title: 'How to Add, Change or Switch Off a Location',
         blocks: [
+          { type: 'text', value: 'A location is either a branch (a service center that sells, makes or ships) or a storage area inside a branch (a yard, floor area, rack or bin). Every branch list in the system, from the branch picker to the web store, is read from this screen. A super admin or the tenant owner can add, switch off and delete locations. An admin can change the details of an existing one.' },
           { type: 'steps', items: [
-            'Go to Administration → Locations (if available) or check Online Settings for location configuration.',
-            'Each location has: name, address, time zone, divisions served, and operating hours.',
-            'To update a location, click on it and edit the fields.',
-            'Set the operating hours for each day of the week.',
-            'Set the cutoff time for next-day delivery (e.g., 2:00 PM means orders placed after 2 PM ship the following business day).',
-            'Enable or disable divisions for this location (some locations only handle Metals, not Plastics).',
-            'Click "Save Changes".',
+            'Open "Locations" under Administration.',
+            'To add one, click "Add location". Give it a short code (for example CT) and a name, choose its type, and say whether it is a branch or a storage area inside another location.',
+            'Fill in the address, phone, email, hours, time zone and manager. Tick the divisions it serves and the processes it can do.',
+            'Tick "sells from" if orders can be sold at it, and "ships from" if shipments can leave from it. The web store and the cut-off settings list only branches that sell.',
+            'Click save. The location appears in the branch lists straight away.',
+            'To change one, click it in the list, edit the fields and save. A branch that is in use cannot be turned into a storage area.',
+            'To stop using one, click "Switch off". The screen shows what is still attached to it. People assigned to it must be moved to another active branch, which the same box lets you choose.',
+            '"Switch on" brings a switched-off location back.',
           ]},
+          { type: 'warning', value: 'Switch off, do not delete. A location that has ever been used (orders, stock, jobs, shipments or people) cannot be deleted: switching it off removes it from every list and keeps its history. Delete is only for a location added by mistake that nothing has used.' },
         ],
       },
       {
         id: 'set-cutoff-times',
         title: 'How to Set Cutoff Times',
         blocks: [
-          { type: 'text', value: 'Cutoff times determine the deadline for orders to qualify for next-day delivery. For example, if the cutoff is 2:00 PM, any order placed before 2:00 PM today can ship tomorrow. Orders placed after 2:00 PM ship the day after tomorrow.' },
+          { type: 'text', value: 'A cutoff time is the deadline for an order to qualify for next-day shipping. If the cutoff is 2:00 PM, an order placed before 2:00 PM at that branch can ship the next shipping day; a later order ships the day after.' },
           { type: 'steps', items: [
-            'Go to Administration → Locations → select your location.',
-            'Find the "Cutoff Times" section.',
-            'Set the time for each division: Metals may have a different cutoff than Plastics.',
-            'Set the cutoff for each day of the week (weekdays typically have later cutoffs than Friday).',
-            'Click "Save".',
-            'The cutoff clock appears in the top-right corner of the app for all users at this location.',
+            'Open "Online Settings" in the E-Commerce section of the sidebar and go to the cut-off times.',
+            'Pick the branch in "Select Location".',
+            'Set the cutoff time, next-day shipping, shipping days and same-day pickup for each division.',
+            'Add blackout windows for days the branch does not ship.',
+            'Save. The cutoff clock in the top bar and the promise check use the new times at once.',
           ]},
-          { type: 'tip', value: 'The cutoff clock in the header counts down to the next cutoff. It turns yellow at 30 minutes before cutoff and red at 10 minutes.' },
+          { type: 'warning', value: 'Until a branch\'s times are saved, the clock and the promise check say they are not set and promise no date.' },
         ],
       },
       {
@@ -2066,6 +2085,7 @@ const manualModules = [
         title: 'Demand Shaping',
         blocks: [
           { type: 'text', value: 'Demand Shaping analyzes historical ordering patterns to identify trends, seasonality, and demand peaks. It suggests actions to smooth demand — like promotions during slow periods or surcharges during peak times — to optimize capacity utilization.' },
+          { type: 'text', value: 'How busy a branch is, is worked out from its plan each time it is asked, never typed in. Booked hours are the unfinished plan steps with a start and an end inside the next 7 days, at no more than 10 hours a day each. Capacity is the branch\'s active machines times 10 hours times 5 working days. A branch with no active machine has no load figure, and nothing is suggested from it. Plan steps with no times on file are not counted as booked hours; they are shown as unscheduled.' },
           { type: 'steps', items: [
             'Click "Demand Shaping" under Commercial.',
             'The dashboard shows a demand heat map by product category and week.',
@@ -3114,10 +3134,10 @@ const manualModules = [
   // ─── 33. FREIGHT & DELIVERY ───────────────────────────────────────────
   {
     moduleId: 'freight-delivery',
-    // Every screen of this chapter is a design sample with example data (qa/tools/phase12-manual.mjs keeps this true).
-    sample: true,
+    // The rate comparison is a design sample: no carrier is connected (qa/tools/phase12-manual.mjs keeps this true).
+    sampleRoutes: ['/freight/comparison'],
     title: 'Freight & Delivery',
-    shortDescription: 'Plan shipments, compare freight rates, track deliveries in real time, and manage delivery exceptions.',
+    shortDescription: 'See orders ready to ship, follow open shipments, find the ones that need attention, and read proof of delivery.',
     icon: 'LocalShipping',
     roles: ['SHIPPING', 'LOGISTICS', 'DISPATCH', 'CSR', 'BRANCH_MANAGER', 'ADMIN'],
     divisions: ['METALS', 'PLASTICS', 'SUPPLIES', 'OUTLET'],
@@ -3127,7 +3147,9 @@ const manualModules = [
         id: 'what-it-does',
         title: 'What This Module Does',
         blocks: [
-          { type: 'text', value: 'Freight & Delivery focuses specifically on freight management: planning outbound shipments, comparing carrier rates to find the best option, tracking deliveries with real-time updates, and handling delivery exceptions (damages, delays, refused shipments). This module works alongside Logistics but focuses on the freight/carrier side of transportation.' },
+          { type: 'text', value: 'Freight & Delivery reads the real shipments and orders on file. The Shipment Planner lists orders with finished work and nothing on the dock yet. The Tracking Board shows every open shipment under its status. The Exception Inbox lists the shipments that need someone. Proof of delivery shows what was recorded when a shipment was delivered. Shipments are still created, dispatched and delivered on the Shipping screen; these screens are where you see what to do next.' },
+          { type: 'text', value: 'You see the shipments and orders of your own branches. People whose role covers every branch see all of them.' },
+          { type: 'warning', value: 'Freight Comparison is a design sample with example figures. No carrier is connected, so there are no live rates, truck positions or carrier tracking events in the system.' },
         ],
       },
       {
@@ -3135,31 +3157,13 @@ const manualModules = [
         title: 'Shipment Planner',
         blocks: [
           { type: 'steps', items: [
-            'Click "Shipment Planner" under Freight & Delivery in the sidebar.',
-            'The planner shows all packages staged and ready to ship, organized by destination region.',
-            'Select packages to build into a shipment. The system calculates total weight, dimensions, and freight class.',
-            'Choose delivery priority: Standard, Expedited, or Hot Rush.',
-            'Click "Get Rates" to request carrier quotes (see Freight Comparison).',
-            'Select the carrier and service level.',
-            'Generate BOL and shipping documents.',
-            'Schedule the pickup with the carrier.',
+            'Click "Shipment Planner" under Freight & Delivery.',
+            'The list shows each sales order that can ship, has at least one job ready to ship, and has no shipment waiting on the dock or loading.',
+            'Each row gives the customer, the delivery town, the selling branch, the promised date (or how many days late it is) and how much of the work is ready and how much is still in the shop.',
+            'Use the "Selling branch" filter to see one branch.',
+            'Click "Plan shipment". The New shipment form opens on the Shipping screen with that order already looked up.',
+            'Once the shipment is created, the order leaves this list.',
           ]},
-        ],
-      },
-      {
-        id: 'freight-comparison',
-        title: 'Freight Comparison',
-        blocks: [
-          { type: 'text', value: 'Compare real-time freight rates from multiple carriers to find the best price and transit time for each shipment.' },
-          { type: 'steps', items: [
-            'Click "Freight Comparison" under Freight & Delivery.',
-            'Enter shipment details: origin, destination, weight, dimensions, and freight class.',
-            'Click "Compare Rates." The system queries connected carriers and displays quotes in a comparison table.',
-            'The table shows: carrier name, service level, transit time, cost, and reliability score (based on historical performance).',
-            'Sort by price, transit time, or reliability to find the best option.',
-            'Click "Select" on your chosen carrier to apply the rate to the shipment.',
-          ]},
-          { type: 'tip', value: 'The reliability score is calculated from historical data — on-time delivery rate and damage claim rate for that carrier and lane. A cheaper rate isn\'t always better if the carrier has reliability issues.' },
         ],
       },
       {
@@ -3168,11 +3172,12 @@ const manualModules = [
         blocks: [
           { type: 'steps', items: [
             'Click "Tracking Board" under Freight & Delivery.',
-            'The board shows all in-transit shipments with carrier, status, ETA, and last update.',
-            'Status colors: Green = on time, Yellow = minor delay, Red = significant delay or exception.',
-            'Click a shipment to see the tracking timeline with all carrier scan events.',
-            'Click "Send Update to Customer" to email the customer a delivery status update.',
-            'The "Delivery Today" section highlights all shipments expected to deliver today.',
+            'Four columns: On the dock, Loading, On the road, and Delivered in the last 7 days. The number at the top of a column is everything in it.',
+            'A long column draws its first 50 cards, late ones first. "Show more" draws the next 50.',
+            'A card marked "Late" has not left and its scheduled day has passed.',
+            'Type in Search to find a shipment by its number, order, customer, carrier or bill of lading.',
+            'Click a card to open the shipment on the Shipping screen.',
+            'A yellow notice says how many shipments need attention and opens the Exception Inbox.',
           ]},
         ],
       },
@@ -3180,15 +3185,35 @@ const manualModules = [
         id: 'exception-inbox',
         title: 'Exception Inbox',
         blocks: [
+          { type: 'text', value: 'The inbox lists four kinds of shipment, worst first: recorded as lost; marked as an exception; late leaving (still on the dock or loading after its scheduled day); and delivered with no proof of delivery and no reason on file.' },
           { type: 'steps', items: [
             'Click "Exception Inbox" under Freight & Delivery.',
-            'The inbox shows all delivery exceptions: refused deliveries, damage reports, address issues, missed appointments, and carrier delays.',
-            'Click an exception to see details and the affected shipment.',
-            'Assign the exception to a handler (shipping coordinator or CSR).',
-            'Take action: redeliver, reroute, file a carrier claim, or notify the customer.',
-            'Document the resolution and close the exception.',
+            'Read the reason on each row.',
+            'Click "Open" to go to the shipment and deal with it on the Shipping screen.',
+            'For a delivery with no proof, click "Proof of delivery" to see what is on file.',
+            'A shipment leaves the inbox when its cause is gone: it ships, its proof or a reason is recorded, or its status changes.',
           ]},
-          { type: 'warning', value: 'Delivery exceptions must be addressed within 24 hours. Unresolved exceptions can lead to customer dissatisfaction and carrier claim deadlines expiring.' },
+          { type: 'tip', value: 'If the inbox says the shipments could not be loaded, it is not saying that nothing needs attention. Click "Refresh".' },
+        ],
+      },
+      {
+        id: 'proof-of-delivery',
+        title: 'Proof of Delivery',
+        blocks: [
+          { type: 'text', value: 'Proof of delivery shows, for one shipment, when it was delivered, who signed for it, the stored image if there is one, or the reason given when no proof was taken, with the shipment\'s status history.' },
+          { type: 'steps', items: [
+            'Open it from the Exception Inbox with the "Proof of delivery" button.',
+            '"Proof on file" shows the name and, if an image was stored, an "Open the image" button.',
+            '"No proof taken" shows the reason that was typed when the delivery was recorded.',
+            'A warning means the shipment was delivered with no name, no image and no reason. Record one on the Shipping screen.',
+          ]},
+        ],
+      },
+      {
+        id: 'freight-comparison',
+        title: 'Freight Comparison (sample)',
+        blocks: [
+          { type: 'text', value: 'This screen is a design sample. It shows example carriers and rates so the layout can be reviewed. Nothing on it is read from or saved to your records, and no carrier is asked for a rate.' },
         ],
       },
     ],

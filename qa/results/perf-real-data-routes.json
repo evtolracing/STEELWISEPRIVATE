@@ -1,0 +1,154 @@
+{
+  "at": "2026-11-22T22:30:02.639Z",
+  "limit": {
+    "p95": 800,
+    "p99": 1500,
+    "why": "a list or a report opens in under a second",
+    "status": "PROPOSED, PENDING OWNER APPROVAL"
+  },
+  "rows": [
+    {
+      "read": "locations list",
+      "requests": 40,
+      "p50": 10.8,
+      "p95": 11.9,
+      "p99": 64.9,
+      "tenAtOnceMax": 64.9,
+      "kilobytes": 58.7,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "users list with the no-branch count",
+      "requests": 40,
+      "p50": 19.5,
+      "p95": 20.8,
+      "p99": 76.2,
+      "tenAtOnceMax": 76.2,
+      "kilobytes": 112.1,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "users with no branch",
+      "requests": 40,
+      "p50": 8.6,
+      "p95": 16.9,
+      "p99": 36.3,
+      "tenAtOnceMax": 36.3,
+      "kilobytes": 0.1,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "users list, held to a branch",
+      "requests": 40,
+      "p50": 17.6,
+      "p95": 20.9,
+      "p99": 69.8,
+      "tenAtOnceMax": 69.8,
+      "kilobytes": 92.7,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "store branches",
+      "requests": 40,
+      "p50": 5.1,
+      "p95": 6.7,
+      "p99": 14,
+      "tenAtOnceMax": 14,
+      "kilobytes": 0,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "cut-off rules, every branch",
+      "requests": 40,
+      "p50": 4.5,
+      "p95": 4.9,
+      "p99": 20.8,
+      "tenAtOnceMax": 20.8,
+      "kilobytes": 0,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "branch comparison",
+      "requests": 40,
+      "p50": 7.3,
+      "p95": 8.5,
+      "p99": 28.8,
+      "tenAtOnceMax": 28.8,
+      "kilobytes": 0,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "demand shaping suggestions",
+      "requests": 40,
+      "p50": 9,
+      "p95": 9.8,
+      "p99": 39,
+      "tenAtOnceMax": 39,
+      "kilobytes": 0.4,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "demand shaping settings with branch load",
+      "requests": 40,
+      "p50": 6.9,
+      "p95": 8.3,
+      "p99": 23.8,
+      "tenAtOnceMax": 23.8,
+      "kilobytes": 0.6,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "freight boards: every open shipment",
+      "requests": 40,
+      "p50": 39.9,
+      "p95": 48,
+      "p99": 154.8,
+      "tenAtOnceMax": 154.8,
+      "kilobytes": 396.2,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "freight boards, held to a branch",
+      "requests": 40,
+      "p50": 32.9,
+      "p95": 40.3,
+      "p99": 162.6,
+      "tenAtOnceMax": 162.6,
+      "kilobytes": 342.9,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "orders ready to ship",
+      "requests": 40,
+      "p50": 7.4,
+      "p95": 8.2,
+      "p99": 41.1,
+      "tenAtOnceMax": 41.1,
+      "kilobytes": 6.7,
+      "refused": 0,
+      "pass": true
+    },
+    {
+      "read": "jobs, held to a branch",
+      "requests": 40,
+      "p50": 18.8,
+      "p95": 22.8,
+      "p99": 85.8,
+      "tenAtOnceMax": 85.8,
+      "kilobytes": 152,
+      "refused": 0,
+      "pass": true
+    }
+  ]
+}

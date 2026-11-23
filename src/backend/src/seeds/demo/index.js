@@ -440,7 +440,7 @@ async function seedAnalytics() {
   const owner = await prisma.organization.upsert({ where: { code: demoOwner.code }, update: demoOwner, create: demoOwner });
   const loc = {};
   for (const b of analyticsBranches) {
-    const data = { code: b.code, name: b.name, type: 'WAREHOUSE', city: b.city, state: 'MI', ownerId: owner.id };
+    const data = { code: b.code, name: b.name, type: 'WAREHOUSE', isBranch: true, city: b.city, state: 'MI', ownerId: owner.id };
     loc[b.code] = await prisma.location.upsert({ where: { code: b.code }, update: { name: b.name, city: b.city }, create: data });
   }
   for (const { branch, pace, ...u } of analyticsCsrs) {

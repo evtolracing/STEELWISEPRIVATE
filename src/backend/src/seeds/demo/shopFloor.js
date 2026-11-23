@@ -5,7 +5,7 @@
  */
 export const demoOwner = { code: 'STEELWISE-DEMO', name: 'SteelWise Demo Metals', type: 'SERVICE_CENTER', city: 'Jackson', state: 'MI' };
 
-export const demoLocation = { code: 'DEMO-JAX', name: 'Jackson Service Center', type: 'WAREHOUSE', city: 'Jackson', state: 'MI' };
+export const demoLocation = { code: 'DEMO-JAX', name: 'Jackson Service Center', type: 'WAREHOUSE', isBranch: true, city: 'Jackson', state: 'MI' };
 
 export const demoWorkCenters = [
   { id: 'DEMO-WC-SAW-01', code: 'DEMO-SAW-01', name: 'Saw #1', type: 'SAW', division: 'METALS' },

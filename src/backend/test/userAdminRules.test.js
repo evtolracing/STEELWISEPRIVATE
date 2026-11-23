@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { userChangeDenial, visibleUsersWhere } from '../src/lib/userAdminRules.js';
+import { userChangeDenial, visibleUsersWhere, noBranchWhere, hasNoBranch } from '../src/lib/userAdminRules.js';
 
 const A = 'branch-a', B = 'branch-b';
 const superAdmin = { id: 's', role: 'SUPER_ADMIN' };
@@ -60,4 +60,18 @@ test('a person held to branches sees the people of those branches and themselves
   assert.deepEqual(visibleUsersWhere(regional).OR[1].homeLocationId.in.sort(), [A, B]);
   // No branch on file: only their own login.
   assert.deepEqual(visibleUsersWhere({ id: 'n', role: 'CSR' }).OR[1], { homeLocationId: { in: [] } });
+});
+
+test('staff with no branch: active, held to branches, and nowhere on file', () => {
+  assert.equal(hasNoBranch({ role: 'CSR', isActive: true, userLocations: [] }), true);
+  assert.equal(hasNoBranch({ role: 'CSR', isActive: true, homeLocationId: A }), false, 'has a home branch');
+  assert.equal(hasNoBranch({ role: 'CSR', isActive: true, userLocations: [{ locationId: B }] }), false, 'works at a branch');
+  assert.equal(hasNoBranch({ role: 'CSR', isActive: false }), false, 'switched off');
+  assert.equal(hasNoBranch({ role: 'ADMIN', isActive: true }), false, 'sees every branch');
+  assert.equal(hasNoBranch({ role: 'CUSTOMER_BUYER', isActive: true }), false, 'a customer login');
+  const where = noBranchWhere();
+  assert.equal(where.isActive, true);
+  assert.equal(where.homeLocationId, null);
+  assert.deepEqual(where.userLocations, { none: {} });
+  assert.ok(where.role.notIn.includes('SUPER_ADMIN') && where.role.notIn.includes('CUSTOMER_BUYER') && !where.role.notIn.includes('CSR'));
 });

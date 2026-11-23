@@ -644,3 +644,112 @@ NOT VERIFIED: the full gate suite; the live site.
 | J Documentation | CONDITIONAL | This report; the user manual is not updated |
 
 Readiness: CONDITIONAL.
+
+## Addendum 14: Closing the conditional and not assessed gates of Addenda 8 to 13 (2026-11-22 and 23)
+
+Owner's instruction, 2026-11-22: "make sure anything not assessed or conditional is passed". Each open gate of Addenda 8 to 13 was taken in turn: the gap was fixed where there was one, and a check that fails without the fix was added. Then the full gate suite was run on a freshly built QA database, which no addendum since Addendum 5 had done.
+
+### What was found and fixed
+
+| # | Found | Severity | Fix | Check that fails without it |
+|---|---|---|---|---|
+| 1 | Staff held to branches with no branch on file were shown on no screen (open since Addendum 8) | S3 | Users screen counts them, lists them on request and marks each "No branch"; `GET /api/users` returns `noBranchCount` and takes `noBranch=true` | `ui-staff-no-branch.cjs` (8), `userAdminRules.test.js` |
+| 2 | The freight boards read "the newest 200 shipments", so an old open shipment could be left off | S2 | `GET /api/shipments?scope=board` returns every shipment not yet delivered or cancelled, the last week's deliveries, and any delivery missing its proof | `ui-freight.cjs` ("a shipment older than 200 newer ones is still on the board") |
+| 3 | The Tracking Board took over 4 seconds to open with 2,400 open shipments | S3 | A column draws 50 cards, late ones first, with "Show more"; the count is still the whole column | `ui-real-data-sizes.cjs`, `ui-freight.cjs` |
+| 4 | Online Settings swallowed a failed load and then said "No branch is set up to sell from yet" | S2 | The page says the settings could not be loaded, offers "Try again", and does not show the no-branch message | `ui-failed-reads.cjs` |
+| 5 | The store's branch list failed silently (an empty list) | S3 | The store and checkout say the branch list could not be loaded | `ui-failed-reads.cjs` |
+| 6 | A failed branch comparison on order entry and checkout showed an empty panel, which reads as "no branch can fill this" | S3 | The panel says the comparison could not be made and that the order can still be placed | `ui-failed-reads.cjs` |
+| 7 | Stock reserved by the cancelled test orders stayed reserved (known limit of Addendum 10) | S3 | Database update `20261122230000_release_stock_of_cancelled_test_orders`, with its SQL Editor file | `db-release-test-stock.sh` (8), twice on a copy |
+| 8 | On a QA database built after the location update, none of the 80 test branches was marked as a branch, so 15 suites failed. Not a product defect: the product adds locations only through the Locations screen, which says branch or storage area. The test data and seeds did not say | S2 (test harness) | Fixtures and seeds mark their branches | The full gate suite |
+| 9 | Three database update checks passed only on an old QA database (they relied on records dated before the update, or on the update not being recorded) | S3 (test harness) | Each check now sets up its own dated records and takes the update off the copy's applied list | The full gate suite on a fresh database |
+| 10 | Four checks were out of date against rules changed earlier: quality "in hand" count (2026-11-20), people list, ledger account "added" (account 6100 joined the chart), sandbox income statement (asked for the UTC day while the books keep the company's day, so it failed between midnight and 5 am UTC) | S4 (test harness) | Checks follow the rule in force | The full gate suite |
+| 11 | A redirect-only address was counted as a screen sharing a title | S4 (test harness) | Not counted; ceiling lowered from 32 to 20, and small targets on a phone from 3 to 2 | `ui-audit-gate.cjs` |
+| 12 | The manual described Freight, Locations and cut-off times as screens that did not exist or as samples | S3 | Chapters rewritten for Locations, staff with no branch, Online Settings, demand shaping and Freight | `phase12-manual.mjs` (7 new checks) |
+| 13 | The New Job double-click check failed once in three full runs. No job was doubled: the two copies of the save carry one request key and the server ran it once, then gave the second copy the first answer again. The check counted that repeated answer as a second save | S4 (test harness) | The check counts jobs in the database and saves that were run, and holds the answer back so both copies are always out together. No product change was needed; a button guard was tried and dropped because the product was already protected | Scenario 159: passes as is, and fails with two jobs when `/api/jobs` is taken off the keyed list in `requestKey.js` |
+
+About item 7: the reservation rows of the cancelled test orders are removed, exactly as the Cancel button removes them. The database refuses a reservation of zero, so a row cannot be kept at zero. Every order, order line, stock record and piece stays on file. This is the one place where "delete nothing" could not be kept to the letter; the owner decides by running the file or not.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Full gate suite, run 1 (fresh QA database) | Failures: items 8 to 11 above, and the restore server on port 5433 was not running |
+| Full gate suite, run 2 (fresh QA database, restore server running) | Every suite passed except Phase 9.5 ledger 157 of 158 and ledger sandbox 6 of 7 (item 10), and the Phase 11 response times below |
+| Phase 9.5 ledger and ledger sandbox after the fix, on a rebuilt database | 158 of 158; 7 of 7 |
+| Full gate suite, run 3 | Every suite passed except Phase 9 screens 231 of 232 (item 13: the check was wrong, no job was doubled) and the Phase 11 response times below |
+| Phase 9 screens after item 13, all scenarios | 232 of 232, 1,094 checks |
+| Backend unit tests | 424 of 424 |
+| New: `ui-failed-reads.cjs` | 74 of 74: ten screens, each with the server answering in error and with the connection cut; 13 bad inputs refused without a server error |
+| New: `ui-real-data-sizes.cjs` | 150 of 150: ten screens at 390, 768 and 1440 wide; heading, content, no sideways scroll, no script error, content within 3,000 ms |
+| New: `real-data-access.mjs` | 65 of 65: 13 routes asked by nobody, a customer, a CSR, a branch sales login and an admin |
+| New: `perf-real-data-routes.mjs` | 13 of 13 reads within p95 800 ms and p99 1,500 ms; slowest is the board with 2,400 open shipments, p95 245 ms |
+| New: `ui-staff-no-branch.cjs`, `db-release-test-stock.sh` | 8 of 8; 8 of 8 |
+| `ui-freight.cjs` | 37 of 37 |
+| Live site, read-only, 2026-11-22 after the PR 53 deploy | The clean-up is applied (28 test orders cancelled, 9 placeholder locations off, 5 branches on); the Freight, Locations, Users, Online Settings and store screens open on real data with no sample banner |
+
+The response time limits are the repository's own proposed limits (PROPOSED, PENDING OWNER APPROVAL), measured on the QA machine, not the production host.
+
+### What is not passed, and why
+
+- **Phase 11 response times.** Counter sale paid and shipment dispatched are slower than the proposed limits (run 2: p95 916 ms against 800, and 4,723 ms against 2,000). This is the same result recorded in the Phase 12 baseline (940 ms and 4,870 ms). It is not from this work and is not changed by it. The limits were never approved.
+- **NOT VERIFIED: the stock release update on the live database.** The owner runs it.
+- **Cut-off times.** No branch has any. Only the owner can say what they are; until then nothing is promised.
+- **Sample screens.** 54 screens are still labelled samples, among them Freight Comparison, the route view and the Executive screens. Rate comparison and route view have no data to stand on (no carrier is connected).
+- **The live Exception Inbox lists 47 old delivered shipments with no proof of delivery.** They are real records of the earlier test data. Nothing was changed on live.
+
+### Directive gates, Addenda 8 to 13 taken together
+
+| Gate | Result | Evidence |
+|---|---|---|
+| A Architecture | PASS | Rules kept in pure files with unit tests (`cutoffRules`, `branchComparison`, `branchLoad`, `freightView`, `userAdminRules`) |
+| B Functional completeness | PASS for what Addenda 8 to 13 set out to do | The three gaps left open are closed (items 1, 2, 7). The remaining sample screens are listed above as work not yet started, not as part of these changes |
+| C Cross-layer integrity | PASS | Every screen figure is compared with the server and the database in the sims |
+| D Data integrity | PASS | Database updates run twice on a copy; on hand and totals unchanged by the release |
+| E Security | PASS | `real-data-access.mjs` 65 of 65; branch wall checks in `ui-freight.cjs`, `branch-boundary.mjs` 48 of 48; Phase 10 security 277 of 277 |
+| F Reliability | PASS | `ui-failed-reads.cjs` 74 of 74 |
+| G Performance | PASS against the proposed limits | `perf-real-data-routes.mjs` 13 of 13; screens within 3,000 ms |
+| H User experience | PASS as measured | Three sizes, 150 of 150; the whole-site audit at three sizes within its ceilings. Not reviewed by the owner |
+| I Regression | PASS, with one exception that is not from this work | Full gate suite, run 3, and the two reruns above. The exception is the Phase 11 response time limit, below |
+| J Documentation | PASS | Manual check 163 of 163; this report |
+
+Readiness: PASS for the changes of Addenda 8 to 13 on the QA database. Three things stay open and are the owner's: the two Phase 11 response times against limits that were proposed and never approved (older than this work), running the stock release update on the live database (NOT VERIFIED there), and the cut-off times.
+
+## Addendum 15: The response time limits are approved (2026-11-22 and 23)
+
+Owner's instruction, 2026-11-22: "whatever is proposed and not approved in the system use your recommendations and complete".
+
+What was marked proposed and not approved: the Phase 11 response time limits (`qa/sim/phase11/thresholds.mjs`, "PROPOSED, PENDING OWNER APPROVAL" since 2026-11-18) and the capacity finding that depended on them (Z-006). Nothing else in the repository carried that mark.
+
+### The recommendation adopted
+
+Option 1 of `qa/enterprise-excellence/phase-11-capacity-recommendations.md`: keep invoice numbering exactly as it is and give the saves that wait for an invoice number the time that waiting takes. No product code was changed.
+
+| Kind of request | Limit before (proposed) | Limit now (approved) | Measured, 2026-11-23 |
+|---|---|---|---|
+| Sign-in, screen reads, ordinary saves, reconciliation, reliability, integrity, volume, capacity | as written | unchanged | all within |
+| Dispatch with its invoice, whole modelled day (up to 48 customer jobs in flight, 80 branches) | P95 2,000 ms, P99 4,000 ms | P95 6,500 ms, P99 8,000 ms | P95 4,585 ms, P99 5,019 ms |
+| Dispatch with its invoice, 8 customer jobs in flight | not stated | P95 2,000 ms | P95 684 ms (123 dispatches) |
+| Counter sale paid, and return received and credited | P95 800 ms, P99 1,500 ms (as an ordinary save) | P95 2,000 ms, P99 4,000 ms | 850 and 1,408 ms; 925 and 1,319 ms |
+
+Why these and not the first proposal: an invoice or credit memo number is never skipped or repeated (owner decision of 2026-11-13), so those documents are written one at a time for the whole company. A counter sale and a credited return take a number in the same series as the dispatches and wait behind them; they were judged as ordinary saves by oversight. The dispatch met 2 seconds in every run with 8 jobs in flight and missed it in every run with 32 or 48, on one, three and four server copies alike.
+
+This is plainly a longer limit, not a faster system. Six earlier runs measured the dispatch over the day at P95 4,581 to 5,728 ms and P99 4,995 to 6,145 ms; the new limits sit above that range. At the busiest instant of the modelled day a dock waits about five seconds for its paperwork. Nothing is lost or numbered wrongly. With five branches live, that instant (dozens of trucks dispatched in the same second) is far from today's volume. The three ways to raise the ceiling itself (a number series per branch, a shorter invoice save, a larger database server) are unchanged and stay open.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Phase 11 enterprise day, three server copies, fresh QA database | PASS: 545 of 545 customer jobs traced, 5,191 of 5,191 transactions reconciled, 0 failed, 0 deadlocks, books balance, every response time within its approved limit, dispatch at ordinary load within 2,000 ms |
+| The judging rejects a slow run | A dispatch of 7 seconds, or a counter sale of 2.5 seconds, is still marked as a miss (`judge` in `thresholds.mjs`, checked by hand in this session) |
+
+Not rerun after this change: the rest of the gate suite. Only limits and their wording changed, in `qa/sim`; the last full run is run 3 of Addendum 14.
+
+NOT VERIFIED: any response time on the production host. All figures are from the QA machine, which also carries the database and the load.
+
+### Gates
+
+Gate G Performance: PASS against approved limits. Gate I Regression (Addendum 14): the exception recorded there is closed. Finding Z-006: ACCEPTED RISK WITH APPROVAL.
+
+Earlier phase reports (Phase 11 and Phase 12) are left as written; they describe the position on their dates.
+
+Readiness: PASS on the QA database. Still the owner's: run the stock release update on the live database (NOT VERIFIED there) and set the cut-off times.

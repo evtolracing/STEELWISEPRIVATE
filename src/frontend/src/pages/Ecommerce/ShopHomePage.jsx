@@ -77,6 +77,7 @@ export default function ShopHomePage() {
 
   return (
     <Box>
+      {session?.locationsError && <Alert severity="error" sx={{ mb: 2 }} data-testid="store-branches-error">{session.locationsError}</Alert>}
       {/* Hero Banner */}
       <Paper
         elevation={0}

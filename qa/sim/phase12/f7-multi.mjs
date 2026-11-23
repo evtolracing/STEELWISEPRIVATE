@@ -72,7 +72,7 @@ export default async function run(c) {
     x.note(`the product has no path that adds a branch: ${tried.join(', ')}; the branch below is added the way cutover adds one, by script`);
     ok('no route pretends to add a branch', (await prisma.location.count({ where: { code } })) === 0, tried.join(', '));
     const owner = (await prisma.location.findUnique({ where: { id: E.branches[0].id } })).ownerId;
-    const made = await prisma.location.create({ data: { code, name: `P12 new branch ${code}`, type: (await prisma.location.findUnique({ where: { id: E.branches[0].id } })).type, ownerId: owner, city: 'Toledo', state: 'OH' } });
+    const made = await prisma.location.create({ data: { code, isBranch: true, name: `P12 new branch ${code}`, type: (await prisma.location.findUnique({ where: { id: E.branches[0].id } })).type, ownerId: owner, city: 'Toledo', state: 'OH' } });
     const mgr = await c.login('BRANCH_MANAGER', made, `p12-new-${code.toLowerCase()}`);
     const [o, s2] = await Promise.all([mgr.get('/api/orders?limit=50'), mgr.get('/api/coils?limit=50')]);
     const rows = (r) => r.body?.data || r.body?.orders || r.body?.coils || r.body?.items || (Array.isArray(r.body) ? r.body : []);

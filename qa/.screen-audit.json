@@ -1,17 +1,14 @@
 {
- "screens": 147,
+ "screens": 146,
  "tally": {
   "STATIC": 6,
-  "REAL": 79,
-  "SAMPLE, LABELLED": 58,
-  "MIXED": 4
+  "REAL": 85,
+  "SAMPLE, LABELLED": 54,
+  "MIXED": 1
  },
  "unlabelled": [],
  "mixed": [
-  "orders/intake",
-  "pos",
-  "shop/checkout",
-  "admin/online-settings"
+  "pos"
  ],
  "rows": [
   {
@@ -393,18 +390,6 @@
    "file": "apps/safety/StopWorkClearance.jsx"
   },
   {
-   "route": "production",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "components/production/ProductionWorkflowBoard.jsx"
-  },
-  {
-   "route": "production/shop-floor",
-   "onMenu": false,
-   "verdict": "REAL",
-   "file": "components/production/ShopFloorScreen.jsx"
-  },
-  {
    "route": "production/shipping",
    "onMenu": false,
    "verdict": "REAL",
@@ -497,7 +482,7 @@
   {
    "route": "freight/planner",
    "onMenu": true,
-   "verdict": "SAMPLE, LABELLED",
+   "verdict": "REAL",
    "file": "pages/Freight/ShipmentPlanner.jsx"
   },
   {
@@ -521,19 +506,19 @@
   {
    "route": "freight/tracking",
    "onMenu": true,
-   "verdict": "SAMPLE, LABELLED",
+   "verdict": "REAL",
    "file": "pages/Freight/ShipmentTrackingBoard.jsx"
   },
   {
    "route": "freight/exceptions",
    "onMenu": true,
-   "verdict": "SAMPLE, LABELLED",
+   "verdict": "REAL",
    "file": "pages/Freight/ExceptionInbox.jsx"
   },
   {
    "route": "freight/pod/:shipmentId",
    "onMenu": false,
-   "verdict": "SAMPLE, LABELLED",
+   "verdict": "REAL",
    "file": "pages/Freight/PODViewer.jsx"
   },
   {
@@ -707,7 +692,7 @@
   {
    "route": "orders/intake",
    "onMenu": true,
-   "verdict": "MIXED",
+   "verdict": "REAL",
    "file": "pages/Orders/CSRIntakePage.jsx"
   },
   {
@@ -777,6 +762,12 @@
    "file": "pages/Admin/RolesPage.jsx"
   },
   {
+   "route": "admin/locations",
+   "onMenu": true,
+   "verdict": "REAL",
+   "file": "pages/Admin/LocationsPage.jsx"
+  },
+  {
    "route": "admin/tax-rates",
    "onMenu": true,
    "verdict": "REAL",
@@ -833,7 +824,7 @@
   {
    "route": "shop/checkout",
    "onMenu": false,
-   "verdict": "MIXED",
+   "verdict": "REAL",
    "file": "pages/Ecommerce/CheckoutPage.jsx"
   },
   {
@@ -881,7 +872,7 @@
   {
    "route": "admin/online-settings",
    "onMenu": true,
-   "verdict": "MIXED",
+   "verdict": "REAL",
    "file": "pages/Ecommerce/OnlineSettingsPage.jsx"
   },
   {

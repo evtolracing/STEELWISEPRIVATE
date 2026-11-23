@@ -50,8 +50,14 @@ echo "== production screens"; node qa/sim/ui-production-overview.cjs 2>&1 | tail
 echo "== cancel demo jobs (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-cancel-demo-jobs.sh 2>&1 | tail -6
 echo "== first five locations (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-first-five-locations.sh 2>&1 | tail -8
 echo "== retire test data (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-retire-test-data.sh 2>&1 | tail -8
+echo "== release stock of cancelled test orders (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-release-test-stock.sh 2>&1 | tail -8
 echo "== store on real branches"; node qa/sim/store-branches.mjs --base http://localhost:3011 2>&1 | tail -6; node qa/sim/ui-store-branches.cjs 2>&1 | tail -6
 echo "== freight screens on real shipments"; node qa/sim/ui-freight.cjs 2>&1 | tail -6
+echo "== staff with no branch"; node qa/sim/ui-staff-no-branch.cjs 2>&1 | tail -6
+echo "== failed reads on the real-data screens"; node qa/sim/ui-failed-reads.cjs 2>&1 | tail -6
+echo "== real-data screens at three sizes"; node qa/sim/ui-real-data-sizes.cjs 2>&1 | tail -6
+echo "== who may ask the real-data routes"; node qa/sim/real-data-access.mjs --base http://localhost:3011 2>&1 | tail -6
+echo "== response times of the real-data routes"; node qa/sim/perf-real-data-routes.mjs --base http://localhost:3011 2>&1 | tail -15
 echo "== locations"; node qa/sim/ui-locations.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
@@ -64,7 +70,7 @@ echo "== phase 9.5 UI scenarios"; node qa/sim/phase95-ui.cjs 2>&1 | grep "✗\|P
 echo "== phase 10 security scenarios"; [ -f qa/sim/phase10-security.mjs ] && node qa/sim/phase10-security.mjs --base http://localhost:3011 --server-log "$LOGS/server-3011.log" 2>&1 | grep -v "^\s*at " | tail -14
 echo "== phase 9.5 load, 80 branches"; node qa/sim/phase95-load.mjs --base http://localhost:3011 2>&1 | grep "✗\|stage 1\|Phase 9.5 load"
 # Phase 11: three server copies behind one front door on the same QA database; the enterprise day, then the 320 scenarios.
-echo "== phase 11 enterprise run, three server copies"; P11_DB="$(basename "${DATABASE_URL%%\?*}")" qa/tools/phase11-cluster.sh 3 | tail -1; node qa/sim/phase11-enterprise.mjs --base http://localhost:3110 --cycle gate --label "Gate" --out qa/results/phase11-gate-enterprise.json 2>&1 | grep -E "customer jobs|transactions:|books:|^✗|^✓ Phase|slower"
+echo "== phase 11 enterprise run, three server copies"; P11_DB="$(basename "${DATABASE_URL%%\?*}")" qa/tools/phase11-cluster.sh 3 | tail -1; node qa/sim/phase11-enterprise.mjs --base http://localhost:3110 --cycle gate --label "Gate" --out qa/results/phase11-gate-enterprise.json 2>&1 | grep -E "customer jobs|transactions:|books:|^✗|^✓ Phase|slower|dispatch with"
 echo "== phase 11 scenarios"; node qa/sim/phase11-scenarios.mjs --base http://localhost:3110 --stub-port 3166 --app http://localhost:5199 --out qa/results/phase11-gate-scenarios.json 2>&1 | grep -v "^\s*at " | tail -16
 # Phase 12: the certification suite on the same three server copies (ten cross-module flows, the ledger, reconciliation,
 # dashboards, the assistant, security, multi-location), then the browser checks, the process checks and the manual check.

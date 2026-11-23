@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-22T21:59:25.882Z",
+ "generated": "2026-11-23T02:08:59.221Z",
  "commit": "ref: refs/heads/claude/project-thread-1fcpg9",
  "schema": {
   "models": [
@@ -7395,6 +7395,15 @@
     "alters": 0,
     "checks": 0,
     "indexes": 0
+   },
+   {
+    "name": "20261122230000_release_stock_of_cancelled_test_orders",
+    "lines": 44,
+    "creates": 0,
+    "drops": 0,
+    "alters": 0,
+    "checks": 0,
+    "indexes": 0
    }
   ],
   "sqlEditor": [
@@ -7445,6 +7454,7 @@
    "src/backend/prisma/upgrades/sql-editor/20261122090000_location_details.sql",
    "src/backend/prisma/upgrades/sql-editor/20261122100000_first_five_locations.sql",
    "src/backend/prisma/upgrades/sql-editor/20261122213000_retire_test_orders_and_demo_locations.sql",
+   "src/backend/prisma/upgrades/sql-editor/20261122230000_release_stock_of_cancelled_test_orders.sql",
    "src/backend/prisma/upgrades/sql-editor/fix-rls-app-access.sql",
    "src/backend/prisma/upgrades/supabase-sql-editor-upgrade.sql"
   ],
@@ -23865,7 +23875,7 @@
     "mock": 0
    },
    "src/backend/src/routes/shipments.js": {
-    "lines": 646,
+    "lines": 661,
     "routers": [
      "router"
     ],
@@ -23874,8 +23884,8 @@
       "router": "router",
       "method": "GET",
       "path": "/",
-      "line": 132,
-      "lines": 25,
+      "line": 135,
+      "lines": 37,
       "guards": [],
       "models": [
        "Shipment"
@@ -23899,7 +23909,7 @@
       "router": "router",
       "method": "GET",
       "path": "/ready-orders",
-      "line": 156,
+      "line": 171,
       "lines": 24,
       "guards": [],
       "models": [
@@ -23924,7 +23934,7 @@
       "router": "router",
       "method": "GET",
       "path": "/shippable",
-      "line": 179,
+      "line": 194,
       "lines": 31,
       "guards": [],
       "models": [
@@ -23949,7 +23959,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 209,
+      "line": 224,
       "lines": 27,
       "guards": [],
       "models": [
@@ -23976,7 +23986,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 235,
+      "line": 250,
       "lines": 41,
       "guards": [],
       "models": [
@@ -24002,7 +24012,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 275,
+      "line": 290,
       "lines": 8,
       "guards": [],
       "models": [
@@ -24027,7 +24037,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/items",
-      "line": 282,
+      "line": 297,
       "lines": 7,
       "guards": [],
       "models": [
@@ -24053,7 +24063,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/items",
-      "line": 288,
+      "line": 303,
       "lines": 10,
       "guards": [],
       "models": [
@@ -24078,7 +24088,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id/items/:itemId",
-      "line": 297,
+      "line": 312,
       "lines": 264,
       "guards": [],
       "models": [
@@ -24114,7 +24124,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/dispatch",
-      "line": 560,
+      "line": 575,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24137,7 +24147,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/deliver",
-      "line": 564,
+      "line": 579,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24160,7 +24170,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id/lost",
-      "line": 568,
+      "line": 583,
       "lines": 5,
       "guards": [],
       "models": [],
@@ -24183,7 +24193,7 @@
       "router": "router",
       "method": "PATCH",
       "path": "/:id/status",
-      "line": 572,
+      "line": 587,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -24206,7 +24216,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id/documents",
-      "line": 579,
+      "line": 594,
       "lines": 8,
       "guards": [],
       "models": [],
@@ -25418,7 +25428,7 @@
     "mock": 0
    },
    "src/backend/src/routes/users.js": {
-    "lines": 644,
+    "lines": 649,
     "routers": [
      "router"
     ],
@@ -25428,7 +25438,7 @@
       "method": "GET",
       "path": "/",
       "line": 47,
-      "lines": 86,
+      "lines": 91,
       "guards": [
        "authenticate"
       ],
@@ -25454,7 +25464,7 @@
       "router": "router",
       "method": "GET",
       "path": "/:id",
-      "line": 132,
+      "line": 137,
       "lines": 34,
       "guards": [
        "authenticate"
@@ -25481,7 +25491,7 @@
       "router": "router",
       "method": "POST",
       "path": "/",
-      "line": 165,
+      "line": 170,
       "lines": 97,
       "guards": [
        "authenticate",
@@ -25510,7 +25520,7 @@
       "router": "router",
       "method": "PUT",
       "path": "/:id",
-      "line": 261,
+      "line": 266,
       "lines": 144,
       "guards": [
        "authenticate",
@@ -25543,7 +25553,7 @@
       "router": "router",
       "method": "DELETE",
       "path": "/:id",
-      "line": 404,
+      "line": 409,
       "lines": 47,
       "guards": [
        "authenticate",
@@ -25572,7 +25582,7 @@
       "router": "router",
       "method": "POST",
       "path": "/:id/reset-password",
-      "line": 450,
+      "line": 455,
       "lines": 51,
       "guards": [
        "authenticate",
@@ -25601,7 +25611,7 @@
       "router": "router",
       "method": "GET",
       "path": "/enums/roles",
-      "line": 500,
+      "line": 505,
       "lines": 60,
       "guards": [],
       "models": [],
@@ -25624,7 +25634,7 @@
       "router": "router",
       "method": "GET",
       "path": "/locations",
-      "line": 559,
+      "line": 564,
       "lines": 19,
       "guards": [
        "authenticate"
@@ -25651,7 +25661,7 @@
       "router": "router",
       "method": "GET",
       "path": "/divisions",
-      "line": 577,
+      "line": 582,
       "lines": 16,
       "guards": [
        "authenticate"
@@ -26668,7 +26678,7 @@
     "method": "GET",
     "path": "/",
     "line": 47,
-    "lines": 86,
+    "lines": 91,
     "guards": [
      "authenticate"
     ],
@@ -26703,7 +26713,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 132,
+    "line": 137,
     "lines": 34,
     "guards": [
      "authenticate"
@@ -26739,7 +26749,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 165,
+    "line": 170,
     "lines": 97,
     "guards": [
      "authenticate",
@@ -26777,7 +26787,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 261,
+    "line": 266,
     "lines": 144,
     "guards": [
      "authenticate",
@@ -26819,7 +26829,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id",
-    "line": 404,
+    "line": 409,
     "lines": 47,
     "guards": [
      "authenticate",
@@ -26857,7 +26867,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/reset-password",
-    "line": 450,
+    "line": 455,
     "lines": 51,
     "guards": [
      "authenticate",
@@ -26895,7 +26905,7 @@
     "router": "router",
     "method": "GET",
     "path": "/enums/roles",
-    "line": 500,
+    "line": 505,
     "lines": 60,
     "guards": [],
     "models": [],
@@ -26927,7 +26937,7 @@
     "router": "router",
     "method": "GET",
     "path": "/locations",
-    "line": 559,
+    "line": 564,
     "lines": 19,
     "guards": [
      "authenticate"
@@ -26959,7 +26969,7 @@
     "router": "router",
     "method": "GET",
     "path": "/divisions",
-    "line": 577,
+    "line": 582,
     "lines": 16,
     "guards": [
      "authenticate"
@@ -31664,8 +31674,8 @@
     "router": "router",
     "method": "GET",
     "path": "/",
-    "line": 132,
-    "lines": 25,
+    "line": 135,
+    "lines": 37,
     "guards": [],
     "models": [
      "Shipment"
@@ -31698,7 +31708,7 @@
     "router": "router",
     "method": "GET",
     "path": "/ready-orders",
-    "line": 156,
+    "line": 171,
     "lines": 24,
     "guards": [],
     "models": [
@@ -31728,7 +31738,7 @@
     "router": "router",
     "method": "GET",
     "path": "/shippable",
-    "line": 179,
+    "line": 194,
     "lines": 31,
     "guards": [],
     "models": [
@@ -31762,7 +31772,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id",
-    "line": 209,
+    "line": 224,
     "lines": 27,
     "guards": [],
     "models": [
@@ -31798,7 +31808,7 @@
     "router": "router",
     "method": "POST",
     "path": "/",
-    "line": 235,
+    "line": 250,
     "lines": 41,
     "guards": [],
     "models": [
@@ -31833,7 +31843,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id",
-    "line": 275,
+    "line": 290,
     "lines": 8,
     "guards": [],
     "models": [
@@ -31867,7 +31877,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/items",
-    "line": 282,
+    "line": 297,
     "lines": 7,
     "guards": [],
     "models": [
@@ -31902,7 +31912,7 @@
     "router": "router",
     "method": "POST",
     "path": "/:id/items",
-    "line": 288,
+    "line": 303,
     "lines": 10,
     "guards": [],
     "models": [
@@ -31936,7 +31946,7 @@
     "router": "router",
     "method": "DELETE",
     "path": "/:id/items/:itemId",
-    "line": 297,
+    "line": 312,
     "lines": 264,
     "guards": [],
     "models": [
@@ -31981,7 +31991,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/dispatch",
-    "line": 560,
+    "line": 575,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -32013,7 +32023,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/deliver",
-    "line": 564,
+    "line": 579,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -32045,7 +32055,7 @@
     "router": "router",
     "method": "PUT",
     "path": "/:id/lost",
-    "line": 568,
+    "line": 583,
     "lines": 5,
     "guards": [],
     "models": [],
@@ -32077,7 +32087,7 @@
     "router": "router",
     "method": "PATCH",
     "path": "/:id/status",
-    "line": 572,
+    "line": 587,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -32109,7 +32119,7 @@
     "router": "router",
     "method": "GET",
     "path": "/:id/documents",
-    "line": 579,
+    "line": 594,
     "lines": 8,
     "guards": [],
     "models": [],
@@ -54117,7 +54127,7 @@
    },
    {
     "file": "components/orders/FulfillmentSuggestionPanel.jsx",
-    "lines": 248,
+    "lines": 250,
     "reachable": true,
     "useState": 1,
     "useEffect": 0,
@@ -55107,9 +55117,9 @@
    },
    {
     "file": "contexts/CustomerSessionContext.jsx",
-    "lines": 151,
+    "lines": 155,
     "reachable": true,
-    "useState": 5,
+    "useState": 6,
     "useEffect": 6,
     "ts": false,
     "dialogs": 0,
@@ -55233,7 +55243,7 @@
    },
    {
     "file": "help/manualContent.js",
-    "lines": 3605,
+    "lines": 3630,
     "reachable": true,
     "useState": 0,
     "useEffect": 0,
@@ -55719,9 +55729,9 @@
    },
    {
     "file": "pages/Admin/UserManagementPage.jsx",
-    "lines": 511,
+    "lines": 527,
     "reachable": true,
-    "useState": 18,
+    "useState": 20,
     "useEffect": 2,
     "ts": false,
     "dialogs": 0,
@@ -56151,9 +56161,9 @@
    },
    {
     "file": "pages/Ecommerce/CheckoutPage.jsx",
-    "lines": 308,
+    "lines": 311,
     "reachable": true,
-    "useState": 8,
+    "useState": 9,
     "useEffect": 2,
     "ts": false,
     "dialogs": 1,
@@ -56205,9 +56215,9 @@
    },
    {
     "file": "pages/Ecommerce/OnlineSettingsPage.jsx",
-    "lines": 357,
+    "lines": 361,
     "reachable": true,
-    "useState": 7,
+    "useState": 8,
     "useEffect": 1,
     "ts": false,
     "dialogs": 0,
@@ -56277,7 +56287,7 @@
    },
    {
     "file": "pages/Ecommerce/ShopHomePage.jsx",
-    "lines": 166,
+    "lines": 167,
     "reachable": true,
     "useState": 3,
     "useEffect": 1,
@@ -56583,9 +56593,9 @@
    },
    {
     "file": "pages/Freight/ShipmentTrackingBoard.jsx",
-    "lines": 106,
+    "lines": 115,
     "reachable": true,
-    "useState": 2,
+    "useState": 3,
     "useEffect": 1,
     "ts": false,
     "dialogs": 0,
@@ -57069,9 +57079,9 @@
    },
    {
     "file": "pages/Orders/CSRIntakePage.jsx",
-    "lines": 622,
+    "lines": 624,
     "reachable": true,
-    "useState": 29,
+    "useState": 30,
     "useEffect": 3,
     "ts": false,
     "dialogs": 0,
@@ -59595,7 +59605,7 @@
    },
    {
     "file": "src/backend/test/userAdminRules.test.js",
-    "tests": 6,
+    "tests": 7,
     "importsDb": false,
     "mocks": 0
    },
@@ -59620,12 +59630,12 @@
    },
    {
     "file": "qa/sim/branch-boundary.mjs",
-    "lines": 153,
+    "lines": 155,
     "checks": 44
    },
    {
     "file": "qa/sim/db-cancel-demo-jobs.sh",
-    "lines": 34,
+    "lines": 36,
     "checks": 1
    },
    {
@@ -59634,13 +59644,18 @@
     "checks": 1
    },
    {
+    "file": "qa/sim/db-release-test-stock.sh",
+    "lines": 66,
+    "checks": 1
+   },
+   {
     "file": "qa/sim/db-retire-test-data.sh",
-    "lines": 75,
+    "lines": 79,
     "checks": 1
    },
    {
     "file": "qa/sim/fixtures.mjs",
-    "lines": 126,
+    "lines": 128,
     "checks": 0
    },
    {
@@ -59650,7 +59665,7 @@
    },
    {
     "file": "qa/sim/ledger-sandbox.mjs",
-    "lines": 142,
+    "lines": 145,
     "checks": 0
    },
    {
@@ -59666,6 +59681,11 @@
    {
     "file": "qa/sim/p8-probe.mjs",
     "lines": 186,
+    "checks": 0
+   },
+   {
+    "file": "qa/sim/perf-real-data-routes.mjs",
+    "lines": 63,
     "checks": 0
    },
    {
@@ -59895,7 +59915,7 @@
    },
    {
     "file": "qa/sim/phase7-manufacturing.mjs",
-    "lines": 2236,
+    "lines": 2237,
     "checks": 0
    },
    {
@@ -59925,8 +59945,8 @@
    },
    {
     "file": "qa/sim/phase9/make.cjs",
-    "lines": 256,
-    "checks": 85
+    "lines": 265,
+    "checks": 86
    },
    {
     "file": "qa/sim/phase9/nav.cjs",
@@ -59995,7 +60015,7 @@
    },
    {
     "file": "qa/sim/phase95/g7-guard.mjs",
-    "lines": 390,
+    "lines": 391,
     "checks": 5
    },
    {
@@ -60012,6 +60032,11 @@
     "file": "qa/sim/phase95-ui.cjs",
     "lines": 259,
     "checks": 71
+   },
+   {
+    "file": "qa/sim/real-data-access.mjs",
+    "lines": 46,
+    "checks": 0
    },
    {
     "file": "qa/sim/role-rights.mjs",
@@ -60049,14 +60074,19 @@
     "checks": 8
    },
    {
+    "file": "qa/sim/ui-failed-reads.cjs",
+    "lines": 90,
+    "checks": 5
+   },
+   {
     "file": "qa/sim/ui-floor-to-ship.cjs",
     "lines": 185,
     "checks": 27
    },
    {
     "file": "qa/sim/ui-freight.cjs",
-    "lines": 165,
-    "checks": 30
+    "lines": 185,
+    "checks": 37
    },
    {
     "file": "qa/sim/ui-integration.cjs",
@@ -60104,6 +60134,11 @@
     "checks": 28
    },
    {
+    "file": "qa/sim/ui-real-data-sizes.cjs",
+    "lines": 93,
+    "checks": 5
+   },
+   {
     "file": "qa/sim/ui-role-rights.cjs",
     "lines": 147,
     "checks": 19
@@ -60134,6 +60169,11 @@
     "checks": 0
    },
    {
+    "file": "qa/sim/ui-staff-no-branch.cjs",
+    "lines": 72,
+    "checks": 8
+   },
+   {
     "file": "qa/sim/ui-store-branches.cjs",
     "lines": 97,
     "checks": 11
@@ -60162,7 +60202,7 @@
   "feTests": []
  },
  "contract": {
-  "total": 310,
+  "total": 318,
   "missing": [
    {
     "call": "GET /api/admin/integrations",
@@ -60569,19 +60609,16 @@
   ]
  },
  "screens": {
-  "screens": 147,
+  "screens": 146,
   "tally": {
    "STATIC": 6,
-   "REAL": 79,
-   "SAMPLE, LABELLED": 58,
-   "MIXED": 4
+   "REAL": 85,
+   "SAMPLE, LABELLED": 54,
+   "MIXED": 1
   },
   "unlabelled": [],
   "mixed": [
-   "orders/intake",
-   "pos",
-   "shop/checkout",
-   "admin/online-settings"
+   "pos"
   ],
   "rows": [
    {
@@ -60963,18 +61000,6 @@
     "file": "apps/safety/StopWorkClearance.jsx"
    },
    {
-    "route": "production",
-    "onMenu": false,
-    "verdict": "REAL",
-    "file": "components/production/ProductionWorkflowBoard.jsx"
-   },
-   {
-    "route": "production/shop-floor",
-    "onMenu": false,
-    "verdict": "REAL",
-    "file": "components/production/ShopFloorScreen.jsx"
-   },
-   {
     "route": "production/shipping",
     "onMenu": false,
     "verdict": "REAL",
@@ -61067,7 +61092,7 @@
    {
     "route": "freight/planner",
     "onMenu": true,
-    "verdict": "SAMPLE, LABELLED",
+    "verdict": "REAL",
     "file": "pages/Freight/ShipmentPlanner.jsx"
    },
    {
@@ -61091,19 +61116,19 @@
    {
     "route": "freight/tracking",
     "onMenu": true,
-    "verdict": "SAMPLE, LABELLED",
+    "verdict": "REAL",
     "file": "pages/Freight/ShipmentTrackingBoard.jsx"
    },
    {
     "route": "freight/exceptions",
     "onMenu": true,
-    "verdict": "SAMPLE, LABELLED",
+    "verdict": "REAL",
     "file": "pages/Freight/ExceptionInbox.jsx"
    },
    {
     "route": "freight/pod/:shipmentId",
     "onMenu": false,
-    "verdict": "SAMPLE, LABELLED",
+    "verdict": "REAL",
     "file": "pages/Freight/PODViewer.jsx"
    },
    {
@@ -61277,7 +61302,7 @@
    {
     "route": "orders/intake",
     "onMenu": true,
-    "verdict": "MIXED",
+    "verdict": "REAL",
     "file": "pages/Orders/CSRIntakePage.jsx"
    },
    {
@@ -61347,6 +61372,12 @@
     "file": "pages/Admin/RolesPage.jsx"
    },
    {
+    "route": "admin/locations",
+    "onMenu": true,
+    "verdict": "REAL",
+    "file": "pages/Admin/LocationsPage.jsx"
+   },
+   {
     "route": "admin/tax-rates",
     "onMenu": true,
     "verdict": "REAL",
@@ -61403,7 +61434,7 @@
    {
     "route": "shop/checkout",
     "onMenu": false,
-    "verdict": "MIXED",
+    "verdict": "REAL",
     "file": "pages/Ecommerce/CheckoutPage.jsx"
    },
    {
@@ -61451,7 +61482,7 @@
    {
     "route": "admin/online-settings",
     "onMenu": true,
-    "verdict": "MIXED",
+    "verdict": "REAL",
     "file": "pages/Ecommerce/OnlineSettingsPage.jsx"
    },
    {

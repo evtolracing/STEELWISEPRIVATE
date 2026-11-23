@@ -138,7 +138,9 @@ for (const [who, allowed] of [['branchA', [L1]], ['regional', [L1, L2, L3]]]) {
   check(`${who} lists only the people of their own branches`, list.length > 0 && outside.length === 0 && list.some((u) => u.id === self), `${list.length} people, ${outside.length} from elsewhere`);
 }
 const everyone = await people('admin');
-check('head office lists people of every branch and people with no branch', new Set(everyone.map((u) => u.homeLocationId)).size > 3 && everyone.some((u) => !u.homeLocationId), `${everyone.length}`);
+// Judged by the logins the fixtures make, so the check holds on a database built a minute ago as well as on a used one.
+const seen = new Set(everyone.map((u) => u.id));
+check('head office lists people of every branch and people with no branch', seen.has(await meOf('branchA')) && seen.has(await meOf('branchB')) && seen.has(await meOf('regional')) && everyone.some((u) => !u.homeLocationId), `${everyone.length}`);
 const idA = await meOf('branchA'), idB = await meOf('branchB');
 check('opening a person of another branch is refused as not found', (await A.get(`/api/users/${idB}`, 'branchA')).status === 404);
 check('opening yourself and a colleague of your branch works', (await A.get(`/api/users/${idA}`, 'branchA')).status === 200 && (await A.get(`/api/users/${await meOf('branchWh')}`, 'branchA')).status === 200);

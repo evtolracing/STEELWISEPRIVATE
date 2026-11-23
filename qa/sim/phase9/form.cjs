@@ -15,7 +15,7 @@ module.exports = async (s) => {
     ['/order-board', 'New Job', /^Create Job$/, boss],
     ['/material-tracking/packages', 'Open a package', /^Open package$/, boss],
   ];
-  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300);
+  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300 && !x.replayed); // an answer given again for a repeated request is not a second save
 
   for (const [route, opener, , who] of DIALOGS) {
     await sc('FORM', `${route} "${opener}": opens from the keyboard, holds the keyboard, Escape closes, focus returns, nothing is saved`, async (t) => {

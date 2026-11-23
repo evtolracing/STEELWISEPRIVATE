@@ -124,6 +124,7 @@ async function main() {
     update: {},
     create: {
       code: 'WH-MAIN',
+      isBranch: true,
       name: 'Main Warehouse',
       type: 'WAREHOUSE',
       ownerId: org.id,

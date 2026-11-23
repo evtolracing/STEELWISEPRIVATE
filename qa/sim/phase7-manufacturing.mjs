@@ -1433,7 +1433,8 @@ if (want(5)) {
     const d = r.body.data;
     const day = new Date(new Date().setHours(0, 0, 0, 0));
     const [queue, running, passed, failed, total] = await Promise.all([
-      prisma.job.count({ where: { status: 'WAITING_QC' } }), prisma.jobInspection.count({ where: { status: 'IN_PROGRESS' } }),
+      prisma.job.count({ where: { status: 'WAITING_QC' } }), // In hand means started and not yet decided, with or without an inspector (the walkthrough fix of 2026-11-20).
+      prisma.jobInspection.count({ where: { status: { in: ['PENDING', 'IN_PROGRESS'] } } }),
       prisma.jobInspection.count({ where: { overallResult: 'PASS', completedAt: { gte: day } } }), prisma.jobInspection.count({ where: { overallResult: 'FAIL', completedAt: { gte: day } } }), prisma.jobInspection.count(),
     ]);
     ok('each count equals the records', r.status === 200 && d.queueCount === queue && d.inProgressCount === running && d.passedToday === passed && d.failedToday === failed && d.totalInspections === total, JSON.stringify({ d: [d.queueCount, d.inProgressCount, d.passedToday, d.failedToday], db: [queue, running, passed, failed] }));

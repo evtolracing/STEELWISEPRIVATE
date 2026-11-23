@@ -77,16 +77,16 @@ export async function seedSupabaseData() {
     //  LOCATIONS
     // ═══════════════════════════════════════════════════════════
     const jackson = await prisma.location.create({
-      data: { code: 'JAX-WH', name: 'Jackson Main Warehouse', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '3100 E Michigan Ave', city: 'Jackson', state: 'MI', postalCode: '49202', hasCrane: true, isActive: true }
+      data: { code: 'JAX-WH', isBranch: true, name: 'Jackson Main Warehouse', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '3100 E Michigan Ave', city: 'Jackson', state: 'MI', postalCode: '49202', hasCrane: true, isActive: true }
     });
     const detroitA = await prisma.location.create({
-      data: { code: 'DET-A', name: 'Detroit Branch - Bay A', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '14000 W 8 Mile Rd', city: 'Detroit', state: 'MI', postalCode: '48235', hasCrane: true, isActive: true }
+      data: { code: 'DET-A', isBranch: true, name: 'Detroit Branch - Bay A', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '14000 W 8 Mile Rd', city: 'Detroit', state: 'MI', postalCode: '48235', hasCrane: true, isActive: true }
     });
     const detroitB = await prisma.location.create({
-      data: { code: 'DET-B', name: 'Detroit Branch - Bay B', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '14000 W 8 Mile Rd', city: 'Detroit', state: 'MI', postalCode: '48235', hasCrane: false, isActive: true }
+      data: { code: 'DET-B', isBranch: true, name: 'Detroit Branch - Bay B', type: 'WAREHOUSE', ownerId: alroSteel.id, addressLine1: '14000 W 8 Mile Rd', city: 'Detroit', state: 'MI', postalCode: '48235', hasCrane: false, isActive: true }
     });
     const grYard = await prisma.location.create({
-      data: { code: 'GR-YARD', name: 'Grand Rapids Yard', type: 'YARD', ownerId: alroSteel.id, addressLine1: '4500 Division Ave S', city: 'Grand Rapids', state: 'MI', postalCode: '49548', isOutdoor: true, hasCrane: true, isActive: true }
+      data: { code: 'GR-YARD', isBranch: true, name: 'Grand Rapids Yard', type: 'YARD', ownerId: alroSteel.id, addressLine1: '4500 Division Ave S', city: 'Grand Rapids', state: 'MI', postalCode: '49548', isOutdoor: true, hasCrane: true, isActive: true }
     });
     console.log('✅ Seeded 4 locations');
 

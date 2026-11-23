@@ -12,6 +12,7 @@ const failed = [];
 const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push(`${name} ${typeof detail === 'string' ? detail : JSON.stringify(detail)}`.slice(0, 420)); };
 
 (async () => {
+  if (!/localhost.*qa|127\.0\.0\.1.*qa/.test(process.env.DATABASE_URL || '')) throw new Error('Refusing: DATABASE_URL is not a local QA database');
   const owner = await fetch(`${API}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'qa-admin@qa.test', password: 'qa-password-1' }) }).then((r) => r.json());
   if (!owner.token) throw new Error('QA sign-in failed. Is the QA server running with the fixtures loaded?');
   const call = async (method, url, body) => { const r = await fetch(API + url, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${owner.token}` }, body: body ? JSON.stringify(body) : undefined }); return { status: r.status, body: await r.json().catch(() => null) }; };
@@ -84,7 +85,6 @@ const check = (name, ok, detail = '') => { if (ok) passed += 1; else failed.push
     // Put the rule back as it was found.
     const { PrismaClient } = require(require('path').resolve(__dirname, '../../src/backend/node_modules/@prisma/client'));
     const prisma = new PrismaClient();
-    if (!/localhost.*qa|127\.0\.0\.1.*qa/.test(process.env.DATABASE_URL || '')) throw new Error('Refusing: DATABASE_URL is not a local QA database');
     const row = await prisma.appSetting.findUnique({ where: { key: 'online.cutoffRules' } });
     if (row && !target.isSet) { const value = { ...row.value }; delete value[target.locationId]; await prisma.appSetting.update({ where: { key: 'online.cutoffRules' }, data: { value } }); }
     await prisma.$disconnect();

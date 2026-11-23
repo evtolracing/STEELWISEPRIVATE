@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import * as ctx from './phase10/ctx.mjs';
 import { rng } from './lib.mjs';
 import { build, signIn, TIERS } from './phase11/model.mjs';
-import { THRESHOLDS, STATUS as THRESHOLD_STATUS, judge } from './phase11/thresholds.mjs';
+import { THRESHOLDS, STATUS as THRESHOLD_STATUS, judge, judgeDispatchAtOrdinaryLoad } from './phase11/thresholds.mjs';
 import { makeEngine, pool, summary, CATEGORIES, MINIMUMS, JOB_TYPES, StepFailed } from './phase11/engine.mjs';
 
 const { prisma, arg, near, ok2, sleep } = ctx;
@@ -243,7 +243,8 @@ Object.assign(report, {
 const invBad = Object.entries(invariants).filter(([, v]) => v !== 0);
 const judged = judge({ 'sign-in': report.signIn, ...report.latencyMs, ...report.readsWhileWorking });
 const serverErrors = Object.entries(X.statuses).filter(([s]) => Number(s) >= 500 || Number(s) === 0).reduce((n, [, v]) => n + v, 0);
-report.thresholds = { status: THRESHOLD_STATUS, limits: THRESHOLDS, latency: judged, latencyMisses: judged.filter((j) => !j.pass), serverErrors, failedTransactionsPercent: +((100 * txTotals.failed) / Math.max(1, txTotals.attempted)).toFixed(3), peakLevelRequestsPerSecond: Math.max(0, ...levels.map((l) => l.requestsPerSecond)) };
+const ordinary = judgeDispatchAtOrdinaryLoad(levels);
+report.thresholds = { status: THRESHOLD_STATUS, limits: THRESHOLDS, latency: judged, latencyMisses: judged.filter((j) => !j.pass), dispatchAtOrdinaryLoad: ordinary, serverErrors, failedTransactionsPercent: +((100 * txTotals.failed) / Math.max(1, txTotals.attempted)).toFixed(3), peakLevelRequestsPerSecond: Math.max(0, ...levels.map((l) => l.requestsPerSecond)) };
 if (CHAOS) report.chaos = { faultsInjected: chaos.events.length, events: chaos.events, everyCopyBackUp: chaos.events.every((e) => e.backUp !== false), copiesUpAtTheEnd: (await fetch(`${ctx.BASE}/__cluster/state`).then((r) => r.json()).catch(() => null))?.workers.filter((w) => w.up).length ?? null };
 report.verdict = {
   jobs500: PROBE || report.jobs.tracedEndToEnd >= 500, transactions2000: PROBE || txTotals.reconciled >= 2000,
@@ -252,7 +253,8 @@ report.verdict = {
   nothingCountedIsMissing: Object.keys(recon.missing).length === 0 && Object.keys(recon.notChecked).length === 0,
   noServerError: serverErrors <= THRESHOLDS.reliability.serverErrors.max, noDeadlock: report.databaseDuringRun.deadlocks <= THRESHOLDS.reliability.deadlocks.max,
   failedTransactionsWithinLimit: report.thresholds.failedTransactionsPercent <= THRESHOLDS.reliability.failedTransactionsPercent.max,
-  responseTimesWithinProposedLimits: report.thresholds.latencyMisses.length === 0,
+  responseTimesWithinProposedLimits: report.thresholds.latencyMisses.length === 0, // the key keeps its first name so earlier result files and the report tools still read it; the limits were approved on 2026-11-22
+  dispatchWithinLimitAtOrdinaryLoad: PROBE || (ordinary.length > 0 && ordinary.every((o) => o.pass)),
 };
 fs.writeFileSync(OUT, `${JSON.stringify(report, null, 1)}\n`);
 if (!PROBE) fs.writeFileSync(OUT.replace(/\.json$/, '-jobs.json'), `${JSON.stringify({ cycle: CYCLE, at: report.at, jobs: jobs.map(({ n: _n, ...j }) => j) })}\n`);
@@ -269,7 +271,8 @@ if (X.failures.length) console.log(`  failed requests: ${Object.entries(report.r
 console.log(`  books: trial balance ${report.books.trialBalanceBalanced ? 'balances' : 'DOES NOT BALANCE'}; reconciliation ${report.books.reconciliation.clean ? 'clean' : `differences: ${report.books.reconciliation.checks.filter((c) => c.ok === false).map((c) => `${c.key} ${c.difference}`).join(', ')}`}; database: ${report.databaseDuringRun.deadlocks} deadlocks, ${report.databaseDuringRun.rolledBack} rolled back, lock waiters max ${report.databaseDuringRun.sessionsWaitingForALock.max}`);
 const slow = Object.entries(report.latencyMs).sort((a, b) => b[1].p95 - a[1].p95).slice(0, 8);
 for (const [k, v] of slow) console.log(`   ${k.padEnd(44)} n=${String(v.requests).padStart(4)} p50=${v.p50} p95=${v.p95} p99=${v.p99} max=${v.max}`);
-for (const m of report.thresholds.latencyMisses) console.log(`  ✗ slower than the proposed limit: ${m.kind} p95 ${m.p95} (limit ${m.limitP95}), p99 ${m.p99} (limit ${m.limitP99})`);
+for (const m of report.thresholds.latencyMisses) console.log(`  ✗ slower than the approved limit: ${m.kind} p95 ${m.p95} (limit ${m.limitP95}), p99 ${m.p99} (limit ${m.limitP99})`);
+for (const o of ordinary) console.log(`  ${o.pass ? '✓' : '✗'} dispatch with ${o.jobsInFlight} jobs in flight: p95 ${o.p95} (limit ${o.limitP95}), ${o.requests} dispatches`);
 // With failures injected, lost requests and slow answers are the point: the run is judged on what must
 // hold whatever fails (nothing half-saved, nothing counted that is not there, the books agree, every copy back).
 const JUDGED = CHAOS ? ['invariantsHold', 'booksAgree', 'nothingCountedIsMissing', 'noDeadlock', 'everyCopyBackUp', 'faultsWereInjected'] : Object.keys(report.verdict);

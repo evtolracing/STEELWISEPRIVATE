@@ -1,6 +1,6 @@
 # Test execution results
 
-Generated 2026-11-20T12:12:12.229Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
+Generated 2026-11-23T01:46:03.877Z by `qa/tools/report.mjs` from the files in `qa/results/`. Nothing here is typed by hand.
 
 All runs were against the local QA database `steelwise_qa` (80 test branches, 280 work centers, 323 stock items, 16 test customers). No production system was touched.
 
@@ -51,12 +51,12 @@ All runs were against the local QA database `steelwise_qa` (80 test branches, 28
 
 - Pass: 10 simultaneous orders all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201; 10 distinct
 - Pass: two reservations racing for the same stock: exactly one wins. statuses 201,409; available 2640
-- Pass: two shipments racing for the same order line: exactly one is created. statuses 409,201
+- Pass: two shipments racing for the same order line: exactly one is created. statuses 201,409
 - Pass: one shipment dispatched three times at once: counted once. statuses 200,409,409; line shipped 3960 of 3960; on hand 6600 → 2640
 - Pass: 10 simultaneous jobs all saved with distinct numbers. statuses 201,201,201,201,201,201,201,201,201,201
 - Pass: one shipment invoiced three more times at once: billed once. statuses 409,409,409; 1 invoice(s), 3960 billed of 3960 shipped
 - Pass: three full payments at once on one invoice: taken once. statuses 201,409,409; paid 2574 of 2574
-- Pass: one return received three times at once: counted once, one credit. statuses 200,409,409; 1 credit memo(s); source coil on hand 2640 → 3630
+- Pass: one return received three times at once: counted once, one credit. statuses 409,200,409; 1 credit memo(s); source coil on hand 2640 → 3630
 
 The reconciliation also found 52 inconsistencies in the demo seed orders (created by the seed script, not by the app). Examples: SO-P1001: fully shipped but status is CONFIRMED; SO-P1003: fully shipped but status is CONFIRMED; SO-C2001 line 1: shipped 7 ≠ shipments that left 0.
 
@@ -76,24 +76,24 @@ The reconciliation also found 52 inconsistencies in the demo seed orders (create
 
 ## Security, isolation and robustness sweep
 
-Run 2026-11-20T11:14:37.894Z. 670 of 670 routes swept.
+Run 2026-11-23T00:50:28.819Z. 681 of 681 routes swept.
 
 | Check | Result | Detail |
 |---|---|---|
-| No access without signing in | Pass | 630 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped) |
+| No access without signing in | Pass | 641 routes tried with no token, 0 did not refuse (40 documented public or partner routes skipped) |
 | Partner API needs a partner token | Pass | 60 calls, 0 let in |
 | Forged and invalid sign-ins are refused | Pass | 5 cases, 0 problems |
-| Customer logins are held to the store | Pass | 606 staff routes tried as a customer, 0 not refused |
+| Customer logins are held to the store | Pass | 617 staff routes tried as a customer, 0 not refused |
 | Customers and divisions cannot see each other | Pass | 31 checks, 0 problems |
 | Staff roles and departments | Pass | 18 checks, 0 problems |
-| Read routes do not crash on bad input | Pass | 885 reads, 0 server errors |
+| Read routes do not crash on bad input | Pass | 906 reads, 0 server errors |
 | Core write routes reject bad input cleanly | Pass | 38 bad requests, 0 not answered with a 4xx |
 | Documents: upload, list, download, delete | Pass | 11 checks, 0 problems |
 | Web checkout uses the system price, not the browser's | Pass | 4 checks, 0 problems |
 | Platform safeguards: bounded lists, tracing, real figures, database rules | Pass | 33 checks, 0 problems |
 | Error replies do not expose internals | Pass | 0 replies exposed internal detail |
 | One customer, one price in every sales channel | Pass | 47 checks, 0 problems |
-| Order entry screen follows the order rules | FINDINGS | 45 checks, 1 problems |
+| Order entry screen follows the order rules | Pass | 45 checks, 0 problems |
 | Stock items: lists, cost, edits, holds | Pass | 29 checks, 0 problems |
 | Credit hold: over the limit waits for a manager | Pass | 22 checks, 0 problems |
 | Heats, products and grades: checked input, right people, prices recorded | Pass | 47 checks, 0 problems |
@@ -101,30 +101,26 @@ Run 2026-11-20T11:14:37.894Z. 670 of 670 routes swept.
 | Shop floor records: who moved a job, and work orders that follow the rules | Pass | 50 checks, 0 problems |
 | Shipping and money records: web order tax, shipments and who did what | Pass | 40 checks, 0 problems |
 
-### Order entry screen follows the order rules
-
-- stock reserved for a replaced line goes back on the shelf: reserve 404; allocated 0 → 0 → 0; available 9792 → 9792
-
 ## Screen check
 
-Run 2026-11-20T11:49:48.102Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
+Run 2026-11-23T01:26:35.460Z as qa-admin@qa.test. Every route in the app's router was opened in a real browser (Chromium).
 
-- Screens opened: 132
-- OK: 132
-- Screens that made at least one failing API call: 10
+- Screens opened: 133
+- OK: 133
+- Screens that made at least one failing API call: 11
 
 ### API calls that failed while screens loaded
 
 | Call | Screens |
 |---|---|
-| `GET /api/shipments/:id → 404` | `/logistics/shipments/:id`, `/shipping/:id` |
+| `GET /api/shipments/:id → 404` | `/logistics/shipments/:id`, `/freight/pod/:shipmentId`, `/shipping/:id` |
 | `GET /api/heats/:id → 404` | `/heats/:id` |
-| `GET /api/coils/:id → 404` | `/units/:id` |
 | `GET /api/coils/:id/history → 404` | `/units/:id` |
+| `GET /api/coils/:id → 404` | `/units/:id` |
 | `GET /api/work-orders/:id → 404` | `/work-orders/:id` |
 | `GET /api/qc/inspections/:id → 404` | `/qc/inspect/:id` |
-| `GET /api/jobs/:id/history → 404` | `/jobs/:id` |
 | `GET /api/jobs/:id → 404` | `/jobs/:id` |
+| `GET /api/jobs/:id/history → 404` | `/jobs/:id` |
 | `GET /api/orders/intake/:id → 404` | `/orders/:id` |
 | `GET /api/ecom/catalog/:id → 404` | `/shop/products/:id` |
 | `GET /api/ecom/my-orders/:id → 404` | `/shop/orders/:id` |
@@ -133,7 +129,7 @@ Screens with an id in the address were opened with an id that does not exist, so
 
 ## Sales screens operated in a browser
 
-Run 2026-11-20T11:20:25.366Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-23T00:55:00.691Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales Dashboard, Pricing and Credit Holds were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 24
 - Failed: 0
@@ -167,7 +163,7 @@ Run 2026-11-20T11:20:25.366Z with `qa/sim/ui-sales.cjs`: Sales Rep Mobile, Sales
 
 ## Stock screens operated in a browser
 
-Run 2026-11-20T11:20:49.321Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
+Run 2026-11-23T00:55:20.451Z with `qa/sim/ui-inventory.cjs`: stock items, heats and receiving were used as a clerk and as a manager, and what they showed was compared with the database.
 
 - Checks: 23
 - Failed: 0
@@ -200,7 +196,7 @@ Run 2026-11-20T11:20:49.321Z with `qa/sim/ui-inventory.cjs`: stock items, heats 
 
 ## Shop screens operated in a browser
 
-Run 2026-11-20T11:20:03.344Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
+Run 2026-11-23T00:54:41.960Z with `qa/sim/ui-shop.cjs`: the job, schedule, time tracking and work order screens were used as an operator and as a manager, and what they showed was compared with the server.
 
 - Checks: 31
 - Failed: 0
@@ -241,9 +237,9 @@ Run 2026-11-20T11:20:03.344Z with `qa/sim/ui-shop.cjs`: the job, schedule, time 
 
 ## Shipping and invoice screens operated in a browser
 
-Run 2026-11-20T11:19:34.104Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
+Run 2026-11-23T00:54:18.420Z with `qa/sim/ui-shipping.cjs`: a shipment was created, dispatched, delivered and cancelled as shipping staff, and a payment recorded as a manager; what the screens showed was compared with the server.
 
-- Checks: 30
+- Checks: 29
 - Failed: 0
 
 | Check | Result |
@@ -275,13 +271,12 @@ Run 2026-11-20T11:19:34.104Z with `qa/sim/ui-shipping.cjs`: a shipment was creat
 | invoice: a payment is saved and the history names who took it | Pass |
 | invoice screen: no script errors | Pass |
 | all orders: real orders are listed with no sample fallback | Pass |
-| /freight/planner: says it is a sample screen and points to Shipping | Pass |
-| /freight/tracking: says it is a sample screen and points to Shipping | Pass |
+| /freight/comparison: says it is a sample screen and points to Shipping | Pass |
 | /logistics/dispatch: says it is a sample screen and points to Shipping | Pass |
 
 ## Sample notices and invented figures checked in a browser
 
-Run 2026-11-20T11:19:09.073Z with `qa/sim/ui-experience.cjs`.
+Run 2026-11-23T00:54:01.040Z with `qa/sim/ui-experience.cjs`.
 
 - Checks: 22
 - Failed: 0
@@ -313,11 +308,11 @@ Run 2026-11-20T11:19:09.073Z with `qa/sim/ui-experience.cjs`.
 
 ## Screen audit
 
-147 screens: 6 STATIC, 79 REAL, 58 SAMPLE, LABELLED, 4 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
+146 screens: 6 STATIC, 85 REAL, 54 SAMPLE, LABELLED, 1 MIXED. 0 show made-up data with no notice. Full list in `qa/screen-audit.md`.
 
 ## Screen-to-server contract
 
-310 distinct API calls are written in the screens; 67 have no matching server route. Full list in `qa/api-contract.md`.
+318 distinct API calls are written in the screens; 67 have no matching server route. Full list in `qa/api-contract.md`.
 
 ## Unit tests
 

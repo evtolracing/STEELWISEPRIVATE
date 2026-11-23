@@ -56,7 +56,7 @@ if (finish('Set-up', '/dev/null', fs)) { console.log('✗ the ledger could not b
 const branches = [];
 for (let i = 1; i <= BRANCHES; i++) {
   const code = `QALOAD-${String(i).padStart(2, '0')}`;
-  branches.push(await prisma.location.upsert({ where: { code }, update: { isActive: true }, create: { code, name: `QA load branch ${i}`, type: L1.type, ownerId: house, state: L1.state, city: L1.city, country: L1.country, isActive: true } }));
+  branches.push(await prisma.location.upsert({ where: { code }, update: { isActive: true, isBranch: true }, create: { code, isBranch: true, name: `QA load branch ${i}`, type: L1.type, ownerId: house, state: L1.state, city: L1.city, country: L1.country, isActive: true } }));
 }
 // --ledger off: the same work with posting stopped, to measure what the ledger itself adds. No posting check applies to that run.
 const LEDGER_OFF = arg('ledger', 'on') === 'off';

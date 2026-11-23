@@ -141,6 +141,9 @@ async function checkItems(db, orderId, rawItems, ignoreShipmentId) {
 
 const SHIPMENT_STATUSES = ['PENDING', 'LOADING', 'IN_TRANSIT', 'DELIVERED', 'EXCEPTION', 'CANCELLED', 'LOST'];
 const LIST_MAX = 200;
+// The freight boards: far above any real count of open shipments; the screen says so if it is ever reached.
+const BOARD_MAX = 5000;
+const BOARD_DELIVERED_DAYS = 8; // the board keeps 7 days by the viewer's clock; one more covers any time zone
 // The customer as the shipping desk needs it: who and where, not credit terms or pricing.
 const BUYER = { select: { id: true, code: true, name: true, city: true, state: true } };
 
@@ -159,16 +162,28 @@ router.get('/', handle('fetch shipments', async (req, res) => {
   const { status } = req.query;
   if (status !== undefined && !SHIPMENT_STATUSES.includes(status)) refuse(400, `status must be one of: ${SHIPMENT_STATUSES.join(', ')}`);
   const search = typeof req.query.search === 'string' ? req.query.search.trim().slice(0, 60) : '';
-  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), LIST_MAX);
+  // scope=board: everything the freight boards need and nothing older, so no open shipment is left off for
+  // being outside "the newest 200": every shipment not yet delivered or cancelled, the last week's deliveries,
+  // and any delivery still missing its proof.
+  const board = req.query.scope === 'board';
+  if (req.query.scope !== undefined && !board) refuse(400, 'scope must be: board');
+  const limit = board ? BOARD_MAX : Math.min(Math.max(parseInt(req.query.limit, 10) || 50, 1), LIST_MAX);
   const like = { contains: search, mode: 'insensitive' };
   const where = {
     ...(status && { status }),
-    ...(search && { OR: [{ shipmentNumber: like }, { bolNumber: like }, { carrierName: like }, { order: { orderNumber: like } }, { order: { buyer: { name: like } } }] }),
+    AND: [
+      ...(search ? [{ OR: [{ shipmentNumber: like }, { bolNumber: like }, { carrierName: like }, { order: { orderNumber: like } }, { order: { buyer: { name: like } } }] }] : []),
+      ...(board ? [{ OR: [
+        { status: { in: ['PENDING', 'LOADING', 'IN_TRANSIT', 'EXCEPTION', 'LOST'] } },
+        { status: 'DELIVERED', deliveredAt: { gte: new Date(Date.now() - BOARD_DELIVERED_DAYS * 86400000) } },
+        { status: 'DELIVERED', podCaptured: false, noPodReason: null },
+      ] }] : []),
+    ],
   };
   const [shipments, total] = await Promise.all([
     prisma.shipment.findMany({
       where,
-      include: { order: { select: { id: true, orderNumber: true, status: true, buyer: BUYER } }, fromLocation: { select: { id: true, code: true, name: true } }, items: true },
+      include: { order: { select: { id: true, orderNumber: true, status: true, buyer: BUYER } }, fromLocation: { select: { id: true, code: true, name: true } }, ...(board ? {} : { items: true }) }, // the boards show no lines
       orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
       take: limit,
     }),
@@ -196,7 +211,7 @@ router.get('/ready-orders', handle('list orders ready to ship', async (req, res)
       jobs: { select: { status: true } },
     },
     orderBy: [{ promisedDate: { sort: 'asc', nulls: 'last' } }, { orderNumber: 'asc' }],
-    take: LIST_MAX,
+    take: BOARD_MAX,
   });
   res.json(orders.map(({ jobs, ...o }) => ({
     ...o,

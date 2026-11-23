@@ -387,7 +387,7 @@ function WorkCenterQueuePage() {
                               <Typography variant="caption" color="text.secondary">
                                 {[customerOf(op), op.name].filter(Boolean).join(' · ')}
                               </Typography>
-                              <StepLights steps={op.planSteps} sx={{ mt: 0.5, maxWidth: 200 }} />
+                              <StepLights steps={op.planSteps} sx={{ mt: 0.5, maxWidth: 260 }} />
                             </Box>
                           </TableCell>
                           <TableCell>
@@ -496,7 +496,7 @@ function WorkCenterQueuePage() {
                 <CardContent sx={{ flex: 1, overflow: 'auto' }}>
                   <Box sx={{ mb: 2.5 }} data-testid="queue-job-lights">
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>Plan</Typography>
-                    <StepLights steps={selectedOperation.planSteps} showText sx={{ maxWidth: 520 }} />
+                    <StepLights steps={selectedOperation.planSteps} showText />
                   </Box>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>

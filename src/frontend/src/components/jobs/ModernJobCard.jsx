@@ -672,7 +672,7 @@ const ModernJobCard = ({
             ) : (
               <>
               <ChangePlanButton jobId={job.id} status={job.status} onSaved={onPlanChanged} />
-              <Fade in={isHovered}>
+              <Fade in>
                 <Stack direction="row" spacing={0.5}>
                   {job.status === 'SCHEDULED' && onStart && (
                     <Tooltip title="Start Job">

@@ -63,6 +63,7 @@ import { calendarDate } from '../../utils/calendarDate'
 import { clockSeconds } from '../../pages/timeTrackingRules'
 import { jobTitle, customerOf, orderOf, thicknessOf, branchLabel } from './queueLabels'
 import ChangePlanButton from '../../components/jobs/ChangePlanButton'
+import StepLights from '../../components/jobs/StepLights'
 
 // Priority config
 const PRIORITY_CONFIG = {
@@ -386,6 +387,7 @@ function WorkCenterQueuePage() {
                               <Typography variant="caption" color="text.secondary">
                                 {[customerOf(op), op.name].filter(Boolean).join(' · ')}
                               </Typography>
+                              <StepLights steps={op.planSteps} sx={{ mt: 0.5, maxWidth: 200 }} />
                             </Box>
                           </TableCell>
                           <TableCell>
@@ -492,6 +494,10 @@ function WorkCenterQueuePage() {
 
                 {/* Job Details */}
                 <CardContent sx={{ flex: 1, overflow: 'auto' }}>
+                  <Box sx={{ mb: 2.5 }} data-testid="queue-job-lights">
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>Plan</Typography>
+                    <StepLights steps={selectedOperation.planSteps} showText sx={{ maxWidth: 520 }} />
+                  </Box>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>

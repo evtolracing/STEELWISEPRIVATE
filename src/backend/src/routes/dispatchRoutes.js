@@ -20,6 +20,7 @@ import { Prisma } from '@prisma/client'
 import { readKindRules } from '../lib/workCenterKindRules.js'
 import { can } from '../lib/roleStore.js'
 import { clockOf } from '../lib/timeEntries.js'
+import { planLights } from '../lib/productionView.js'
 const router = express.Router()
 
 /** The labor rate of a kind of work center is cost: it goes only to the roles that manage cost. */
@@ -738,7 +739,8 @@ router.get('/queue', async (req, res) => {
     
     const rawOps = await prisma.dispatchOperation.findMany({
       where: opWhere,
-      include: { dispatchJob: { include: { order: { select: { orderNumber: true } } } }, timeLogs: { select: { startAt: true, endAt: true } } },
+      // The job's whole plan comes with each step, for the lights on the shop floor card.
+      include: { dispatchJob: { include: { order: { select: { orderNumber: true } }, operations: { select: { id: true, sequence: true, status: true, name: true, assignedWorkCenter: { select: { name: true } } } } } }, timeLogs: { select: { startAt: true, endAt: true } } },
       orderBy: { sequence: 'asc' },
     })
     
@@ -787,6 +789,8 @@ router.get('/queue', async (req, res) => {
         jobId: job?.id || null,
         // The production job this step belongs to (the plan's own id is above), for the job screen and Change plan.
         productionJobId: job?.jobId || null,
+        // Every step of the job's plan in order, and which of them this step is, for the lights on the card.
+        planSteps: planLights(job?.operations || []).map((s) => ({ ...s, here: s.sequence === op.sequence })),
         job: job
           ? {
               id: job.id,

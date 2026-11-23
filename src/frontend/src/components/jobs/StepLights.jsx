@@ -2,6 +2,7 @@
  * The lights on a job's card: one per step of its plan, in order, lit by the step's status (owner, 2026-11-22).
  * Finished is solid green, the running step glows, a step queued at its machine is outlined, a step not started is
  * dim. Pointing at a light names the step, its machine and its status. A job with no plan shows no lights.
+ * On the shop floor the step that belongs to the machine being looked at (`here`) is drawn taller.
  */
 import { Box, Stack, Tooltip, Typography } from '@mui/material'
 import { keyframes } from '@mui/system'
@@ -29,8 +30,9 @@ export default function StepLights({ steps, showText = false, sx }) {
         {list.map((step, i) => {
           const light = stepLight(step)
           return (
-            <Tooltip key={step.sequence ?? i} title={[`${i + 1}. ${step.name || 'Step'}`, step.machine, light.words].filter(Boolean).join(' · ')}>
-              <Box data-testid="step-light" data-tone={light.tone} sx={{ flex: '1 1 14px', minWidth: 14, maxWidth: 44, height: 8, borderRadius: 4, boxSizing: 'border-box', ...TONES[light.tone] }} />
+            <Tooltip key={step.sequence ?? i} title={[`${i + 1}. ${step.name || 'Step'}`, step.machine, light.words, step.here ? 'this machine\'s step' : null].filter(Boolean).join(' · ')}>
+              <Box data-testid="step-light" data-tone={light.tone} data-here={step.here ? 'yes' : undefined}
+                sx={{ flex: '1 1 14px', minWidth: 14, maxWidth: 44, height: step.here ? 12 : 8, borderRadius: 4, boxSizing: 'border-box', ...TONES[light.tone] }} />
             </Tooltip>
           )
         })}

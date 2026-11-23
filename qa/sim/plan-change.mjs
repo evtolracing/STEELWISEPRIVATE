@@ -96,6 +96,8 @@ try {
   const names = (q.body?.data?.operations || []).map((o) => o.name);
   check('the steps put on a machine are in that machine\'s queue', q.status === 200 && names.includes('Deburr pass 2') && names.includes('Final deburr'), `${q.status} ${JSON.stringify(q.body).slice(0, 160)}`);
   check('the queue names the job each step belongs to, so its plan can be changed from the shop floor', (q.body?.data?.operations || []).every((o) => o.productionJobId === J.job.id), JSON.stringify((q.body?.data?.operations || []).map((o) => o.productionJobId)));
+  const lit = (q.body?.data?.operations || []).find((o) => o.name === 'Final deburr');
+  check('the shop floor queue sends the whole plan for the lights and marks this machine\'s step', lit?.planSteps?.map((s) => `${s.name}:${s.status}${s.here ? ':here' : ''}`).join() === 'First cut:COMPLETE,Second cut:IN_PROCESS,Deburr pass 2:SCHEDULED,Final deburr:SCHEDULED:here', JSON.stringify(lit?.planSteps));
   const q2 = await call('admin', 'GET', `/api/v1/dispatch/queue?workCenterId=${saw2.id}`);
   const q1 = await call('admin', 'GET', `/api/v1/dispatch/queue?workCenterId=${saw1.id}`);
   const list = (r) => (r.body?.data?.operations || []).map((o) => o.id);

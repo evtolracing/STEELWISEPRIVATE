@@ -52,7 +52,7 @@ const phase9Bad = phase9.iconButtonsWithNoName + phase9.fieldsWithNoName + phase
 const PLAN_BOARDS = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/SchedulePage.jsx", "apps/shopfloor/WorkCenterQueuePage.jsx", "pages/JobDetailPage.jsx"];
 const boardsWithNoPlanChange = PLAN_BOARDS.filter((f) => { const file = path.join(fe, "src", f); return !fs.existsSync(file) || !/<(ChangePlanButton|PlanChangeDialog)\b/.test(fs.readFileSync(file, "utf8")); });
 // The cards on the boards light one light per plan step (owner, 2026-11-22).
-const cardsWithNoStepLights = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/JobDetailPage.jsx"].filter((f) => !/<StepLights\b/.test(fs.readFileSync(path.join(fe, "src", f), "utf8")));
+const cardsWithNoStepLights = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/JobDetailPage.jsx", "apps/shopfloor/WorkCenterQueuePage.jsx"].filter((f) => !/<StepLights\b/.test(fs.readFileSync(path.join(fe, "src", f), "utf8")));
 fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, rawNotes, boardsWithNoPlanChange, cardsWithNoStepLights, phase9 }, null, 1));
 console.log("phase 9 (each must be 0; pages with no title found, ceiling " + MAX_NO_TITLE + "): " + JSON.stringify(phase9));
 console.log(`effects that read a value they do not list: ${effects.length} (ceiling ${MAX_EFFECTS}); screens that invent a record when the server fails: ${invented.length} (ceiling ${MAX_INVENTED})`);

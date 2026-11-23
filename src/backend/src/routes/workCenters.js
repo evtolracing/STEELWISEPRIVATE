@@ -1,6 +1,7 @@
 import { readFields } from '../lib/fieldRules.js';
 import { Router } from 'express';
 import prisma from '../lib/db.js';
+import { acrossBranches } from '../lib/branchScope.js';
 import { capacityError, typeError, changeError } from '../lib/workCenterGuard.js';
 
 const router = Router();
@@ -79,7 +80,7 @@ router.post('/', async (req, res) => {
     const { data, error } = readFields(req.body, WORK_CENTER_FIELDS, { creating: true });
     if (error) return res.status(400).json({ error });
     if (!(await prisma.location.findUnique({ where: { id: data.locationId }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
-    if (await prisma.workCenter.findUnique({ where: { code: data.code }, select: { id: true } })) return res.status(409).json({ error: 'A work center with that code already exists' });
+    if (await acrossBranches(() => prisma.workCenter.findUnique({ where: { code: data.code }, select: { id: true } }))) return res.status(409).json({ error: 'A work center with that code already exists' });
     const bad = capacityError(data.capacity) || await typeError(data.type);
     if (bad) return res.status(400).json({ error: bad });
 
@@ -111,7 +112,7 @@ router.patch('/:id', async (req, res) => {
     const bad = capacityError(updateData.capacity) || (updateData.type !== undefined && updateData.type !== existing.type ? await typeError(updateData.type) : null);
     if (bad) return res.status(400).json({ error: bad });
     if (updateData.locationId && updateData.locationId !== existing.locationId && !(await prisma.location.findUnique({ where: { id: updateData.locationId }, select: { id: true } }))) return res.status(400).json({ error: 'Branch not found' });
-    if (updateData.code && updateData.code !== existing.code && await prisma.workCenter.findUnique({ where: { code: updateData.code }, select: { id: true } })) return res.status(409).json({ error: 'A work center with that code already exists' });
+    if (updateData.code && updateData.code !== existing.code && await acrossBranches(() => prisma.workCenter.findUnique({ where: { code: updateData.code }, select: { id: true } }))) return res.status(409).json({ error: 'A work center with that code already exists' });
     const held = await changeError(existing, updateData);
     if (held) return res.status(409).json({ error: held });
     

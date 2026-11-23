@@ -14,7 +14,8 @@ import { divisions as DEFAULT_DIVISIONS } from '../data/dispatchData.js'
 import { changeError, lockedOut } from '../lib/workCenterGuard.js'
 import { planAssignments, SCHEDULABLE_JOB_STATUSES, PRIORITY_ORDER, SKILL_ORDER } from '../lib/dispatchPlan.js'
 
-import { currentScope } from '../lib/branchScope.js'
+import { currentScope, acrossBranches } from '../lib/branchScope.js'
+import { nextWorkCenterCode } from '../lib/workCenterCode.js'
 import { Prisma } from '@prisma/client'
 import { readKindRules } from '../lib/workCenterKindRules.js'
 import { can } from '../lib/roleStore.js'
@@ -336,32 +337,40 @@ router.post('/work-centers', async (req, res) => {
       })
     }
 
-    // Auto-generate code from type + count
-    const existingCount = await prisma.workCenter.count({ where: { type: workCenterType } })
-    const code = customId || `${workCenterType}-${String(existingCount + 1).padStart(2, '0')}`
-
-    // Check duplicate code
-    const existing = await prisma.workCenter.findUnique({ where: { code } })
-    if (existing) {
-      return res.status(409).json({ success: false, error: `Work center code '${code}' already exists` })
+    // The code is one list for the whole company, so it is looked up at every branch, whichever branch the person
+    // is working in, and among work centers that are offline too (lib/workCenterCode.js). A branch may have as many
+    // work centers of one kind as it needs: each gets the next free number.
+    if (customId && await acrossBranches(() => prisma.workCenter.findUnique({ where: { code: customId }, select: { id: true } }))) {
+      return res.status(409).json({ success: false, error: `Work center code '${customId}' already exists` })
     }
-
-    const wc = await prisma.workCenter.create({
-      data: {
-        code,
-        name: name.trim(),
-        locationId,
-        type: workCenterType,
-        capabilities: capabilities || [],
-        // Only what was entered is stored. No division or thickness limit is assumed (it used to default to METALS and 12 in).
-        capacity: {
-          ...(division || typeExists.divisions?.[0] ? { division: division || typeExists.divisions[0] } : {}),
-          ...(limit != null ? { maxThicknessInches: limit } : {}),
-        },
-        isActive: true,
-      },
-      include: { location: { select: { id: true, code: true, name: true } } },
-    })
+    let wc = null
+    for (let attempt = 0; !wc; attempt += 1) {
+      const inUse = customId ? [] : await acrossBranches(() => prisma.workCenter.findMany({ where: { code: { startsWith: `${workCenterType}-`, mode: 'insensitive' } }, select: { code: true } }))
+      const code = customId || nextWorkCenterCode(workCenterType, inUse.map((w) => w.code))
+      try {
+        wc = await prisma.workCenter.create({
+          data: {
+            code,
+            name: name.trim(),
+            locationId,
+            type: workCenterType,
+            capabilities: capabilities || [],
+            // Only what was entered is stored. No division or thickness limit is assumed (it used to default to METALS and 12 in).
+            capacity: {
+              ...(division || typeExists.divisions?.[0] ? { division: division || typeExists.divisions[0] } : {}),
+              ...(limit != null ? { maxThicknessInches: limit } : {}),
+            },
+            isActive: true,
+          },
+          include: { location: { select: { id: true, code: true, name: true } } },
+        })
+      } catch (error) {
+        // Someone else took the number in the same moment: take the next one. A typed code is not changed.
+        if (error?.code !== 'P2002') throw error
+        if (customId) return res.status(409).json({ success: false, error: `Work center code '${customId}' already exists` })
+        if (attempt >= 4) return res.status(409).json({ success: false, error: 'Another work center was being added at the same moment. Save again.' })
+      }
+    }
 
     res.status(201).json({ success: true, data: mapPrismaWC(wc) })
   } catch (error) {

@@ -1,6 +1,6 @@
 # Testing gap analysis
 
-Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 6d038f7. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit eda572e. Do not edit by hand: change the source and rerun.
 
 ## What exists
 

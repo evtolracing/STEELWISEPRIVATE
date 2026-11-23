@@ -1,6 +1,6 @@
 # Findings register
 
-Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit eda572e. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 796f8b9. Do not edit by hand: change the source and rerun.
 
 Source of truth: `findings.json` in this folder. Nothing is ever deleted from it. IDs are permanent: B = Phase 1 baseline; C = Phase 2 architecture review; E, S, I, M, F, X = the six earlier workstreams; D = the first audit; U = user-experience register; G to N and V = Phases 3 to 9; W = Phase 9.5 financial ledger. The older registers in `qa/` are kept as history.
 
@@ -19,11 +19,11 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | Status | Count |
 |---|---:|
 | VERIFIED FIXED | 348 |
-| REQUIRES BUSINESS DECISION | 92 |
+| REQUIRES BUSINESS DECISION | 91 |
 | FIXED — NOT VERIFIED | 7 |
 | IN PROGRESS | 6 |
 | BLOCKED | 5 |
-| ACCEPTED RISK WITH APPROVAL | 4 |
+| ACCEPTED RISK WITH APPROVAL | 5 |
 | NOT APPLICABLE | 2 |
 
 ## Open findings, most severe first
@@ -102,7 +102,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 | W-023 | P2 | BLOCKED | Financial ledger | The load check ran on one container with one server process and one database: 80 branches, about 1,100 events and 2,000 manual entries. Report and reconciliation times at a year's volume (hundreds of thousands of entries | Phase 9.5: financial ledger and accounting foundation |
 | X-008 | P2 | REQUIRES BUSINESS DECISION | Counter (`/pos`), will-call screens | The will-call pickup queue and completion screens use sample orders. The screen is not on the menu | Enterprise experience |
 | Y-009 | P2 | FIXED — NOT VERIFIED | Database | The application's connection could create and drop tables and functions in the public schema. | Phase 10: security, financial integrity, reliability and recovery |
-| Z-006 | P2 | REQUIRES BUSINESS DECISION | Shipping and invoicing | Invoices are written one at a time for the whole company, because invoice numbers must never be skipped or repeated (owner decision of 2026-11-13). Measured on a 4-processor machine that also ran the database and the loa | Phase 11: 80-location enterprise stress simulation |
+| Z-006 | P2 | ACCEPTED RISK WITH APPROVAL | Shipping and invoicing | Invoices are written one at a time for the whole company, because invoice numbers must never be skipped or repeated (owner decision of 2026-11-13). Measured on a 4-processor machine that also ran the database and the loa | Phase 11: 80-location enterprise stress simulation |
 | AA-010 | P3 | REQUIRES BUSINESS DECISION | Access control | By the department rules sales staff may dispatch a shipment and may start or complete a work order (shipments: warehouse and sales; jobs and work orders: production, sales, warehouse and quality). The rules are applied a | Phase 12: production certification |
 | B-013 | P3 | REQUIRES BUSINESS DECISION | Code base | It is kept, read by new engineers and scanned by every tool. | Phase 2: architecture and code quality |
 | B-022 | P3 | REQUIRES BUSINESS DECISION | Demo and QA data | The demo seed writes rows directly and skips the rules. | Data integrity phase |
@@ -7717,7 +7717,7 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Verification evidence:** src/backend/test/enterpriseScale.test.js "Z-005"; qa/sim/phase11-enterprise.mjs cycles 2 to 5 (returns 60 of 60); qa/tools/phase11-mutations.mjs Z-005 holds.
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 
-### Z-006 · P2 · REQUIRES BUSINESS DECISION
+### Z-006 · P2 · ACCEPTED RISK WITH APPROVAL
 
 - **Discovered:** 2026-11-18
 - **Module:** Shipping and invoicing
@@ -7731,8 +7731,8 @@ Severity: P0 critical security, financial integrity, data corruption or outage r
 - **Recommended correction:** Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.
 - **Required tests:** qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.
 - **Assigned phase:** Phase 11: 80-location enterprise stress simulation
-- **Status note:** Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.
-- **Verification evidence:** qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.
+- **Status note:** Owner, 2026-11-22: "whatever is proposed and not approved in the system, use your recommendations and complete". Recommendation adopted: keep invoice numbering as it is and approve a longer limit for the dispatch at peak (option 1 of phase-11-capacity-recommendations.md). Approved limits (qa/sim/phase11/thresholds.mjs): dispatch over the whole modelled day P95 6,500 ms and P99 8,000 ms; dispatch with 8 customer jobs in flight P95 2,000 ms; counter sale and credited return, which take a number in the same series, P95 2,000 ms and P99 4,000 ms; every other limit as first proposed. Measured 2026-11-23 on the QA machine: dispatch P95 4,585 ms and P99 5,019 ms over the day, 684 ms with 8 in flight; counter sale P95 850 ms; credited return P95 925 ms. No product code was changed. The ceiling itself is unchanged: a number series per branch, a shorter invoice save or a larger database server would raise it, and remain open to the owner.
+- **Verification evidence:** qa/sim/phase11-enterprise.mjs (gate run of 2026-11-23: every limit met, qa/results/phase11-gate-enterprise.json)
 - **First recorded in:** Phase 11 enterprise day, scenarios and failure injection on three server copies
 
 ### Z-007 · P1 · VERIFIED FIXED

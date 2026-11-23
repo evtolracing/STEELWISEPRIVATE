@@ -10235,9 +10235,9 @@
    "correction": "Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.",
    "requiredTests": "qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json.",
    "phase": "Phase 11: 80-location enterprise stress simulation",
-   "status": "REQUIRES BUSINESS DECISION",
-   "statusNote": "Not changed: every option that raises the ceiling changes either how invoices are numbered (the owner's and the accountant's decision) or the hardware (the owner's). The measurements and the options are in phase-11-capacity-recommendations.md.",
-   "verification": "qa/sim/phase11-enterprise.mjs cycles 1 to 5 and the one-copy and four-copy runs (qa/results/phase11-capacity-*.json); qa/results/phase11-invoice-capacity-3.json."
+   "status": "ACCEPTED RISK WITH APPROVAL",
+   "statusNote": "Owner, 2026-11-22: \"whatever is proposed and not approved in the system, use your recommendations and complete\". Recommendation adopted: keep invoice numbering as it is and approve a longer limit for the dispatch at peak (option 1 of phase-11-capacity-recommendations.md). Approved limits (qa/sim/phase11/thresholds.mjs): dispatch over the whole modelled day P95 6,500 ms and P99 8,000 ms; dispatch with 8 customer jobs in flight P95 2,000 ms; counter sale and credited return, which take a number in the same series, P95 2,000 ms and P99 4,000 ms; every other limit as first proposed. Measured 2026-11-23 on the QA machine: dispatch P95 4,585 ms and P99 5,019 ms over the day, 684 ms with 8 in flight; counter sale P95 850 ms; credited return P95 925 ms. No product code was changed. The ceiling itself is unchanged: a number series per branch, a shorter invoice save or a larger database server would raise it, and remain open to the owner.",
+   "verification": "qa/sim/phase11-enterprise.mjs (gate run of 2026-11-23: every limit met, qa/results/phase11-gate-enterprise.json)"
   },
   {
    "id": "Z-007",

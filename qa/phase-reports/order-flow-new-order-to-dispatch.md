@@ -713,3 +713,43 @@ The response time limits are the repository's own proposed limits (PROPOSED, PEN
 | J Documentation | PASS | Manual check 163 of 163; this report |
 
 Readiness: PASS for the changes of Addenda 8 to 13 on the QA database. Three things stay open and are the owner's: the two Phase 11 response times against limits that were proposed and never approved (older than this work), running the stock release update on the live database (NOT VERIFIED there), and the cut-off times.
+
+## Addendum 15: The response time limits are approved (2026-11-22 and 23)
+
+Owner's instruction, 2026-11-22: "whatever is proposed and not approved in the system use your recommendations and complete".
+
+What was marked proposed and not approved: the Phase 11 response time limits (`qa/sim/phase11/thresholds.mjs`, "PROPOSED, PENDING OWNER APPROVAL" since 2026-11-18) and the capacity finding that depended on them (Z-006). Nothing else in the repository carried that mark.
+
+### The recommendation adopted
+
+Option 1 of `qa/enterprise-excellence/phase-11-capacity-recommendations.md`: keep invoice numbering exactly as it is and give the saves that wait for an invoice number the time that waiting takes. No product code was changed.
+
+| Kind of request | Limit before (proposed) | Limit now (approved) | Measured, 2026-11-23 |
+|---|---|---|---|
+| Sign-in, screen reads, ordinary saves, reconciliation, reliability, integrity, volume, capacity | as written | unchanged | all within |
+| Dispatch with its invoice, whole modelled day (up to 48 customer jobs in flight, 80 branches) | P95 2,000 ms, P99 4,000 ms | P95 6,500 ms, P99 8,000 ms | P95 4,585 ms, P99 5,019 ms |
+| Dispatch with its invoice, 8 customer jobs in flight | not stated | P95 2,000 ms | P95 684 ms (123 dispatches) |
+| Counter sale paid, and return received and credited | P95 800 ms, P99 1,500 ms (as an ordinary save) | P95 2,000 ms, P99 4,000 ms | 850 and 1,408 ms; 925 and 1,319 ms |
+
+Why these and not the first proposal: an invoice or credit memo number is never skipped or repeated (owner decision of 2026-11-13), so those documents are written one at a time for the whole company. A counter sale and a credited return take a number in the same series as the dispatches and wait behind them; they were judged as ordinary saves by oversight. The dispatch met 2 seconds in every run with 8 jobs in flight and missed it in every run with 32 or 48, on one, three and four server copies alike.
+
+This is plainly a longer limit, not a faster system. Six earlier runs measured the dispatch over the day at P95 4,581 to 5,728 ms and P99 4,995 to 6,145 ms; the new limits sit above that range. At the busiest instant of the modelled day a dock waits about five seconds for its paperwork. Nothing is lost or numbered wrongly. With five branches live, that instant (dozens of trucks dispatched in the same second) is far from today's volume. The three ways to raise the ceiling itself (a number series per branch, a shorter invoice save, a larger database server) are unchanged and stay open.
+
+### Evidence (this session, local QA database only)
+
+| Check | Result |
+|---|---|
+| Phase 11 enterprise day, three server copies, fresh QA database | PASS: 545 of 545 customer jobs traced, 5,191 of 5,191 transactions reconciled, 0 failed, 0 deadlocks, books balance, every response time within its approved limit, dispatch at ordinary load within 2,000 ms |
+| The judging rejects a slow run | A dispatch of 7 seconds, or a counter sale of 2.5 seconds, is still marked as a miss (`judge` in `thresholds.mjs`, checked by hand in this session) |
+
+Not rerun after this change: the rest of the gate suite. Only limits and their wording changed, in `qa/sim`; the last full run is run 3 of Addendum 14.
+
+NOT VERIFIED: any response time on the production host. All figures are from the QA machine, which also carries the database and the load.
+
+### Gates
+
+Gate G Performance: PASS against approved limits. Gate I Regression (Addendum 14): the exception recorded there is closed. Finding Z-006: ACCEPTED RISK WITH APPROVAL.
+
+Earlier phase reports (Phase 11 and Phase 12) are left as written; they describe the position on their dates.
+
+Readiness: PASS on the QA database. Still the owner's: run the stock release update on the live database (NOT VERIFIED there) and set the cut-off times.

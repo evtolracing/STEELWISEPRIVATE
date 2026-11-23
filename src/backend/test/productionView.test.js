@@ -181,12 +181,12 @@ test('the Order Board counts open jobs apart from the recently finished ones it 
 test('the card lights are the plan steps in order, each with its name, status and machine', () => {
   const lights = planLights([step(3, 'PENDING'), step(1, 'COMPLETE', SAW), step(2, 'IN_PROCESS', ROUTER)]);
   assert.deepEqual(lights, [
-    { sequence: 1, name: 'Step 1', status: 'COMPLETE', machine: 'KASTO 2' },
-    { sequence: 2, name: 'Step 2', status: 'IN_PROCESS', machine: 'Router #1' },
-    { sequence: 3, name: 'Step 3', status: 'PENDING', machine: null },
+    { sequence: 1, name: 'Step 1', status: 'COMPLETE', machine: 'KASTO 2', machineId: 'w1' },
+    { sequence: 2, name: 'Step 2', status: 'IN_PROCESS', machine: 'Router #1', machineId: 'w2' },
+    { sequence: 3, name: 'Step 3', status: 'PENDING', machine: null, machineId: null },
   ]);
   assert.deepEqual(planLights([]), []);
-  assert.deepEqual(productionRow({ id: 'j', status: 'IN_PROCESS', dispatchJob: { operations: [step(1, 'IN_PROCESS', SAW)] } }).planSteps, [{ sequence: 1, name: 'Step 1', status: 'IN_PROCESS', machine: 'KASTO 2' }]);
+  assert.deepEqual(productionRow({ id: 'j', status: 'IN_PROCESS', dispatchJob: { operations: [step(1, 'IN_PROCESS', SAW)] } }).planSteps, [{ sequence: 1, name: 'Step 1', status: 'IN_PROCESS', machine: 'KASTO 2', machineId: 'w1' }]);
 });
 
 test('each light is lit by its status, and the row says in words where the job is', () => {

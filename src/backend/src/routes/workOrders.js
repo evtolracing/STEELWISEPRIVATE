@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { can } from '../lib/roleStore.js';
 import prisma from '../lib/db.js';
+import { planLights } from '../lib/productionView.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { readFields } from '../lib/fieldRules.js';
 import { workOrderMoveError, gradeFitError, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
@@ -64,7 +65,8 @@ router.get('/:id', async (req, res) => {
       include: {
         sourceCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true, grade: { select: { code: true, name: true } }, heat: { select: { id: true, heatNumber: true } }, location: { select: { id: true, code: true, name: true } } } },
         outputs: { include: { outputCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true } } } },
-        job: { select: { id: true, jobNumber: true, status: true } },
+        // The job's plan steps come with it, so the work order shows how far the job has got.
+        job: { select: { id: true, jobNumber: true, status: true, dispatchJob: { select: { operations: { select: { sequence: true, status: true, name: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } } } },
       },
     });
     if (!wo) return res.status(404).json({ error: 'Work order not found' });
@@ -82,7 +84,8 @@ router.get('/:id', async (req, res) => {
       note: r.details?.note || null,
       by: r.user ? [r.user.firstName, r.user.lastName].filter(Boolean).join(' ') || r.user.email : null,
     }));
-    res.json({ ...wo, history });
+    const job = wo.job ? { id: wo.job.id, jobNumber: wo.job.jobNumber, status: wo.job.status, planSteps: planLights(wo.job.dispatchJob?.operations || []) } : null;
+    res.json({ ...wo, job, history });
   } catch (error) {
     console.error('Error fetching work order:', error);
     res.status(500).json({ error: 'Failed to fetch work order' });

@@ -36,6 +36,7 @@ import OrderCloseoutPanel from '../../components/orders/OrderCloseoutPanel'
 import OrderStockPanel from '../../components/orders/OrderStockPanel'
 import { ReleaseHoldDialog } from './CreditHoldsPage'
 import { getJobs } from '../../api/jobs'
+import StepLights from '../../components/jobs/StepLights'
 import { readableNotes } from '../../utils/readableNotes.js'
 
 const STATUS_COLOR = {
@@ -377,8 +378,11 @@ export default function OrderDetailPage() {
                     {jobs.length} work order{jobs.length === 1 ? '' : 's'} on the Order Board
                   </Typography>
                   {jobs.map((j) => (
-                    <Chip key={j.id} size="small" variant="outlined" sx={{ mr: 0.5, mb: 0.5 }}
-                      label={`${j.jobNumber} · ${j.status === 'ORDERED' ? 'New, not planned' : String(j.status || '').replace(/_/g, ' ').toLowerCase()}`} />
+                    <Box key={j.id} sx={{ mb: 1 }} data-testid="order-job">
+                      <Chip size="small" variant="outlined" clickable onClick={() => navigate(`/jobs/${j.id}`)}
+                        label={`${j.jobNumber} · ${j.status === 'ORDERED' ? 'New, not planned' : String(j.status || '').replace(/_/g, ' ').toLowerCase()}`} />
+                      <StepLights steps={j.planSteps} sx={{ mt: 0.5 }} />
+                    </Box>
                   ))}
                   <Button fullWidth size="small" variant="outlined" onClick={seeOnBoard} data-testid="see-on-board">See on Order Board</Button>
                 </Box>

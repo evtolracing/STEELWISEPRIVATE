@@ -740,7 +740,7 @@ router.get('/queue', async (req, res) => {
     const rawOps = await prisma.dispatchOperation.findMany({
       where: opWhere,
       // The job's whole plan comes with each step, for the lights on the shop floor card.
-      include: { dispatchJob: { include: { order: { select: { orderNumber: true } }, operations: { select: { id: true, sequence: true, status: true, name: true, assignedWorkCenter: { select: { name: true } } } } } }, timeLogs: { select: { startAt: true, endAt: true } } },
+      include: { dispatchJob: { include: { order: { select: { orderNumber: true } }, operations: { select: { id: true, sequence: true, status: true, name: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } }, timeLogs: { select: { startAt: true, endAt: true } } },
       orderBy: { sequence: 'asc' },
     })
     

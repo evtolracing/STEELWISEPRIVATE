@@ -577,8 +577,6 @@ function WorkCenterSelectPage() {
                             </Typography>
                           </Box>
                         )}
-                          </Stack>
-                        )}
                       </CardContent>
                     </CardActionArea>
                   </Card>

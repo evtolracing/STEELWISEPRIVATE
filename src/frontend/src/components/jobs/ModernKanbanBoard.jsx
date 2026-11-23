@@ -59,6 +59,7 @@ const ModernKanbanColumn = ({
   onPauseJob,
   onCompleteJob,
   onUpdateJob,
+  onPlanChanged,
   onDrop,
   isDropTarget,
 }) => {
@@ -263,6 +264,7 @@ const ModernKanbanColumn = ({
                 onPause={onPauseJob}
                 onComplete={onCompleteJob}
                 onUpdate={onUpdateJob}
+                onPlanChanged={onPlanChanged}
                 draggable
                 showAIHints
               />
@@ -531,6 +533,7 @@ const ModernKanbanBoard = ({
             onPauseJob={onPauseJob}
             onCompleteJob={onCompleteJob}
             onUpdateJob={onUpdateJob}
+            onPlanChanged={onRefresh}
             onDrop={handleDrop}
           />
         ))}

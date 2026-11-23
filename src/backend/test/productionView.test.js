@@ -1,8 +1,8 @@
 // Production screens: where a job is, how far it has got, and the counts (owner's audit, 2026-11-21).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES } from '../src/lib/productionView.js';
-import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue } from '../../frontend/src/components/production/productionView.js';
+import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES } from '../src/lib/productionView.js';
+import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue, stepLight, lightsSummary } from '../../frontend/src/components/production/productionView.js';
 import { jobAtBranch } from '../src/routes/jobs.js';
 
 const step = (sequence, status, wc = null) => ({ sequence, status, name: `Step ${sequence}`, assignedWorkCenterId: wc?.id || null, assignedWorkCenter: wc });
@@ -175,4 +175,29 @@ test('the Order Board counts open jobs apart from the recently finished ones it 
   assert.deepEqual(boardCounts([], now), { open: 0, finished: 0, hot: 0, overdue: 0, inProgress: 0 });
   assert.equal(isOverdue({ status: 'SHIPPED', dueDate: late }, now), false, 'a shipped job is never late');
   assert.equal(isOverdue({ status: 'ORDERED', dueDate: late }, now), true);
+});
+
+// The lights on a job's card: one per plan step, in order, lit by status (owner, 2026-11-22).
+test('the card lights are the plan steps in order, each with its name, status and machine', () => {
+  const lights = planLights([step(3, 'PENDING'), step(1, 'COMPLETE', SAW), step(2, 'IN_PROCESS', ROUTER)]);
+  assert.deepEqual(lights, [
+    { sequence: 1, name: 'Step 1', status: 'COMPLETE', machine: 'KASTO 2' },
+    { sequence: 2, name: 'Step 2', status: 'IN_PROCESS', machine: 'Router #1' },
+    { sequence: 3, name: 'Step 3', status: 'PENDING', machine: null },
+  ]);
+  assert.deepEqual(planLights([]), []);
+  assert.deepEqual(productionRow({ id: 'j', status: 'IN_PROCESS', dispatchJob: { operations: [step(1, 'IN_PROCESS', SAW)] } }).planSteps, [{ sequence: 1, name: 'Step 1', status: 'IN_PROCESS', machine: 'KASTO 2' }]);
+});
+
+test('each light is lit by its status, and the row says in words where the job is', () => {
+  assert.equal(stepLight({ status: 'COMPLETE' }).tone, 'done');
+  assert.equal(stepLight({ status: 'IN_PROCESS' }).tone, 'running');
+  assert.equal(stepLight({ status: 'SCHEDULED' }).tone, 'queued');
+  assert.equal(stepLight({ status: 'PENDING' }).tone, 'waiting');
+  assert.equal(stepLight({ status: 'SOMETHING_NEW' }).tone, 'waiting');
+  const steps = [{ name: 'First cut', status: 'COMPLETE' }, { name: 'Second cut', status: 'IN_PROCESS' }, { name: 'Deburr', status: 'PENDING' }];
+  assert.equal(lightsSummary(steps), 'Step 2 of 3 running: Second cut');
+  assert.equal(lightsSummary([steps[0], { name: 'Deburr', status: 'SCHEDULED' }]), 'Step 2 of 2 queued at its machine: Deburr');
+  assert.equal(lightsSummary([steps[0]]), 'All 1 step finished');
+  assert.equal(lightsSummary([]), 'No plan yet');
 });

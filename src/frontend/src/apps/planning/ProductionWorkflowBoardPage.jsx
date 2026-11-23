@@ -24,6 +24,8 @@ import ProductionFilterBar from '../../components/production/ProductionFilterBar
 import { useProductionOverview } from '../../components/production/useProductionOverview';
 import { byStage, stepText } from '../../components/production/productionView';
 import { calendarDate } from '../../utils/calendarDate';
+import StepLights from '../../components/jobs/StepLights';
+import ChangePlanButton from '../../components/jobs/ChangePlanButton';
 
 function ProductionWorkflowBoardPage() {
   const { data, loading, error, filters, setFilters, reload } = useProductionOverview();
@@ -81,6 +83,10 @@ function ProductionWorkflowBoardPage() {
                         <Typography variant="caption" display="block" color="text.secondary">
                           {[job.locationName || 'No branch on file', job.division, job.dueDate ? `Due ${calendarDate(job.dueDate)}` : null].filter(Boolean).join(' · ')}
                         </Typography>
+                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 0.5 }}>
+                          <StepLights steps={job.planSteps} sx={{ flex: 1 }} />
+                          {job.stepCount > 0 && <ChangePlanButton jobId={job.id} status={job.status} onSaved={reload} />}
+                        </Stack>
                       </Paper>
                     ))}
                     {jobs.length === 0 && (

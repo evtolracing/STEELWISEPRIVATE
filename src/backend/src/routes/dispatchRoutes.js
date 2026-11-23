@@ -785,6 +785,8 @@ router.get('/queue', async (req, res) => {
         // The clock: time already closed, and when the open entry started (the screen counts on from there).
         timeSpent: clockOf(op.timeLogs),
         jobId: job?.id || null,
+        // The production job this step belongs to (the plan's own id is above), for the job screen and Change plan.
+        productionJobId: job?.jobId || null,
         job: job
           ? {
               id: job.id,

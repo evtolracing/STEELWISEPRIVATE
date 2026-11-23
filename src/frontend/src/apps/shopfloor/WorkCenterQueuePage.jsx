@@ -62,6 +62,7 @@ import { ask, tell } from '../../utils/ask'
 import { calendarDate } from '../../utils/calendarDate'
 import { clockSeconds } from '../../pages/timeTrackingRules'
 import { jobTitle, customerOf, orderOf, thicknessOf, branchLabel } from './queueLabels'
+import ChangePlanButton from '../../components/jobs/ChangePlanButton'
 
 // Priority config
 const PRIORITY_CONFIG = {
@@ -640,6 +641,9 @@ function WorkCenterQueuePage() {
                         </Grid>
                       </>
                     )}
+                    <Grid item xs={12}>
+                      <ChangePlanButton jobId={selectedOperation.productionJobId} variant="outlined" size="medium" onSaved={() => { setSelectedOperation(null); loadQueue() }} />
+                    </Grid>
                   </Grid>
                 </Box>
               </Card>

@@ -66,6 +66,8 @@ import { activateOnKey } from '../../utils/activateOnKey'
 import { readableNotes } from '../../utils/readableNotes.js'
 
 // Modern gradient backgrounds based on priority
+import ChangePlanButton from './ChangePlanButton'
+import StepLights from './StepLights'
 const PRIORITY_GRADIENTS = {
   HOT: 'linear-gradient(135deg, rgba(244,67,54,0.15) 0%, rgba(255,138,128,0.1) 100%)',
   URGENT: 'linear-gradient(135deg, rgba(255,152,0,0.15) 0%, rgba(255,193,7,0.1) 100%)',
@@ -88,6 +90,7 @@ const ModernJobCard = ({
   onClick,
   onUpdate,
   onAIAssist,
+  onPlanChanged,
   draggable = true,
   compact = false,
   showActions = true,
@@ -586,6 +589,8 @@ const ModernJobCard = ({
             </>
           )}
 
+          <StepLights steps={job.planSteps} showText={!compact} sx={{ mt: compact ? 1 : 1.5 }} />
+
           {/* Status Chip - Bottom */}
           <Box sx={{ mt: compact ? 1 : 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Chip
@@ -665,6 +670,8 @@ const ModernJobCard = ({
                 </Button>
               </>
             ) : (
+              <>
+              <ChangePlanButton jobId={job.id} status={job.status} onSaved={onPlanChanged} />
               <Fade in={isHovered}>
                 <Stack direction="row" spacing={0.5}>
                   {job.status === 'SCHEDULED' && onStart && (
@@ -720,6 +727,7 @@ const ModernJobCard = ({
                   )}
                 </Stack>
               </Fade>
+              </>
             )}
           </CardActions>
         )}

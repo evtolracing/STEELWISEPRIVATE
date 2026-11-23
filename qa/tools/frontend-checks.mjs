@@ -48,11 +48,20 @@ const phase9 = {
   browserPopUpBoxes: popups.length,
 };
 const phase9Bad = phase9.iconButtonsWithNoName + phase9.fieldsWithNoName + phase9.pagesMissingAMainHeading + phase9.sampleButtonsWithNoActionAndNoNotice + phase9.clickOnlyRowsAndCards + phase9.browserPopUpBoxes > 0 || phase9.pagesWhereNoTitleCouldBeFound > MAX_NO_TITLE;
-fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, rawNotes, phase9 }, null, 1));
+// Every board that shows jobs offers "Change plan" where the job is seen (owner, 2026-11-22).
+const PLAN_BOARDS = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/SchedulePage.jsx", "apps/shopfloor/WorkCenterQueuePage.jsx", "pages/JobDetailPage.jsx"];
+const boardsWithNoPlanChange = PLAN_BOARDS.filter((f) => { const file = path.join(fe, "src", f); return !fs.existsSync(file) || !/<(ChangePlanButton|PlanChangeDialog)\b/.test(fs.readFileSync(file, "utf8")); });
+// The cards on the boards light one light per plan step (owner, 2026-11-22).
+const cardsWithNoStepLights = ["components/jobs/ModernJobCard.jsx", "apps/planning/ProductionWorkflowBoardPage.jsx", "pages/JobDetailPage.jsx"].filter((f) => !/<StepLights\b/.test(fs.readFileSync(path.join(fe, "src", f), "utf8")));
+fs.writeFileSync(path.join(root, "qa/results/frontend-checks.json"), JSON.stringify({ at: new Date().toISOString(), effects, invented, rawNotes, boardsWithNoPlanChange, cardsWithNoStepLights, phase9 }, null, 1));
 console.log("phase 9 (each must be 0; pages with no title found, ceiling " + MAX_NO_TITLE + "): " + JSON.stringify(phase9));
 console.log(`effects that read a value they do not list: ${effects.length} (ceiling ${MAX_EFFECTS}); screens that invent a record when the server fails: ${invented.length} (ceiling ${MAX_INVENTED})`);
 for (const i of popups) console.log(`  browser pop-up box: ${i}`);
 for (const i of invented) console.log(`  invented record: ${i}`);
 console.log(`screens that print notes kept as data without putting them in words: ${rawNotes.length} (must be 0)`);
 for (const i of rawNotes) console.log(`  notes printed as stored: ${i}`);
-process.exit(effects.length > MAX_EFFECTS || invented.length > MAX_INVENTED || rawNotes.length > 0 || phase9Bad ? 1 : 0);
+console.log(`boards that show jobs with no way to change the plan: ${boardsWithNoPlanChange.length} (must be 0)`);
+for (const i of boardsWithNoPlanChange) console.log(`  no Change plan: ${i}`);
+console.log(`job cards with no step lights: ${cardsWithNoStepLights.length} (must be 0)`);
+for (const i of cardsWithNoStepLights) console.log(`  no step lights: ${i}`);
+process.exit(effects.length > MAX_EFFECTS || invented.length > MAX_INVENTED || rawNotes.length > 0 || boardsWithNoPlanChange.length > 0 || cardsWithNoStepLights.length > 0 || phase9Bad ? 1 : 0);

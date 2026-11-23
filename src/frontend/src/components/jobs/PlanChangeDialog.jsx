@@ -14,7 +14,7 @@ const STEP_WORDS = { PENDING: 'Not started', SCHEDULED: 'Scheduled', IN_PROCESS:
 export const stepStatusLabel = (status) => STEP_WORDS[status] || String(status || '').replace(/_/g, ' ').toLowerCase()
 let nextKey = 0
 
-export default function PlanChangeDialog({ jobId, open, onClose, onSaved }) {
+export default function PlanChangeDialog({ jobId, open, onClose, onSaved, onOpenJob }) {
   const [data, setData] = useState(null)
   const [rows, setRows] = useState([])
   const [reason, setReason] = useState('')
@@ -113,6 +113,7 @@ export default function PlanChangeDialog({ jobId, open, onClose, onSaved }) {
         )}
       </DialogContent>
       <DialogActions>
+        {onOpenJob && <Button onClick={() => { onClose(); onOpenJob(jobId) }} disabled={busy} sx={{ mr: 'auto' }} data-testid="plan-change-open-job">Open the job</Button>}
         <Button onClick={onClose} disabled={busy}>Cancel</Button>
         <Button variant="contained" onClick={save} disabled={!canSave} data-testid="plan-change-save">{busy ? 'Saving…' : 'Save the plan'}</Button>
       </DialogActions>

@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { WorkCenterSchedule } from '../components/jobs'
+import PlanChangeDialog from '../components/jobs/PlanChangeDialog'
 import { getWorkCenters } from '../api/workCenters'
 import { getJobs } from '../api/jobs'
 import { WORK_CENTER_STATUS } from '../constants/processingTypes'
@@ -40,6 +41,7 @@ const SchedulePage = () => {
   const [scheduledJobs, setScheduledJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(0)
+  const [planJob, setPlanJob] = useState(null)
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
 
   const loadScheduleData = useCallback(async () => {
@@ -83,8 +85,9 @@ const SchedulePage = () => {
     setDate(newDate)
   }
 
+  // A click on a job opens its plan right here, so a machine can be changed from the schedule; the job screen is one click further.
   const handleJobClick = (job) => {
-    navigate(`/jobs/${job.id}`)
+    setPlanJob(job)
   }
 
   // Calculate summary stats
@@ -315,6 +318,11 @@ const SchedulePage = () => {
           </Box>
         )}
       </Box>
+
+      {planJob && (
+        <PlanChangeDialog jobId={planJob.id} open onClose={() => setPlanJob(null)} onOpenJob={(id) => navigate(`/jobs/${id}`)}
+          onSaved={() => { setSnackbar({ open: true, message: 'The plan was changed. The schedule is updated.', severity: 'success' }); loadScheduleData() }} />
+      )}
 
       {/* Snackbar */}
       <Snackbar

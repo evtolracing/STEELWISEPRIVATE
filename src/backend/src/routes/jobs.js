@@ -9,7 +9,7 @@ import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
 import { planChange, mayChangePlan, hasWork, PLAN_CHANGED, PLAN_OPEN_JOB_STATUSES } from '../lib/planChange.js';
-import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
+import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -190,10 +190,9 @@ router.get('/', async (req, res) => {
         select: { id: true, firstName: true, lastName: true },
       },
     };
-    // The Schedule books a job on the machine of the step it is on, so it needs the steps.
-    if (scheduled) {
-      include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, assignedWorkCenterId: true } } } };
-    }
+    // A job's card lights one light per plan step, and the Schedule books a job on the machine of the step it is on,
+    // so every list carries the steps.
+    include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, name: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } };
     const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
     // The reply is capped so a board never downloads the whole job history.
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || JOB_LIST_DEFAULT, 1), JOB_LIST_MAX);
@@ -226,9 +225,10 @@ router.get('/', async (req, res) => {
     if (jobs.length < total) res.setHeader('X-Result-Limited', 'true');
 
     const mapped = jobs.map((job) => {
-      if (!scheduled) return mapJobForFrontend(job);
       const { dispatchJob, ...rest } = job;
-      return { ...mapJobForFrontend(rest), bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
+      const planSteps = planLights(dispatchJob?.operations || []);
+      if (!scheduled) return { ...mapJobForFrontend(rest), planSteps };
+      return { ...mapJobForFrontend(rest), planSteps, bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
     });
     res.json(mapped);
   } catch (error) {

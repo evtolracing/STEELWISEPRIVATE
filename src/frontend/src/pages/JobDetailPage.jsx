@@ -13,6 +13,7 @@ import { ArrowBack as BackIcon, SwapHoriz as MoveIcon, Refresh as RefreshIcon, A
 import client from '../api/client'
 import { JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { readableNotes } from '../utils/readableNotes.js'
+import StepLights from '../components/jobs/StepLights'
 import PlanChangeDialog, { stepStatusLabel } from '../components/jobs/PlanChangeDialog'
 
 export const jobStatusLabel = (status) => JOB_STATUS_CONFIG[status]?.label || String(status || '').replace(/_/g, ' ').toLowerCase()
@@ -154,6 +155,7 @@ export default function JobDetailPage() {
                 <Typography variant="h6">Plan</Typography>
                 {plan.mayChange && <Button size="small" startIcon={<PlanIcon />} onClick={() => setPlanDialog(true)}>Change plan</Button>}
               </Box>
+              <StepLights steps={plan.steps.map((st) => ({ ...st, machine: st.machineName }))} showText sx={{ mb: 1.5 }} />
               <TableContainer>
                 <Table size="small">
                   <TableHead><TableRow><TableCell>Step</TableCell><TableCell>Machine</TableCell><TableCell>Status</TableCell></TableRow></TableHead>

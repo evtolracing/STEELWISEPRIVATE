@@ -75,6 +75,13 @@ try {
   check('the clock carries on at the new machine from the same moment', step.timeLogs[1]?.workCenterId === saw2.id && step.timeLogs[1]?.endAt === null && step.timeLogs[1]?.status === 'RUNNING' && +step.timeLogs[1].startAt === +step.timeLogs[0].endAt);
   const doneStill = await prisma.dispatchOperation.findUnique({ where: { id: J.done.id }, include: { _count: { select: { timeLogs: true } } } });
   check('the finished step and its time are untouched', doneStill.status === 'COMPLETE' && doneStill.sequence === 1 && doneStill.assignedWorkCenterId === saw1.id && doneStill._count.timeLogs === 1);
+  // The lights on the job's card: the lists send the plan's steps in order with status and machine.
+  const listed = await call('admin', 'GET', `/api/jobs?status=IN_PROCESS&limit=2000`);
+  const mine = (Array.isArray(listed.body) ? listed.body : []).find((j) => j.id === J.job.id);
+  check('the job list sends the plan steps for the card lights, with the new machine', !!mine && mine.planSteps?.map((s) => `${s.status}@${s.machine}`).join() === 'COMPLETE@QA plan saw 1,IN_PROCESS@QA plan saw 2,PENDING@null', JSON.stringify(mine?.planSteps));
+  const over = await call('admin', 'GET', '/api/jobs/overview');
+  const row = (over.body?.jobs || []).find((j) => j.id === J.job.id);
+  check('the workflow board gets the same steps', !!row && row.planSteps?.length === 3 && row.planSteps[1].status === 'IN_PROCESS' && row.planSteps[1].machine === 'QA plan saw 2', JSON.stringify(row?.planSteps));
   const hist = await call('admin', 'GET', `/api/jobs/${J.job.id}/history`);
   const line = (Array.isArray(hist.body) ? hist.body : hist.body?.history || []).find((h) => h.type === 'PLAN');
   check('the job\'s history says what changed, why and who', !!line && /moved to QA plan saw 2/.test(line.note) && /Saw 1 blade broke/.test(line.note) && !!line.by, JSON.stringify(line || hist.body).slice(0, 200));
@@ -88,6 +95,7 @@ try {
   const q = await call('admin', 'GET', `/api/v1/dispatch/queue?workCenterId=${deb1.id}`);
   const names = (q.body?.data?.operations || []).map((o) => o.name);
   check('the steps put on a machine are in that machine\'s queue', q.status === 200 && names.includes('Deburr pass 2') && names.includes('Final deburr'), `${q.status} ${JSON.stringify(q.body).slice(0, 160)}`);
+  check('the queue names the job each step belongs to, so its plan can be changed from the shop floor', (q.body?.data?.operations || []).every((o) => o.productionJobId === J.job.id), JSON.stringify((q.body?.data?.operations || []).map((o) => o.productionJobId)));
   const q2 = await call('admin', 'GET', `/api/v1/dispatch/queue?workCenterId=${saw2.id}`);
   const q1 = await call('admin', 'GET', `/api/v1/dispatch/queue?workCenterId=${saw1.id}`);
   const list = (r) => (r.body?.data?.operations || []).map((o) => o.id);

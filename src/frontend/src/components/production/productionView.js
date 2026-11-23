@@ -80,3 +80,25 @@ export function boardCounts(jobs = [], now = new Date()) {
     inProgress: open.filter((j) => j.status === 'IN_PROCESS').length,
   }
 }
+
+/** How a plan step's light is lit: its words and its tone. Finished is solid, running glows, queued at a machine is outlined, waiting is dim. */
+const LIGHTS = {
+  COMPLETE: { words: 'Finished', tone: 'done' },
+  IN_PROCESS: { words: 'Running', tone: 'running' },
+  PAUSED: { words: 'Paused', tone: 'paused' },
+  SCHEDULED: { words: 'Queued at its machine', tone: 'queued' },
+  PENDING: { words: 'Not started', tone: 'waiting' },
+}
+export function stepLight(step) {
+  return LIGHTS[step?.status] || { words: String(step?.status || 'Not started').replace(/_/g, ' ').toLowerCase(), tone: 'waiting' }
+}
+/** What the row of lights says, in words, for a screen reader and the tooltip: "Step 2 of 3 running: Second cut". */
+export function lightsSummary(steps = []) {
+  if (!steps.length) return 'No plan yet'
+  const done = steps.filter((s) => s.status === 'COMPLETE').length
+  if (done === steps.length) return `All ${steps.length} ${steps.length === 1 ? 'step' : 'steps'} finished`
+  const i = steps.findIndex((s) => s.status === 'IN_PROCESS')
+  const at = i > -1 ? i : steps.findIndex((s) => s.status !== 'COMPLETE')
+  const step = steps[at]
+  return `Step ${at + 1} of ${steps.length} ${stepLight(step).words.toLowerCase()}${step.name ? `: ${step.name}` : ''}`
+}

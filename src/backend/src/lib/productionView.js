@@ -38,6 +38,14 @@ export function currentStep(steps = []) {
   return open.find((s) => s.status === 'IN_PROCESS') || open[0] || null;
 }
 
+/**
+ * The plan's steps in order, as the lights on a job's card show them: the step's name, its status and its machine.
+ * `steps` are { sequence, status, name, assignedWorkCenter? }.
+ */
+export function planLights(steps = []) {
+  return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null }));
+}
+
 /** The stage of a job, or null for one that is shipped, completed or cancelled. */
 export function jobStage(job, steps = []) {
   const status = job?.status;
@@ -94,6 +102,7 @@ export function productionRow(job) {
     stepSequence: now?.sequence ?? null,
     stepCount: steps.length,
     stepsDone: steps.filter((s) => s.status === 'COMPLETE').length,
+    planSteps: planLights(steps),
   };
 }
 

@@ -40,10 +40,10 @@ export function currentStep(steps = []) {
 
 /**
  * The plan's steps in order, as the lights on a job's card show them: the step's name, its status and its machine.
- * `steps` are { sequence, status, name, assignedWorkCenter? }.
+ * `steps` are { sequence, status, name, assignedWorkCenterId?, assignedWorkCenter? }.
  */
 export function planLights(steps = []) {
-  return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null }));
+  return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null, machineId: s.assignedWorkCenterId || s.assignedWorkCenter?.id || null }));
 }
 
 /** The stage of a job, or null for one that is shipped, completed or cancelled. */

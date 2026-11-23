@@ -25,6 +25,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { WorkCenterSchedule } from '../components/jobs'
 import PlanChangeDialog from '../components/jobs/PlanChangeDialog'
+import StepLights from '../components/jobs/StepLights'
 import { getWorkCenters } from '../api/workCenters'
 import { getJobs } from '../api/jobs'
 import { WORK_CENTER_STATUS } from '../constants/processingTypes'
@@ -291,6 +292,8 @@ const SchedulePage = () => {
                           key={job.id}
                           sx={{
                             display: 'inline-block',
+                            verticalAlign: 'top',
+                            maxWidth: 360,
                             px: 1.5,
                             py: 0.75,
                             mr: 1,
@@ -308,7 +311,8 @@ const SchedulePage = () => {
                           }}
                           onClick={() => handleJobClick(job)}
                         >
-                          <Typography variant="caption" fontWeight={600}>{job.jobNumber}</Typography>
+                          <Typography variant="caption" fontWeight={600} display="block">{job.jobNumber}</Typography>
+                          <StepLights steps={(job.planSteps || []).map((s) => ({ ...s, here: s.machineId === wc.id && s.status !== 'COMPLETE' }))} sx={{ mt: 0.5 }} />
                         </Box>
                       ))}
                   </Box>

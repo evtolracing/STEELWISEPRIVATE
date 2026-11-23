@@ -10,6 +10,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from '@mui/material'
 import { ArrowBack as BackIcon, PlayArrow as StartIcon, CheckCircle as CompleteIcon, Cancel as CancelIcon, Send as ReleaseIcon } from '@mui/icons-material'
+import StepLights from '../../components/jobs/StepLights'
 import client from '../../api/client'
 import { activateOnKey } from '../../utils/activateOnKey'
 import { readableNotes } from '../../utils/readableNotes.js'
@@ -149,6 +150,7 @@ export default function WorkOrderDetailPage() {
           <Paper sx={{ p: 3, height: '100%' }}>
             <Typography variant="h6" gutterBottom>Source stock item</Typography>
             {wo.job && <Fact name="For job"><Link component={RouterLink} to={`/jobs/${wo.job.id}`}>{wo.job.jobNumber}</Link></Fact>}
+            {wo.job?.planSteps?.length > 0 && <StepLights steps={wo.job.planSteps} showText sx={{ mb: 1.5 }} />}
             <Fact name="Item">{coil ? <Link component={RouterLink} to={`/units/${coil.id}`}>{coil.coilNumber}</Link> : ''}</Fact>
             <Fact name="Grade">{coil?.grade?.code}</Fact>
             <Fact name="Heat">{coil?.heat?.heatNumber}</Fact>

@@ -64,6 +64,11 @@ import CreateWorkCenterDialog from './CreateWorkCenterDialog'
 import ManageWorkCenterTypesDialog from './ManageWorkCenterTypesDialog'
 import { ask } from '../../utils/ask'
 import { dispatchMessage } from './dispatchMessage'
+import StepLights from '../../components/jobs/StepLights'
+import { machineJobs } from '../../components/production/productionView'
+
+// A machine's card names this many of its jobs; the rest are one click away in its queue.
+const MACHINE_JOBS_SHOWN = 3
 
 function WorkCenterSelectPage() {
   const { user } = useAuth()
@@ -442,6 +447,7 @@ function WorkCenterSelectPage() {
               const queueCount = getQueueCount(wc.id)
               const color = getWCColor(wc.workCenterType)
               const wcStats = machineStats[wc.id]
+              const atMachine = machineJobs(stats?.jobs, wc.id)
               const typeLabel = typeMap[wc.workCenterType]?.label || wc.workCenterType
               
               return (
@@ -576,6 +582,23 @@ function WorkCenterSelectPage() {
                               {queueCount} step{queueCount !== 1 ? 's' : ''} in queue
                             </Typography>
                           </Box>
+                        )}
+
+                        {/* The jobs at this machine and how far each has got */}
+                        {atMachine.length > 0 && (
+                          <Stack spacing={1} sx={{ mt: 1.5, textAlign: 'left' }} data-testid="machine-jobs">
+                            {atMachine.slice(0, MACHINE_JOBS_SHOWN).map((j) => (
+                              <Box key={j.id} data-testid="machine-job">
+                                <Typography variant="caption" fontWeight={700} display="block" noWrap>
+                                  {j.jobNumber}{j.stage === 'RUNNING' ? ' · running' : ' · waiting'}
+                                </Typography>
+                                <StepLights steps={j.planSteps} sx={{ mt: 0.25 }} />
+                              </Box>
+                            ))}
+                            {atMachine.length > MACHINE_JOBS_SHOWN && (
+                              <Typography variant="caption" color="text.secondary">and {atMachine.length - MACHINE_JOBS_SHOWN} more: open the machine to see them</Typography>
+                            )}
+                          </Stack>
                         )}
                       </CardContent>
                     </CardActionArea>

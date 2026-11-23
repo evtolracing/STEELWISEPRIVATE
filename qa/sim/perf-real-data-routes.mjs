@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Response times of the routes added or changed for the real locations and the screens rebuilt on real data
 // (2026-11-22). Each read is asked 30 times in a row and then 10 at once, on the QA server and QA database, and
-// judged by the repository's own proposed limit for a screen read (qa/sim/phase11/thresholds.mjs: p95 800 ms,
-// p99 1500 ms; PROPOSED, PENDING OWNER APPROVAL). The figures are for the QA machine, not the production host.
+// judged by the repository's limit for a screen read (qa/sim/phase11/thresholds.mjs: p95 800 ms,
+// p99 1500 ms; approved by the owner on 2026-11-22). The figures are for the QA machine, not the production host.
 //   node qa/sim/perf-real-data-routes.mjs --base http://localhost:3001 [--out qa/results/perf-real-data-routes.json]
 import fs from 'node:fs';
 import { THRESHOLDS, STATUS } from './phase11/thresholds.mjs';

@@ -9,7 +9,7 @@ import { execFileSync } from 'node:child_process';
 export default async function run(c) {
   const { S, G11, branch, P, hq, onDock, all, statuses, prisma, err, arg, http1, reconcile, root, near } = c;
   const G = G11.report;
-  const READ = { p95: 800 }; const SCREEN_MS = 3000; // proposed limits (qa/sim/phase11/thresholds.mjs; the screen limit is proposed here), pending the owner's approval
+  const READ = { p95: 800 }; const SCREEN_MS = 3000; // limits of qa/sim/phase11/thresholds.mjs, and 3 seconds for a screen; approved by the owner on 2026-11-22
   const cfo = hq('CFO', 0); const exec = hq('EXECUTIVE', 0); const auditor = hq('AUDITOR', 0);
   const bL = await branch('LARGE', 7);
   const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.ceil(p * s.length) - 1)] : 0; };

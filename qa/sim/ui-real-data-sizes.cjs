@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // The screens added or rebuilt for the real locations (2026-11-22), each opened at phone, tablet and desktop
 // size on the QA server: it must show its heading and its content, fit the width with no sideways scrolling of
-// the page, raise no script error, and show its content within the repository's proposed limit for a screen
-// (3000 ms, qa/sim/phase11/s8-report.mjs; PROPOSED, PENDING OWNER APPROVAL).
+// the page, raise no script error, and show its content within the repository's limit for a screen
+// (3000 ms, qa/sim/phase11/s8-report.mjs; approved by the owner on 2026-11-22).
 //   node qa/sim/ui-real-data-sizes.cjs --app http://localhost:5199 --api http://localhost:3001
 const { chromium } = require('playwright');
 const path = require('path');

@@ -2,7 +2,7 @@
 module.exports = async (s) => {
   const { sc, P, boss, clerk, api, rowsOf, ctx, open, text, has, shown, gone, pathOf, settle, until, APP, w, B, prisma, run } = s;
   const { screenShows, sent } = require('./lists.cjs')(s);
-  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300);
+  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300 && !x.replayed); // an answer given again for a repeated request is not a second save
   const wc1 = await prisma.workCenter.findFirst({ where: { locationId: w.L1.id } });
   // A job belongs to a branch through its order or work centre, so the branch's jobs are taken from what the server lists to each manager.
   const mineList = rowsOf((await api(P.planner, 'GET', '/api/jobs')).body); const theirList = rowsOf((await api(P.manager2, 'GET', '/api/jobs')).body);
@@ -217,9 +217,18 @@ module.exports = async (s) => {
     const save = dialog.getByRole('button', { name: 'Create Job' });
     if (!(await until(() => save.isEnabled(), 3000))) { for (const sel of await dialog.locator('[role="combobox"]').all()) { await sel.click().catch(() => {}); await page.getByRole('option').first().click().catch(() => {}); await page.keyboard.press('Escape').catch(() => {}); } }
     t.check('the save button comes on once the required entries are in', await until(() => save.isEnabled(), 3000), (await dialog.innerText()).slice(0, 200));
-    await save.dblclick().catch(() => {}); await gone(dialog, 10000);
+    // A double click sends the save twice. The two copies carry one request key (src/frontend/src/api/requestKey.js),
+    // so the server runs the save once: the second copy is turned away while the first is still being worked on, or
+    // is handed the first answer again once it is done ("replayed"). A replayed answer is not a second save, and
+    // counting it as one made this check fail by chance on a fast run (2026-11-23). The answer is held back half a
+    // second so both copies are always out together.
+    await page.route('**/api/jobs', async (route) => { if (route.request().method() === 'POST') await new Promise((r) => setTimeout(r, 500)); await route.continue(); });
+    await save.dblclick().catch(() => {});
+    await gone(dialog, 10000); await settle(page, 800);
     const made = (await prisma.job.count()) - before; t.check('exactly one job was created', made === 1, made);
-    t.check('one save was accepted', good(page).filter((x) => x.method === 'POST').length === 1, JSON.stringify(page.writes));
+    const posts = page.writes.filter((x) => x.method === 'POST' && x.url === '/jobs');
+    t.check('the double click did send the save twice', posts.length === 2, JSON.stringify(page.writes));
+    t.check('one save was run; the other copy was turned away or given the first answer again', good(page).filter((x) => x.method === 'POST').length === 1, JSON.stringify(page.writes));
   });
 
   await sc('MAKE', 'the bills of material screen says plainly that it is a sample and saves nothing', async (t) => {

@@ -3,7 +3,7 @@ module.exports = async (s) => {
   const { sc, P, boss, clerk, api, rowsOf, ctx, open, openWithAnswer, text, has, shown, gone, pathOf, settle, until, APP, w, B, prisma, run } = s;
   const { listShows, money } = require('./lists.cjs')(s);
   const lb = (v) => `${Number(v).toLocaleString('en-US')} lb`;
-  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300);
+  const good = (page) => page.writes.filter((x) => x.status >= 200 && x.status < 300 && !x.replayed); // an answer given again for a repeated request is not a second save
 
   await sc('STOCK', 'the stock list shows the items the server sent, with heat, grade and location', async (t) => {
     await B.received({ weightLb: 4321 });

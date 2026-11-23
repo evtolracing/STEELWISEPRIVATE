@@ -65,7 +65,7 @@ const PASSWORD = 'qa-password-1';
     const page = await context.newPage(); page.setDefaultTimeout(12000); page.errors = []; page.writes = [];
     page.on('pageerror', (e) => page.errors.push(e.message));
     page.answers = [];
-    page.on('response', (r) => { const q = r.request(); const u = r.url(); if (!/\/api\//.test(u) || /\/src\//.test(u)) return; if (q.method() !== 'GET' && q.method() !== 'OPTIONS') page.writes.push({ method: q.method(), url: u.replace(/^.*\/api/, ''), status: r.status() }); else if (q.method() === 'GET' && r.status() === 200) r.json().then((json) => page.answers.push({ url: u.replace(/^.*\/api/, ''), json })).catch(() => {}); });
+    page.on('response', (r) => { const q = r.request(); const u = r.url(); if (!/\/api\//.test(u) || /\/src\//.test(u)) return; if (q.method() !== 'GET' && q.method() !== 'OPTIONS') page.writes.push({ method: q.method(), url: u.replace(/^.*\/api/, ''), status: r.status(), ...(r.headers()['idempotency-replayed'] === 'true' && { replayed: true }) }); else if (q.method() === 'GET' && r.status() === 200) r.json().then((json) => page.answers.push({ url: u.replace(/^.*\/api/, ''), json })).catch(() => {}); });
     await page.goto(APP + url, { waitUntil: 'domcontentloaded' });
     if (wait) await page.locator(wait).first().waitFor({ timeout: 20000 }).catch(() => {});
     return page;

@@ -8,6 +8,7 @@ import prisma from './db.js';
 
 export const JOB_MOVED = 'JOB_STATUS_CHANGED';
 export const JOB_ASSIGNED = 'JOB_ASSIGNED';
+export const JOB_PLAN_CHANGED = 'JOB_PLAN_CHANGED'; // written by PUT /api/jobs/:id/plan/change (lib/planChange.js)
 
 const text = (v, max = 500) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : null);
 
@@ -52,6 +53,8 @@ export function buildHistory(job, rows, people = {}) {
     const d = r.details || {};
     if (r.eventType === JOB_MOVED) {
       history.push({ timestamp: r.timestamp, type: 'STATUS', from: d.from || null, status: d.to || null, note: d.note || null, via: d.via || null, by: person(r.user), recorded: true });
+    } else if (r.eventType === JOB_PLAN_CHANGED) {
+      history.push({ timestamp: r.timestamp, type: 'PLAN', status: null, note: `Plan changed: ${(Array.isArray(d.changes) ? d.changes : []).join('. ')}${d.reason ? `. Reason: ${d.reason}` : ''}`, by: person(r.user), recorded: true });
     } else if (r.eventType === JOB_ASSIGNED) {
       history.push({ timestamp: r.timestamp, type: 'ASSIGNED', status: null, note: d.to ? `Assigned to ${people[d.to] || 'a user no longer on file'}` : 'Assignment removed', by: person(r.user), recorded: true });
     }
@@ -68,7 +71,7 @@ export function buildHistory(job, rows, people = {}) {
 /** History for one job, read from the audit log. */
 export async function jobHistory(job) {
   const rows = await prisma.auditLog.findMany({
-    where: { resourceType: 'Job', resourceId: job.id, eventType: { in: [JOB_MOVED, JOB_ASSIGNED] } },
+    where: { resourceType: 'Job', resourceId: job.id, eventType: { in: [JOB_MOVED, JOB_ASSIGNED, JOB_PLAN_CHANGED] } },
     orderBy: { timestamp: 'asc' },
     take: 500,
     include: { user: { select: { firstName: true, lastName: true, email: true } } },

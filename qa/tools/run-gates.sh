@@ -58,6 +58,7 @@ echo "== failed reads on the real-data screens"; node qa/sim/ui-failed-reads.cjs
 echo "== real-data screens at three sizes"; node qa/sim/ui-real-data-sizes.cjs 2>&1 | tail -6
 echo "== who may ask the real-data routes"; node qa/sim/real-data-access.mjs --base http://localhost:3011 2>&1 | tail -6
 echo "== work center codes: several of one kind at each branch"; node qa/sim/work-center-codes.mjs --base http://localhost:3011 2>&1 | grep "✗\|work center codes"
+echo "== plan change: a job's plan changed while it is in production"; node qa/sim/plan-change.mjs --base http://localhost:3011 2>&1 | grep "✗\|plan change"
 echo "== response times of the real-data routes"; node qa/sim/perf-real-data-routes.mjs --base http://localhost:3011 2>&1 | tail -15
 echo "== locations"; node qa/sim/ui-locations.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"

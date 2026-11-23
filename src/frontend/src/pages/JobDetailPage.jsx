@@ -9,10 +9,11 @@ import {
   Box, Typography, Paper, Grid, Button, IconButton, Chip, Alert, CircularProgress, Snackbar, Link, Divider,
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from '@mui/material'
-import { ArrowBack as BackIcon, SwapHoriz as MoveIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { ArrowBack as BackIcon, SwapHoriz as MoveIcon, Refresh as RefreshIcon, AltRoute as PlanIcon } from '@mui/icons-material'
 import client from '../api/client'
 import { JOB_STATUS_CONFIG } from '../constants/jobStatuses'
 import { readableNotes } from '../utils/readableNotes.js'
+import PlanChangeDialog, { stepStatusLabel } from '../components/jobs/PlanChangeDialog'
 
 export const jobStatusLabel = (status) => JOB_STATUS_CONFIG[status]?.label || String(status || '').replace(/_/g, ' ').toLowerCase()
 const when = (v) => (v ? new Date(v).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '')
@@ -86,6 +87,8 @@ export default function JobDetailPage() {
   const [error, setError] = useState('')
   const [dialog, setDialog] = useState(false)
   const [toast, setToast] = useState('')
+  const [plan, setPlan] = useState(null)
+  const [planDialog, setPlanDialog] = useState(false)
   // What the job used and made, from the coil work orders raised for it; and its cost, for the roles that see cost.
   const [material, setMaterial] = useState(null)
   const [cost, setCost] = useState(null)
@@ -99,6 +102,8 @@ export default function JobDetailPage() {
       client.get(`/jobs/${id}/material`).then((r) => setMaterial(r.data)).catch(() => setMaterial(null))
       // 403 means this person does not see cost: the section is simply not shown.
       client.get(`/jobs/${id}/cost`).then((r) => setCost(r.data)).catch(() => setCost(null))
+      // The plan: its steps, their machines, and whether this person may change it.
+      client.get(`/jobs/${id}/plan/change`).then((r) => setPlan(r.data)).catch(() => setPlan(null))
     } catch (e) {
       setJob(null)
       setError(e.response?.status === 404 ? 'This job is not on file.' : (e.response?.data?.error || 'The job could not be loaded.'))
@@ -135,6 +140,7 @@ export default function JobDetailPage() {
           </Typography>
         </Box>
         <Button startIcon={<RefreshIcon />} onClick={load}>Refresh</Button>
+        {plan?.exists && <Button variant="outlined" startIcon={<PlanIcon />} onClick={() => setPlanDialog(true)} data-testid="job-change-plan">{plan.mayChange ? 'Change plan' : 'View plan'}</Button>}
         <Button variant="contained" startIcon={<MoveIcon />} onClick={() => setDialog(true)} disabled={closed}>Change status</Button>
       </Box>
 
@@ -142,6 +148,28 @@ export default function JobDetailPage() {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={7}>
+          {plan?.exists && (
+            <Paper sx={{ p: 3, mb: 3 }} data-testid="job-plan">
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="h6">Plan</Typography>
+                {plan.mayChange && <Button size="small" startIcon={<PlanIcon />} onClick={() => setPlanDialog(true)}>Change plan</Button>}
+              </Box>
+              <TableContainer>
+                <Table size="small">
+                  <TableHead><TableRow><TableCell>Step</TableCell><TableCell>Machine</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+                  <TableBody>
+                    {plan.steps.map((s) => (
+                      <TableRow key={s.id} data-testid="job-plan-step">
+                        <TableCell>{s.sequence}. {s.name}</TableCell>
+                        <TableCell>{s.machineName || <Typography component="span" variant="body2" color="text.secondary">No machine yet</Typography>}</TableCell>
+                        <TableCell>{stepStatusLabel(s.status)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )}
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>Work</Typography>
             <Grid container spacing={2}>
@@ -258,6 +286,7 @@ export default function JobDetailPage() {
         onClose={() => setDialog(false)}
         onSaved={() => { setDialog(false); setToast('Status changed'); load() }}
       />
+      <PlanChangeDialog jobId={job.id} open={planDialog} onClose={() => setPlanDialog(false)} onSaved={() => { setToast('The plan was changed.'); load() }} />
       <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast('')} message={toast} />
     </Box>
   )

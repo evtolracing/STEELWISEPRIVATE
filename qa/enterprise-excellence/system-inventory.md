@@ -1,6 +1,6 @@
 # System inventory
 
-Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 6d038f7. Do not edit by hand: change the source and rerun.
 
 Every figure here is counted from the code or measured in a test run. The module map itself (which files make a module, and its classification) is written by hand in `qa/tools/excellence-modules.mjs`.
 
@@ -57,10 +57,10 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Status:** IMPLEMENTED BUT NOT VERIFIED
 - **Basis:** Sweep proves who may not change users. No test creates, edits and removes a user and checks the result. Branch and division assignments are saved and read by nothing
 - **Purpose:** Create and edit users, assign role, home branch, divisions
-- **Screens:** 2 (2 real): /admin/users, /admin/roles
-- **Server:** `src/backend/src/routes/users.js`, `src/backend/src/routes/roles.js`, `src/backend/src/routes/userAccess.js`; served at /api/users/roles, /api/users
-- **Routes:** 20, of which 9 change data. Returned a success in a test this session: 18 of 20; of the changing routes, 9 of 9
-- **Tables:** Role, User, UserRoleAssignment, UserPrimaryRole, AuditLog, UserPermissionOverride, UserLocation, UserDivision, Location, Division
+- **Screens:** 3 (3 real): /admin/users, /admin/roles, /admin/locations
+- **Server:** `src/backend/src/routes/users.js`, `src/backend/src/routes/roles.js`, `src/backend/src/routes/userAccess.js`, `src/backend/src/routes/adminLocations.js`; served at /api/users/roles, /api/users, /api/admin/locations
+- **Routes:** 28, of which 14 change data. Returned a success in a test this session: 26 of 28; of the changing routes, 14 of 14
+- **Tables:** Role, User, UserRoleAssignment, UserPrimaryRole, AuditLog, UserPermissionOverride, UserLocation, UserDivision, Location, Division, WorkCenter, Order, Organization, Operator
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sign-in
 - **Feeds:** Access control
@@ -104,7 +104,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Sales tax by state, store rules, catalogue visibility, demo seed switch
 - **Screens:** 11 (11 real): /admin/integrations, /admin/users, /admin/partners, /admin/roles, /admin/locations, /admin/tax-rates, /admin/audit-log, /admin/processing-recipes, /admin/staff, /admin/catalog, …
 - **Server:** `src/backend/src/routes/taxRates.js`, `src/backend/src/routes/onlineSettings.js`, `src/backend/src/routes/admin.js`; served at /api/tax-rates, /api/admin/online-settings, /api/admin
-- **Routes:** 12, of which 6 change data. Returned a success in a test this session: 5 of 12; of the changing routes, 0 of 6
+- **Routes:** 12, of which 6 change data. Returned a success in a test this session: 7 of 12; of the changing routes, 1 of 6
 - **Tables:** SalesTaxRate, Location, AppSetting, AuditLog
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Access control
@@ -329,7 +329,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Versioned routings (called BOM recipes in the code: steps, not materials) and processing recipes
 - **Screens:** 4 (1 sample, labelled, 3 real): /boms, /bom//, /bom//new, /bom//:recipeId
 - **Server:** `src/backend/src/routes/processingRecipes.js`, `src/backend/src/routes/bomV1.js`; served at /api/processing-recipes, /api/v1/bom
-- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 9 of 16; of the changing routes, 6 of 11
+- **Routes:** 16, of which 11 change data. Returned a success in a test this session: 11 of 16; of the changing routes, 7 of 11
 - **Tables:** ProcessingRecipe, RecipeRoutingTemplate, BomRecipe
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, work centers
@@ -360,7 +360,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Coils, plates, bars and shelf goods by heat and location; holds; corrections; reservation fit rules
 - **Screens:** 4 (3 real, 1 static): /inventory, /units, /units/:id, /inventory/*
 - **Server:** `src/backend/src/routes/coils.js`, `src/backend/src/routes/inventory.js`; served at /api/coils, /api/inventory
-- **Routes:** 25, of which 13 change data. Returned a success in a test this session: 22 of 25; of the changing routes, 12 of 13
+- **Routes:** 25, of which 13 change data. Returned a success in a test this session: 23 of 25; of the changing routes, 12 of 13
 - **Tables:** Coil, MaterialMovement, QCHold, OrderLineAllocation, Heat, Grade, Organization, Location, Product, User, Inventory, AuditLog, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, receiving
@@ -375,7 +375,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** A receipt or an upload makes real stock with heat and location; a receipt against a purchase order line is checked against it
 - **Screens:** 1 (1 real): /receiving
 - **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
-- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 16 of 17; of the changing routes, 9 of 9
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 17 of 17; of the changing routes, 9 of 9
 - **Tables:** Inventory, Coil, Location, MaterialMovement, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Products, heats, purchase orders
@@ -405,7 +405,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Send, in transit, receive, short or damaged held, settle, call back
 - **Screens:** 1 (1 real): /transfers
 - **Server:** `src/backend/src/routes/inventory.js`; served at /api/inventory
-- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 16 of 17; of the changing routes, 9 of 9
+- **Routes:** 17, of which 9 change data. Returned a success in a test this session: 17 of 17; of the changing routes, 9 of 9
 - **Tables:** Inventory, Coil, Location, MaterialMovement, StockTransfer
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Stock, branches
@@ -452,7 +452,7 @@ IMPLEMENTED AND VERIFIED means the module's critical behaviour was run successfu
 - **Purpose:** Shop jobs: create, plan, move through the shop, every move recorded against a person and passed through one quality and open-steps gate
 - **Screens:** 4 (4 real): /production/shipping, /order-board, /schedule, /jobs/:id
 - **Server:** `src/backend/src/routes/jobs.js`, `src/backend/src/lib/jobGates.js`, `src/backend/src/lib/costing.js`; served at /api/jobs, /api/v1/jobs
-- **Routes:** 38, of which 20 change data. Returned a success in a test this session: 22 of 38; of the changing routes, 10 of 20
+- **Routes:** 38, of which 20 change data. Returned a success in a test this session: 23 of 38; of the changing routes, 10 of 20
 - **Tables:** Job, WorkCenter, DispatchOperation, OrderLine, Order, DispatchJob, WorkCenterType, User
 - **Who may change it:** see permissions-matrix.md
 - **Depends on:** Sales orders, routings
@@ -964,8 +964,4 @@ Finding B-014.
 | console.log calls | 15 |
 | Dialogs | 145 |
 | Frontend unit test files | 0 |
-
-## Not yet placed in a module
-
-- route file src/backend/src/routes/adminLocations.js
 

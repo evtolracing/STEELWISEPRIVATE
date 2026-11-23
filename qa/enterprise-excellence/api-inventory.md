@@ -1,6 +1,6 @@
 # API inventory
 
-Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 6d038f7. Do not edit by hand: change the source and rerun.
 
 709 routes in 79 route files, served at 80 mount points. 372 change data.
 
@@ -15,8 +15,8 @@ Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success in a test | 482 of 709 |
-| Changing routes that returned a success in a test | 214 of 372 |
+| Routes that returned a success in a test | 489 of 709 |
+| Changing routes that returned a success in a test | 217 of 372 |
 | Changing handlers with two or more database writes and no transaction | 5 |
 | Read routes with a list query that has no row limit | 61 |
 | Handlers with no try/catch of their own | 238 (many use a shared wrapper) |
@@ -222,7 +222,7 @@ Mounted at /api/inventory. Tables: Inventory, Coil, Location, MaterialMovement, 
 | `POST /api/inventory/receive` | yes | 2 | yes |  |  |  |
 | `POST /api/inventory/transfer` | yes |  |  |  |  |  |
 | `GET /api/inventory/transfers` | yes |  |  |  |  |  |
-| `GET /api/inventory/transfers/:id` |  |  |  |  |  |  |
+| `GET /api/inventory/transfers/:id` | yes |  |  |  |  |  |
 | `POST /api/inventory/transfers` | yes |  |  |  |  |  |
 | `POST /api/inventory/transfers/:id/receive` | yes |  | yes |  |  |  |
 | `POST /api/inventory/transfers/:id/settle` | yes |  | yes |  |  |  |
@@ -643,7 +643,7 @@ Mounted at /api/jobs, /api/v1/jobs. Tables: Job, WorkCenter, DispatchOperation, 
 | `GET /api/jobs/:id/history` | yes |  |  |  |  |  |
 | `GET /api/jobs/stats/summary` | yes |  |  |  |  |  |
 | `GET /api/v1/jobs` | yes |  |  |  |  |  |
-| `GET /api/v1/jobs/overview` |  |  |  | yes |  |  |
+| `GET /api/v1/jobs/overview` | yes |  |  | yes |  |  |
 | `GET /api/v1/jobs/sla-risk` | yes |  |  | yes |  |  |
 | `GET /api/v1/jobs/:id` |  |  |  |  |  |  |
 | `POST /api/v1/jobs` |  | 1 |  |  |  |  |
@@ -823,9 +823,9 @@ Mounted at /api/v1/bom. Tables: BomRecipe.
 | Route | Tested OK | Writes | Tx | No limit | Record | Own guard |
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/v1/bom/recipes` | yes |  |  | yes |  |  |
-| `GET /api/v1/bom/recipes/:id` |  |  |  |  |  |  |
+| `GET /api/v1/bom/recipes/:id` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes` | yes | 1 |  |  |  |  |
-| `PUT /api/v1/bom/recipes/:id` |  | 1 |  |  |  |  |
+| `PUT /api/v1/bom/recipes/:id` | yes | 1 |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/activate` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/transition` | yes |  |  |  |  |  |
 | `POST /api/v1/bom/recipes/:id/clone` | yes | 1 |  | yes |  |  |
@@ -1044,8 +1044,8 @@ Mounted at /api/admin/online-settings. Tables: Location, AppSetting, AuditLog.
 |---|:-:|---:|:-:|:-:|:-:|---|
 | `GET /api/admin/online-settings/rules` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/rules` |  |  |  | yes |  |  |
-| `GET /api/admin/online-settings/cutoff-rules` |  |  |  |  |  |  |
-| `PUT /api/admin/online-settings/cutoff-rules/:locationId` |  | 2 | yes |  | yes |  |
+| `GET /api/admin/online-settings/cutoff-rules` | yes |  |  |  |  |  |
+| `PUT /api/admin/online-settings/cutoff-rules/:locationId` | yes | 2 | yes |  | yes |  |
 | `GET /api/admin/online-settings/processes` | yes |  |  |  |  |  |
 | `PUT /api/admin/online-settings/processes` |  |  |  |  |  |  |
 
@@ -1073,7 +1073,7 @@ Mounted at /api/admin/locations. Tables: Location, User, WorkCenter, Order, Audi
 | `POST /api/admin/locations` | yes | 1 | yes |  |  |  |
 | `PUT /api/admin/locations/:id` | yes | 1 | yes |  |  |  |
 | `POST /api/admin/locations/:id/deactivate` | yes | 4 | yes |  |  |  |
-| `POST /api/admin/locations/:id/reactivate` |  | 1 | yes |  |  |  |
+| `POST /api/admin/locations/:id/reactivate` | yes | 1 | yes |  |  |  |
 | `DELETE /api/admin/locations/:id` | yes | 1 | yes |  |  |  |
 
 ### admin.js (3 routes, 51 lines)

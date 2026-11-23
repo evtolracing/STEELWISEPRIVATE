@@ -74,7 +74,10 @@ await S('A month of a small company, by journal entry and by business events, re
   await post([{ accountCode: '4310', debit: 50 }, { accountCode: '1150', credit: 50 }], 'Sandbox: a discount allowed against another receivable');
   await post([{ accountCode: '8000', debit: 1000 }, { accountCode: '2400', credit: 1000 }], 'Sandbox: income tax provided for');
   const sale = await c.shipped(1000, { cost: 0.4, price: 0.9 }); // 900.00 of sales, 400.00 of material cost
-  const is = (await cfo.get(`/api/ledger/reports/income-statement?from=${today()}&to=${today()}`)).body;
+  // The books are kept in the company's time zone (America/Detroit above), so a sale made in the evening there is
+  // dated a day before the UTC date for five hours every night. The statement is asked for from the books' day.
+  const booksDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Detroit' }).format(new Date());
+  const is = (await cfo.get(`/api/ledger/reports/income-statement?from=${booksDay}&to=${today()}`)).body;
   const s = is.summary;
   ok('net sales: the sale less the discount', s.netSales === '850.00', s.netSales);
   ok('cost of goods sold: the material shipped', s.costOfGoodsSold === '400.00', s.costOfGoodsSold);

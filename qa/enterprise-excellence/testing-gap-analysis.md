@@ -1,6 +1,6 @@
 # Testing gap analysis
 
-Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 6d038f7. Do not edit by hand: change the source and rerun.
 
 ## What exists
 
@@ -23,9 +23,9 @@ Measured from the server's request log during the full gate run of this session 
 
 | Measure | Count |
 |---|---:|
-| Routes that returned a success | 482 of 709 (68%) |
-| Changing routes that returned a success | 214 of 372 (58%) |
-| Routes called at all (including refusals) | 701 of 709 |
+| Routes that returned a success | 489 of 709 (69%) |
+| Changing routes that returned a success | 217 of 372 (58%) |
+| Routes called at all (including refusals) | 703 of 709 |
 | Screens operated by a browser suite (not just opened) | about 30 of 146 |
 | Screens opened without a crash | 125 of 125 that take no record id |
 
@@ -41,12 +41,12 @@ Measured from the server's request log during the full gate run of this session 
 | Second stock list (unit tracking) | 9 | 0 | 9 |
 | AI assistant and voice | 10 | 2 | 8 |
 | Stop work | 7 | 0 | 7 |
-| Settings, tax rates and online settings | 6 | 0 | 6 |
 | Operations cockpit and dashboards | 9 | 3 | 6 |
 | Staff and operators | 9 | 4 | 5 |
-| Routings and processing recipes | 11 | 6 | 5 |
+| Settings, tax rates and online settings | 6 | 1 | 5 |
 | Partner API | 20 | 15 | 5 |
 | Web store | 11 | 7 | 4 |
+| Routings and processing recipes | 11 | 7 | 4 |
 | Dispatch, work centers and shop-floor operations | 16 | 12 | 4 |
 | Counter quick sale | 6 | 3 | 3 |
 | Maintenance and assets | 9 | 6 | 3 |
@@ -58,7 +58,7 @@ Measured from the server's request log during the full gate run of this session 
 | Remnants | 4 | 3 | 1 |
 | Documents | 3 | 2 | 1 |
 | Sign-in and sessions | 4 | 4 | 0 |
-| Users, roles and branches | 9 | 9 | 0 |
+| Users, roles and branches | 14 | 14 | 0 |
 | Order entry | 7 | 7 | 0 |
 | Sales orders | 4 | 4 | 0 |
 | Pricing and customer tiers | 2 | 2 | 0 |

@@ -152,16 +152,17 @@ export default async function guard(ctx, state) {
     };
     for (const [name, [lines, opts]] of Object.entries(bad)) { const r = await draft(lines, opts); ok(`${name}: refused`, [400, 409].includes(r.status) && err(r).length > 5, `${r.status} ${err(r)}`); }
     ok('none was saved', (await prisma.journalEntry.count()) === n);
-    const acc = await cfo.put('/api/ledger/accounts/6100', { name: 'QA account not yet approved', type: 'EXPENSE' });
+    // 6195 is not in the chart of accounts, so this adds an account (6100, used here before, joined the chart in 2026-11).
+    const acc = await cfo.put('/api/ledger/accounts/6195', { name: 'QA account not yet approved', type: 'EXPENSE' });
     ok('a new account can be added', acc.status === 200 && acc.body.approvedAt === null, `${acc.status} ${err(acc)}`);
-    const un = await draft([D('6100', 5), C('2200', 5)]);
+    const un = await draft([D('6195', 5), C('2200', 5)]);
     ok('and cannot be used until the accountant approves it', un.status === 409 && un.body.code === 'NOT_APPROVED', `${un.status} ${err(un)}`);
-    ok('approval is recorded with the accountant\'s name', (await cfo.post('/api/ledger/approvals', { accounts: ['6100'], approvedBy: 'QA Synthetic Accountant (test data only)' })).body.accountsApproved === 1);
-    const now = await draft([D('6100', 5), C('2200', 5)]);
+    ok('approval is recorded with the accountant\'s name', (await cfo.post('/api/ledger/approvals', { accounts: ['6195'], approvedBy: 'QA Synthetic Accountant (test data only)' })).body.accountsApproved === 1);
+    const now = await draft([D('6195', 5), C('2200', 5)]);
     ok('then it can', now.status === 201);
     await cfo.del(`/api/ledger/entries/${now.body.id}`);
-    ok('changing an account removes its approval', (await cfo.put('/api/ledger/accounts/6100', { name: 'QA account renamed' })).body.approvedAt === null);
-    ok('and it is approved again, so nothing is left waiting', (await cfo.post('/api/ledger/approvals', { accounts: ['6100'], approvedBy: 'QA Synthetic Accountant (test data only)' })).status === 200);
+    ok('changing an account removes its approval', (await cfo.put('/api/ledger/accounts/6195', { name: 'QA account renamed' })).body.approvedAt === null);
+    ok('and it is approved again, so nothing is left waiting', (await cfo.post('/api/ledger/approvals', { accounts: ['6195'], approvedBy: 'QA Synthetic Accountant (test data only)' })).status === 200);
     ok('an account with entries cannot change type', (await cfo.put('/api/ledger/accounts/5100', { type: 'ASSET' })).status === 409);
     ok('an account a rule posts to cannot be switched off', (await cfo.put('/api/ledger/accounts/1100', { isActive: false })).status === 409);
   });

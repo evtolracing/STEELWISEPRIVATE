@@ -1,6 +1,6 @@
 # Module dependency map
 
-Generated 2026-11-22 by `qa/tools/excellence-docs.mjs` at commit 0bc7dd0. Do not edit by hand: change the source and rerun.
+Generated 2026-11-23 by `qa/tools/excellence-docs.mjs` at commit 6d038f7. Do not edit by hand: change the source and rerun.
 
 Two views. The first is the business flow, written by hand in the module map. The second is measured: which tables more than one module touches, and which shared code files the route files import. A change to a shared table or a shared file needs the tests of every module listed beside it.
 
@@ -66,22 +66,22 @@ Two views. The first is the business flow, written by hand in the module map. Th
 |---|---|---:|
 | AuditLog | Sign-in and sessions; Users, roles and branches; Settings, tax rates and online settings; Customers; Order entry; Sales orders; Pricing and customer tiers; Counter quick sale; Stock items and stock levels; Purchase orders and supply position; Coil work orders; Quality inspections; Shipping; Returns; Partner API; Operations cockpit and dashboards | 16 |
 | Location | Sign-in and sessions; Users, roles and branches; Staff and operators; Settings, tax rates and online settings; Order entry; Web store; Stock items and stock levels; Receiving; Purchase orders and supply position; Interbranch transfers; Dispatch, work centers and shop-floor operations; Shipping; Operations cockpit and dashboards | 13 |
-| Order | RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Jobs, job board and schedule; Shipping; Returns; Partner API; Operations cockpit and dashboards | 11 |
-| Organization | Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Partner API; Operations cockpit and dashboards | 10 |
+| Order | Users, roles and branches; RFQs and quotes; Order entry; Sales orders; Counter quick sale; Web store; Purchase orders and supply position; Jobs, job board and schedule; Shipping; Returns; Partner API; Operations cockpit and dashboards | 12 |
+| Organization | Users, roles and branches; Customers; RFQs and quotes; Order entry; Counter session flow (older); Web store; Products, grades and heats; Stock items and stock levels; Purchase orders and supply position; Partner API; Operations cockpit and dashboards | 11 |
 | Job | Order entry; Customer specifications; Jobs, job board and schedule; Coil work orders; Dispatch, work centers and shop-floor operations; Planning and optimization; Quality inspections; Material tracking, packages and drop tags; Shipping; Operations cockpit and dashboards | 10 |
 | Inventory | Sales orders; Web store; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Shipping; Returns; Operations cockpit and dashboards | 9 |
 | Coil | Sales orders; Stock items and stock levels; Receiving; Interbranch transfers; Coil work orders; Material tracking, packages and drop tags; Shipping; Returns; Operations cockpit and dashboards | 9 |
+| WorkCenter | Users, roles and branches; Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 8 |
 | OrderLine | Order entry; Sales orders; Customer specifications; Purchase orders and supply position; Jobs, job board and schedule; Coil work orders; Shipping; Returns | 8 |
 | MaterialMovement | Counter quick sale; Products, grades and heats; Stock items and stock levels; Receiving; Interbranch transfers; Shipping; Returns; Operations cockpit and dashboards | 8 |
-| WorkCenter | Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Planning and optimization; Maintenance and assets; Shipping; Operations cockpit and dashboards | 7 |
 | User | Sign-in and sessions; Users, roles and branches; RFQs and quotes; Sales orders; Stock items and stock levels; Jobs, job board and schedule | 6 |
 | Product | Order entry; Counter quick sale; Web store; Products, grades and heats; Stock items and stock levels | 5 |
+| Operator | Users, roles and branches; Staff and operators; Dispatch, work centers and shop-floor operations; Quality inspections | 4 |
 | WorkCenterType | Staff and operators; Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Quality inspections | 4 |
 | Quote | RFQs and quotes; Order entry; Partner API; Operations cockpit and dashboards | 4 |
 | Shipment | Sales orders; Shipping; Partner API; Operations cockpit and dashboards | 4 |
 | Invoice | Counter quick sale; Shipping; Returns; Partner API | 4 |
 | DispatchOperation | Jobs, job board and schedule; Dispatch, work centers and shop-floor operations; Quality inspections; Operations cockpit and dashboards | 4 |
-| Operator | Staff and operators; Dispatch, work centers and shop-floor operations; Quality inspections | 3 |
 | RFQ | RFQs and quotes; Partner API; Operations cockpit and dashboards | 3 |
 | OrderLineAllocation | Sales orders; Stock items and stock levels; Shipping | 3 |
 | Grade | Products, grades and heats; Stock items and stock levels; Operations cockpit and dashboards | 3 |

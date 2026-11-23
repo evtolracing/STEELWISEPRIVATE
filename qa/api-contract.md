@@ -1,6 +1,6 @@
 # Screen-to-server API contract
 
-Generated 2026-11-22 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
+Generated 2026-11-23 by `qa/tools/api-contract.mjs` (static analysis of literal API paths in the frontend).
 
 - Distinct API calls found in the screens: **318**
 - Matched to a server route: **251**

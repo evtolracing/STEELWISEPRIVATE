@@ -4,7 +4,9 @@ import prisma from '../lib/db.js';
 import { planLights } from '../lib/productionView.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { readFields } from '../lib/fieldRules.js';
-import { workOrderMoveError, gradeFitError, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
+import { workOrderMoveError, gradeFitError, jobForWorkOrder, workOrderJobText, cancelsItsJob, OPEN_JOB_STATUSES, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
+import { createJobNumbered } from '../lib/jobNumbers.js';
+import { changeJobStatusTx } from '../lib/jobGates.js';
 import { completeWorkOrder, readPieces } from '../lib/stockChanges.js';
 import { retryOverlap } from '../lib/numbering.js';
 
@@ -44,7 +46,7 @@ router.get('/', async (req, res) => {
     const [workOrders, total] = await Promise.all([
       prisma.workOrder.findMany({
         where,
-        include: { sourceCoil: { select: { id: true, coilNumber: true, netWeightLb: true, grade: { select: { code: true } } } }, outputs: { select: { id: true } } },
+        include: { sourceCoil: { select: { id: true, coilNumber: true, netWeightLb: true, grade: { select: { code: true } } } }, outputs: { select: { id: true } }, job: { select: { id: true, jobNumber: true, status: true } } },
         orderBy: { createdAt: 'desc' },
         take: limit,
       }),
@@ -99,7 +101,7 @@ router.post('/', async (req, res) => {
     const data = read.data;
     if (data.priority != null && !Number.isInteger(data.priority)) return res.status(400).json({ error: 'priority must be a whole number from 1 to 5' });
 
-    const coil = await prisma.coil.findUnique({ where: { id: data.sourceCoilId }, select: { id: true, status: true, netWeightLb: true, qcStatus: true, grade: { select: { id: true, code: true } } } }).catch(() => null);
+    const coil = await prisma.coil.findUnique({ where: { id: data.sourceCoilId }, select: { id: true, coilNumber: true, status: true, netWeightLb: true, qcStatus: true, grade: { select: { id: true, code: true } } } }).catch(() => null);
     if (!coil) return res.status(400).json({ error: 'The source stock item is not on file' });
     // One item may feed several work orders, and an item reserved for an order is cut for it.
     // Each work order takes only what is free, or reserved for its own line, when it completes.
@@ -117,8 +119,9 @@ router.post('/', async (req, res) => {
     }
     const substitutionReason = typeof req.body?.substitutionReason === 'string' ? req.body.substitutionReason.trim().slice(0, 500) : null;
     let substitution = null;
+    let line = null;
     if (data.lineId) {
-      const line = await prisma.orderLine.findUnique({ where: { id: data.lineId }, select: { id: true, orderId: true, lineStatus: true, grade: { select: { id: true, code: true } } } }).catch(() => null);
+      line = await prisma.orderLine.findUnique({ where: { id: data.lineId }, select: { id: true, orderId: true, lineNumber: true, lineStatus: true, order: { select: { id: true, orderNumber: true } }, grade: { select: { id: true, code: true } } } }).catch(() => null);
       if (!line) return res.status(400).json({ error: 'The order line is not on file' });
       if (line.lineStatus === 'CANCELLED') return res.status(409).json({ error: 'That order line is cancelled' });
       data.salesOrderId = line.orderId;
@@ -142,15 +145,46 @@ router.post('/', async (req, res) => {
     if (data.inputWeightLb != null && onHand != null && data.inputWeightLb > onHand + 1e-6) return res.status(400).json({ error: `inputWeightLb is more than the ${onHand.toLocaleString()} lb the item has on hand` });
     if (data.inputWeightLb == null) data.inputWeightLb = onHand ?? coil.netWeightLb;
 
-    const wo = await createNumbered({
-      count: () => prisma.workOrder.count(),
-      format: padded('WO'),
-      create: (woNumber) => prisma.workOrder.create({ data: { ...data, woNumber }, include: { sourceCoil: { select: { id: true, coilNumber: true } } } }),
-    });
+    // A work order is work for the shop, so it always has a job (owner's decision, 2026-11-23). Opened from
+    // a job, it is that job's. For an order line it joins the line's open job. Otherwise it makes its own,
+    // which starts on the Order Board to be planned.
+    let job = null;
+    let madeJob = false;
+    if (!data.jobId) {
+      if (line) job = await prisma.job.findFirst({ where: { orderLineId: line.id, status: { in: OPEN_JOB_STATUSES } }, orderBy: { createdAt: 'asc' }, select: { id: true, jobNumber: true } });
+      if (!job) {
+        const jobData = jobForWorkOrder({ ...data, coilNumber: coil.coilNumber, line, userId: req.user.id });
+        job = await createJobNumbered({
+          client: prisma,
+          order: line?.order || null,
+          lineNumber: line?.lineNumber ?? null,
+          create: (jobNumber) => prisma.job.create({ data: { ...jobData, jobNumber }, select: { id: true, jobNumber: true } }),
+        });
+        madeJob = true;
+      }
+      data.jobId = job.id;
+    }
+
+    let wo;
+    try {
+      wo = await createNumbered({
+        count: () => prisma.workOrder.count(),
+        format: padded('WO'),
+        create: (woNumber) => prisma.workOrder.create({ data: { ...data, woNumber }, include: { sourceCoil: { select: { id: true, coilNumber: true } }, job: { select: { id: true, jobNumber: true, status: true } } } }),
+      });
+    } catch (error) {
+      // No work order was saved, so the job made for it a moment ago is taken back.
+      if (madeJob) await prisma.job.delete({ where: { id: job.id } }).catch(() => {});
+      throw error;
+    }
+    if (madeJob) {
+      // The job names its work order, so the traveler leads back to the stock that is cut.
+      await prisma.job.update({ where: { id: job.id }, data: { workOrderId: wo.id, instructions: workOrderJobText({ ...data, coilNumber: coil.coilNumber, woNumber: wo.woNumber, forOrder: Boolean(line) }) } });
+    }
     await prisma.auditLog.create({
-      data: { category: 'WORKFLOW', eventType: 'WORK_ORDER_CREATED', action: 'CREATE', userId: req.user?.id || null, resourceType: 'WorkOrder', resourceId: wo.id, details: { woNumber: wo.woNumber, woType: wo.woType, sourceCoilId: wo.sourceCoilId, ...(substitution && { substitution }) } },
+      data: { category: 'WORKFLOW', eventType: 'WORK_ORDER_CREATED', action: 'CREATE', userId: req.user?.id || null, resourceType: 'WorkOrder', resourceId: wo.id, details: { jobNumber: wo.job?.jobNumber || null, jobMade: madeJob, woNumber: wo.woNumber, woType: wo.woType, sourceCoilId: wo.sourceCoilId, ...(substitution && { substitution }) } },
     });
-    res.status(201).json(wo);
+    res.status(201).json({ ...wo, jobMade: madeJob });
   } catch (error) {
     console.error('Error creating work order:', error);
     res.status(500).json({ error: 'Failed to create work order' });
@@ -158,7 +192,7 @@ router.post('/', async (req, res) => {
 });
 
 /** Move a work order, refusing a move its status does not allow. Two people pressing at once: one wins. */
-async function move(req, res, to, extra = {}) {
+async function move(req, res, to, extra = {}, after = null) {
   const wo = await prisma.workOrder.findUnique({ where: { id: req.params.id } });
   if (!wo) return res.status(404).json({ error: 'Work order not found' });
   const why = workOrderMoveError(wo.status, to);
@@ -168,6 +202,8 @@ async function move(req, res, to, extra = {}) {
   await prisma.auditLog.create({
     data: { category: 'WORKFLOW', eventType: 'WORK_ORDER_STATUS_CHANGED', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'WorkOrder', resourceId: wo.id, details: { woNumber: wo.woNumber, from: wo.status, to, note: typeof req.body?.reason === 'string' ? req.body.reason.trim().slice(0, 500) || null : null } },
   });
+  // What follows from the move is done before the answer goes back, so the screen reloads to the finished state.
+  if (after) await after(wo);
   return res.json(await prisma.workOrder.findUnique({ where: { id: wo.id } }));
 }
 
@@ -242,6 +278,23 @@ router.put('/:id/release-hold', guard(async (req, res) => {
   return move(req, res, 'IN_PROGRESS');
 }));
 
-router.put('/:id/cancel', guard((req, res) => move(req, res, 'CANCELLED')));
+// The job this work order made goes with it while nobody has started it, so the boards do not keep
+// work that is no longer wanted. A job that came from an order, or has other cutting on it, stays.
+async function cancelItsJob(wo, userId) {
+  if (!wo.jobId) return;
+  try {
+    const [job, others] = await Promise.all([
+      prisma.job.findUnique({ where: { id: wo.jobId }, select: { id: true, status: true, workOrderId: true } }),
+      prisma.workOrder.count({ where: { jobId: wo.jobId, id: { not: wo.id }, status: { not: 'CANCELLED' } } }),
+    ]);
+    if (!cancelsItsJob({ workOrderId: wo.id, job, otherLiveWorkOrders: others })) return;
+    await prisma.$transaction((tx) => changeJobStatusTx(tx, job.id, 'CANCELLED', { from: ['ORDERED', 'SCHEDULED'], note: `Work order ${wo.woNumber} was cancelled`, via: 'work-order', userId, skipGates: true }));
+  } catch (error) {
+    // The work order is cancelled either way; the job can still be cancelled from its own page.
+    console.error('Work order cancelled, but its job could not be cancelled:', error);
+  }
+}
+
+router.put('/:id/cancel', guard((req, res) => move(req, res, 'CANCELLED', {}, (wo) => cancelItsJob(wo, req.user?.id))));
 
 export default router;

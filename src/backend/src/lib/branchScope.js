@@ -65,6 +65,8 @@ const jobIn = (ids) => ({ OR: [
   { dispatchJob: { locationId: { in: ids } } },
   { workCenter: { locationId: { in: ids } } },
   { orderId: null, workCenterId: null, createdBy: { homeLocationId: { in: ids } } },
+  // A job is also seen where its stock is cut: a work order's job belongs to the branch that holds the item.
+  { coilWorkOrders: { some: { sourceCoil: { locationId: { in: ids } } } } },
 ] });
 const ownOrUnassigned = (ids) => ({ OR: [{ locationId: { in: ids } }, { locationId: null }] });
 

@@ -76,7 +76,7 @@ export default function WorkOrderListPage() {
           <Table size="small" aria-label="Work orders">
             <TableHead>
               <TableRow>
-                <TableCell>Work order</TableCell><TableCell>Type</TableCell><TableCell>Source item</TableCell><TableCell>Grade</TableCell>
+                <TableCell>Work order</TableCell><TableCell>Job</TableCell><TableCell>Type</TableCell><TableCell>Source item</TableCell><TableCell>Grade</TableCell>
                 <TableCell align="right">Weight in</TableCell><TableCell>Scheduled</TableCell><TableCell>Priority</TableCell><TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
@@ -84,6 +84,7 @@ export default function WorkOrderListPage() {
               {rows.map((wo) => (
                 <TableRow tabIndex={0} onKeyDown={activateOnKey} key={wo.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/work-orders/${wo.id}`)}>
                   <TableCell><Typography variant="body2" fontWeight={600} color="primary">{wo.woNumber}</Typography></TableCell>
+                  <TableCell>{wo.job?.jobNumber || ''}</TableCell>
                   <TableCell>{WO_TYPE_LABELS[wo.woType] || wo.woType}</TableCell>
                   <TableCell>{wo.sourceCoil?.coilNumber || ''}</TableCell>
                   <TableCell>{wo.sourceCoil?.grade?.code || ''}</TableCell>
@@ -94,7 +95,7 @@ export default function WorkOrderListPage() {
                 </TableRow>
               ))}
               {!loading && !rows.length && !error && (
-                <TableRow><TableCell colSpan={8} align="center" sx={{ py: 5, color: 'text.secondary' }}>
+                <TableRow><TableCell colSpan={9} align="center" sx={{ py: 5, color: 'text.secondary' }}>
                   {search || status || woType ? 'No work orders match.' : 'No work orders yet.'}
                 </TableCell></TableRow>
               )}

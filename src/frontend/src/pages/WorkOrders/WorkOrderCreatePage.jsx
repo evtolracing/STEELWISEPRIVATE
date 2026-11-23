@@ -129,7 +129,7 @@ export default function WorkOrderCreatePage() {
       }
       
       const created = await createWorkOrder(payload)
-      setSuccess(true)
+      setSuccess(created?.job?.jobNumber ? (created.jobMade ? `Work order created. Job ${created.job.jobNumber} is on the Order Board to be planned.` : `Work order created for job ${created.job.jobNumber}.`) : 'Work order created.')
       
       // Navigate to the new work order after a brief delay
       setTimeout(() => {
@@ -169,6 +169,11 @@ export default function WorkOrderCreatePage() {
         </Box>
       </Box>
 
+      {!jobId && (
+        <Alert severity="info" sx={{ mb: 3 }} data-testid="wo-makes-job">
+          Saving this makes a job on the Order Board, so the work can be planned and run on the Shop Floor. Work for an order line that already has a job joins that job.
+        </Alert>
+      )}
       {jobId && (
         <Alert severity="info" sx={{ mb: 3 }}>
           This work order is for job {forJob?.jobNumber || ''}. What it uses, makes and scraps will show on the job.
@@ -182,7 +187,7 @@ export default function WorkOrderCreatePage() {
 
       {success && (
         <Alert severity="success" sx={{ mb: 3 }}>
-          Work order created successfully! Redirecting...
+          {success} Opening it now...
         </Alert>
       )}
 

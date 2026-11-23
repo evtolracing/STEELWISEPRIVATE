@@ -198,7 +198,17 @@ const manualOperations = [
     sections: [
       { id: 'what', title: 'What a Work Order Is', blocks: [
         { type: 'text', value: 'A work order plans processing against one stock item (the source) and records what came out: the pieces made, each of which becomes a stock item of its own with the same heat, and the scrap.' },
-        { type: 'text', value: 'The list shows each work order with its type, source item, grade, weight in, priority, the date it is scheduled and its status. Search and the Status and Type choices narrow the list.' },
+        { type: 'text', value: 'The list shows each work order with its job, type, source item, grade, weight in, priority, the date it is scheduled and its status. Search and the Status and Type choices narrow the list.' },
+      ] },
+      { id: 'job', title: 'A Work Order and Its Job', blocks: [
+        { type: 'text', value: 'Every work order has a job, because the job is what the shop plans and runs. A new work order made from the Work Orders page makes its own job. The job starts on the Order Board as a new job, is planned there like any other, and then shows on the Schedule and on the Shop Floor.' },
+        { type: 'bullets', items: [
+          'A work order with no order makes a stock job, numbered JS- and the next number.',
+          'A work order for an order line joins the job that line already has. If the line has no open job, it makes one, numbered after the order and the line.',
+          'A work order opened from a job ("Create work order" on the job) belongs to that job and makes no other.',
+        ] },
+        { type: 'text', value: 'The work order names its job at the top and in the list, and the job shows the work order under what it used, made and scrapped. The work order still has its own Release, Start and Complete, because completing it is what changes stock.' },
+        { type: 'warning', value: 'Cancelling a work order also cancels the job it made, as long as nobody has started the job and no other work order is cutting for it. A job that came from an order is left alone.' },
       ] },
       { id: 'complete', title: 'Recording What Was Made', blocks: [
         { type: 'steps', items: [

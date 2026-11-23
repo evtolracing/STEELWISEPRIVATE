@@ -32,9 +32,11 @@ test('records reached through a parent are held to the parent\'s branch', () => 
   assert.deepEqual(scopedArgs('Shipment', 'findMany', {}, held).where.AND, [seen]);
   // A print job with no branch on file is seen by every branch; one with a branch only by that branch (N-015).
   assert.deepEqual(scopedArgs('PrintQueueJob', 'findMany', {}, held).where.AND, [{ OR: [{ locationId: { in: [A] } }, { locationId: null }] }]);
-  // A job is seen by the branch that sold it, the branch that plans it, and the branch of its machine.
+  // A job is seen by the branch that sold it, the branch that plans it, the branch of its machine,
+  // and the branch that holds the stock a work order cuts for it (2026-11-23).
   const job = scopedArgs('Job', 'findMany', {}, held).where.AND[0].OR;
-  assert.equal(job.length, 4);
+  assert.equal(job.length, 5);
+  assert.deepEqual(job[4], { coilWorkOrders: { some: { sourceCoil: { locationId: { in: [A] } } } } }, 'the branch that cuts for the job sees it');
   assert.deepEqual(job[1], { dispatchJob: { locationId: { in: [A] } } }, 'the plan\'s branch sees the job');
   assert.deepEqual(scopedArgs('JobInspection', 'findMany', {}, held).where.AND[0].job.OR[1], { dispatchJob: { locationId: { in: [A] } } });
 });

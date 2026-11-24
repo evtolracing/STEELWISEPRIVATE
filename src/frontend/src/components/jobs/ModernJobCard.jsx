@@ -589,7 +589,7 @@ const ModernJobCard = ({
             </>
           )}
 
-          <StepLights steps={job.planSteps} showText={!compact} sx={{ mt: compact ? 1 : 1.5 }} />
+          <StepLights steps={job.planSteps} showText={!compact} showDetails="current" sx={{ mt: compact ? 1 : 1.5 }} />
 
           {/* Status Chip - Bottom */}
           <Box sx={{ mt: compact ? 1 : 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

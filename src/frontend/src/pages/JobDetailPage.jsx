@@ -158,11 +158,12 @@ export default function JobDetailPage() {
               <StepLights steps={plan.steps.map((st) => ({ ...st, machine: st.machineName }))} showText sx={{ mb: 1.5 }} />
               <TableContainer>
                 <Table size="small">
-                  <TableHead><TableRow><TableCell>Step</TableCell><TableCell>Machine</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+                  <TableHead><TableRow><TableCell>Step</TableCell><TableCell>What to do</TableCell><TableCell>Machine</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
                   <TableBody>
                     {plan.steps.map((s) => (
                       <TableRow key={s.id} data-testid="job-plan-step">
                         <TableCell>{s.sequence}. {s.name}</TableCell>
+                        <TableCell data-testid="plan-step-detail">{s.detail || <Typography component="span" variant="body2" color="text.secondary">Not stated</Typography>}</TableCell>
                         <TableCell>{s.machineName || <Typography component="span" variant="body2" color="text.secondary">No machine yet</Typography>}</TableCell>
                         <TableCell>{stepStatusLabel(s.status)}</TableCell>
                       </TableRow>

@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
         sourceCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true, grade: { select: { code: true, name: true } }, heat: { select: { id: true, heatNumber: true } }, location: { select: { id: true, code: true, name: true } } } },
         outputs: { include: { outputCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true } } } },
         // The job's plan steps come with it, so the work order shows how far the job has got.
-        job: { select: { id: true, jobNumber: true, status: true, dispatchJob: { select: { operations: { select: { sequence: true, status: true, name: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } } } },
+        job: { select: { id: true, jobNumber: true, status: true, dispatchJob: { select: { operations: { select: { sequence: true, status: true, name: true, details: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } } } },
       },
     });
     if (!wo) return res.status(404).json({ error: 'Work order not found' });

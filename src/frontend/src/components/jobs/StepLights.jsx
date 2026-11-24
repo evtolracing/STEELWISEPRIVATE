@@ -8,7 +8,7 @@
 import { Box, Stack, Tooltip, Typography } from '@mui/material'
 import { keyframes } from '@mui/system'
 import { Check as DoneIcon, PlayArrow as RunningIcon, Pause as PausedIcon, Schedule as QueuedIcon } from '@mui/icons-material'
-import { stepLight, lightsSummary } from '../production/productionView'
+import { stepLight, lightsSummary, detailRows } from '../production/productionView'
 
 const glow = keyframes`
   0%, 100% { box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.6); }
@@ -23,7 +23,8 @@ const TONES = {
 }
 const ICONS = { done: DoneIcon, running: RunningIcon, paused: PausedIcon, queued: QueuedIcon }
 
-export default function StepLights({ steps, showText = false, sx }) {
+// showDetails: 'all' lists what to do at every step that says; 'current' only the step the job is on now.
+export default function StepLights({ steps, showText = false, showDetails = false, sx }) {
   const list = Array.isArray(steps) ? steps : []
   if (!list.length) return null
   const summary = lightsSummary(list)
@@ -35,7 +36,7 @@ export default function StepLights({ steps, showText = false, sx }) {
           const Icon = ICONS[light.tone]
           const name = step.name || `Step ${i + 1}`
           return (
-            <Tooltip key={step.sequence ?? i} title={[`${i + 1}. ${name}`, step.machine, light.words, step.here ? 'this machine\'s step' : null].filter(Boolean).join(' · ')}>
+            <Tooltip key={step.sequence ?? i} title={[`${i + 1}. ${name}`, step.machine, light.words, step.detail, step.here ? 'this machine\'s step' : null].filter(Boolean).join(' · ')}>
               <Box role="listitem" aria-label={`Step ${i + 1}, ${name}: ${light.words}${step.here ? ', this machine\'s step' : ''}`} data-testid="step-light" data-tone={light.tone} data-here={step.here ? 'yes' : undefined}
                 sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, maxWidth: 150, height: 20, px: 0.75, borderRadius: 10, boxSizing: 'border-box', fontSize: '0.68rem', fontWeight: 600, lineHeight: 1,
                   ...TONES[light.tone], ...(step.here ? { outline: '2px solid #212529', outlineOffset: 1 } : {}) }}>
@@ -47,6 +48,11 @@ export default function StepLights({ steps, showText = false, sx }) {
         })}
       </Stack>
       {showText && <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }} data-testid="step-lights-text">{summary}</Typography>}
+      {showDetails && detailRows(list, showDetails).map((row) => (
+        <Typography key={row.n} variant="caption" display="block" data-testid="step-detail" sx={{ mt: 0.25, color: 'text.primary', fontWeight: row.now ? 600 : 400 }}>
+          {row.n}. {row.name}: {row.detail}
+        </Typography>
+      ))}
     </Box>
   )
 }

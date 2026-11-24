@@ -381,7 +381,7 @@ export default function OrderDetailPage() {
                     <Box key={j.id} sx={{ mb: 1 }} data-testid="order-job">
                       <Chip size="small" variant="outlined" clickable onClick={() => navigate(`/jobs/${j.id}`)}
                         label={`${j.jobNumber} · ${j.status === 'ORDERED' ? 'New, not planned' : String(j.status || '').replace(/_/g, ' ').toLowerCase()}`} />
-                      <StepLights steps={j.planSteps} sx={{ mt: 0.5 }} />
+                      <StepLights steps={j.planSteps} showDetails="all" sx={{ mt: 0.5 }} />
                     </Box>
                   ))}
                   <Button fullWidth size="small" variant="outlined" onClick={seeOnBoard} data-testid="see-on-board">See on Order Board</Button>

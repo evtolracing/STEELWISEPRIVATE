@@ -28,6 +28,10 @@ import {
   Straighten as CTLIcon,
 } from '@mui/icons-material'
 import { createWorkOrder, getUnits } from '../../api'
+import { stockTitle, stockDetail, stockSize, stockNumber, stockMatches, stockOnHandLb, canBeCut } from './sourceStock'
+
+// A long list is slow to open, so it shows this many rows and the person types to narrow it.
+const SHOWN = 100
 
 const WO_TYPES = [
   { value: 'SLIT', label: 'Slitting', icon: SlitIcon },
@@ -74,23 +78,25 @@ export default function WorkOrderCreatePage() {
   const [coilsLoading, setCoilsLoading] = useState(true)
   const [selectedCoil, setSelectedCoil] = useState(null)
 
-  // Load available coils
+  // Stock that can be cut: free stock, and stock reserved for an order (it is cut for that order).
+  // The server refuses the rest, so it is not offered. Asked once, then narrowed as the person types.
   useEffect(() => {
+    let live = true
     async function loadCoils() {
       try {
         setCoilsLoading(true)
-        const data = await getUnits({ status: 'AVAILABLE' })
-        // Handle both array response and object with data property
-        const coilList = Array.isArray(data) ? data : (data.coils || data.data || [])
-        setCoils(coilList)
+        const lists = await Promise.all(['AVAILABLE', 'ALLOCATED'].map((status) => getUnits({ status, limit: 500 })))
+        const all = lists.flatMap((data) => (Array.isArray(data) ? data : (data?.coils || data?.data || [])))
+        if (live) setCoils(all.filter(canBeCut))
       } catch (err) {
-        console.error('Failed to load coils:', err)
-        setError('Failed to load available coils')
+        console.error('Failed to load stock:', err)
+        if (live) setError(err.response?.data?.error || 'The stock list could not be loaded. Reload the page to try again.')
       } finally {
-        setCoilsLoading(false)
+        if (live) setCoilsLoading(false)
       }
     }
     loadCoils()
+    return () => { live = false }
   }, [])
 
   const handleChange = (field) => (event) => {
@@ -110,7 +116,7 @@ export default function WorkOrderCreatePage() {
     event.preventDefault()
     
     if (!formData.sourceCoilId) {
-      setError('Please select a source coil')
+      setError('Choose the material to cut')
       return
     }
     
@@ -242,34 +248,38 @@ export default function WorkOrderCreatePage() {
                   </TextField>
                 </Grid>
 
-                {/* Source Coil */}
+                {/* Source material */}
                 <Grid item xs={12}>
                   <Autocomplete
                     options={coils}
                     value={selectedCoil}
                     onChange={handleCoilSelect}
                     loading={coilsLoading}
-                    getOptionLabel={(coil) => 
-                      `${coil.coilNumber || coil.unitNumber || coil.id} - ${coil.grade?.code || coil.grade?.name || 'Unknown'} (${coil.widthIn || '?'}" x ${coil.gaugeIn || '?'}")`
-                    }
-                    renderOption={(props, coil) => (
-                      <li {...props} key={coil.id}>
-                        <Stack spacing={0.5}>
-                          <Typography variant="body2" fontWeight={600}>
-                            {coil.coilNumber || coil.unitNumber || coil.id}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {coil.grade?.name || 'Unknown Grade'} • {coil.widthIn || '?'}" x {coil.gaugeIn || '?'}" • {coil.netWeightLb != null ? Number(coil.netWeightLb).toLocaleString() : '?'} lbs
-                          </Typography>
+                    openOnFocus
+                    autoHighlight
+                    isOptionEqualToValue={(a, b) => a.id === b.id}
+                    getOptionLabel={(item) => stockTitle(item)}
+                    filterOptions={(options, state) => options.filter((item) => stockMatches(item, state.inputValue)).slice(0, SHOWN)}
+                    loadingText="Loading stock..."
+                    noOptionsText={coils.length === 0
+                      ? 'No stock is free to cut at the branch chosen at the top of the page. Choose another branch, or receive stock first.'
+                      : 'Nothing matches. Try the stock number, material, grade, form (plate, sheet, coil) or a size.'}
+                    ListboxProps={{ 'data-testid': 'wo-source-list', style: { maxHeight: 420 } }}
+                    renderOption={(props, item) => (
+                      <li {...props} key={item.id}>
+                        <Stack spacing={0.25}>
+                          <Typography variant="body2" fontWeight={600}>{stockTitle(item)}</Typography>
+                          <Typography variant="caption" color="text.secondary">{stockDetail(item)}</Typography>
                         </Stack>
                       </li>
                     )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Source Coil"
+                        label="Source material"
                         required
-                        placeholder="Search for a coil..."
+                        placeholder="Click to see stock, or type a number, material, grade or size"
+                        helperText={coilsLoading ? 'Loading stock...' : `${coils.length.toLocaleString()} stock ${coils.length === 1 ? 'item' : 'items'} can be cut here. Every form is listed: coil, sheet, plate, bar and the rest.${coils.length > SHOWN ? ` The list shows ${SHOWN} at a time, so type to narrow it.` : ''}`}
                         InputProps={{
                           ...params.InputProps,
                           startAdornment: (
@@ -318,48 +328,48 @@ export default function WorkOrderCreatePage() {
             </Paper>
           </Grid>
 
-          {/* Right Column - Selected Coil Info & Actions */}
+          {/* Right Column - selected material and actions */}
           <Grid item xs={12} md={4}>
-            {/* Selected Coil Card */}
+            {/* Selected material card */}
             {selectedCoil && (
               <Card sx={{ mb: 3, borderRadius: 2, border: '2px solid', borderColor: 'primary.main' }}>
                 <CardContent>
                   <Stack direction="row" spacing={1} alignItems="center" mb={2}>
                     <CoilIcon color="primary" />
                     <Typography variant="h6" fontWeight={600}>
-                      Selected Coil
+                      Selected material
                     </Typography>
                   </Stack>
                   <Divider sx={{ mb: 2 }} />
                   <Stack spacing={1.5}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Coil Number</Typography>
+                      <Typography variant="body2" color="text.secondary">Stock number</Typography>
                       <Typography variant="body2" fontWeight={600}>
-                        {selectedCoil.coilNumber || selectedCoil.unitNumber || selectedCoil.id}
+                        {stockNumber(selectedCoil)}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Grade</Typography>
+                      <Typography variant="body2" color="text.secondary">Material</Typography>
                       <Typography variant="body2" fontWeight={600}>
-                        {selectedCoil.grade?.name || 'Unknown'}
+                        {selectedCoil.product?.name || selectedCoil.grade?.name || selectedCoil.grade?.code || 'Not recorded'}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">Dimensions</Typography>
                       <Typography variant="body2" fontWeight={600}>
-                        {selectedCoil.widthIn || '?'}" x {selectedCoil.gaugeIn || '?'}"
+                        {stockSize(selectedCoil) || 'Not recorded'}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">Weight</Typography>
                       <Typography variant="body2" fontWeight={600}>
-                        {selectedCoil.weightLb?.toLocaleString() || '?'} lbs
+                        {stockOnHandLb(selectedCoil) == null ? 'Not recorded' : `${Math.round(stockOnHandLb(selectedCoil)).toLocaleString()} lb on hand`}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">Location</Typography>
                       <Typography variant="body2" fontWeight={600}>
-                        {selectedCoil.location?.name || selectedCoil.locationId || 'Unknown'}
+                        {selectedCoil.location?.name || 'Not recorded'}
                       </Typography>
                     </Box>
                   </Stack>

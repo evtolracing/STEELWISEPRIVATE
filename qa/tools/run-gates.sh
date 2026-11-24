@@ -51,6 +51,7 @@ echo "== cancel demo jobs (database update, on a copy)"; PGPASSWORD=${PGPASSWORD
 echo "== first five locations (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-first-five-locations.sh 2>&1 | tail -8
 echo "== retire test data (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-retire-test-data.sh 2>&1 | tail -8
 echo "== release stock of cancelled test orders (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-release-test-stock.sh 2>&1 | tail -8
+echo "== move old stock to the real branches (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-move-old-stock.sh 2>&1 | tail -8
 echo "== store on real branches"; node qa/sim/store-branches.mjs --base http://localhost:3011 2>&1 | tail -6; node qa/sim/ui-store-branches.cjs 2>&1 | tail -6
 echo "== freight screens on real shipments"; node qa/sim/ui-freight.cjs 2>&1 | tail -6
 echo "== staff with no branch"; node qa/sim/ui-staff-no-branch.cjs 2>&1 | tail -6

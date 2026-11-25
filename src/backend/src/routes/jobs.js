@@ -2,6 +2,7 @@ import { Router } from 'express';
 import prisma from '../lib/db.js';
 import { onJobStatusChange } from '../services/printAutomationService.js';
 import { createJobNumbered } from '../lib/jobNumbers.js';
+import { readStepDetails, stepDetailText, planDefaults } from '../lib/planDetails.js';
 import { JOB_STATUSES, UNFINISHED_JOB_STATUSES, jobMoveError } from '../lib/workflowRules.js';
 import { shipForJob } from './shipments.js';
 import { recordJobAssignment, jobHistory } from '../lib/jobHistory.js';
@@ -192,7 +193,7 @@ router.get('/', async (req, res) => {
     };
     // A job's card lights one light per plan step, and the Schedule books a job on the machine of the step it is on,
     // so every list carries the steps.
-    include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, name: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } };
+    include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, name: true, details: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } };
     const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
     // The reply is capped so a board never downloads the whole job history.
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || JOB_LIST_DEFAULT, 1), JOB_LIST_MAX);
@@ -261,7 +262,7 @@ router.get('/overview', async (req, res) => {
           id: true, jobNumber: true, status: true, priority: true, scheduledStart: true, scheduledEnd: true, operationType: true, orderId: true,
           order: { select: { orderNumber: true, locationId: true, notes: true, location: place, buyer: { select: { name: true } } } },
           workCenter: machine,
-          dispatchJob: { select: { locationId: true, division: true, customerName: true, location: place, operations: { select: { name: true, sequence: true, status: true, assignedWorkCenterId: true, assignedWorkCenter: machine } } } },
+          dispatchJob: { select: { locationId: true, division: true, customerName: true, location: place, operations: { select: { name: true, sequence: true, status: true, details: true, assignedWorkCenterId: true, assignedWorkCenter: machine } } } },
         },
       }),
       prisma.job.count({ where: { status: { notIn: PRODUCTION_CLOSED } } }),
@@ -551,6 +552,35 @@ router.get('/:id/cost', async (req, res) => {
   }
 });
 
+// What a job's material is, from what is already on file, so the Plan Job box starts filled in.
+async function materialOnFile(db, job) {
+  const line = job.orderLineId ? await db.orderLine.findUnique({
+    where: { id: job.orderLineId },
+    select: { lineNumber: true, description: true, thicknessIn: true, widthIn: true, lengthIn: true, gradeOverride: true, qtyOrdered: true, unit: true,
+      tolerancePreset: true, grade: { select: { code: true } }, product: { select: { name: true, form: true } } },
+  }) : null;
+  // The stock a work order cuts for this job: the newest one that is not cancelled.
+  const wo = await db.workOrder.findFirst({
+    where: { jobId: job.id, status: { not: 'CANCELLED' } },
+    orderBy: { createdAt: 'desc' },
+    select: { woNumber: true, sourceCoil: { select: { coilNumber: true, form: true, thicknessIn: true, widthIn: true, lengthIn: true, grade: { select: { code: true } }, product: { select: { name: true } } } } },
+  });
+  return { line, item: wo?.sourceCoil || null, woNumber: wo?.woNumber || null };
+}
+
+// GET /api/jobs/:id/plan/defaults: the material facts a new plan starts from, and where each came from.
+router.get('/:id/plan/defaults', async (req, res) => {
+  try {
+    const job = await prisma.job.findUnique({ where: { id: req.params.id }, select: { id: true, orderLineId: true, thicknessIn: true, widthIn: true, lengthIn: true, gradeOverride: true, instructions: true } });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const { line, item, woNumber } = await materialOnFile(prisma, job);
+    res.json({ ...planDefaults({ job, line, item }), workOrder: woNumber });
+  } catch (error) {
+    console.error('Error reading plan defaults:', error);
+    res.status(500).json({ error: 'Failed to read the job\'s material' });
+  }
+});
+
 router.get('/:id/plan', async (req, res) => {
   try {
     const { id } = req.params;
@@ -568,9 +598,12 @@ router.get('/:id/plan', async (req, res) => {
     }
 
     // Map to the shape the frontend expects
+    const sizes = await prisma.job.findUnique({ where: { id }, select: { widthIn: true, lengthIn: true } });
     const mappedJob = {
       ...dispatchJob,
       thickness: Number(dispatchJob.thickness),
+      widthIn: sizes?.widthIn == null ? null : Number(sizes.widthIn),
+      lengthIn: sizes?.lengthIn == null ? null : Number(sizes.lengthIn),
     };
     const mappedOps = dispatchJob.operations.map((op) => ({
       id: op.id,
@@ -588,6 +621,8 @@ router.get('/:id/plan', async (req, res) => {
       assignedOperatorId: op.assignedOperatorId,
       scheduledStart: op.scheduledStart,
       scheduledEnd: op.scheduledEnd,
+      details: op.details || null,
+      detail: stepDetailText(op.details) || null,
     }));
 
     res.json({
@@ -611,6 +646,7 @@ async function planForChange(db, jobId) {
   const steps = plan.operations.map((op) => ({
     id: op.id, sequence: op.sequence, name: op.name, status: op.status, requiredWorkCenterType: op.requiredWorkCenterType,
     assignedWorkCenterId: op.assignedWorkCenterId, machineName: op.assignedWorkCenter?.name || null, timeLogCount: op._count.timeLogs,
+    details: op.details || null, detail: stepDetailText(op.details) || null,
   }));
   return { plan, steps };
 }
@@ -728,6 +764,8 @@ router.post('/:id/plan', async (req, res) => {
       form,
       grade,
       locationId,
+      widthIn,
+      lengthIn,
     } = req.body;
 
     // Validate operations array
@@ -750,6 +788,17 @@ router.post('/:id/plan', async (req, res) => {
           availableTypes: allActive.map((t) => t.id),
         });
       }
+    }
+
+    // What to do at each step (pieces, cut length, width, tolerance, instructions). None of it is required.
+    const stepDetails = [];
+    for (const [i, op] of operations.entries()) {
+      const read = readStepDetails(op.details);
+      if (read.error) return res.status(400).json({ error: `Step ${i + 1}: ${read.error}` });
+      stepDetails.push(read.details);
+    }
+    for (const [name, value] of [['widthIn', widthIn], ['lengthIn', lengthIn]]) {
+      if (value != null && value !== '' && !(Number(value) > 0 && Number(value) <= 100000)) return res.status(400).json({ error: `${name} must be more than zero` });
     }
 
     // Find the Prisma job
@@ -779,6 +828,10 @@ router.post('/:id/plan', async (req, res) => {
     if (dueDate) {
       updateData.scheduledEnd = new Date(dueDate);
     }
+    // The size typed on the plan is the job's size from now on, so the card and the traveler show it.
+    if (Number(thickness) > 0) updateData.thicknessIn = Number(thickness);
+    if (Number(widthIn) > 0) updateData.widthIn = Number(widthIn);
+    if (Number(lengthIn) > 0) updateData.lengthIn = Number(lengthIn);
 
     // A dispatch job belongs to the branch the work is done at: the job's work center, else the order's
     // branch, else the planner's home branch. (It used to default to the text 'FWA', which is not a branch.)
@@ -786,10 +839,14 @@ router.post('/:id/plan', async (req, res) => {
     // What the material is comes from the request, else the job's own specification, else its order line.
     // Nothing is assumed: a grade that is not known is left empty (it used to be written as A36), and a
     // thickness that is not known is saved as 0, which the schedule reads as "not stated" (it used to be 0.5).
-    const line = job.orderLineId ? await prisma.orderLine.findUnique({ where: { id: job.orderLineId }, select: { thicknessIn: true, gradeOverride: true, grade: { select: { code: true } } } }) : null;
+    // The stock item a work order cuts for the job is the last place looked.
+    const { line, item } = await materialOnFile(prisma, job);
+    const onFile = planDefaults({ job, line, item });
     const known = {
-      grade: grade || job.gradeOverride || line?.gradeOverride || line?.grade?.code || null,
-      thickness: Number(thickness) > 0 ? Number(thickness) : Number(job.thicknessIn) > 0 ? Number(job.thicknessIn) : Number(line?.thicknessIn) > 0 ? Number(line.thicknessIn) : 0,
+      grade: grade || onFile.grade || null,
+      thickness: Number(thickness) > 0 ? Number(thickness) : Number(onFile.thicknessIn) > 0 ? Number(onFile.thicknessIn) : 0,
+      form: form || onFile.form || 'PLATE',
+      material: materialCode || onFile.material || job.instructions || 'N/A',
     };
     if (thickness != null && thickness !== '' && !(Number(thickness) > 0)) return res.status(400).json({ error: 'thickness must be more than zero' });
     if (planned?.workCenter?.locationId && locationId && locationId !== planned.workCenter.locationId) {
@@ -831,9 +888,9 @@ router.post('/:id/plan', async (req, res) => {
         jobId: id,
         jobNumber: job.jobNumber,
         orderId: job.orderId || null,
-        materialCode: materialCode || job.instructions || 'N/A',
+        materialCode: known.material,
         commodity: commodity || 'METALS',
-        form: form || 'PLATE',
+        form: known.form,
         grade: known.grade,
         thickness: known.thickness,
         division: division || 'METALS',
@@ -850,7 +907,8 @@ router.post('/:id/plan', async (req, res) => {
             requiredSkillLevel: op.skillLevel || 'STANDARD',
             specialization: op.specialization || null,
             thickness: known.thickness,
-            materialCode: materialCode || job.instructions || 'N/A',
+            materialCode: known.material,
+            details: stepDetails[idx] || undefined,
             status: 'PENDING',
           })),
         },

@@ -205,3 +205,14 @@ export async function getSlaRiskJobs(params = {}) {
   }
 }
 
+
+/**
+ * The material facts a new plan starts from (grade, form, thickness, width, length, pieces), read from the
+ * job, its order line or the stock its work order cuts, with where each came from.
+ * @param {string} id - Job ID
+ */
+export async function getJobPlanDefaults(id) {
+  const response = await fetch(`${API_BASE}/jobs/${id}/plan/defaults`, { credentials: 'include' });
+  if (!response.ok) throw new Error(`Failed to read the job's material: ${response.statusText}`);
+  return response.json();
+}

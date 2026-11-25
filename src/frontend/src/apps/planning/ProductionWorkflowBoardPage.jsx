@@ -84,7 +84,7 @@ function ProductionWorkflowBoardPage() {
                           {[job.locationName || 'No branch on file', job.division, job.dueDate ? `Due ${calendarDate(job.dueDate)}` : null].filter(Boolean).join(' · ')}
                         </Typography>
                         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 0.5 }}>
-                          <StepLights steps={job.planSteps} sx={{ flex: 1 }} />
+                          <StepLights steps={job.planSteps} showDetails="current" sx={{ flex: 1 }} />
                           {job.stepCount > 0 && <ChangePlanButton jobId={job.id} status={job.status} onSaved={reload} />}
                         </Stack>
                       </Paper>

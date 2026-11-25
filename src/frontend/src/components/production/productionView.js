@@ -102,3 +102,12 @@ export function lightsSummary(steps = []) {
   const step = steps[at]
   return `Step ${at + 1} of ${steps.length} ${stepLight(step).words.toLowerCase()}${step.name ? `: ${step.name}` : ''}`
 }
+
+/** The steps that say what to do, numbered as the lights are. 'current' keeps only the first step not yet finished. */
+export function detailRows(steps, which = 'all') {
+  const list = Array.isArray(steps) ? steps : []
+  const nowIndex = list.findIndex((s) => s.status !== 'COMPLETE')
+  return list
+    .map((s, i) => ({ n: i + 1, name: s.name || `Step ${i + 1}`, detail: s.detail || '', now: s.here || (!list.some((x) => x.here) && i === nowIndex) }))
+    .filter((r) => r.detail && (which !== 'current' || r.now))
+}

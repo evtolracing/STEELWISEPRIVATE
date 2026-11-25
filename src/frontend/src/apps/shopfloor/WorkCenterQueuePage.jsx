@@ -387,6 +387,7 @@ function WorkCenterQueuePage() {
                               <Typography variant="caption" color="text.secondary">
                                 {[customerOf(op), op.name].filter(Boolean).join(' · ')}
                               </Typography>
+                              {op.detail && <Typography variant="caption" display="block" fontWeight={600} data-testid="queue-row-detail">{op.detail}</Typography>}
                               <StepLights steps={op.planSteps} sx={{ mt: 0.5, maxWidth: 260 }} />
                             </Box>
                           </TableCell>
@@ -494,9 +495,15 @@ function WorkCenterQueuePage() {
 
                 {/* Job Details */}
                 <CardContent sx={{ flex: 1, overflow: 'auto' }}>
+                  <Alert severity={selectedOperation.detail ? 'info' : 'warning'} icon={false} sx={{ mb: 2.5 }} data-testid="queue-what-to-do">
+                    <Typography variant="subtitle2" gutterBottom>What to do at this step</Typography>
+                    {selectedOperation.detail
+                      ? <Typography variant="h6" component="p">{selectedOperation.detail}</Typography>
+                      : <Typography variant="body2">The plan does not say how many pieces or what size. Ask the planner before cutting.</Typography>}
+                  </Alert>
                   <Box sx={{ mb: 2.5 }} data-testid="queue-job-lights">
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>Plan</Typography>
-                    <StepLights steps={selectedOperation.planSteps} showText />
+                    <StepLights steps={selectedOperation.planSteps} showText showDetails="all" />
                   </Box>
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>

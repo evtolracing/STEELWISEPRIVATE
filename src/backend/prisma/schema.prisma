@@ -990,6 +990,8 @@ model DispatchOperation {
   scheduledEnd           DateTime?
   actualStart            DateTime?
   actualEnd              DateTime?
+  /// What to do at this step: { qty, lengthIn, widthIn, tolerance, notes } (lib/planDetails.js).
+  details                Json?
   reworkOfInspectionId   String? // set on a rework step: the failed inspection it answers (L-020)
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt

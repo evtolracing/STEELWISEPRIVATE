@@ -40,7 +40,8 @@ import {
   PrecisionManufacturing as MachineIcon,
 } from '@mui/icons-material'
 import { getWorkCenterTypes, getLocations, getDivisions, getWorkCenters } from '../../services/dispatchApi'
-import { getJobPlan } from '../../services/jobsApi'
+import { getJobPlan, getJobPlanDefaults } from '../../services/jobsApi'
+import { stepFieldLabels, startingDetails, detailsToSend, filledFromText } from './stepFields'
 import SpecOverridePanel from '../shared/SpecOverridePanel'
 
 const SKILL_LEVELS = [
@@ -69,6 +70,10 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
   const [thickness, setThickness] = useState('')
   const [form, setForm] = useState('PLATE')
   const [grade, setGrade] = useState('')
+  const [widthIn, setWidthIn] = useState('')
+  const [lengthIn, setLengthIn] = useState('')
+  // The job's material as it is on file (order line, stock item), and where each fact came from.
+  const [onFile, setOnFile] = useState(null)
 
   // Spec overrides for this job
   const [jobSpecs, setJobSpecs] = useState({})
@@ -90,6 +95,19 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       // Reset operations when opening a new job
       setOperations([])
       setError(null)
+      setThickness(''); setWidthIn(''); setLengthIn(''); setGrade(''); setOnFile(null)
+      // The material fills itself in from the order line or the stock the work order cuts; nobody retypes it.
+      let current = true
+      getJobPlanDefaults(job.id).then((d) => {
+        if (!current || !d) return
+        setOnFile(d)
+        if (d.material) setMaterialCode((was) => (was && was !== (job.material || job.instructions || '') ? was : d.material))
+        if (d.thicknessIn) setThickness((was) => was || String(d.thicknessIn))
+        if (d.widthIn) setWidthIn((was) => was || String(d.widthIn))
+        if (d.lengthIn) setLengthIn((was) => was || String(d.lengthIn))
+        if (d.grade) setGrade((was) => was || d.grade)
+        if (d.form) setForm(d.form)
+      }).catch(() => { /* the planner can still type it */ })
       // Pre-fill specs from job if they exist
       setJobSpecs({
         tolerancePreset: job.tolerancePreset || '',
@@ -109,6 +127,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
       if (job.status === 'SCHEDULED') {
         loadExistingPlan()
       }
+      return () => { current = false }
     }
   }, [job, open])
 
@@ -128,6 +147,8 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           if (dj.thickness) setThickness(String(dj.thickness))
           if (dj.form) setForm(dj.form)
           if (dj.grade) setGrade(dj.grade)
+          if (dj.widthIn) setWidthIn(String(dj.widthIn))
+          if (dj.lengthIn) setLengthIn(String(dj.lengthIn))
         }
         // Populate operations from existing routing
         const existingOps = plan.operations.map((op) => ({
@@ -136,6 +157,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           workCenterId: op.assignedWorkCenterId || '',
           name: op.name || '',
           skillLevel: op.requiredSkillLevel || 'STANDARD',
+          details: { qty: op.details?.qty ?? '', lengthIn: op.details?.lengthIn ?? '', widthIn: op.details?.widthIn ?? '', tolerance: op.details?.tolerance || '', notes: op.details?.notes || '' },
         }))
         setOperations(existingOps)
       }
@@ -185,6 +207,15 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
     })
   }
 
+  // The questions a step asks depend on its kind of work: a saw asks a cut length, a slitter a slit width.
+  const labelsFor = (typeId, name = '') => {
+    const type = workCenterTypes.find((t) => t.id === typeId)
+    return stepFieldLabels([typeId, type?.label, name].filter(Boolean).join(' '))
+  }
+  const updateDetail = (id, field, value) => {
+    setOperations((prev) => prev.map((op) => (op.id === id ? { ...op, details: { ...(op.details || {}), [field]: value } } : op)))
+  }
+
   const addOperation = () => {
     setOperations((prev) => [
       ...prev,
@@ -194,6 +225,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
         workCenterId: '',
         name: '',
         skillLevel: 'STANDARD',
+        details: startingDetails(onFile, labelsFor('')),
       },
     ])
   }
@@ -262,6 +294,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           workCenterId: op.workCenterId || undefined,
           name: op.name || `${op.workCenterType} Operation`,
           skillLevel: op.skillLevel || 'STANDARD',
+          details: detailsToSend(op.details, labelsFor(op.workCenterType, op.name)),
         })),
         division,
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
@@ -271,6 +304,8 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
         thickness: thickness ? parseFloat(thickness) : undefined,
         form,
         grade: grade || undefined,
+        widthIn: widthIn ? parseFloat(widthIn) : undefined,
+        lengthIn: lengthIn ? parseFloat(lengthIn) : undefined,
         locationId,
         // Spec overrides
         ...jobSpecs,
@@ -296,6 +331,7 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
         workCenterId: matching.length === 1 ? matching[0].id : '',
         name: op.name,
         skillLevel: op.skill || 'STANDARD',
+        details: startingDetails(onFile, labelsFor(typeId, op.name)),
       }
     })
     setOperations(newOps)
@@ -403,13 +439,31 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
             placeholder="e.g., A36-PL-0.5x48x96"
           />
           <TextField
-            label="Thickness (in)"
+            label="Thick (in)"
             type="number"
             value={thickness}
             onChange={(e) => setThickness(e.target.value)}
             size="small"
-            sx={{ width: 140 }}
-            inputProps={{ step: 0.001, min: 0 }}
+            sx={{ width: 160, flexShrink: 0 }}
+            inputProps={{ step: 0.001, min: 0, 'data-testid': 'plan-thickness' }}
+          />
+          <TextField
+            label="Width (in)"
+            type="number"
+            value={widthIn}
+            onChange={(e) => setWidthIn(e.target.value)}
+            size="small"
+            sx={{ width: 140, flexShrink: 0 }}
+            inputProps={{ step: 0.001, min: 0, 'data-testid': 'plan-width' }}
+          />
+          <TextField
+            label="Length (in)"
+            type="number"
+            value={lengthIn}
+            onChange={(e) => setLengthIn(e.target.value)}
+            size="small"
+            sx={{ width: 140, flexShrink: 0 }}
+            inputProps={{ step: 0.001, min: 0, 'data-testid': 'plan-length' }}
           />
           <TextField
             label="Grade"
@@ -421,6 +475,12 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
           />
         </Stack>
 
+        {onFile && (
+          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: -1, mb: 2 }} data-testid="plan-filled-from">
+            {filledFromText(onFile.from) || 'Nothing about this material is on file yet, so type the thickness, size and grade here.'}
+            {onFile.orderedQty ? ` Ordered: ${Number(onFile.orderedQty).toLocaleString()} ${onFile.orderedUnit || ''}.` : ''}
+          </Typography>
+        )}
         <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
           <TextField
             select
@@ -571,7 +631,9 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                   />
                 </ListItemIcon>
                 <ListItemText
+                  disableTypography
                   primary={
+                    <Stack spacing={1.25} sx={{ pr: 12, py: 0.5 }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <TextField
                         select
@@ -647,6 +709,26 @@ const JobPlanningDialog = ({ open, job, onClose, onSave }) => {
                           </MenuItem>
                         ))}
                       </TextField>
+                    </Stack>
+                    {(() => {
+                      const labels = labelsFor(op.workCenterType, op.name)
+                      const d = op.details || {}
+                      const number = (field, label, width, step) => (
+                        <TextField label={label} type="number" value={d[field] ?? ''} onChange={(e) => updateDetail(op.id, field, e.target.value)}
+                          size="small" sx={{ width }} inputProps={{ min: 0, step, 'data-testid': `step-${field}` }} />
+                      )
+                      return (
+                        <Stack direction="row" spacing={1} alignItems="flex-start" data-testid="step-details">
+                          {number('qty', labels.qty, 130, 1)}
+                          {labels.length && number('lengthIn', labels.length, 150, 0.001)}
+                          {labels.width && number('widthIn', labels.width, 150, 0.001)}
+                          <TextField label="Tolerance" value={d.tolerance || ''} onChange={(e) => updateDetail(op.id, 'tolerance', e.target.value)}
+                            size="small" sx={{ width: 130 }} placeholder="+/- 1/16" inputProps={{ maxLength: 60, 'data-testid': 'step-tolerance' }} />
+                          <TextField label="Instructions for this step" value={d.notes || ''} onChange={(e) => updateDetail(op.id, 'notes', e.target.value)}
+                            size="small" sx={{ flex: 1, minWidth: 180 }} helperText={labels.hint} inputProps={{ maxLength: 500, 'data-testid': 'step-notes' }} />
+                        </Stack>
+                      )
+                    })()}
                     </Stack>
                   }
                 />

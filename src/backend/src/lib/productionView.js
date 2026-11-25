@@ -14,6 +14,7 @@
  *   machine  the machine of its current step (the first step not finished)
  *   stage    from the job's status and its steps, below
  */
+import { stepDetailText } from './planDetails.js';
 const PRODUCTION = ['ORDERED', 'SCHEDULED', 'IN_PROCESS'];
 export const CLOSED = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
 
@@ -40,10 +41,11 @@ export function currentStep(steps = []) {
 
 /**
  * The plan's steps in order, as the lights on a job's card show them: the step's name, its status and its machine.
- * `steps` are { sequence, status, name, assignedWorkCenterId?, assignedWorkCenter? }.
+ * `steps` are { sequence, status, name, details?, assignedWorkCenterId?, assignedWorkCenter? }.
+ * `detail` is what to do at the step in one line (pieces, cut length, width, tolerance, instructions), or null.
  */
 export function planLights(steps = []) {
-  return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null, machineId: s.assignedWorkCenterId || s.assignedWorkCenter?.id || null }));
+  return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, detail: stepDetailText(s.details) || null, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null, machineId: s.assignedWorkCenterId || s.assignedWorkCenter?.id || null }));
 }
 
 /** The stage of a job, or null for one that is shipped, completed or cancelled. */

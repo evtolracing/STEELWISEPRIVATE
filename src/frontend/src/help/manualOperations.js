@@ -208,6 +208,8 @@ const manualOperations = [
           'A work order opened from a job ("Create work order" on the job) belongs to that job and makes no other.',
         ] },
         { type: 'text', value: 'The work order names its job at the top and in the list, and the job shows the work order under what it used, made and scrapped. The work order still has its own Release, Start and Complete, because completing it is what changes stock.' },
+        { type: 'text', value: 'On the boards: the job\'s card on the Order Board and the Production Workflow board names its work order and the stock item it cuts, and both boards can be searched by the work order number. Stock work with no order is shown at the branch that holds the stock, so it stays on the board when a branch is picked.' },
+        { type: 'tip', value: 'A work order opened before work orders had jobs has none, so it is on no board. The Work Orders page says how many there are and has a button, Put them on the boards, that gives each one its job. Finished and cancelled work orders are left as they are.' },
         { type: 'warning', value: 'Cancelling a work order also cancels the job it made, as long as nobody has started the job and no other work order is cutting for it. A job that came from an order is left alone.' },
       ] },
       { id: 'complete', title: 'Recording What Was Made', blocks: [

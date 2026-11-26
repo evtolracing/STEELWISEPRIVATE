@@ -9,12 +9,14 @@
  *
  * One rule now, for every screen:
  *   branch   the branch of the job's plan (where its steps run); before it is planned, its machine's branch;
- *            before that, the branch that sold the order
+ *            before that, the branch that sold the order; and for stock work with no order, the branch that holds
+ *            the stock its work order cuts (owner, 2026-11-25: work orders were on no board once a branch was picked)
  *   division the plan's division; before that, its machine's; before that, the order's
  *   machine  the machine of its current step (the first step not finished)
  *   stage    from the job's status and its steps, below
  */
 import { stepDetailText } from './planDetails.js';
+import { WORK_WORDS } from './workOrderRules.js';
 const PRODUCTION = ['ORDERED', 'SCHEDULED', 'IN_PROCESS'];
 export const CLOSED = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
 
@@ -46,6 +48,16 @@ export function currentStep(steps = []) {
  */
 export function planLights(steps = []) {
   return [...steps].sort(bySequence).map((s) => ({ sequence: s.sequence, detail: stepDetailText(s.details) || null, name: s.name || null, status: s.status, machine: s.assignedWorkCenter?.name || null, machineId: s.assignedWorkCenterId || s.assignedWorkCenter?.id || null }));
+}
+
+/**
+ * The work orders cutting for a job, as a card names them: number, status, what is cut and from which stock item.
+ * Cancelled ones are left out. `list` are { id, woNumber, woType, status, sourceCoil: { coilNumber } }.
+ */
+export function workOrderLines(list = []) {
+  return (Array.isArray(list) ? list : [])
+    .filter((w) => w && w.status !== 'CANCELLED')
+    .map((w) => ({ id: w.id, woNumber: w.woNumber, status: w.status, work: WORK_WORDS[w.woType] || (w.woType ? String(w.woType).toLowerCase().replace(/_/g, ' ') : null), stockNumber: w.sourceCoil?.coilNumber || null }));
 }
 
 /** The stage of a job, or null for one that is shipped, completed or cancelled. */
@@ -82,8 +94,10 @@ export function productionRow(job) {
   const steps = plan?.operations || [];
   const now = currentStep(steps);
   const machine = now?.assignedWorkCenter || (steps.length ? null : job.workCenter) || null;
-  const location = plan?.location || machine?.location || job.workCenter?.location || job.order?.location || null;
-  const locationId = plan?.locationId || machine?.locationId || job.workCenter?.locationId || job.order?.locationId || null;
+  const workOrders = workOrderLines(job.coilWorkOrders);
+  const stock = (job.coilWorkOrders || []).map((w) => w.sourceCoil).find((c) => c?.locationId) || null;
+  const location = plan?.location || machine?.location || job.workCenter?.location || job.order?.location || stock?.location || null;
+  const locationId = plan?.locationId || machine?.locationId || job.workCenter?.locationId || job.order?.locationId || stock?.locationId || null;
   return {
     id: job.id,
     jobNumber: job.jobNumber,
@@ -105,6 +119,7 @@ export function productionRow(job) {
     stepCount: steps.length,
     stepsDone: steps.filter((s) => s.status === 'COMPLETE').length,
     planSteps: planLights(steps),
+    workOrders,
   };
 }
 

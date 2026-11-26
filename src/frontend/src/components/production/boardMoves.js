@@ -63,11 +63,12 @@ export function nudge(ids = [], movedId, where) {
   return [...rest.slice(0, to), movedId, ...rest.slice(to)]
 }
 
-/** Does this job match what was typed in the board's search box? Job, order, customer, step and machine are searched. */
+/** Does this job match what was typed in the board's search box? Job, order, work order, stock item, customer, step and machine are searched. */
 export function matchesSearch(job, text) {
   const q = String(text || '').trim().toLowerCase()
   if (!q) return true
-  return [job.jobNumber, job.orderNumber, job.customerName, job.stepName, job.workCenterName, job.locationName, job.division]
+  const workOrders = (job.workOrders || []).flatMap((w) => [w.woNumber, w.stockNumber])
+  return [job.jobNumber, job.orderNumber, job.customerName, job.stepName, job.workCenterName, job.locationName, job.division, ...workOrders]
     .some((v) => String(v || '').toLowerCase().includes(q))
 }
 

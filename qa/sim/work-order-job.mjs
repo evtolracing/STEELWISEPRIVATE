@@ -23,6 +23,7 @@ if (!coil) throw new Error('No free stock item at QA-L01 to cut');
 const admin = await prisma.user.findFirst({ where: { email: QA_USERS.admin }, select: { id: true } });
 const made = { wos: [], jobs: [], orders: [] };
 const newWo = async (extra = {}) => { const r = await call('POST', '/api/work-orders', { woType: 'SLIT', sourceCoilId: coil.id, priority: 4, ...extra }); if (r.body?.id) made.wos.push(r.body.id); if (r.body?.jobMade && r.body?.job?.id) made.jobs.push(r.body.job.id); return r; };
+let wasJobless = [];
 try {
   // 1. A work order from the Work Orders page makes its own job.
   const first = await newWo({ scheduledDate: '2027-01-15T00:00:00.000Z' });
@@ -85,11 +86,48 @@ try {
   const again = await newWo({ lineId: order.lines[0].id });
   check('a second work order for the line joins the same job', again.status === 201 && again.body.jobId === lineJob?.id && again.body.jobMade === false, `${again.status} ${again.body.jobId}`);
 
+  // 6. The job shows on the boards with a branch picked (owner, 2026-11-25: work orders were on no board).
+  const shown = await newWo();
+  const shownJob = shown.body.job?.id;
+  const rowsOf = (r) => (Array.isArray(r.body) ? r.body : r.body.jobs || []);
+  const boardAll = rowsOf(await call('GET', '/api/jobs')).find((j) => j.id === shownJob);
+  check('the Order Board list has the stock job, naming its work order and stock item', boardAll?.workOrders?.[0]?.woNumber === shown.body.woNumber && boardAll.workOrders[0].stockNumber === coil.coilNumber && boardAll.workOrders[0].work === 'Slit', JSON.stringify(boardAll?.workOrders));
+  check('the job list for its branch has it', rowsOf(await call('GET', `/api/jobs?locationId=${a.id}`)).some((j) => j.id === shownJob));
+  const other = await prisma.location.findFirst({ where: { code: 'QA-L02' } });
+  check('the job list for another branch does not', !rowsOf(await call('GET', `/api/jobs?locationId=${other.id}`)).some((j) => j.id === shownJob));
+  const ov = (await call('GET', `/api/jobs/overview?locationId=${a.id}`)).body;
+  const ovRow = (ov.jobs || []).find((j) => j.id === shownJob);
+  check('the Workflow board for its branch has it, in Not planned, at the stock\'s branch', ovRow?.stage === 'NOT_PLANNED' && ovRow.locationId === a.id && ovRow.workOrders?.[0]?.woNumber === shown.body.woNumber, JSON.stringify(ovRow).slice(0, 200));
+  check('the Workflow board for another branch does not', !((await call('GET', `/api/jobs/overview?locationId=${other.id}`)).body.jobs || []).some((j) => j.id === shownJob));
+  const cancelled = await newWo({ jobId: shownJob });
+  await call('PUT', `/api/work-orders/${cancelled.body.id}/cancel`);
+  check('a cancelled work order is not named on the card', rowsOf(await call('GET', '/api/jobs')).find((j) => j.id === shownJob)?.workOrders?.length === 1);
+
+  // 7. A work order from before work orders had jobs is counted, and given a job with one press.
+  const old = await prisma.workOrder.create({ data: { woNumber: `QAWJ-OLD-${T}`, woType: 'CTL', status: 'READY', sourceCoilId: coil.id, priority: 4, inputWeightLb: 500 } }); made.wos.push(old.id);
+  const done = await prisma.workOrder.create({ data: { woNumber: `QAWJ-DONE-${T}`, woType: 'CTL', status: 'COMPLETE', sourceCoilId: coil.id } }); made.wos.push(done.id);
+  // The QA data's own work orders with no job are put back as they were afterwards.
+  wasJobless = (await prisma.workOrder.findMany({ where: { jobId: null, id: { notIn: made.wos } }, select: { id: true } })).map((w) => w.id);
+  const noJob = await call('GET', '/api/work-orders/without-job');
+  check('the open work order with no job is counted; the finished one is not', noJob.status === 200 && noJob.body.count >= 1 && (await prisma.workOrder.count({ where: { jobId: null, status: { in: ['DRAFT', 'READY', 'IN_PROGRESS', 'QC_HOLD'] } } })) === noJob.body.count, JSON.stringify(noJob.body));
+  const fill = await call('POST', '/api/work-orders/make-missing-jobs');
+  const oldNow = await prisma.workOrder.findUnique({ where: { id: old.id }, include: { job: true } });
+  if (fill.body.workOrders) for (const w of fill.body.workOrders) { const j = await prisma.job.findUnique({ where: { jobNumber: w.jobNumber }, select: { id: true } }); if (j && w.jobMade) made.jobs.push(j.id); }
+  check('it is given a job to be planned, named after it', fill.status === 200 && oldNow?.job?.status === 'ORDERED' && oldNow.job.workOrderId === old.id && (oldNow.job.instructions || '').includes(`Cut to length ${coil.coilNumber} (500 lb), QAWJ-OLD-${T}`), `${fill.status} ${oldNow?.job?.instructions}`);
+  check('with its priority', oldNow?.job?.priority === 4, String(oldNow?.job?.priority));
+  check('none is left, and the finished work order still has no job', fill.body.left === 0 && (await prisma.workOrder.findUnique({ where: { id: done.id } })).jobId === null, JSON.stringify(fill.body).slice(0, 120));
+  check('its job is on the board for its branch', ((await call('GET', `/api/jobs/overview?locationId=${a.id}`)).body.jobs || []).some((j) => j.id === oldNow?.jobId));
+  const twice = await call('POST', '/api/work-orders/make-missing-jobs');
+  check('pressing again makes nothing', twice.status === 200 && twice.body.made === 0);
+  check('the work order page route is not taken for these', (await call('GET', '/api/work-orders/without-job')).body.count === 0);
+
   // 5. A refused work order leaves no job behind.
   const jobsBefore = await prisma.job.count();
   const bad = await call('POST', '/api/work-orders', { woType: 'SLIT', sourceCoilId: '00000000-0000-0000-0000-000000000000' });
   check('a refused work order makes no job', bad.status === 400 && (await prisma.job.count()) === jobsBefore, bad.status);
 } finally {
+  await prisma.workOrder.updateMany({ where: { id: { in: wasJobless } }, data: { jobId: null } }).catch(() => {});
+  await prisma.auditLog.deleteMany({ where: { resourceId: { in: [...made.wos, ...made.jobs, ...wasJobless] }, eventType: { in: ['WORK_ORDER_JOB_MADE', 'WORK_ORDER_CREATED', 'WORK_ORDER_STATUS_CHANGED'] } } }).catch(() => {});
   await prisma.auditLog.deleteMany({ where: { resourceId: { in: [...made.wos, ...made.jobs] } } }).catch(() => {});
   await prisma.workOrder.deleteMany({ where: { id: { in: made.wos } } }).catch((e) => console.log('cleanup work orders', e.message.slice(-120)));
   await prisma.job.deleteMany({ where: { id: { in: made.jobs } } }).catch((e) => console.log('cleanup jobs', e.message.slice(-120)));

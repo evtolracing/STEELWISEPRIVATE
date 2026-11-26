@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material'
 import StepLights from '../jobs/StepLights'
 import ChangePlanButton from '../jobs/ChangePlanButton'
-import { stepLight, stepText } from './productionView'
+import { stepLight, stepText, jobForText } from './productionView'
 import { moveChoices, boardMove } from './boardMoves'
 import { calendarDate } from '../../utils/calendarDate'
 
@@ -40,7 +40,12 @@ export default function BoardJobPanel({ job, stages = [], open, onClose, onMove,
         </Stack>
       </DialogTitle>
       <DialogContent dividers>
-        <Typography variant="body2">{[job.orderNumber || 'No order', job.customerName].filter(Boolean).join(' · ')}</Typography>
+        <Typography variant="body2">{[jobForText(job), job.customerName].filter(Boolean).join(' · ')}</Typography>
+        {(job.workOrders || []).map((w) => (
+          <Typography key={w.id} variant="body2" data-testid="panel-work-order">
+            Work order <RouterLink to={`/work-orders/${w.id}`}>{w.woNumber}</RouterLink>{[w.work, w.stockNumber].some(Boolean) ? `: ${[w.work, w.stockNumber].filter(Boolean).join(' ')}` : ''}
+          </Typography>
+        ))}
         <Typography variant="body2" color="text.secondary">
           {[job.locationName || 'No branch on file', job.division, job.dueDate ? `Due ${calendarDate(job.dueDate)}` : 'No due date'].filter(Boolean).join(' · ')}
         </Typography>

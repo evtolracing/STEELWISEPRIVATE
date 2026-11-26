@@ -11,7 +11,7 @@ import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
 import { planChange, mayChangePlan, hasWork, PLAN_CHANGED, PLAN_OPEN_JOB_STATUSES } from '../lib/planChange.js';
 import { arrangeRows, boardOrderError, positionsFor } from '../lib/boardOrder.js';
-import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
+import { workOrderLines, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
 const STALE = 'This job was changed by someone else a moment ago. Reload it and try again.';
@@ -142,7 +142,11 @@ export const jobAtBranch = (locationId) => ({ OR: [
   { dispatchJob: { locationId } },
   { dispatchJob: { is: null }, workCenter: { locationId } },
   { dispatchJob: { is: null }, workCenterId: null, order: { locationId } },
+  // Stock work with no order: the branch that holds the stock its work order cuts.
+  { dispatchJob: { is: null }, workCenterId: null, orderId: null, coilWorkOrders: { some: { sourceCoil: { locationId } } } },
 ] });
+// The work orders cutting for a job, so its card can name them and its branch can follow the stock.
+const JOB_WORK_ORDERS = { select: { id: true, woNumber: true, woType: true, status: true, sourceCoil: { select: { coilNumber: true, locationId: true, location: { select: { id: true, name: true } } } } }, orderBy: { createdAt: 'asc' } };
 const JOB_LIST_DEFAULT = 1000;
 const JOB_LIST_MAX = 5000;
 const JOB_LIST_RECENT_FINISHED = 200;
@@ -194,6 +198,7 @@ router.get('/', async (req, res) => {
     };
     // A job's card lights one light per plan step, and the Schedule books a job on the machine of the step it is on,
     // so every list carries the steps.
+    include.coilWorkOrders = JOB_WORK_ORDERS;
     include.dispatchJob = { select: { operations: { select: { sequence: true, status: true, name: true, details: true, assignedWorkCenterId: true, assignedWorkCenter: { select: { name: true } } } } } };
     const orderBy = [{ priority: 'desc' }, { scheduledStart: 'asc' }, { id: 'asc' }];
     // The reply is capped so a board never downloads the whole job history.
@@ -227,10 +232,11 @@ router.get('/', async (req, res) => {
     if (jobs.length < total) res.setHeader('X-Result-Limited', 'true');
 
     const mapped = jobs.map((job) => {
-      const { dispatchJob, ...rest } = job;
+      const { dispatchJob, coilWorkOrders, ...rest } = job;
       const planSteps = planLights(dispatchJob?.operations || []);
-      if (!scheduled) return { ...mapJobForFrontend(rest), planSteps };
-      return { ...mapJobForFrontend(rest), planSteps, bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
+      const workOrders = workOrderLines(coilWorkOrders);
+      if (!scheduled) return { ...mapJobForFrontend(rest), planSteps, workOrders };
+      return { ...mapJobForFrontend(rest), planSteps, workOrders, bookedWorkCenterId: bookedMachineId(job, dispatchJob?.operations || []) };
     });
     res.json(mapped);
   } catch (error) {
@@ -263,6 +269,7 @@ router.get('/overview', async (req, res) => {
           id: true, jobNumber: true, status: true, priority: true, scheduledStart: true, scheduledEnd: true, operationType: true, orderId: true,
           order: { select: { orderNumber: true, locationId: true, notes: true, location: place, buyer: { select: { name: true } } } },
           workCenter: machine,
+          coilWorkOrders: JOB_WORK_ORDERS,
           dispatchJob: { select: { locationId: true, division: true, customerName: true, location: place, operations: { select: { name: true, sequence: true, status: true, details: true, assignedWorkCenterId: true, assignedWorkCenter: machine } } } },
         },
       }),

@@ -53,3 +53,27 @@ test('retention level: past the period wins over close to it', () => {
   assert.equal(levelFor(1, 0), 'ARCHIVE');
   assert.equal(levelFor(2, 9), 'ARCHIVE');
 });
+
+// Pieces made for an order line are reserved for it (owner, 2026-11-25).
+{
+  const { pieceReserve } = await import('../src/lib/stockChanges.js');
+  const line = { lineNumber: 1, unit: 'LB', gradeId: 'G1', widthIn: 24 };
+  const base = { line, order: { status: 'CONFIRMED', buyerId: 'B' }, coil: { coilNumber: 'P-1', gradeId: 'G1', widthIn: 24 }, unit: 'LB', houseOrgIds: ['H'] };
+  test('a finished piece is reserved for its line up to what the line still needs', () => {
+    assert.equal(pieceReserve({ ...base, open: 1000, free: 600 }), 600);
+    assert.equal(pieceReserve({ ...base, open: 400, free: 600 }), 400);
+    assert.equal(pieceReserve({ ...base, open: 0, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, open: -5, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, open: 100, free: 0 }), 0);
+  });
+  test('nothing is reserved for a closed order, or for a piece that could not be reserved by hand', () => {
+    assert.equal(pieceReserve({ ...base, order: { status: 'CANCELLED' }, open: 1000, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, order: { status: 'COMPLETE' }, open: 1000, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, line: { ...line, unit: 'EA' }, open: 10, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, coil: { ...base.coil, gradeId: 'G2' }, open: 1000, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, coil: { ...base.coil, widthIn: 12 }, open: 1000, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, coil: { ...base.coil, ownerId: 'SOMEONE' }, open: 1000, free: 600 }), 0);
+    assert.equal(pieceReserve({ ...base, coil: { ...base.coil, ownerId: 'B' }, open: 1000, free: 600 }), 600);
+    assert.equal(pieceReserve({ ...base, line: null, open: 1000, free: 600 }), 0);
+  });
+}

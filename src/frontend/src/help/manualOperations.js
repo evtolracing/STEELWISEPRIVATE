@@ -324,6 +324,7 @@ const manualOperations = [
           'Press "Send to quality" if the package must be released by quality before it ships. "Hold" and "Release" stop and free a package.',
         ] },
         { type: 'warning', value: 'Material can be packed only from stock that is reserved for the order line. If the screen says "No stock is reserved for this order line", reserve the stock on the order first.' },
+        { type: 'text', value: 'When a work order made for an order line is completed, its finished pieces are reserved for that line automatically, up to what the line still needs, so they are ready to pack and ship. Pieces from a work order with no order line stay free stock.' },
       ] },
       { id: 'trace', title: 'Reading and Adding to the Record', blocks: [
         { type: 'steps', items: [

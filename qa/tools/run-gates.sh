@@ -52,6 +52,7 @@ echo "== first five locations (database update, on a copy)"; PGPASSWORD=${PGPASS
 echo "== retire test data (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-retire-test-data.sh 2>&1 | tail -8
 echo "== release stock of cancelled test orders (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-release-test-stock.sh 2>&1 | tail -8
 echo "== move old stock to the real branches (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-move-old-stock.sh 2>&1 | tail -8
+echo "== job board position (database update, on a copy)"; PGPASSWORD=${PGPASSWORD:-password} qa/sim/db-job-board-position.sh 2>&1 | tail -4
 echo "== store on real branches"; node qa/sim/store-branches.mjs --base http://localhost:3011 2>&1 | tail -6; node qa/sim/ui-store-branches.cjs 2>&1 | tail -6
 echo "== freight screens on real shipments"; node qa/sim/ui-freight.cjs 2>&1 | tail -6
 echo "== staff with no branch"; node qa/sim/ui-staff-no-branch.cjs 2>&1 | tail -6
@@ -62,6 +63,7 @@ echo "== work center codes: several of one kind at each branch"; node qa/sim/wor
 echo "== plan change: a job's plan changed while it is in production"; node qa/sim/plan-change.mjs --base http://localhost:3011 2>&1 | grep "✗\|plan change"
 echo "== work order job: a new work order makes a job to be planned"; node qa/sim/work-order-job.mjs --base http://localhost:3011 2>&1 | grep "✗\|work order job"
 echo "== plan details: material filled in, and what to do at each step"; node qa/sim/plan-details.mjs --base http://localhost:3011 2>&1 | grep "✗\|plan details"
+echo "== board arrange: cards arranged and moved on the workflow board"; node qa/sim/board-arrange.mjs --base http://localhost:3011 2>&1 | grep "✗\|board arrange"
 echo "== response times of the real-data routes"; node qa/sim/perf-real-data-routes.mjs --base http://localhost:3011 2>&1 | tail -15
 echo "== locations"; node qa/sim/ui-locations.cjs 2>&1 | tail -6
 echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phase 9 UI"

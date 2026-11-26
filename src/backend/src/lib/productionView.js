@@ -19,7 +19,7 @@ const PRODUCTION = ['ORDERED', 'SCHEDULED', 'IN_PROCESS'];
 export const CLOSED = ['SHIPPED', 'COMPLETED', 'CANCELLED'];
 
 export const STAGES = [
-  { key: 'NOT_PLANNED', label: 'Not planned', hint: 'No route yet. Plan it on the Order Board.' },
+  { key: 'NOT_PLANNED', label: 'Not planned', hint: 'No route yet. Click a card to plan it.' },
   { key: 'NO_MACHINE', label: 'Waiting for a machine', hint: 'Planned, but its next step is on no machine. Run Dispatch.' },
   { key: 'QUEUED', label: 'Queued', hint: 'Its next step is waiting at a machine.' },
   { key: 'RUNNING', label: 'Running', hint: 'A step is being worked now.' },

@@ -1158,6 +1158,7 @@ model Job {
   workOrder      WorkOrder?  @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
   // Coil work orders raised for this job (finding L-024): its material, scrap and yield.
   coilWorkOrders WorkOrder[] @relation("WorkOrderForJob")
+  boardPosition  JobBoardPosition?
 
   @@index([recipeId])
   @@index([assignedToId])
@@ -1166,6 +1167,17 @@ model Job {
   @@index([workCenterId])
   @@index([orderLineId])
   @@index([workOrderId])
+}
+
+/// Where a planner put a job's card within its column of the Production Workflow board. Counts only while the job
+/// is still in the stage it was arranged in.
+model JobBoardPosition {
+  jobId       String   @id
+  stage       String
+  position    Float
+  updatedById String?
+  updatedAt   DateTime @default(now()) @updatedAt
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
 
 model Order {

@@ -435,6 +435,39 @@ if (want(2)) {
     const i = await invOf(piece.id);
     ok('completed, and the piece is free with nothing reserved', d.status === 200 && piece.status === 'AVAILABLE' && near(i.qtyAllocated, 0) && near(i.qtyAvailable, 480), `${d.status} ${piece.status} ${i.qtyAllocated}`);
   });
+  await scenario(G2, 'completing a work order moves its job out of production (owner, 2026-11-25)', async (ok) => {
+    const coilId = await B.received({ weightLb: 2000 });
+    const wo = await startedWorkOrder(coilId, { inputWeightLb: 500 });
+    const before = await prisma.job.findUnique({ where: { id: wo.jobId } });
+    const d = await finishWo(wo, { scrapWeightLb: 10, outputs: [{ weightLb: 480 }] });
+    const after = await prisma.job.findUnique({ where: { id: wo.jobId } });
+    ok('the job was still in production, and now waits for inspection', d.status === 200 && ['ORDERED', 'SCHEDULED', 'IN_PROCESS'].includes(before?.status) && after?.status === 'WAITING_QC', `${d.status} ${before?.status} ${after?.status}`);
+    ok('the answer says what became of the job', d.body?.job?.moved === true && d.body.job.status === 'WAITING_QC' && /gone to inspection/.test(d.body.job.message), JSON.stringify(d.body?.job));
+    const moved = await prisma.auditLog.findFirst({ where: { resourceType: 'Job', resourceId: wo.jobId, eventType: 'JOB_STATUS_CHANGED' }, orderBy: { timestamp: 'desc' } });
+    ok('the job\'s history names the work order', JSON.stringify(moved?.details || {}).includes(wo.woNumber), JSON.stringify(moved?.details || {}).slice(0, 200));
+  });
+  await scenario(G2, 'a job with a planned step still open stays in production when its work order completes', async (ok) => {
+    const coilId = await B.received({ weightLb: 2000 });
+    const wo = await startedWorkOrder(coilId, { inputWeightLb: 500 });
+    const kind = await prisma.workCenterType.findFirst({ where: { isActive: true } });
+    const p = await A.post(`/api/jobs/${wo.jobId}/plan`, { operations: [{ workCenterType: kind.id, name: 'Cut' }], locationId: L1.id, thickness: 0.25 });
+    const d = await finishWo(wo, { scrapWeightLb: 10, outputs: [{ weightLb: 480 }] });
+    const after = await prisma.job.findUnique({ where: { id: wo.jobId } });
+    ok('planned, then the work order completed', p.status <= 201 && d.status === 200, `${p.status} ${JSON.stringify(p.body).slice(0, 150)} ${d.status}`);
+    ok('the job did not skip its step', !['WAITING_QC', 'PACKAGING', 'READY_TO_SHIP'].includes(after?.status), String(after?.status));
+    ok('and the answer says the step is to be finished on the Shop Floor', d.body?.job?.moved === false && /1 planned step is not finished/.test(d.body.job.message), JSON.stringify(d.body?.job));
+  });
+  await scenario(G2, 'a job with two work orders leaves production only when the last one completes', async (ok) => {
+    const coilId = await B.received({ weightLb: 3000 });
+    const first = await startedWorkOrder(coilId, { inputWeightLb: 500 });
+    const second = await startedWorkOrder(coilId, { inputWeightLb: 500, jobId: first.jobId });
+    ok('both work orders are for the one job', second.jobId === first.jobId, `${first.jobId} ${second.jobId}`);
+    const a = await finishWo(first, { scrapWeightLb: 10, outputs: [{ weightLb: 480 }] });
+    const mid = await prisma.job.findUnique({ where: { id: first.jobId } });
+    ok('after the first, the job stays and the answer says another is open', a.status === 200 && mid.status !== 'WAITING_QC' && a.body?.job?.moved === false && /1 other work order is still open/.test(a.body.job.message), `${mid.status} ${JSON.stringify(a.body?.job)}`);
+    const b = await finishWo(second, { scrapWeightLb: 10, outputs: [{ weightLb: 480 }] });
+    ok('after the last, it goes to inspection', b.status === 200 && (await prisma.job.findUnique({ where: { id: first.jobId } })).status === 'WAITING_QC', `${b.status} ${JSON.stringify(b.body?.job)}`);
+  });
   await scenario(G2, 'a work order cannot cut stock that is reserved for another order', async (ok) => {
     const coilId = await B.received({ weightLb: 1000 });
     const o = await mkOrder({ qty: 800 });
@@ -1466,7 +1499,7 @@ if (want(5)) {
     ok('each count equals the records', r.status === 200 && d.queueCount === queue && d.inProgressCount === running && d.passedToday === passed && d.failedToday === failed && d.totalInspections === total, JSON.stringify({ d: [d.queueCount, d.inProgressCount, d.passedToday, d.failedToday], db: [queue, running, passed, failed] }));
     ok('the pass rate is passed over decided, as a whole percentage', d.passRate === Math.round((passed / (passed + failed)) * 100) && passed >= 1 && failed >= 1, `${d.passRate}`);
     const other = await qc2.call('GET', '/api/qc/stats');
-    const theirs = await prisma.job.count({ where: { status: 'WAITING_QC', OR: [{ order: { locationId: L2.id } }, { workCenter: { locationId: L2.id } }] } });
+    const theirs = await prisma.job.count({ where: { status: 'WAITING_QC', OR: [{ order: { locationId: L2.id } }, { workCenter: { locationId: L2.id } }, { dispatchJob: { locationId: L2.id } }, { orderId: null, workCenterId: null, createdBy: { homeLocationId: L2.id } }, { coilWorkOrders: { some: { sourceCoil: { locationId: L2.id } } } }] } });
     ok('another branch\'s inspector gets their own branch\'s figures, not these', other.status === 200 && other.body.data.queueCount <= theirs && other.body.data.queueCount < queue, `${other.body?.data?.queueCount} of ${queue}`);
     const { inspectionPassBlockers } = await import('../../src/backend/src/lib/productionRules.js');
     ok('with nothing decided there is no pass rate: the rule reads null, not 100%', inspectionPassBlockers([], []).length === 0 && /passRate = passedToday \+ failedToday > 0[\s\S]{0,120}: null/.test(fs.readFileSync('src/backend/src/routes/qcRoutes.js', 'utf8')));
@@ -1519,7 +1552,7 @@ if (want(5)) {
     const q4 = (await qc1.call('GET', '/api/qc/queue?limit=500')).body;
     const at = (id) => q4.data.findIndex((x) => x.id === id);
     ok('a hot job is listed ahead of a low-priority one that arrived at the same time (the queue used to put the lowest priority first)', at(hot.id) >= 0 && at(low.id) > at(hot.id), `${at(hot.id)} ${at(low.id)} of ${q4.data.length}`);
-    ok('the queue says how many are waiting in all, and never sends more than it was asked for', q4.total === (await prisma.job.count({ where: { status: 'WAITING_QC', OR: [{ order: { locationId: L1.id } }, { workCenter: { locationId: L1.id } }] } })) && q4.data.length <= 500 && (await qc1.call('GET', '/api/qc/queue?limit=2')).body.data.length <= 2, `${q4.total} ${q4.data.length}`);
+    ok('the queue says how many are waiting in all, and never sends more than it was asked for', q4.total === (await prisma.job.count({ where: { status: 'WAITING_QC', OR: [{ order: { locationId: L1.id } }, { workCenter: { locationId: L1.id } }, { dispatchJob: { locationId: L1.id } }, { orderId: null, workCenterId: null, createdBy: { homeLocationId: L1.id } }, { coilWorkOrders: { some: { sourceCoil: { locationId: L1.id } } } }] } })) && q4.data.length <= 500 && (await qc1.call('GET', '/api/qc/queue?limit=2')).body.data.length <= 2, `${q4.total} ${q4.data.length}`);
     ok('every job in the queue is waiting for inspection', (await prisma.job.count({ where: { id: { in: q3.body.data.map((x) => x.id) }, status: { not: 'WAITING_QC' } } })) === 0);
   });
   await scenario(G5, 'nonconformance reports and corrective actions are not part of this product: a failed inspection is the only nonconformance record', async (ok) => {

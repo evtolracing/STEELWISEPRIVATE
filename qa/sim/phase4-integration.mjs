@@ -427,6 +427,15 @@ if (want(2)) {
     const reserved = await prisma.orderLineAllocation.findMany({ where: { orderLineId: o.lines[0].id } });
     ok('manufacturing → inventory: the pieces exist with the source heat', pieces.length === 2 && pieces.every((p) => p.heatId === w.heat.id));
     ok('manufacturing → orders: the pieces are reserved for the same line', reserved.length === 2 && reserved.every((r) => pieces.some((p) => p.id === r.coilId)) && reserved.reduce((t, r) => t + num(r.qtyAllocated), 0) === 980, JSON.stringify(reserved.map((r) => num(r.qtyAllocated))));
+    // The job the work order was given leaves production with it (owner, 2026-11-25): to inspection, as it owes one.
+    const job = await prisma.job.findUnique({ where: { id: (await prisma.workOrder.findUnique({ where: { id: wo.body.id } })).jobId } });
+    ok('manufacturing → production: the work order\'s job has gone to inspection, and the answer says so', job?.status === 'WAITING_QC' && done.body?.job?.moved === true && /gone to inspection/.test(done.body?.job?.message || ''), `${job?.status} ${JSON.stringify(done.body?.job)}`);
+    const early = await B.dispatch((await B.shipment(o, [[o.lines[0], 10]])).body);
+    ok('quality → shipping: nothing ships while the job waits for inspection', early.status === 409 && /not finished/.test(early.body?.error || ''), `${early.status} ${early.body?.error}`);
+    await prisma.shipment.deleteMany({ where: { orderId: o.id, status: { in: ['PENDING', 'LOADING'] } } });
+    await prisma.jobInspection.create({ data: { inspectionNumber: tag('P4INSP'), jobId: job.id, status: 'PASSED', overallResult: 'PASS', completedAt: new Date() } });
+    const released = await A.patch(`/api/jobs/${job.id}/status`, { status: 'READY_TO_SHIP' });
+    ok('quality → production: with a passed inspection the job is released', released.status === 200, `${released.status} ${released.body?.error}`);
     const s = await B.shipment(o, [[o.lines[0], 980]]);
     const d = await B.dispatch(s.body);
     ok('orders → shipping: the pieces ship', d.status === 200, `${d.status} ${d.body?.error}`);

@@ -401,30 +401,32 @@ model Grade {
 }
 
 model Product {
-  id           String        @id @default(uuid())
-  sku          String        @unique
-  name         String
-  description  String?
-  category     String?
-  productType  ProductType
-  form         ProductForm
-  gradeId      String?
-  specStandard String?
-  thicknessMin Decimal?
-  thicknessMax Decimal?
-  widthMin     Decimal?
-  widthMax     Decimal?
-  basePriceCwt Decimal?
-  priceUnit    PriceUnit     @default(CWT)
-  division     String        @default("METALS") // METALS | PLASTICS | SUPPLIES | OUTLET
-  isRemnant    Boolean       @default(false)
-  isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  coils        Coil[]
-  orderLines   OrderLine[]
-  grade        Grade?        @relation(fields: [gradeId], references: [id])
-  storeListing StoreListing?
+  id            String        @id @default(uuid())
+  sku           String        @unique
+  name          String
+  description   String?
+  category      String?
+  productType   ProductType
+  form          ProductForm
+  gradeId       String?
+  specStandard  String?
+  thicknessMin  Decimal?
+  thicknessMax  Decimal?
+  widthMin      Decimal?
+  widthMax      Decimal?
+  basePriceCwt  Decimal?
+  priceUnit     PriceUnit     @default(CWT)
+  /// Weight of one foot of a bar, shape, tube or pipe, in lb (2026-11-26). Empty for flat products, which are weighed from their size.
+  weightPerFtLb Decimal?      @db.Decimal(12, 4)
+  division      String        @default("METALS") // METALS | PLASTICS | SUPPLIES | OUTLET
+  isRemnant     Boolean       @default(false)
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  coils         Coil[]
+  orderLines    OrderLine[]
+  grade         Grade?        @relation(fields: [gradeId], references: [id])
+  storeListing  StoreListing?
 
   quoteLines QuoteLine[] @relation("QuoteLineProduct")
 
@@ -1154,10 +1156,10 @@ model Job {
   dispatchJob DispatchJob?
   inspections JobInspection[]
 
-  orderLine      OrderLine?  @relation("JobOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
-  workOrder      WorkOrder?  @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
+  orderLine      OrderLine?        @relation("JobOrderLine", fields: [orderLineId], references: [id], onDelete: SetNull)
+  workOrder      WorkOrder?        @relation("JobWorkOrder", fields: [workOrderId], references: [id], onDelete: SetNull)
   // Coil work orders raised for this job (finding L-024): its material, scrap and yield.
-  coilWorkOrders WorkOrder[] @relation("WorkOrderForJob")
+  coilWorkOrders WorkOrder[]       @relation("WorkOrderForJob")
   boardPosition  JobBoardPosition?
 
   @@index([recipeId])

@@ -28,7 +28,7 @@ import {
   Straighten as CTLIcon,
 } from '@mui/icons-material'
 import { createWorkOrder, getUnits } from '../../api'
-import { stockTitle, stockDetail, stockSize, stockNumber, stockMatches, stockOnHandLb, canBeCut } from './sourceStock'
+import { stockTitle, stockDetail, stockSize, stockNumber, stockMatches, stockOnHandLb, canBeCut, mergeStock } from './sourceStock'
 
 // A long list is slow to open, so it shows this many rows and the person types to narrow it.
 const SHOWN = 100
@@ -98,6 +98,25 @@ export default function WorkOrderCreatePage() {
     loadCoils()
     return () => { live = false }
   }, [])
+
+  // The first list holds the newest 500 of each kind. Typing also asks the server, so a piece further back is
+  // found too (2026-11-26: thousands of stock items). What comes back is added to the list.
+  const [typed, setTyped] = useState('')
+  useEffect(() => {
+    const words = typed.trim()
+    if (words.length < 2) return undefined
+    let live = true
+    const timer = setTimeout(async () => {
+      try {
+        const lists = await Promise.all(['AVAILABLE', 'ALLOCATED'].map((status) => getUnits({ status, search: words, limit: 200 })))
+        const found = lists.flatMap((data) => (Array.isArray(data) ? data : (data?.coils || data?.data || []))).filter(canBeCut)
+        if (live && found.length) setCoils((have) => mergeStock(have, found))
+      } catch (err) {
+        console.error('Stock search failed:', err)
+      }
+    }, 300)
+    return () => { live = false; clearTimeout(timer) }
+  }, [typed])
 
   const handleChange = (field) => (event) => {
     setFormData({ ...formData, [field]: event.target.value })
@@ -254,6 +273,7 @@ export default function WorkOrderCreatePage() {
                     options={coils}
                     value={selectedCoil}
                     onChange={handleCoilSelect}
+                    onInputChange={(event, value, reason) => { if (reason === 'input') setTyped(value) }}
                     loading={coilsLoading}
                     openOnFocus
                     autoHighlight

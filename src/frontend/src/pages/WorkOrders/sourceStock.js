@@ -61,3 +61,10 @@ export function canBeCut(item) {
   const lb = stockOnHandLb(item)
   return lb == null || lb > 0
 }
+
+/** The list with the items found by a search added, each item once (the newer copy wins). */
+export function mergeStock(have, found) {
+  const byId = new Map((have || []).map((item) => [item.id, item]))
+  for (const item of found || []) byId.set(item.id, item)
+  return [...byId.values()]
+}

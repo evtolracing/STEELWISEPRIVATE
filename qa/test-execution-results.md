@@ -317,3 +317,14 @@ Run 2026-11-23T00:54:01.040Z with `qa/sim/ui-experience.cjs`.
 ## Unit tests
 
 Run with `npm test` in `src/backend` (Node built-in test runner). The count and result are printed by the runner; see the pull request for the latest run.
+
+## Working inventory (2026-11-26)
+
+Run this session on local QA copies of the database:
+
+| Check | Result |
+|---|---|
+| `qa/sim/db-working-inventory.sh`: every SQL Editor file run on a copy, then again twice; refusals, counts, balances, heats, holds, outlet, demo clean-up, machines, check/verify files, removal twice | 41 passed, 0 failed |
+| `qa/sim/working-inventory-jobs.mjs --jobs 200`: order, reservation, job, plan, shop floor steps, inspection, shipment, delivery at all five branches | 200 of 200 jobs passed (3,000 steps, 1,600 checks); balances off 0; pieces without heat or grade 0 |
+| `qa/sim/working-inventory-ui.cjs`: store home, word search, form filter, Steel Outlet, work order material search in Chromium | 14 passed, 0 failed |
+| `npm test` in `src/backend` | 514 passed, 0 failed |

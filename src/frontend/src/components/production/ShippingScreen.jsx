@@ -30,6 +30,7 @@ import {
   CheckCircle as CheckIcon
 } from '@mui/icons-material';
 import { fetchJobs, shipJob } from '../../services/jobsService';
+import JobShipmentAction, { useJobShipmentPlans } from '../shipping/JobShipmentAction';
 
 const CARRIERS = [
   'FedEx',
@@ -52,6 +53,9 @@ export default function ShippingScreen() {
     trackingNumber: '',
     notes: ''
   });
+
+  // A job for a customer order ships on its planned shipment (Shipping screen); only a job with no order ships here.
+  const shipmentPlans = useJobShipmentPlans();
 
   const loadJobs = async () => {
     try {
@@ -159,14 +163,8 @@ export default function ShippingScreen() {
 
         {isReadyToShip && (
           <CardActions sx={{ justifyContent: 'flex-end', pt: 0 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<ShipIcon />}
-              onClick={() => openShipDialog(job)}
-            >
-              Ship Job
-            </Button>
+            <JobShipmentAction job={job} plans={shipmentPlans.plans} loaded={shipmentPlans.loaded} size="medium" fullWidth={false}
+              onMarkShipped={(j) => openShipDialog(j)} />
           </CardActions>
         )}
       </Card>

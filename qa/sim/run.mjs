@@ -387,16 +387,9 @@ async function partialRework(sc, variant) {
     await step(sc, 'dispatch while the job is on hold is refused', () => A.put(`/api/shipments/${s.id}/dispatch`, {}, 'shipping'), 409);
     await step(sc, 'marking the job shipped by hand before anything ships is refused', () => A.post(`/api/jobs/${j.id}/status`, { status: 'SHIPPED' }, 'operator'), 409);
     await runJob(sc, j, ['IN_PROCESS', 'WAITING_QC', 'PACKAGING', 'READY_TO_SHIP']);
-    if (variant === 2) {
-      await dispatchDeliver(sc, s);
-    } else {
-      // Shop-floor "Ship" on the job: it makes the shipment itself.
-      await step(sc, 'shop-floor ship is refused while the line sits on an open shipment', () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: `QA-${sc.id}` }, 'operator'), 409);
-      await step(sc, 'cancel the open shipment', () => A.patch(`/api/shipments/${s.id}/status`, { status: 'CANCELLED' }, 'shipping'));
-      const shipped = await step(sc, `ship ${j.jobNumber} from the shop floor`, () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: `QA-${sc.id}` }, 'operator'));
-      check(sc, 'shop-floor ship created a shipment and an invoice', !!shipped.body?.shipment?.shipmentNumber && !!shipped.body?.shipment?.invoice?.invoiceNumber, JSON.stringify(shipped.body?.shipment || null));
-      await step(sc, 'shipping the same job twice is refused', () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: 'again' }, 'operator'), '4xx');
-    }
+    // A job for a customer order leaves on its planned shipment: "Ship" on the job is refused and names it (owner, 2026-11-25).
+    if (variant !== 2) await step(sc, 'shop-floor ship is refused: the job leaves when its planned shipment is dispatched', () => A.post(`/api/jobs/${j.id}/ship`, { carrier: 'XPO', trackingNumber: `QA-${sc.id}` }, 'operator'), 409);
+    await dispatchDeliver(sc, s);
     const jobNow = await prisma.job.findUnique({ where: { id: j.id } });
     check(sc, 'the job is SHIPPED once its line has shipped', jobNow.status === 'SHIPPED', `job status ${jobNow.status}`);
     await checkBilling(sc, order.id);

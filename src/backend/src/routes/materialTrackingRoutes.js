@@ -426,9 +426,9 @@ router.patch('/staging/:jobId/ship', async (req, res) => {
     const staged = await prisma.job.findUnique({ where: { id: jobId } });
     if (!staged) return res.status(404).json({ error: 'Job not found' });
     if (staged.status !== 'READY_TO_SHIP') return res.status(409).json({ error: `Only a job that is ready to ship can be shipped. This one is ${staged.status}.` });
-    // For a customer order this is a real shipment: stock, the order and the invoice follow.
+    // A job for a customer order leaves on its planned shipment, dispatched on the Shipping screen: refused here.
     try {
-      await shipForJob(staged, { carrier, trackingNumber, userId: req.user.id });
+      await shipForJob(staged);
     } catch (error) {
       if (error?.status && error.status < 500) return res.status(error.status).json({ error: error.message });
       throw error;

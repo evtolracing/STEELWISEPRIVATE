@@ -1,6 +1,6 @@
 /**
- * Words for the Packaging Queue: why a move was refused, and what shipping a job did. No screen parts here, so the
- * automated checks can run them.
+ * Words for the screens that list jobs ready to ship (Packaging Queue, Staging, shop-floor shipping): why a move
+ * was refused, and where a job stands with its shipment. No screen parts here, so the automated checks can run them.
  */
 
 /** The server's own sentence for a refused move, else a plain fallback. Never a bare "failed". */
@@ -11,18 +11,28 @@ export function moveProblem(err, fallback = 'The job could not be moved.') {
   return `${fallback} Try again, and if it keeps happening tell your administrator.`
 }
 
-/** What shipping a job did, for the message afterwards. */
-export function shippedText(job, answer) {
-  const number = answer?.shipment?.shipmentNumber
-  const invoice = answer?.shipment?.invoice?.invoiceNumber
-  const name = job?.jobNumber ? `Job ${job.jobNumber}` : 'The job'
-  if (!number) return `${name} is marked shipped.`
-  return `${name} shipped on shipment ${number}.${invoice ? ` Invoice ${invoice} was raised.` : ''}`
+const SHIPMENT_WORDS = { PENDING: 'on the dock', LOADING: 'loading' }
+
+/**
+ * Where a job that is ready to ship stands, and the one next step. plan is its row from /shipments/job-plans:
+ * { orderNumber, shipment: { id, shipmentNumber, status } | null }, or undefined for a job with no customer order.
+ * Returns { kind: 'byHand' | 'plan' | 'dispatch', words, button, to }.
+ */
+export function shipmentStep(plan) {
+  if (!plan) return { kind: 'byHand', words: '', button: 'Mark Shipped', to: null }
+  if (plan.shipment) {
+    return {
+      kind: 'dispatch', button: 'Open shipment', to: `/shipping/${plan.shipment.id}`,
+      words: `On shipment ${plan.shipment.shipmentNumber}, ${SHIPMENT_WORDS[plan.shipment.status] || 'not left yet'}. It is marked shipped when the shipment is dispatched.`,
+    }
+  }
+  return {
+    kind: 'plan', button: 'Plan shipment', to: plan.orderNumber ? `/shipping?order=${encodeURIComponent(plan.orderNumber)}` : '/freight/planner',
+    words: 'No shipment planned yet.',
+  }
 }
 
-/** Why the Ship button cannot be pressed yet, or '' when it can. */
-export function shipFormProblem({ carrier, trackingNumber } = {}) {
-  if (!String(carrier || '').trim()) return 'Enter the carrier.'
-  if (!String(trackingNumber || '').trim()) return 'Enter the tracking or BOL number.'
-  return ''
+/** The plans keyed by job, from the list the server sends. */
+export function plansByJob(rows) {
+  return new Map((Array.isArray(rows) ? rows : []).map((r) => [r.jobId, r]))
 }

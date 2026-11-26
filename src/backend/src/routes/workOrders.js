@@ -4,7 +4,7 @@ import prisma from '../lib/db.js';
 import { planLights } from '../lib/productionView.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { readFields } from '../lib/fieldRules.js';
-import { workOrderMoveError, gradeFitError, jobForWorkOrder, workOrderJobText, cancelsItsJob, OPEN_JOB_STATUSES, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
+import { workOrderMoveError, gradeFitError, jobForWorkOrder, workOrderJobText, cancelsItsJob, OPEN_JOB_STATUSES, WITHOUT_JOB_STATUSES, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
 import { createJobNumbered } from '../lib/jobNumbers.js';
 import { changeJobStatusTx } from '../lib/jobGates.js';
 import { completeWorkOrder, readPieces } from '../lib/stockChanges.js';
@@ -57,6 +57,52 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error fetching work orders:', error);
     res.status(500).json({ error: 'Failed to fetch work orders' });
+  }
+});
+
+// Work orders opened before a work order always had a job (2026-11-23) have none, so they are on no board.
+// Only work still to do counts: a finished or cancelled work order is left as it is.
+const NO_JOB = { jobId: null, status: { in: WITHOUT_JOB_STATUSES } };
+
+// GET /work-orders/without-job: how many open work orders have no job, and the first few numbers.
+router.get('/without-job', async (req, res) => {
+  try {
+    const [count, first] = await Promise.all([
+      prisma.workOrder.count({ where: NO_JOB }),
+      prisma.workOrder.findMany({ where: NO_JOB, orderBy: { createdAt: 'asc' }, take: 5, select: { woNumber: true } }),
+    ]);
+    res.json({ count, first: first.map((w) => w.woNumber) });
+  } catch (error) {
+    console.error('Error counting work orders without a job:', error);
+    res.status(500).json({ error: 'The work orders could not be counted' });
+  }
+});
+
+// POST /work-orders/make-missing-jobs: give every open work order with no job its job, the same way a new work
+// order gets one, so it shows on the Order Board to be planned. Up to 200 at a time; safe to press again.
+router.post('/make-missing-jobs', async (req, res) => {
+  try {
+    const list = await prisma.workOrder.findMany({
+      where: NO_JOB, orderBy: { createdAt: 'asc' }, take: 200,
+      select: { id: true, woNumber: true, woType: true, priority: true, scheduledDate: true, inputWeightLb: true, lineId: true, sourceCoil: { select: { coilNumber: true } },
+        line: { select: { id: true, orderId: true, lineNumber: true, lineStatus: true, order: { select: { id: true, orderNumber: true } } } } },
+    });
+    const done = [];
+    for (const wo of list) {
+      const line = wo.line && wo.line.lineStatus !== 'CANCELLED' ? wo.line : null;
+      const data = { woType: wo.woType, priority: wo.priority, scheduledDate: wo.scheduledDate, inputWeightLb: wo.inputWeightLb == null ? null : Number(wo.inputWeightLb) };
+      const { job, madeJob } = await jobFor({ data, coilNumber: wo.sourceCoil?.coilNumber, line, userId: req.user.id });
+      // Only a work order that still has no job takes this one: two people pressing at once cannot give it two.
+      const took = await prisma.workOrder.updateMany({ where: { id: wo.id, jobId: null }, data: { jobId: job.id } });
+      if (!took.count) { if (madeJob) await prisma.job.delete({ where: { id: job.id } }).catch(() => {}); continue; }
+      if (madeJob) await prisma.job.update({ where: { id: job.id }, data: { workOrderId: wo.id, instructions: workOrderJobText({ ...data, coilNumber: wo.sourceCoil?.coilNumber, woNumber: wo.woNumber, forOrder: Boolean(line) }) } });
+      await prisma.auditLog.create({ data: { category: 'WORKFLOW', eventType: 'WORK_ORDER_JOB_MADE', action: 'UPDATE', userId: req.user?.id || null, resourceType: 'WorkOrder', resourceId: wo.id, details: { woNumber: wo.woNumber, jobNumber: job.jobNumber, jobMade: madeJob } } });
+      done.push({ woNumber: wo.woNumber, jobNumber: job.jobNumber, jobMade: madeJob });
+    }
+    res.json({ made: done.length, workOrders: done, left: await prisma.workOrder.count({ where: NO_JOB }) });
+  } catch (error) {
+    console.error('Error making jobs for work orders:', error);
+    res.status(500).json({ error: 'The jobs could not be made' });
   }
 });
 
@@ -151,17 +197,7 @@ router.post('/', async (req, res) => {
     let job = null;
     let madeJob = false;
     if (!data.jobId) {
-      if (line) job = await prisma.job.findFirst({ where: { orderLineId: line.id, status: { in: OPEN_JOB_STATUSES } }, orderBy: { createdAt: 'asc' }, select: { id: true, jobNumber: true } });
-      if (!job) {
-        const jobData = jobForWorkOrder({ ...data, coilNumber: coil.coilNumber, line, userId: req.user.id });
-        job = await createJobNumbered({
-          client: prisma,
-          order: line?.order || null,
-          lineNumber: line?.lineNumber ?? null,
-          create: (jobNumber) => prisma.job.create({ data: { ...jobData, jobNumber }, select: { id: true, jobNumber: true } }),
-        });
-        madeJob = true;
-      }
+      ({ job, madeJob } = await jobFor({ data, coilNumber: coil.coilNumber, line, userId: req.user.id }));
       data.jobId = job.id;
     }
 
@@ -190,6 +226,21 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to create work order' });
   }
 });
+
+/** The job a work order with none belongs to: its order line's open job, else a new one. Returns { job, madeJob }. */
+async function jobFor({ data, coilNumber, line, userId }) {
+  let job = null;
+  if (line) job = await prisma.job.findFirst({ where: { orderLineId: line.id, status: { in: OPEN_JOB_STATUSES } }, orderBy: { createdAt: 'asc' }, select: { id: true, jobNumber: true } });
+  if (job) return { job, madeJob: false };
+  const jobData = jobForWorkOrder({ ...data, coilNumber, line, userId });
+  job = await createJobNumbered({
+    client: prisma,
+    order: line?.order || null,
+    lineNumber: line?.lineNumber ?? null,
+    create: (jobNumber) => prisma.job.create({ data: { ...jobData, jobNumber }, select: { id: true, jobNumber: true } }),
+  });
+  return { job, madeJob: true };
+}
 
 /** Move a work order, refusing a move its status does not allow. Two people pressing at once: one wins. */
 async function move(req, res, to, extra = {}, after = null) {

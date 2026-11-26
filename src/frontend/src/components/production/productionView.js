@@ -26,6 +26,23 @@ export function startingBranch(locations = [], { topBarBranchId, homeLocationId 
   return locations[0]?.id || ''
 }
 
+/**
+ * The work orders cutting for a job, in a line for its card: "WO-00179 · Slit C-00012", and "+1 more" after the
+ * first. Empty when the job has none. `job.workOrders` are { woNumber, work, stockNumber } from the server.
+ */
+export function workOrderText(job) {
+  const list = Array.isArray(job?.workOrders) ? job.workOrders : []
+  if (!list.length) return ''
+  const w = list[0]
+  const what = [w.work, w.stockNumber].filter(Boolean).join(' ')
+  return `${[w.woNumber, what].filter(Boolean).join(' · ')}${list.length > 1 ? ` · +${list.length - 1} more` : ''}`
+}
+/** Who a job is for, in a few words: its order, else "Stock work" when a work order cuts for it, else "No order". */
+export function jobForText(job) {
+  if (job?.orderNumber) return job.orderNumber
+  return Array.isArray(job?.workOrders) && job.workOrders.length ? 'Stock work' : 'No order'
+}
+
 /** "Saw step 2 of 3" or "No route yet". */
 export function stepText(row) {
   if (!row?.stepCount) return 'No route yet'

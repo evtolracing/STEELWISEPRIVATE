@@ -46,6 +46,25 @@ export default function WorkOrderListPage() {
   }, [search, status, woType])
   useEffect(() => { load() }, [load])
 
+  // Work orders opened before a work order always had a job are on no board. This says how many, and gives them jobs.
+  const [noJob, setNoJob] = useState(null)
+  const [making, setMaking] = useState(false)
+  const [madeNote, setMadeNote] = useState('')
+  const countNoJob = useCallback(() => { client.get('/work-orders/without-job').then((r) => setNoJob(r.data)).catch(() => setNoJob(null)) }, [])
+  useEffect(() => { countNoJob() }, [countNoJob])
+  const makeJobs = async () => {
+    setMaking(true); setError('')
+    try {
+      const { data } = await client.post('/work-orders/make-missing-jobs')
+      setMadeNote(`${data.made} ${data.made === 1 ? 'work order is' : 'work orders are'} now on the Order Board to be planned.${data.left ? ` ${data.left} still to do: press again.` : ''}`)
+      countNoJob(); load()
+    } catch (e) {
+      setError(e.response?.data?.error || 'The jobs could not be made.')
+    } finally {
+      setMaking(false)
+    }
+  }
+
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
@@ -57,6 +76,14 @@ export default function WorkOrderListPage() {
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/work-orders/new')}>New work order</Button>
       </Box>
 
+      {noJob?.count > 0 && (
+        <Alert severity="warning" sx={{ mb: 2 }} data-testid="wo-without-job"
+          action={<Button color="inherit" size="small" onClick={makeJobs} disabled={making} data-testid="wo-make-jobs">{making ? 'Working…' : 'Put them on the boards'}</Button>}>
+          {noJob.count} open {noJob.count === 1 ? 'work order has' : 'work orders have'} no job, so {noJob.count === 1 ? 'it is' : 'they are'} on no board
+          {noJob.first?.length ? ` (${noJob.first.join(', ')}${noJob.count > noJob.first.length ? ' and more' : ''})` : ''}.
+        </Alert>
+      )}
+      {madeNote && <Alert severity="success" sx={{ mb: 2 }} onClose={() => setMadeNote('')} data-testid="wo-jobs-made">{madeNote}</Alert>}
       <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <TextField size="small" label="Search" placeholder="Work order or item number" value={typed} onChange={(e) => setTyped(e.target.value)} sx={{ minWidth: 260 }} />
         <TextField size="small" select label="Status" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ minWidth: 160 }}>

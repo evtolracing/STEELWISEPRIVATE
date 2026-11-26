@@ -35,7 +35,7 @@ import {
 import { Refresh as RefreshIcon, Search as SearchIcon, DragIndicator as DragIcon, Close as ClearIcon } from '@mui/icons-material';
 import ProductionFilterBar from '../../components/production/ProductionFilterBar';
 import { useProductionOverview } from '../../components/production/useProductionOverview';
-import { byStage, stepText } from '../../components/production/productionView';
+import { byStage, stepText, workOrderText, jobForText } from '../../components/production/productionView';
 import { boardMove, reorder, nudge, matchesSearch } from '../../components/production/boardMoves';
 import BoardJobPanel from '../../components/production/BoardJobPanel';
 import PutOnMachineDialog from '../../components/production/PutOnMachineDialog';
@@ -179,7 +179,7 @@ function ProductionWorkflowBoardPage() {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-          <TextField size="small" placeholder="Search job, order, customer, machine" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ minWidth: 260 }}
+          <TextField size="small" placeholder="Search job, order, work order, customer" value={search} onChange={(e) => setSearch(e.target.value)} sx={{ minWidth: 260 }}
             inputProps={{ 'aria-label': 'Search the board', 'data-testid': 'board-search' }}
             InputProps={{
               startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>,
@@ -246,8 +246,11 @@ function ProductionWorkflowBoardPage() {
                           {job.stage === 'NOT_PLANNED' && <Chip size="small" color="warning" variant="outlined" label="Click to plan" sx={{ height: 18 }} />}
                         </Stack>
                         <Typography variant="caption" color="text.secondary" display="block">
-                          {[job.orderNumber || 'No order', job.customerName].filter(Boolean).join(' · ')}
+                          {[jobForText(job), job.customerName].filter(Boolean).join(' · ')}
                         </Typography>
+                        {workOrderText(job) && (
+                          <Typography variant="caption" display="block" fontWeight={600} data-testid="card-work-order">{workOrderText(job)}</Typography>
+                        )}
                         <Typography variant="caption" display="block" color="text.secondary">
                           {stepText(job)}{job.workCenterName ? ` · ${job.workCenterName}` : ''}
                         </Typography>

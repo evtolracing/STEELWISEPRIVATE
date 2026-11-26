@@ -322,6 +322,7 @@ const ModernKanbanBoard = ({
         job.customerName?.toLowerCase().includes(query) ||
         job.material?.toLowerCase().includes(query) ||
         job.instructions?.toLowerCase().includes(query) ||
+        (job.workOrders || []).some((w) => `${w.woNumber || ''} ${w.stockNumber || ''}`.toLowerCase().includes(query)) ||
         job.id?.toString().includes(query)
       if (!matchesSearch) return false
     }

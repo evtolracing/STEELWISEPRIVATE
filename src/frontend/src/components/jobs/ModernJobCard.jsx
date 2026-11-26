@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { workOrderText } from '../production/productionView'
 import {
   Card,
   CardContent,
@@ -331,6 +332,9 @@ const ModernJobCard = ({
                     {job.customerName || job.instructions?.split('-')[0]?.trim() || 'Customer'}
                     {job.orderNumber ? ` · ${job.orderNumber}` : ''}
                   </Typography>
+                  {workOrderText(job) && (
+                    <Typography variant="caption" sx={{ display: 'block', fontWeight: 600 }} data-testid="card-work-order">{workOrderText(job)}</Typography>
+                  )}
                 </>
               )}
             </Box>

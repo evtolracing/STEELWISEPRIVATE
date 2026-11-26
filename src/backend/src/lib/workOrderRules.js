@@ -39,7 +39,7 @@ export function gradeFitError({ sourceGrade, lineGrade, substitutionReason }) {
   return `The source item is ${sourceGrade.code}; the order line asks for ${lineGrade.code}. Choose stock of the ordered grade, or record this as a substitution with the reason.`;
 }
 
-const WORK_WORDS = { SLIT: 'Slit', CTL: 'Cut to length', BLANK: 'Blank', LEVELCUT: 'Level and cut', MULTIBLANKING: 'Multi-blank', SHEAR: 'Shear' };
+export const WORK_WORDS = { SLIT: 'Slit', CTL: 'Cut to length', BLANK: 'Blank', LEVELCUT: 'Level and cut', MULTIBLANKING: 'Multi-blank', SHEAR: 'Shear' };
 /** Jobs a new work order may still be cut for. */
 export const OPEN_JOB_STATUSES = ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'ON_HOLD'];
 
@@ -68,6 +68,9 @@ export function jobForWorkOrder({ woType, priority, scheduledDate, inputWeightLb
     createdById: userId,
   };
 }
+
+/** A work order still to do. One of these with no job is on no board, and is given a job (owner, 2026-11-25). */
+export const WITHOUT_JOB_STATUSES = ['DRAFT', 'READY', 'IN_PROGRESS', 'QC_HOLD'];
 
 /**
  * Should cancelling a work order cancel its job too? Only the job that work order made, only while nobody

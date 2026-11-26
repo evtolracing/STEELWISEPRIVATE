@@ -124,6 +124,8 @@ test('the search looks at the job, order, customer, step and machine', () => {
   const j = { jobNumber: 'JOB-12', orderNumber: 'SO-900', customerName: 'Acme Steel', stepName: 'Cut to length', workCenterName: 'Saw 2' };
   for (const q of ['job-12', 'so-9', 'acme', 'cut to', 'saw 2', '', '   ']) assert.equal(matchesSearch(j, q), true, q);
   assert.equal(matchesSearch(j, 'laser'), false);
+  assert.equal(matchesSearch({ jobNumber: 'JS-1', workOrders: [{ woNumber: 'WO-00179', stockNumber: 'C-12' }] }, 'wo-00179'), true);
+  assert.equal(matchesSearch({ jobNumber: 'JS-1', workOrders: [{ woNumber: 'WO-00179', stockNumber: 'C-12' }] }, 'c-12'), true);
 });
 
 test('the step a job is on is the running one, else the first not finished', () => {

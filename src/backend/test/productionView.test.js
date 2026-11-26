@@ -1,8 +1,8 @@
 // Production screens: where a job is, how far it has got, and the counts (owner's audit, 2026-11-21).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES } from '../src/lib/productionView.js';
-import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue, stepLight, lightsSummary } from '../../frontend/src/components/production/productionView.js';
+import { workOrderLines, currentStep, jobStage, orderDivision, productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES } from '../src/lib/productionView.js';
+import { byStage, startingBranch, stepText, startOfLocalDay, scheduleMachineId, bookedShare, boardCounts, isOverdue, stepLight, lightsSummary, workOrderText, jobForText } from '../../frontend/src/components/production/productionView.js';
 import { jobAtBranch } from '../src/routes/jobs.js';
 
 const step = (sequence, status, wc = null) => ({ sequence, status, name: `Step ${sequence}`, assignedWorkCenterId: wc?.id || null, assignedWorkCenter: wc });
@@ -112,11 +112,11 @@ test('per machine: queued and running only for jobs in production; done counts o
 });
 
 test('a job is found at a branch by its plan, else its machine, else its order', () => {
-  assert.deepEqual(jobAtBranch('L1'), { OR: [
+  assert.deepEqual(jobAtBranch('L1').OR.slice(0, 3), [
     { dispatchJob: { locationId: 'L1' } },
     { dispatchJob: { is: null }, workCenter: { locationId: 'L1' } },
     { dispatchJob: { is: null }, workCenterId: null, order: { locationId: 'L1' } },
-  ] });
+  ]);
 });
 
 test('screen helpers: columns by stage, the starting branch, the step text, the start of the day', () => {
@@ -200,4 +200,46 @@ test('each light is lit by its status, and the row says in words where the job i
   assert.equal(lightsSummary([steps[0], { name: 'Deburr', status: 'SCHEDULED' }]), 'Step 2 of 2 queued at its machine: Deburr');
   assert.equal(lightsSummary([steps[0]]), 'All 1 step finished');
   assert.equal(lightsSummary([]), 'No plan yet');
+});
+
+test('stock work with no order is at the branch that holds the stock its work order cuts', () => {
+  const stock = { coilNumber: 'C-12', locationId: 'L1', location: { id: 'L1', name: 'Jackson' } };
+  const row = productionRow({ id: 'j', jobNumber: 'JS-00001', status: 'ORDERED', coilWorkOrders: [{ id: 'w', woNumber: 'WO-00007', woType: 'SLIT', status: 'READY', sourceCoil: stock }] });
+  assert.equal(row.locationId, 'L1');
+  assert.equal(row.locationName, 'Jackson');
+  assert.equal(row.stage, 'NOT_PLANNED');
+  assert.deepEqual(row.workOrders, [{ id: 'w', woNumber: 'WO-00007', status: 'READY', work: 'Slit', stockNumber: 'C-12' }]);
+  assert.deepEqual(filterRows([row], { locationId: 'L1' }).length, 1);
+  assert.deepEqual(filterRows([row], { locationId: 'L2' }).length, 0);
+});
+
+test('the order, the machine and the plan still come before the stock for a job\'s branch', () => {
+  const stock = { coilNumber: 'C-12', locationId: 'L1', location: { id: 'L1', name: 'Jackson' } };
+  const wos = [{ id: 'w', woNumber: 'WO-1', woType: 'CTL', status: 'READY', sourceCoil: stock }];
+  assert.equal(productionRow({ id: 'j', status: 'ORDERED', order: { locationId: 'L9', location: { id: 'L9', name: 'Lansing' } }, coilWorkOrders: wos }).locationId, 'L9');
+  assert.equal(productionRow({ id: 'j', status: 'SCHEDULED', dispatchJob: { locationId: 'L8', location: { id: 'L8', name: 'Charlotte' }, operations: [] }, coilWorkOrders: wos }).locationId, 'L8');
+  assert.equal(productionRow({ id: 'j', status: 'ORDERED' }).locationId, null);
+  assert.deepEqual(productionRow({ id: 'j', status: 'ORDERED' }).workOrders, []);
+});
+
+test('a cancelled work order is not named on a card, and an unknown kind of work is written plainly', () => {
+  assert.deepEqual(workOrderLines([{ id: 'a', woNumber: 'WO-1', woType: 'SLIT', status: 'CANCELLED' }, { id: 'b', woNumber: 'WO-2', woType: 'EDGE_TRIM', status: 'DRAFT', sourceCoil: null }]),
+    [{ id: 'b', woNumber: 'WO-2', status: 'DRAFT', work: 'edge trim', stockNumber: null }]);
+  assert.deepEqual(workOrderLines(null), []);
+});
+
+test('a job list for a branch finds stock work by where its stock is', () => {
+  const where = jobAtBranch('L1');
+  assert.deepEqual(where.OR[3], { dispatchJob: { is: null }, workCenterId: null, orderId: null, coilWorkOrders: { some: { sourceCoil: { locationId: 'L1' } } } });
+  assert.equal(where.OR.length, 4);
+});
+
+test('a card names its work order and says stock work instead of no order', () => {
+  const job = { workOrders: [{ woNumber: 'WO-00007', work: 'Slit', stockNumber: 'C-12' }, { woNumber: 'WO-00008' }] };
+  assert.equal(workOrderText(job), 'WO-00007 · Slit C-12 · +1 more');
+  assert.equal(workOrderText({ workOrders: [{ woNumber: 'WO-00009' }] }), 'WO-00009');
+  assert.equal(workOrderText({}), '');
+  assert.equal(jobForText(job), 'Stock work');
+  assert.equal(jobForText({ orderNumber: 'SO-1', workOrders: job.workOrders }), 'SO-1');
+  assert.equal(jobForText({}), 'No order');
 });

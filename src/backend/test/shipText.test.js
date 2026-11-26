@@ -1,10 +1,12 @@
-// The Packaging Queue's words and the branch a job ships from (owner, 2026-11-25: "clicked marked shipped it gave
-// error failed to update job status"). The screen must say the server's reason, and a planned job must be shippable.
+// Packaging, staging, the shop floor, the Shipment Planner and the Shipping screen are one flow (owner, 2026-11-25):
+// "clicked marked shipped it gave error failed to update job status", then "shipping orders are able to be marked
+// shipped while the shipment hasnt been planned". A job screen says the server's reason, never marks an order's job
+// shipped, and points at the one shipment the Shipping screen works on.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { moveProblem, shippedText, shipFormProblem } from '../../frontend/src/pages/MaterialTracking/shipText.js';
-import { jobShipsFrom } from '../src/routes/shipments.js';
+import { moveProblem, shipmentStep, plansByJob } from '../../frontend/src/pages/MaterialTracking/shipText.js';
+import { planOfJob, jobShipRefusal } from '../src/routes/shipments.js';
 
 test('a refused move shows the server\'s own sentence', () => {
   const why = 'This job is for a customer order, so it is marked shipped when its shipment is dispatched.';
@@ -17,26 +19,53 @@ test('with no sentence from the server the message still says what to do', () =>
   assert.match(moveProblem({ response: { status: 500, data: { error: { x: 1 } } } }), /Try again/);
 });
 
-test('the message after shipping names the shipment and the invoice', () => {
-  assert.equal(shippedText({ jobNumber: '00079-1' }, { shipment: { shipmentNumber: 'SHP-1', invoice: { invoiceNumber: 'INV-9' } } }), 'Job 00079-1 shipped on shipment SHP-1. Invoice INV-9 was raised.');
-  assert.equal(shippedText({ jobNumber: '00079-1' }, { shipment: null }), 'Job 00079-1 is marked shipped.');
+const job = { id: 'j1', jobNumber: 'JOB-1', orderId: 'o1', orderLineId: 'l1' };
+const open = [
+  { id: 's0', shipmentNumber: 'SHP-0', status: 'PENDING', orderId: 'o2', lineIds: ['l1'] },
+  { id: 's1', shipmentNumber: 'SHP-1', status: 'PENDING', orderId: 'o1', lineIds: ['l2'] },
+  { id: 's2', shipmentNumber: 'SHP-2', status: 'LOADING', orderId: 'o1', lineIds: ['l1', 'l3'] },
+];
+
+test('a job is planned on the open shipment of its order that carries its line', () => {
+  assert.deepEqual(planOfJob(job, open), { id: 's2', shipmentNumber: 'SHP-2', status: 'LOADING' });
+  assert.equal(planOfJob(job, open.slice(0, 2)), null, 'another line of the order, or another order, is not its plan');
+  assert.equal(planOfJob(job, []), null);
+  assert.equal(planOfJob(job), null);
 });
 
-test('Ship needs a carrier and a tracking or BOL number', () => {
-  assert.equal(shipFormProblem({ carrier: ' ', trackingNumber: 'x' }), 'Enter the carrier.');
-  assert.equal(shipFormProblem({ carrier: 'UPS', trackingNumber: '' }), 'Enter the tracking or BOL number.');
-  assert.equal(shipFormProblem({ carrier: 'UPS', trackingNumber: '1Z' }), '');
+test('a job for the whole order is planned on any open shipment of that order; a job with no order never is', () => {
+  assert.deepEqual(planOfJob({ ...job, orderLineId: null }, open), { id: 's1', shipmentNumber: 'SHP-1', status: 'PENDING' });
+  assert.equal(planOfJob({ ...job, orderId: null }, open), null);
+  assert.equal(planOfJob(null, open), null);
 });
 
-test('a job ships from the branch of its plan, else its machine, else nowhere known', () => {
-  assert.equal(jobShipsFrom({ planLocationId: 'P', machineLocationId: 'M' }), 'P');
-  assert.equal(jobShipsFrom({ planLocationId: null, machineLocationId: 'M' }), 'M');
-  assert.equal(jobShipsFrom({}), null);
-  assert.equal(jobShipsFrom(), null);
+test('the refusal says where to go: plan it, or dispatch the shipment it is on', () => {
+  assert.match(jobShipRefusal(job, null), /No shipment is planned for job JOB-1 yet\. Plan it on the Shipment Planner/);
+  assert.match(jobShipRefusal(job, { shipmentNumber: 'SHP-2' }), /Job JOB-1 is on shipment SHP-2, which has not left yet\. Dispatch that shipment on the Shipping screen/);
 });
 
-test('the Packaging Queue never answers a refusal with a fixed "Failed to update job status"', () => {
-  const page = readFileSync(new URL('../../frontend/src/pages/MaterialTracking/PackagingQueue.jsx', import.meta.url), 'utf8');
-  assert.ok(!/Failed to update job status/.test(page));
-  assert.match(page, /\/jobs\/\$\{job\.id\}\/ship/);
+test('a job screen offers one next step: plan the shipment, open it, or (no order) mark by hand', () => {
+  assert.deepEqual(shipmentStep(undefined), { kind: 'byHand', words: '', button: 'Mark Shipped', to: null });
+  const plan = shipmentStep({ orderNumber: 'SO 1/2', shipment: null });
+  assert.equal(plan.kind, 'plan'); assert.equal(plan.button, 'Plan shipment'); assert.equal(plan.to, '/shipping?order=SO%201%2F2'); assert.equal(plan.words, 'No shipment planned yet.');
+  assert.equal(shipmentStep({ orderNumber: null, shipment: null }).to, '/freight/planner');
+  const onDock = shipmentStep({ orderNumber: 'SO-1', shipment: { id: 's2', shipmentNumber: 'SHP-2', status: 'PENDING' } });
+  assert.equal(onDock.kind, 'dispatch'); assert.equal(onDock.to, '/shipping/s2'); assert.match(onDock.words, /On shipment SHP-2, on the dock\. It is marked shipped when the shipment is dispatched/);
+  assert.match(shipmentStep({ shipment: { id: 's', shipmentNumber: 'SHP-3', status: 'LOADING' } }).words, /SHP-3, loading/);
+});
+
+test('the plans are keyed by job', () => {
+  const m = plansByJob([{ jobId: 'a', shipment: null }, { jobId: 'b', shipment: { id: 's' } }]);
+  assert.equal(m.get('b').shipment.id, 's'); assert.equal(m.get('a').shipment, null); assert.equal(plansByJob(null).size, 0);
+});
+
+test('every screen that lists jobs ready to ship uses the one shipment step, and none hides a refusal', () => {
+  const read = (p) => readFileSync(new URL(`../../frontend/src/${p}`, import.meta.url), 'utf8');
+  for (const p of ['pages/MaterialTracking/PackagingQueue.jsx', 'pages/MaterialTracking/StagingLoading.jsx', 'components/production/ShippingScreen.jsx']) {
+    assert.match(read(p), /<JobShipmentAction /, p);
+  }
+  const queue = read('pages/MaterialTracking/PackagingQueue.jsx');
+  assert.ok(!/Failed to update job status/.test(queue));
+  assert.ok(!/\/ship`/.test(queue), 'the queue never ships an order\'s job itself');
+  assert.ok(!/createNumbered|dispatchAndInvoice\(shipment/.test(readFileSync(new URL('../src/routes/shipments.js', import.meta.url), 'utf8').split('export async function shipForJob')[1].split('router.')[0]), 'Ship on a job never makes or dispatches a shipment');
 });

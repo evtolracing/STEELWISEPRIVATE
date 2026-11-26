@@ -10,6 +10,7 @@ import {
   Inventory2, Warning,
 } from '@mui/icons-material';
 import { getStagingData, shipJob } from '../../api/materialTracking';
+import JobShipmentAction, { useJobShipmentPlans } from '../../components/shipping/JobShipmentAction';
 import { calendarDate } from '../../utils/calendarDate'
 
 const StagingLoading = () => {
@@ -35,6 +36,8 @@ const StagingLoading = () => {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+  // A job for a customer order ships on its planned shipment (Shipping screen); only a job with no order ships here.
+  const shipmentPlans = useJobShipmentPlans();
 
   const handleShip = async () => {
     if (!shipDialog) return;
@@ -172,11 +175,8 @@ const StagingLoading = () => {
                   </TableCell>
                   <TableCell>{job.packageCount}</TableCell>
                   <TableCell align="right">
-                    <Button size="small" variant="contained" color="success"
-                      startIcon={<LocalShipping />}
-                      onClick={() => setShipDialog(job)}>
-                      Ship
-                    </Button>
+                    <JobShipmentAction job={job} plans={shipmentPlans.plans} loaded={shipmentPlans.loaded} fullWidth={false}
+                      onMarkShipped={(j) => setShipDialog(j)} />
                   </TableCell>
                 </TableRow>
               ))}

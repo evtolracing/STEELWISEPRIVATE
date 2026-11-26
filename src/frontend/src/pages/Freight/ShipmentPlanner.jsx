@@ -38,7 +38,7 @@ export default function ShipmentPlanner() {
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ md: 'center' }} sx={{ mb: 2 }}>
         <Box>
           <Typography component="h1" variant="h5" fontWeight={700}>Shipment Planner</Typography>
-          <Typography variant="body2" color="text.secondary">Confirmed orders with work ready to ship and no shipment on the dock yet.</Typography>
+          <Typography variant="body2" color="text.secondary">Confirmed orders with work ready to ship and no shipment on the dock yet. A job is marked shipped when its shipment is dispatched on the Shipping screen.</Typography>
         </Box>
         <Stack direction="row" spacing={1} alignItems="center">
           <TextField select size="small" label="Selling branch" value={branch} onChange={(e) => setBranch(e.target.value)} sx={{ minWidth: 220 }}>

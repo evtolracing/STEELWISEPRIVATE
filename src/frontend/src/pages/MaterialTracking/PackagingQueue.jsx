@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Paper, Grid, Card, CardContent, Chip, Button,
   TextField, InputAdornment, Badge, Divider, FormControl, InputLabel,
-  Select, MenuItem, Alert, Snackbar, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions,
+  Select, MenuItem, Alert, Snackbar, CircularProgress,
 } from '@mui/material';
 import {
   Search, Inventory2, CheckCircle, Schedule, LocalShipping,
   PlayArrow, Refresh, PriorityHigh,
 } from '@mui/icons-material';
 import { getJobs, updateJobStatus } from '../../api/jobs';
-import client from '../../api/client';
-import { moveProblem, shippedText, shipFormProblem } from './shipText';
+import { moveProblem } from './shipText';
+import JobShipmentAction, { useJobShipmentPlans } from '../../components/shipping/JobShipmentAction';
 import { calendarDate } from '../../utils/calendarDate'
 
 const PackagingQueue = () => {
@@ -46,26 +46,9 @@ const PackagingQueue = () => {
     }
   };
 
-  // Shipping a job. A job for a customer order goes out on a real shipment, so stock, the order and the invoice
-  // follow: that needs the carrier and a tracking or BOL number. A job with no order is simply marked shipped.
-  const [shipping, setShipping] = useState(null); // { job, carrier, trackingNumber, busy, error }
-  const startShipping = (job) => {
-    if (!job.orderId) { handleStatusChange(job.id, 'SHIPPED', 'Shipped'); return; }
-    setShipping({ job, carrier: '', trackingNumber: '', busy: false, error: '' });
-  };
-  const ship = async () => {
-    const { job, carrier, trackingNumber } = shipping;
-    setShipping((s) => ({ ...s, busy: true, error: '' }));
-    try {
-      const { data } = await client.post(`/jobs/${job.id}/ship`, { carrier: carrier.trim(), trackingNumber: trackingNumber.trim() });
-      setShipping(null);
-      setSnackbar({ open: true, message: shippedText(job, data), severity: 'success' });
-      loadJobs();
-    } catch (err) {
-      setShipping((s) => ({ ...s, busy: false, error: moveProblem(err, 'The job could not be shipped.') }));
-    }
-  };
-
+  // Where each ready job stands with shipping. A job for a customer order is shipped by its shipment, planned and
+  // dispatched on the Shipping screen; only a job with no order is marked shipped here.
+  const shipmentPlans = useJobShipmentPlans();
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'Critical': case 'EXPEDITE': return 'error';
@@ -168,11 +151,8 @@ const PackagingQueue = () => {
             </Button>
           )}
           {job.status === 'READY_TO_SHIP' && (
-            <Button size="small" variant="contained" color="success"
-              startIcon={<LocalShipping />} fullWidth
-              onClick={() => startShipping(job)} data-testid="mark-shipped">
-              Mark Shipped
-            </Button>
+            <JobShipmentAction job={job} plans={shipmentPlans.plans} loaded={shipmentPlans.loaded}
+              onMarkShipped={(j) => handleStatusChange(j.id, 'SHIPPED', 'Shipped')} />
           )}
           {job.status === 'SHIPPED' && (
             <Chip label="Shipped" color="success" size="small" sx={{ width: '100%' }} />
@@ -284,26 +264,6 @@ const PackagingQueue = () => {
         {renderColumn('Ready to Ship', 'READY_TO_SHIP', readyToShipCount, 'success')}
         {renderColumn('Shipped', 'SHIPPED', shippedCount, 'primary')}
       </Box>
-
-      <Dialog open={Boolean(shipping)} onClose={() => !shipping?.busy && setShipping(null)} maxWidth="xs" fullWidth data-testid="ship-job-dialog">
-        <DialogTitle>Ship job {shipping?.job?.jobNumber}</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            This job is for a customer order, so shipping it makes a shipment, takes the reserved stock out and raises the invoice.
-          </Typography>
-          <TextField label="Carrier" fullWidth size="small" sx={{ mb: 2 }} autoFocus value={shipping?.carrier || ''}
-            onChange={(e) => setShipping((s) => ({ ...s, carrier: e.target.value }))} inputProps={{ 'data-testid': 'ship-carrier', maxLength: 80 }} />
-          <TextField label="Tracking or BOL number" fullWidth size="small" value={shipping?.trackingNumber || ''}
-            onChange={(e) => setShipping((s) => ({ ...s, trackingNumber: e.target.value }))} inputProps={{ 'data-testid': 'ship-tracking', maxLength: 80 }} />
-          {shipping?.error && <Alert severity="error" sx={{ mt: 2 }} data-testid="ship-error">{shipping.error}</Alert>}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShipping(null)} disabled={shipping?.busy}>Cancel</Button>
-          <Button variant="contained" onClick={ship} disabled={shipping?.busy || Boolean(shipFormProblem(shipping || {}))} data-testid="ship-confirm">
-            {shipping?.busy ? 'Shipping…' : 'Ship'}
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <Snackbar open={snackbar.open} autoHideDuration={8000} data-testid="packaging-message"
         onClose={() => setSnackbar(s => ({ ...s, open: false }))}>

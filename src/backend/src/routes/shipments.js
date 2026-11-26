@@ -255,6 +255,21 @@ router.get('/shippable', handle('look up what can ship', async (req, res) => {
   });
 }));
 
+/**
+ * Where each job that is ready to ship stands with shipping: the open shipment it is planned on, or none yet.
+ * The Packaging Queue, Staging and the shop-floor shipping screen show this, so all of them point at the same
+ * shipment the Shipping screen and the Shipment Planner work on. Held to the person's branches like every job list.
+ */
+router.get('/job-plans', handle('read shipment plans of jobs', async (req, res) => {
+  const jobs = await prisma.job.findMany({
+    where: { status: 'READY_TO_SHIP', orderId: { not: null } },
+    select: { id: true, jobNumber: true, orderId: true, orderLineId: true, order: { select: { orderNumber: true } } },
+    take: 1000,
+  });
+  const shipments = await acrossBranches(() => openShipmentsOf([...new Set(jobs.map((j) => j.orderId))]));
+  res.json(jobs.map((j) => ({ jobId: j.id, orderId: j.orderId, orderNumber: j.order?.orderNumber || null, shipment: planOfJob(j, shipments) })));
+}));
+
 router.get('/:id', handle('fetch shipment', async (req, res) => {
   const shipment = await prisma.shipment.findUnique({
     where: { id: req.params.id },
@@ -582,63 +597,48 @@ async function dispatchAndInvoice(id, body, userId) {
   return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount }, ...(invoiceWarning && { invoiceWarning, warning: invoiceWarning }) };
 }
 
-/** The branch a job ships from: where its plan runs, else its machine's branch, else not known (null). */
-export function jobShipsFrom({ planLocationId, machineLocationId } = {}) {
-  return planLocationId || machineLocationId || null;
+/**
+ * The shipment a job is planned on, from the open shipments of its order: the one that carries the job's order
+ * line, or for a job with no line, any open shipment of its order. null when none is planned. Pure.
+ * shipments: [{ id, shipmentNumber, status, orderId, lineIds }]
+ */
+export function planOfJob(job, shipments = []) {
+  if (!job?.orderId) return null;
+  const found = shipments.find((s) => s.orderId === job.orderId && (!job.orderLineId || (s.lineIds || []).includes(job.orderLineId)));
+  return found ? { id: found.id, shipmentNumber: found.shipmentNumber, status: found.status } : null;
 }
 
+/** Why an order's job cannot be shipped from a job screen, in words that say where to go next. Pure. */
+export function jobShipRefusal(job, plan) {
+  const name = `Job ${job.jobNumber}`;
+  if (plan) return `${name} is on shipment ${plan.shipmentNumber}, which has not left yet. Dispatch that shipment on the Shipping screen and the job is marked shipped with it.`;
+  return `No shipment is planned for job ${job.jobNumber} yet. Plan it on the Shipment Planner. The job is marked shipped when its shipment is dispatched.`;
+}
+
+const openShipmentsOf = async (orderIds) => (orderIds.length ? (await prisma.shipment.findMany({
+  where: { orderId: { in: orderIds }, status: { in: OPEN } },
+  select: { id: true, shipmentNumber: true, status: true, orderId: true, items: { select: { orderLineId: true } } },
+  orderBy: { createdAt: 'asc' },
+})).map(({ items, ...sh }) => ({ ...sh, lineIds: items.map((it) => it.orderLineId) })) : []);
+
 /**
- * "Ship" pressed on a job at the shop-floor shipping screen: creates and
- * dispatches a shipment for what is still open on the job's order line, so
- * stock, the order and the invoice all follow. Returns null when there is
- * nothing to ship (the line already went out on a shipment, or the job is not
- * for an order line). Throws an error with .status and .message when refused.
+ * "Ship" pressed on a job, on any screen that lists jobs. A job for a customer order leaves on a shipment that was
+ * planned and is dispatched on the Shipping screen, where the carrier, the load and the paperwork are (owner,
+ * 2026-11-25: "shipping orders are able to be marked shipped while the shipment hasnt been planned"). So this
+ * never makes or dispatches a shipment: it refuses with where to go. Returns null for a job with no order, and
+ * for an order job whose line has nothing left to ship (it went out already).
  */
-export async function shipForJob(job, { carrier, trackingNumber, userId }) {
+export async function shipForJob(job) {
   if (!job.orderId) return null;
-  // The order may have been sold by another branch than the one that made it (N-002): it is still shipped and billed.
-  const [order, workCenter, plan] = await acrossBranches(() => Promise.all([
-    prisma.order.findUnique({
-      where: { id: job.orderId },
-      select: { id: true, status: true, orderNumber: true, lines: { where: job.orderLineId ? { id: job.orderLineId } : {}, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } } },
-    }),
-    job.workCenterId ? prisma.workCenter.findUnique({ where: { id: job.workCenterId }, select: { locationId: true } }) : null,
-    prisma.dispatchJob.findUnique({ where: { jobId: job.id }, select: { locationId: true } }),
+  const [order, shipments] = await acrossBranches(() => Promise.all([
+    prisma.order.findUnique({ where: { id: job.orderId }, select: { lines: { where: job.orderLineId ? { id: job.orderLineId } : {}, select: { qtyOrdered: true, qtyShipped: true, lineStatus: true } } } }),
+    openShipmentsOf([job.orderId]),
   ]));
-  // Where it ships from: the branch of the job's plan (where it was made), else its machine's. The plan never
-  // fills the old machine field on the job, so a planned job used to be refused here (owner, 2026-11-25).
-  const fromLocationId = jobShipsFrom({ planLocationId: plan?.locationId, machineLocationId: workCenter?.locationId });
   if (!order) return null;
-  // A job with no line is for the whole order: everything still open goes.
-  const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED');
-  const waiting = lines.find((l) => l.shipmentItems.some((it) => num(it.qtyShipped) > 1e-9));
-  if (waiting) refuse(409, `Line ${waiting.lineNumber} of ${order.orderNumber} is already on a shipment that has not left. Dispatch that shipment from the shipping desk.`);
-  const wanted = lines.map((l) => ({ orderLineId: l.id, qtyShipped: num(l.qtyOrdered) - num(l.qtyShipped) })).filter((w) => w.qtyShipped > 1e-9);
-  if (!wanted.length) return null;
-  if (!SHIPPABLE_ORDER_STATUSES.includes(order.status)) refuse(409, `Order ${order.orderNumber} is ${order.status}, so this job cannot ship`);
-  if (!fromLocationId) refuse(409, 'This job has no plan and no work center, so the branch it ships from is not known. Create the shipment on the shipping desk.');
-  const branches = myBranches();
-  if (branches && !branches.includes(fromLocationId)) refuse(403, 'This job ships from another branch. Only that branch can ship it.');
-  const shipment = await acrossBranches(() => createNumbered({
-    count: () => prisma.shipment.count(),
-    format: padded('SHP'),
-    create: (shipmentNumber) => prisma.$transaction(async (tx) => {
-      const items = await checkItems(tx, order.id, wanted);
-      return tx.shipment.create({
-        data: {
-          shipmentNumber, orderId: order.id, fromLocationId, carrierName: carrier || null, bolNumber: trackingNumber || null,
-          notes: `Shipped from the shop floor for ${job.jobNumber}`, items: { create: items },
-        },
-      });
-    }, { isolationLevel: 'Serializable' }),
-  }));
-  try {
-    return await dispatchAndInvoice(shipment.id, {}, userId);
-  } catch (error) {
-    // Nothing left the dock: do not leave an empty shipment behind.
-    await acrossBranches(() => prisma.shipment.delete({ where: { id: shipment.id } })).catch(() => {});
-    throw error;
-  }
+  const plan = planOfJob(job, shipments);
+  const left = order.lines.filter((l) => l.lineStatus !== 'CANCELLED').some((l) => num(l.qtyOrdered) - num(l.qtyShipped) > 1e-9);
+  if (!plan && !left) return null;
+  refuse(409, jobShipRefusal(job, plan));
 }
 
 router.put('/:id/dispatch', handle('dispatch', async (req, res) => {

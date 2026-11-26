@@ -1221,10 +1221,11 @@ router.post('/:id/ship', async (req, res) => {
       return res.status(400).json({ error: `Cannot ship job with status ${job.status}` });
     }
     
-    // For a customer order this is a real shipment: stock, the order and the invoice follow.
+    // A job for a customer order leaves on its planned shipment, dispatched on the Shipping screen: refused here
+    // with where to go. Only a job with no order, or one whose line has already gone out, is marked from here.
     let shipment = null;
     try {
-      shipment = await shipForJob(job, { carrier, trackingNumber, userId: req.user.id });
+      shipment = await shipForJob(job);
     } catch (error) {
       if (error?.status && error.status < 500) return res.status(error.status).json({ error: error.message });
       throw error;

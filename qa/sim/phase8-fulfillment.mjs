@@ -548,56 +548,67 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
     ok('refused: that dock belongs to another branch', s.status === 403, `${s.status} ${err(s)}`);
     ok('nothing was saved', (await prisma.shipment.count({ where: { orderId: r.order.id, fromLocationId: L2.id } })) === 0);
   });
-  await scenario(G2, 'a finished job shipped from the shop floor is a real shipment: stock, order and invoice follow', async (ok) => {
+  // Packaging, staging, the shop floor, the Shipment Planner and the Shipping screen are one flow (owner, 2026-11-25):
+  // a job for a customer order is never marked shipped from a job screen. Its shipment is planned and dispatched on
+  // the Shipping screen, and the job is marked shipped with it.
+  const plansFor = async (who = 'shipping') => (typeof who === 'string' ? A.get('/api/shipments/job-plans', who) : who.get('/api/shipments/job-plans'));
+  await scenario(G2, 'a job for a customer order cannot be marked shipped before its shipment is planned', async (ok) => {
     const k = await stagedJob({ qty: 400 });
-    const need = await A.post(`/api/jobs/${k.job.id}/ship`, {}, 'shipping');
-    const s = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-5521' }, 'shipping');
-    ok('carrier and tracking number are required', need.status === 400);
-    ok('the job is shipped', s.status === 200 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'SHIPPED', `${s.status} ${err(s)}`);
-    const sh = await prisma.shipment.findFirst({ where: { orderId: k.order.id }, include: { items: true } });
-    ok('a shipment exists from the job\'s branch, on the road, carrying the line', sh && sh.status === 'IN_TRANSIT' && sh.fromLocationId === wc1.locationId && num(sh.items[0].qtyShipped) === 400 && sh.bolNumber === 'PRO-5521', `${sh?.status}`);
-    ok('the stock left, the line is shipped and one invoice was raised', num((await stock(k.coilId)).qtyOnHand) === 500 && num((await lineOf(k.order.lines[0].id)).qtyShipped) === 400 && (await B.invoicesOf(k.order.id)).length === 1);
-    const again = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-5521' }, 'shipping');
-    ok('shipping the job a second time is refused and adds nothing', again.status >= 400 && (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 1 && (await B.invoicesOf(k.order.id)).length === 1, `${again.status}`);
+    const floor = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-5521' }, 'shipping');
+    ok('the shop-floor Ship is refused and says to plan the shipment', floor.status === 409 && /No shipment is planned/.test(err(floor)) && /Shipment Planner/.test(err(floor)), `${floor.status} ${err(floor)}`);
+    const staging = await A.patch(`/api/material-tracking/staging/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-9' }, 'shipping');
+    ok('the staging Ship is refused the same way', staging.status === 409 && /No shipment is planned/.test(err(staging)), `${staging.status} ${err(staging)}`);
+    const byHand = await A.patch(`/api/jobs/${k.job.id}/status`, { status: 'SHIPPED' }, 'shipping');
+    ok('marking it shipped by hand is refused', byHand.status === 409 && /marked shipped when its shipment is dispatched/.test(err(byHand)), `${byHand.status} ${err(byHand)}`);
+    ok('no shipment, no invoice, no stock out, and the job is still ready', (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 0 && (await B.invoicesOf(k.order.id)).length === 0 && num((await stock(k.coilId)).qtyOnHand) === 900 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP');
+    const plans = await plansFor();
+    const mine = (plans.body || []).find((p) => p.jobId === k.job.id);
+    ok('the job screens are told it has no shipment yet, with its order number to plan one', plans.status === 200 && mine && mine.shipment === null && mine.orderNumber === k.order.orderNumber, JSON.stringify(mine));
+    const planner = await A.get('/api/shipments/ready-orders', 'shipping');
+    ok('and the Shipment Planner lists its order', (planner.body || []).some((o) => o.id === k.order.id));
   });
-  await scenario(G2, 'a job whose line is already on a shipment at the dock is not shipped twice', async (ok) => {
+  await scenario(G2, 'once its shipment is planned the job screens point at it, and dispatching it marks the job shipped', async (ok) => {
     const k = await stagedJob({ qty: 300 });
     const s = await newShipment(k.order, [[k.order.lines[0], 300]]);
+    const mine = ((await plansFor()).body || []).find((p) => p.jobId === k.job.id);
+    ok('the job screens show the planned shipment, on the dock', s.status === 201 && mine?.shipment?.id === s.body.id && mine.shipment.shipmentNumber === s.body.shipmentNumber && mine.shipment.status === 'PENDING', JSON.stringify(mine));
+    ok('the Shipment Planner no longer lists the order as waiting', !((await A.get('/api/shipments/ready-orders', 'shipping')).body || []).some((o) => o.id === k.order.id));
     const j = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-1' }, 'shipping');
-    ok('the job is refused and pointed to the shipping desk', s.status === 201 && j.status === 409 && /already on a shipment/.test(err(j)), `${j.status} ${err(j)}`);
-    ok('the job is still ready to ship and only the one shipment exists', (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP' && (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 1);
+    ok('Ship on the job is still refused, and names the shipment to dispatch', j.status === 409 && err(j).includes(s.body.shipmentNumber) && /Dispatch that shipment on the Shipping screen/.test(err(j)), `${j.status} ${err(j)}`);
+    ok('the job is still ready and only the one shipment exists', (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP' && (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 1);
+    const d = await B.dispatch(s.body);
+    ok('dispatching the shipment marks the job shipped', d.status === 200 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'SHIPPED', `${d.status} ${err(d)}`);
+    ok('the stock left, the line is shipped and one invoice was raised', num((await stock(k.coilId)).qtyOnHand) === 500 && num((await lineOf(k.order.lines[0].id)).qtyShipped) === 300 && (await B.invoicesOf(k.order.id)).length === 1);
+    ok('the job has left the job screens\' list', !((await plansFor()).body || []).some((p) => p.jobId === k.job.id));
   });
-  await scenario(G2, 'a job with no work center cannot ship from the floor, and no empty shipment is left behind', async (ok) => {
-    const k = await stagedJob({ qty: 300, wc: null });
-    const j = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-2' }, 'shipping');
-    ok('refused: the branch it ships from is not known', j.status === 409 && /no plan and no work center/.test(err(j)), `${j.status} ${err(j)}`);
-    ok('no shipment, no invoice, and the job is unchanged', (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 0 && (await B.invoicesOf(k.order.id)).length === 0 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP');
+  await scenario(G2, 'a planned shipment that covers another line does not count as this job\'s plan', async (ok) => {
+    const c = [await B.received({ weightLb: 900 }), await B.received({ weightLb: 900 })];
+    const o = await B.order([B.line(300), B.line(200)], { who: 'admin', extra: { locationId: L1.id } });
+    await B.reserve(o, o.lines[0], c[0], 300); await B.reserve(o, o.lines[1], c[1], 200);
+    const j = await A.post('/api/jobs', { orderId: o.id, orderLineId: o.lines[0].id, instructions: `QA P8 ${run}`, status: 'ORDERED' });
+    await prisma.jobInspection.create({ data: { inspectionNumber: tag('P8INSP'), jobId: j.body.id, status: 'PASSED', overallResult: 'PASS', completedAt: new Date() } });
+    await prisma.job.update({ where: { id: j.body.id }, data: { status: 'READY_TO_SHIP', workCenterId: wc1.id, actualEnd: new Date() } });
+    const other = await newShipment(o, [[o.lines[1], 200]]);
+    const mine = ((await plansFor()).body || []).find((p) => p.jobId === j.body.id);
+    ok('the other line is on the dock, and this job still shows no shipment', other.status === 201 && mine && mine.shipment === null, JSON.stringify(mine));
+    const own = await newShipment(o, [[o.lines[0], 300]]);
+    const now = ((await plansFor()).body || []).find((p) => p.jobId === j.body.id);
+    ok('with its own line planned it shows that shipment', own.status === 201 && now?.shipment?.id === own.body.id, JSON.stringify(now));
   });
-  await scenario(G2, 'a planned job with no machine written on it ships from the branch of its plan (owner, 2026-11-25)', async (ok) => {
-    // Planning a job never fills the old machine field, so this is every job planned on the boards.
-    const k = await stagedJob({ qty: 300, wc: null });
-    await prisma.dispatchJob.create({ data: { jobId: k.job.id, jobNumber: k.job.jobNumber, orderId: k.order.id, locationId: L1.id } });
-    const byHand = await A.patch(`/api/jobs/${k.job.id}/status`, { status: 'SHIPPED' }, 'shipping');
-    ok('marking it shipped by hand is refused, and says a shipment does it', byHand.status === 409 && /marked shipped when its shipment is dispatched/.test(err(byHand)), `${byHand.status} ${err(byHand)}`);
-    const s = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-7' }, 'shipping');
-    ok('shipping it with a carrier works', s.status === 200 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'SHIPPED', `${s.status} ${err(s)}`);
-    const sh = await prisma.shipment.findFirst({ where: { orderId: k.order.id } });
-    ok('the shipment leaves from the plan\'s branch, and one invoice is raised', sh?.fromLocationId === L1.id && sh.status === 'IN_TRANSIT' && (await B.invoicesOf(k.order.id)).length === 1, `${sh?.status}`);
-    ok('the answer names the shipment', s.body?.shipment?.shipmentNumber === sh?.shipmentNumber, JSON.stringify(s.body?.shipment));
-  });
-  await scenario(G2, 'a job that cannot be dispatched leaves no shipment behind', async (ok) => {
-    const k = await stagedJob({ qty: 300, reserve: false });
-    const j = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-3' }, 'shipping');
-    ok('refused: nothing is reserved for what would go out', j.status === 409 && /reserved/.test(err(j)), `${j.status} ${err(j)}`);
-    ok('the half-made shipment was removed, the job is still ready, nothing is invoiced', (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 0 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP' && (await B.invoicesOf(k.order.id)).length === 0);
-  });
-  await scenario(G2, 'shipping a staged job from the staging screen does the same, and its custody record names the real role', async (ok) => {
-    const k = await stagedJob({ qty: 250 });
-    const s = await A.patch(`/api/material-tracking/staging/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-9' }, 'shipping');
-    ok('the job is shipped', s.status === 200 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'SHIPPED', `${s.status} ${err(s)}`);
-    ok('with a real shipment and one invoice', (await prisma.shipment.count({ where: { orderId: k.order.id, status: 'IN_TRANSIT' } })) === 1 && (await B.invoicesOf(k.order.id)).length === 1);
-    const ev = (await traces(k.job.id)).find((e) => /SHIP/.test(e.eventType));
+  await scenario(G2, 'a job with no customer order is still marked shipped from the staging screen, with its custody record', async (ok) => {
+    const job = await prisma.job.create({ data: { jobNumber: tag('P8STOCKJOB'), status: 'READY_TO_SHIP', priority: 3, workCenterId: wc1.id, createdById: users.admin.id, actualEnd: new Date() } });
+    await prisma.jobInspection.create({ data: { inspectionNumber: tag('P8INSP'), jobId: job.id, status: 'PASSED', overallResult: 'PASS', completedAt: new Date() } });
+    ok('it is not in the list of order jobs waiting for a shipment', !((await plansFor()).body || []).some((p) => p.jobId === job.id));
+    const s = await A.patch(`/api/material-tracking/staging/${job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-9' }, 'shipping');
+    ok('the job is shipped', s.status === 200 && (await prisma.job.findUnique({ where: { id: job.id } })).status === 'SHIPPED', `${s.status} ${err(s)}`);
+    const ev = (await traces(job.id)).find((e) => /SHIP/.test(e.eventType));
     ok('the custody record carries the clerk and the clerk\'s own role', ev && ev.actorUserId === users.shipping.id && ev.actorRole === users.shipping.role, `${ev?.actorRole}`);
+  });
+  await scenario(G2, 'another branch does not see this branch\'s jobs waiting for a shipment', async (ok) => {
+    const k = await stagedJob({ qty: 250 });
+    const theirs = await plansFor(ship2);
+    ok('the list answers, without this branch\'s job', theirs.status === 200 && !(theirs.body || []).some((p) => p.jobId === k.job.id), `${theirs.status}`);
+    ok('its own branch sees it', ((await plansFor()).body || []).some((p) => p.jobId === k.job.id));
   });
   await scenario(G2, 'cancelling an order cancels its shipments still on the dock (N-006)', async (ok) => {
     const r = await B.readyToShip(300);

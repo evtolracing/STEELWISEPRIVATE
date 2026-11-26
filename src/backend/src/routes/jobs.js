@@ -10,6 +10,7 @@ import { changeJobStatusTx, sendRefusal, afterProduction } from '../lib/jobGates
 import { jobMaterial, jobCost, publicMaterial } from '../lib/costing.js';
 import { can } from '../lib/roleStore.js';
 import { planChange, mayChangePlan, hasWork, PLAN_CHANGED, PLAN_OPEN_JOB_STATUSES } from '../lib/planChange.js';
+import { arrangeRows, boardOrderError, positionsFor } from '../lib/boardOrder.js';
 import { productionRow, filterRows, stageCounts, machineCounts, bookedMachineId, planLights, STAGES, CLOSED as PRODUCTION_CLOSED } from '../lib/productionView.js';
 
 const router = Router();
@@ -268,7 +269,12 @@ router.get('/overview', async (req, res) => {
       prisma.job.count({ where: { status: { notIn: PRODUCTION_CLOSED } } }),
     ]);
     const all = jobs.map(productionRow);
-    const rows = filterRows(all, { locationId, division, workCenterId });
+    // Where planners have put the cards. The board still loads when the table is not there yet (the database file
+    // not run): cards then keep the order of priority and due date, and `canArrange` tells the board so.
+    let places = []; let canArrange = true;
+    try { places = await prisma.jobBoardPosition.findMany({ select: { jobId: true, stage: true, position: true } }); }
+    catch (e) { canArrange = false; console.error('Board positions could not be read:', e.message); }
+    const rows = arrangeRows(filterRows(all, { locationId, division, workCenterId }), places);
 
     const machines = await prisma.workCenter.findMany({
       where: { isActive: true, ...(locationId ? { locationId: String(locationId) } : {}) },
@@ -294,6 +300,8 @@ router.get('/overview', async (req, res) => {
       limited: jobs.length < openTotal,
       counts: stageCounts(rows),
       stages: STAGES,
+      canArrange,
+      mayArrange: mayChangePlan(req.user?.role),
       stepsDoneToday,
       jobs: rows,
       workCenters: shown.map((m) => ({ ...m, ...perMachine[m.id] })),
@@ -301,6 +309,43 @@ router.get('/overview', async (req, res) => {
   } catch (error) {
     console.error('Error building the production overview:', error);
     res.status(500).json({ error: 'The production overview could not be loaded' });
+  }
+});
+
+// PUT /jobs/board-order: the cards of one column of the Production Workflow board in a new order.
+// Body: { stage, jobIds: [...] } with every card shown in that column, top to bottom. Only jobs the person can see
+// and that are in that stage now are placed; the rules are in lib/boardOrder.js.
+router.put('/board-order', async (req, res) => {
+  try {
+    if (!mayChangePlan(req.user?.role)) return res.status(403).json({ error: 'A work center lead, production manager, scheduler, branch manager or administrator can arrange the board.' });
+    const { stage, jobIds } = req.body || {};
+    const why = boardOrderError(stage, jobIds, STAGES.map((s) => s.key));
+    if (why) return res.status(400).json({ error: why });
+    const jobs = await prisma.job.findMany({
+      where: { id: { in: jobIds }, status: { notIn: PRODUCTION_CLOSED } },
+      select: { id: true, status: true, dispatchJob: { select: { operations: { select: { sequence: true, status: true, assignedWorkCenterId: true } } } } },
+    });
+    const stageOf = new Map(jobs.map((j) => [j.id, productionRow(j).stage]));
+    const moved = jobIds.filter((id) => stageOf.get(id) !== stage);
+    if (moved.length) return res.status(409).json({ error: `${moved.length === 1 ? 'A job has' : `${moved.length} jobs have`} left this column since the board was loaded. Nothing was arranged. Refresh and try again.` });
+    let saved;
+    try {
+      saved = await prisma.$transaction(async (tx) => {
+        const existing = await tx.jobBoardPosition.findMany({ where: { jobId: { in: jobIds } }, select: { jobId: true, stage: true, position: true } });
+        const places = positionsFor(stage, jobIds, existing);
+        for (const p of places) {
+          await tx.jobBoardPosition.upsert({ where: { jobId: p.jobId }, create: { ...p, updatedById: req.user?.id || null }, update: { stage: p.stage, position: p.position, updatedById: req.user?.id || null } });
+        }
+        return places;
+      });
+    } catch (e) {
+      if (e?.code === 'P2021' || /JobBoardPosition/.test(e?.message || '')) return res.status(503).json({ error: 'The board cannot be arranged yet: the database update for it has not been run.' });
+      throw e;
+    }
+    res.json({ success: true, stage, positions: saved });
+  } catch (error) {
+    console.error('Error arranging the board:', error);
+    res.status(500).json({ error: 'The board could not be arranged' });
   }
 });
 

@@ -6,6 +6,7 @@ import {
   Grid,
   Card,
   CardContent,
+  CardActionArea,
   Button,
   Chip,
   Stack,
@@ -91,10 +92,13 @@ function PlanningBoardPage() {
         {CARDS.map(([key, label, color]) => (
           <Grid item xs={6} sm={3} md={1.5} key={key}>
             <Card>
-              <CardContent>
-                <Typography variant="caption" color="text.secondary">{label}</Typography>
-                <Typography variant="h4" fontWeight={600} color={color}>{data ? counts[key] ?? 0 : '—'}</Typography>
-              </CardContent>
+              {/* Each count opens the board at its column (owner, 2026-11-25: the planning screens are clickable). */}
+              <CardActionArea onClick={() => navigate(`/planning/workflow?stage=${key}`)} aria-label={`${label}: open on the workflow board`} data-testid={`planning-count-${key}`}>
+                <CardContent>
+                  <Typography variant="caption" color="text.secondary">{label}</Typography>
+                  <Typography variant="h4" fontWeight={600} color={color}>{data ? counts[key] ?? 0 : '—'}</Typography>
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
         ))}
@@ -113,7 +117,10 @@ function PlanningBoardPage() {
       <Grid container spacing={2}>
         {workCenters.map((wc) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={wc.id}>
-            <Paper sx={{ p: 2 }} data-testid="planning-machine">
+            <Paper sx={{ p: 2, cursor: 'pointer', '&:hover': { boxShadow: 3 }, '&:focus-visible': { outline: '2px solid', outlineColor: 'primary.main' } }} data-testid="planning-machine"
+              role="link" tabIndex={0} aria-label={`${wc.name}: open its queue`}
+              onClick={() => navigate(`/shopfloor/${wc.id}?locationId=${wc.locationId}`)}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/shopfloor/${wc.id}?locationId=${wc.locationId}`); }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                 <Typography variant="subtitle1" fontWeight={600}>
                   {wc.name}

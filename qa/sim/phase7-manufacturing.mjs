@@ -409,6 +409,32 @@ if (want(2)) {
     ok('what is reserved for the line is on stock that exists (never more than the line ordered)', num(reserved._sum.qtyAllocated) <= 1000 + 1e-6, String(reserved._sum.qtyAllocated));
     ok('50 lb of scrap on record', near((await stockMoves(coilId, 'SCRAP')).reduce((n, m) => n + num(m.qtyMoved), 0), 50));
   });
+  await scenario(G2, 'pieces made for an order line are reserved for it even when nothing was reserved beforehand (owner, 2026-11-25)', async (ok) => {
+    const coilId = await B.received({ weightLb: 3000 });
+    const o = await mkOrder({ qty: 1000 });
+    const wo = await startedWorkOrder(coilId, { lineId: o.lines[0].id, inputWeightLb: 1300 });
+    const d = await finishWo(wo, { scrapWeightLb: 20, outputs: [{ weightLb: 600 }, { weightLb: 600 }] });
+    ok('completed with nothing reserved beforehand', d.status === 200, `${d.status} ${d.body?.error}`);
+    const src = await books(ok, coilId, 'source');
+    ok('the source lost 1,220 lb of free stock and holds no reserve', near(src.qtyOnHand, 1780) && near(src.qtyAllocated, 0), `${src.qtyOnHand}/${src.qtyAllocated}`);
+    const pieces = await prisma.coil.findMany({ where: { parentCoilId: coilId }, orderBy: { coilNumber: 'asc' } });
+    const [p1, p2] = [await books(ok, pieces[0].id, 'piece 1'), await books(ok, pieces[1].id, 'piece 2')];
+    ok('the first piece is all reserved, the second only for what the line still needs', near(p1.qtyAllocated, 600) && near(p2.qtyAllocated, 400) && near(p2.qtyAvailable, 200), `${p1.qtyAllocated}/${p2.qtyAllocated}/${p2.qtyAvailable}`);
+    const reserved = await prisma.orderLineAllocation.aggregate({ where: { orderLineId: o.lines[0].id }, _sum: { qtyAllocated: true } });
+    ok('the line has exactly the 1,000 lb it ordered reserved, never more', near(reserved._sum.qtyAllocated, 1000), String(reserved._sum.qtyAllocated));
+    ok('both pieces show as reserved stock', pieces.every((p) => p.status === 'ALLOCATED'), pieces.map((p) => p.status).join());
+    ok('the answer says how much of each piece was reserved', near(d.body?.stock?.pieces?.[0]?.reservedLb, 600) && near(d.body?.stock?.pieces?.[1]?.reservedLb, 400), JSON.stringify(d.body?.stock?.pieces));
+    const logged = await prisma.auditLog.findMany({ where: { eventType: 'STOCK_RESERVED', resourceId: o.id } });
+    ok('each reservation is in the history with its work order', logged.length === 2 && logged.every((l) => l.details?.workOrderId === wo.id), String(logged.length));
+  });
+  await scenario(G2, 'pieces from a work order with no order line stay free stock', async (ok) => {
+    const coilId = await B.received({ weightLb: 1000 });
+    const wo = await startedWorkOrder(coilId, { inputWeightLb: 500 });
+    const d = await finishWo(wo, { scrapWeightLb: 10, outputs: [{ weightLb: 480 }] });
+    const piece = await prisma.coil.findFirst({ where: { parentCoilId: coilId } });
+    const i = await invOf(piece.id);
+    ok('completed, and the piece is free with nothing reserved', d.status === 200 && piece.status === 'AVAILABLE' && near(i.qtyAllocated, 0) && near(i.qtyAvailable, 480), `${d.status} ${piece.status} ${i.qtyAllocated}`);
+  });
   await scenario(G2, 'a work order cannot cut stock that is reserved for another order', async (ok) => {
     const coilId = await B.received({ weightLb: 1000 });
     const o = await mkOrder({ qty: 800 });

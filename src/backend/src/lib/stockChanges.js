@@ -14,6 +14,7 @@
  */
 import { STAFF_GROUPS } from './roleAccess.js';
 import { recordMovement, record as recordLedger } from '../services/ledger.js';
+import { reservationProblem } from './reservationRules.js';
 
 export const ADJUST_REASONS = ['COUNT', 'DAMAGE', 'SCRAP', 'FOUND', 'CORRECTION'];
 /** Who may correct a stock balance: branch and company managers, and the inventory manager. */
@@ -87,6 +88,32 @@ export function readPieces(body, FORMS) {
 }
 
 /**
+ * How much of a finished piece is reserved for the order line it was made for, beyond what was carried over
+ * from the source: as much of the free weight as the line still needs, and nothing when the order is closed or
+ * the piece could not be reserved by hand either (other unit, grade, size or owner). Pure.
+ */
+export function pieceReserve({ open, free, line, order, coil, unit, houseOrgIds = [] }) {
+  if (!line || !(open > EPS) || !(free > EPS)) return 0;
+  if (['CANCELLED', 'COMPLETE'].includes(order?.status)) return 0;
+  if (reservationProblem({ line, order, coil, inventory: { unit, status: 'AVAILABLE' }, houseOrgIds })) return 0;
+  return round4(Math.min(open, free));
+}
+
+/** The order line a work order makes pieces for, with its order locked. null when the line is gone. */
+async function lineToReserveFor(tx, lineId, userId) {
+  const found = await tx.orderLine.findUnique({ where: { id: lineId }, select: { orderId: true } });
+  if (!found) return null;
+  const [locked] = await tx.$queryRaw`SELECT status::text AS status, "buyerId", "sellerId" FROM "Order" WHERE id = ${found.orderId} FOR UPDATE`;
+  if (!locked) return null;
+  const line = await tx.orderLine.findUnique({
+    where: { id: lineId },
+    select: { orderId: true, lineNumber: true, unit: true, qtyOrdered: true, qtyShipped: true, gradeId: true, thicknessIn: true, widthIn: true, lengthIn: true, thkTolerancePlus: true, thkToleranceMinus: true },
+  });
+  const me = userId ? await tx.user.findUnique({ where: { id: userId }, select: { organizationId: true } }) : null;
+  return { line, order: locked, houseOrgIds: [me?.organizationId, locked.sellerId].filter(Boolean) };
+}
+
+/**
  * Books a completed work order: takes output and scrap off the source item, and puts each piece
  * on the books as a new item. Stock that was reserved on the source for the work order's own
  * order line goes into the pieces still reserved for that line, so it can ship.
@@ -99,6 +126,8 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
   });
   if (!source) refuse(409, 'The source stock item is no longer on file');
   if (source.status === 'HOLD' || ['FAILED', 'HOLD'].includes(source.qcStatus)) refuse(409, `Stock item ${source.coilNumber} is on hold. Release the hold before completing work on it.`);
+  // The order is locked before the stock, the same order of locks a reservation on the order page takes.
+  const forLine = wo.lineId ? await lineToReserveFor(tx, wo.lineId, userId) : null;
   const bal = await lockBalance(tx, source.id);
   if (!bal) refuse(409, `Stock item ${source.coilNumber} has no stock balance`);
   if (bal.status === 'IN_TRANSIT') refuse(409, `Stock item ${source.coilNumber} is on its way to another branch. Receive the transfer before completing work on it.`);
@@ -131,12 +160,24 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
 
   // Reserved stock that became pieces stays reserved for the same line. Reserved stock that became scrap is gone.
   let carry = Math.min(fromReserved, out);
+  // Pieces made for an order line are reserved for it up to what the line still needs, even when nothing was
+  // reserved beforehand, so the job can ship (owner, 2026-11-25). What is already held for the line counts first.
+  let open = 0;
+  if (forLine) {
+    const held = await tx.orderLineAllocation.aggregate({ where: { orderLineId: wo.lineId }, _sum: { qtyAllocated: true } });
+    open = round4(num(forLine.line.qtyOrdered) - num(forLine.line.qtyShipped) - num(held._sum.qtyAllocated || 0));
+  }
   const made = [];
   for (const [i, p] of pieces.entries()) {
     const coilNumber = p.coilNumber || `${wo.woNumber}-${String(i + 1).padStart(2, '0')}`;
     if (await tx.coil.findUnique({ where: { coilNumber }, select: { id: true } })) refuse(409, `Item number ${coilNumber} is already in use`);
-    const reserved = round4(Math.min(carry, p.weightLb));
-    carry = round4(carry - reserved);
+    const carried = round4(Math.min(carry, p.weightLb));
+    carry = round4(carry - carried);
+    open = round4(open - carried);
+    const dims = { coilNumber, gradeId: source.gradeId, ownerId: source.ownerId, thicknessIn: p.thicknessIn ?? source.thicknessIn, widthIn: p.widthIn ?? source.widthIn, lengthIn: p.lengthIn ?? source.lengthIn };
+    const extra = forLine ? pieceReserve({ open, free: round4(p.weightLb - carried), ...forLine, coil: dims, unit: bal.unit }) : 0;
+    open = round4(open - extra);
+    const reserved = round4(carried + extra);
     const piece = await tx.coil.create({
       data: {
         coilNumber, form: p.form || source.form, heatId: source.heatId, gradeId: source.gradeId, ownerId: source.ownerId, productId: source.productId,
@@ -153,6 +194,12 @@ export async function completeWorkOrder(tx, wo, { out, scrap, pieces }, userId) 
     if (reserved > EPS) await tx.orderLineAllocation.create({ data: { orderLineId: wo.lineId, coilId: piece.id, qtyAllocated: reserved } });
     await move({ coilId: piece.id, movementType: 'PROCESS', toLocationId: bal.locationId, qtyMoved: p.weightLb, reasonCode: 'WORK_ORDER', notes: `Cut from ${source.coilNumber} on ${wo.woNumber}` });
     await tx.workOrderOutput.create({ data: { workOrderId: wo.id, outputCoilId: piece.id, sequence: i + 1, targetWidth: p.widthIn ?? null, actualWidth: p.widthIn ?? null, actualWeight: p.weightLb } });
+    if (extra > EPS) {
+      await tx.auditLog.create({ data: {
+        category: 'WORKFLOW', eventType: 'STOCK_RESERVED', action: 'CREATE', userId, resourceType: 'Order', resourceId: forLine.line.orderId,
+        details: { orderLineId: wo.lineId, coilId: piece.id, qty: extra, workOrderId: wo.id, woNumber: wo.woNumber, how: 'Made for this line on the work order' },
+      } });
+    }
     made.push({ id: piece.id, coilNumber: piece.coilNumber, weightLb: p.weightLb, reservedLb: reserved });
   }
   // One entry for the whole work order: the source's value moves to the pieces and to scrap.

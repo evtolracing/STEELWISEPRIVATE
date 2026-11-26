@@ -570,8 +570,20 @@ async function stagedJob({ qty = 400, loc = L1, wc = wc1, reserve = true } = {})
   await scenario(G2, 'a job with no work center cannot ship from the floor, and no empty shipment is left behind', async (ok) => {
     const k = await stagedJob({ qty: 300, wc: null });
     const j = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-2' }, 'shipping');
-    ok('refused: the branch it ships from is not known', j.status === 409 && /no work center/.test(err(j)), `${j.status} ${err(j)}`);
+    ok('refused: the branch it ships from is not known', j.status === 409 && /no plan and no work center/.test(err(j)), `${j.status} ${err(j)}`);
     ok('no shipment, no invoice, and the job is unchanged', (await prisma.shipment.count({ where: { orderId: k.order.id } })) === 0 && (await B.invoicesOf(k.order.id)).length === 0 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'READY_TO_SHIP');
+  });
+  await scenario(G2, 'a planned job with no machine written on it ships from the branch of its plan (owner, 2026-11-25)', async (ok) => {
+    // Planning a job never fills the old machine field, so this is every job planned on the boards.
+    const k = await stagedJob({ qty: 300, wc: null });
+    await prisma.dispatchJob.create({ data: { jobId: k.job.id, jobNumber: k.job.jobNumber, orderId: k.order.id, locationId: L1.id } });
+    const byHand = await A.patch(`/api/jobs/${k.job.id}/status`, { status: 'SHIPPED' }, 'shipping');
+    ok('marking it shipped by hand is refused, and says a shipment does it', byHand.status === 409 && /marked shipped when its shipment is dispatched/.test(err(byHand)), `${byHand.status} ${err(byHand)}`);
+    const s = await A.post(`/api/jobs/${k.job.id}/ship`, { carrier: 'Own Truck', trackingNumber: 'PRO-7' }, 'shipping');
+    ok('shipping it with a carrier works', s.status === 200 && (await prisma.job.findUnique({ where: { id: k.job.id } })).status === 'SHIPPED', `${s.status} ${err(s)}`);
+    const sh = await prisma.shipment.findFirst({ where: { orderId: k.order.id } });
+    ok('the shipment leaves from the plan\'s branch, and one invoice is raised', sh?.fromLocationId === L1.id && sh.status === 'IN_TRANSIT' && (await B.invoicesOf(k.order.id)).length === 1, `${sh?.status}`);
+    ok('the answer names the shipment', s.body?.shipment?.shipmentNumber === sh?.shipmentNumber, JSON.stringify(s.body?.shipment));
   });
   await scenario(G2, 'a job that cannot be dispatched leaves no shipment behind', async (ok) => {
     const k = await stagedJob({ qty: 300, reserve: false });

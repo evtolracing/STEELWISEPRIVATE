@@ -582,6 +582,11 @@ async function dispatchAndInvoice(id, body, userId) {
   return { ...shipment, invoice: invoice && { id: invoice.id, invoiceNumber: invoice.invoiceNumber, totalAmount: invoice.totalAmount }, ...(invoiceWarning && { invoiceWarning, warning: invoiceWarning }) };
 }
 
+/** The branch a job ships from: where its plan runs, else its machine's branch, else not known (null). */
+export function jobShipsFrom({ planLocationId, machineLocationId } = {}) {
+  return planLocationId || machineLocationId || null;
+}
+
 /**
  * "Ship" pressed on a job at the shop-floor shipping screen: creates and
  * dispatches a shipment for what is still open on the job's order line, so
@@ -592,13 +597,17 @@ async function dispatchAndInvoice(id, body, userId) {
 export async function shipForJob(job, { carrier, trackingNumber, userId }) {
   if (!job.orderId) return null;
   // The order may have been sold by another branch than the one that made it (N-002): it is still shipped and billed.
-  const [order, workCenter] = await acrossBranches(() => Promise.all([
+  const [order, workCenter, plan] = await acrossBranches(() => Promise.all([
     prisma.order.findUnique({
       where: { id: job.orderId },
       select: { id: true, status: true, orderNumber: true, lines: { where: job.orderLineId ? { id: job.orderLineId } : {}, include: { shipmentItems: { where: { shipment: { status: { in: OPEN } } } } } } },
     }),
     job.workCenterId ? prisma.workCenter.findUnique({ where: { id: job.workCenterId }, select: { locationId: true } }) : null,
+    prisma.dispatchJob.findUnique({ where: { jobId: job.id }, select: { locationId: true } }),
   ]));
+  // Where it ships from: the branch of the job's plan (where it was made), else its machine's. The plan never
+  // fills the old machine field on the job, so a planned job used to be refused here (owner, 2026-11-25).
+  const fromLocationId = jobShipsFrom({ planLocationId: plan?.locationId, machineLocationId: workCenter?.locationId });
   if (!order) return null;
   // A job with no line is for the whole order: everything still open goes.
   const lines = order.lines.filter((l) => l.lineStatus !== 'CANCELLED');
@@ -607,9 +616,9 @@ export async function shipForJob(job, { carrier, trackingNumber, userId }) {
   const wanted = lines.map((l) => ({ orderLineId: l.id, qtyShipped: num(l.qtyOrdered) - num(l.qtyShipped) })).filter((w) => w.qtyShipped > 1e-9);
   if (!wanted.length) return null;
   if (!SHIPPABLE_ORDER_STATUSES.includes(order.status)) refuse(409, `Order ${order.orderNumber} is ${order.status}, so this job cannot ship`);
-  if (!workCenter?.locationId) refuse(409, 'This job has no work center, so the branch it ships from is not known. Create the shipment on the shipping desk.');
+  if (!fromLocationId) refuse(409, 'This job has no plan and no work center, so the branch it ships from is not known. Create the shipment on the shipping desk.');
   const branches = myBranches();
-  if (branches && !branches.includes(workCenter.locationId)) refuse(403, 'This job ships from another branch. Only that branch can ship it.');
+  if (branches && !branches.includes(fromLocationId)) refuse(403, 'This job ships from another branch. Only that branch can ship it.');
   const shipment = await acrossBranches(() => createNumbered({
     count: () => prisma.shipment.count(),
     format: padded('SHP'),
@@ -617,7 +626,7 @@ export async function shipForJob(job, { carrier, trackingNumber, userId }) {
       const items = await checkItems(tx, order.id, wanted);
       return tx.shipment.create({
         data: {
-          shipmentNumber, orderId: order.id, fromLocationId: workCenter.locationId, carrierName: carrier || null, bolNumber: trackingNumber || null,
+          shipmentNumber, orderId: order.id, fromLocationId, carrierName: carrier || null, bolNumber: trackingNumber || null,
           notes: `Shipped from the shop floor for ${job.jobNumber}`, items: { create: items },
         },
       });

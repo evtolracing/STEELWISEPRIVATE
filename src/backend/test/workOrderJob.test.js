@@ -44,3 +44,28 @@ test('cancelling a work order cancels only the job it made, and only before work
 test('a work order joins only a job that is still open', () => {
   assert.deepEqual(OPEN_JOB_STATUSES, ['ORDERED', 'SCHEDULED', 'IN_PROCESS', 'ON_HOLD']);
 });
+
+// Completing a work order moves its job on (owner, 2026-11-25).
+{
+  const { finishesItsJob, jobFinishedText } = await import('../src/lib/workOrderRules.js');
+  const job = { jobNumber: 'JOB-1', status: 'ORDERED' };
+  test('completing the last work order of a job with no step open finishes its production', () => {
+    for (const status of ['ORDERED', 'SCHEDULED', 'IN_PROCESS']) assert.deepEqual(finishesItsJob({ job: { ...job, status } }), { finish: true, why: '' });
+  });
+  test('a job with another open work order, an unfinished step or a hold stays, and says why', () => {
+    assert.match(finishesItsJob({ job, otherOpenWorkOrders: 1 }).why, /1 other work order is still open/);
+    assert.match(finishesItsJob({ job, otherOpenWorkOrders: 2 }).why, /2 other work orders are still open/);
+    assert.match(finishesItsJob({ job, openSteps: 1 }).why, /1 planned step is not finished. Finish it on the Shop Floor/);
+    assert.match(finishesItsJob({ job, openSteps: 3 }).why, /3 planned steps are not finished. Finish them/);
+    assert.match(finishesItsJob({ job: { ...job, status: 'ON_HOLD' } }).why, /on hold/);
+    for (const r of [finishesItsJob({ job, otherOpenWorkOrders: 1 }), finishesItsJob({ job, openSteps: 1 }), finishesItsJob({ job: { ...job, status: 'ON_HOLD' } })]) assert.equal(r.finish, false);
+  });
+  test('a job already past production, closed or missing is left alone without a word', () => {
+    for (const status of ['WAITING_QC', 'PACKAGING', 'READY_TO_SHIP', 'SHIPPED', 'COMPLETED', 'CANCELLED']) assert.deepEqual(finishesItsJob({ job: { ...job, status } }), { finish: false, why: '' });
+    assert.deepEqual(finishesItsJob({ job: null }), { finish: false, why: '' });
+  });
+  test('the screen is told where the job went', () => {
+    assert.match(jobFinishedText('JOB-1', 'WAITING_QC'), /Job JOB-1 has gone to inspection/);
+    assert.equal(jobFinishedText('JOB-1', 'READY_TO_SHIP'), 'Job JOB-1 is ready to ship.');
+  });
+}

@@ -4,9 +4,9 @@ import prisma from '../lib/db.js';
 import { planLights } from '../lib/productionView.js';
 import { createNumbered, padded } from '../lib/numbering.js';
 import { readFields } from '../lib/fieldRules.js';
-import { workOrderMoveError, gradeFitError, jobForWorkOrder, workOrderJobText, cancelsItsJob, OPEN_JOB_STATUSES, WITHOUT_JOB_STATUSES, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
+import { workOrderMoveError, gradeFitError, jobForWorkOrder, workOrderJobText, cancelsItsJob, finishesItsJob, jobFinishedText, OPEN_JOB_STATUSES, WITHOUT_JOB_STATUSES, WO_TYPES, WO_STATUSES } from '../lib/workOrderRules.js';
 import { createJobNumbered } from '../lib/jobNumbers.js';
-import { changeJobStatusTx } from '../lib/jobGates.js';
+import { changeJobStatusTx, afterProduction } from '../lib/jobGates.js';
 import { completeWorkOrder, readPieces } from '../lib/stockChanges.js';
 import { retryOverlap } from '../lib/numbering.js';
 
@@ -308,13 +308,46 @@ router.put('/:id/complete', guard(async (req, res) => {
       });
       return booked;
     }));
+    const job = await finishItsJob(wo, req.user?.id);
     const saved = await prisma.workOrder.findUnique({ where: { id: wo.id }, include: { outputs: { include: { outputCoil: { select: { id: true, coilNumber: true, netWeightLb: true, status: true } } } } } });
-    return res.json({ ...saved, stock: result });
+    return res.json({ ...saved, stock: result, job });
   } catch (error) {
     if (error?.refuse) return res.status(error.status).json({ error: error.message });
     throw error;
   }
 }));
+
+/**
+ * The job a completed work order was cutting for leaves production with it: to inspection when it owes one, else
+ * ready to ship. Not while another work order is open for it or a planned step is unfinished (lib/workOrderRules.js).
+ * Returns { id, jobNumber, status, moved, message } for the screen, or null when the work order has no job.
+ */
+async function finishItsJob(wo, userId) {
+  if (!wo.jobId) return null;
+  try {
+    return await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Job" WHERE id = ${wo.jobId} FOR UPDATE`;
+      const [job, others, plan] = await Promise.all([
+        tx.job.findUnique({ where: { id: wo.jobId }, select: { id: true, jobNumber: true, status: true } }),
+        tx.workOrder.count({ where: { jobId: wo.jobId, id: { not: wo.id }, status: { notIn: ['COMPLETE', 'CANCELLED'] } } }),
+        tx.dispatchJob.findUnique({ where: { jobId: wo.jobId }, select: { operations: { select: { status: true } } } }),
+      ]);
+      if (!job) return null;
+      const openSteps = (plan?.operations || []).filter((o) => o.status !== 'COMPLETE').length;
+      const rule = finishesItsJob({ job, otherOpenWorkOrders: others, openSteps });
+      if (!rule.finish) return { id: job.id, jobNumber: job.jobNumber, status: job.status, moved: false, message: rule.why };
+      const moved = await changeJobStatusTx(tx, job.id, 'READY_TO_SHIP', {
+        from: ['ORDERED', 'SCHEDULED', 'IN_PROCESS'], note: `Work order ${wo.woNumber} was completed`, via: 'work-order', userId,
+        decide: (j, db) => afterProduction(db, j, 'READY_TO_SHIP'),
+      });
+      return { id: job.id, jobNumber: job.jobNumber, status: moved.to, moved: true, message: jobFinishedText(job.jobNumber, moved.to) };
+    });
+  } catch (error) {
+    // The work order is complete either way; the job can still be moved from its own page or the boards.
+    if (!error?.refused) console.error('Work order completed, but its job could not be moved on:', error);
+    return { id: wo.jobId, moved: false, message: error?.refused ? error.message : 'Its job could not be moved on. Move it from the Production Workflow board.' };
+  }
+}
 
 // Quality hold: the work stops, nothing can be completed, and quality (or the production manager) releases it.
 router.put('/:id/hold', guard((req, res) => {

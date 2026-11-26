@@ -45,8 +45,9 @@ function CompleteDialog({ wo, open, onClose, onDone }) {
       // Equal pieces; the last one takes any rounding so the pieces add up to the weight entered.
       const each = Math.floor((total / n) * 10000) / 10000
       const outputs = total > 0 ? Array.from({ length: n }, (_, i) => ({ weightLb: i === n - 1 ? Math.round((total - each * (n - 1)) * 10000) / 10000 : each })) : []
-      await client.put(`/work-orders/${wo.id}/complete`, { outputWeightLb: total, scrapWeightLb: scrap === '' ? 0 : Number(scrap), outputs })
-      onDone('Work order completed')
+      const { data } = await client.put(`/work-orders/${wo.id}/complete`, { outputWeightLb: total, scrapWeightLb: scrap === '' ? 0 : Number(scrap), outputs })
+      // The server says what became of the job this work order was cutting for.
+      onDone(['Work order completed.', data?.job?.message].filter(Boolean).join(' '))
     } catch (e) {
       setError(e.response?.data?.error || 'The work order could not be completed')
     } finally {
@@ -225,7 +226,7 @@ export default function WorkOrderDetailPage() {
       </Grid>
 
       <CompleteDialog wo={wo} open={completing} onClose={() => setCompleting(false)} onDone={(m) => { setCompleting(false); setToast(m); load() }} />
-      <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast('')} message={toast} />
+      <Snackbar open={!!toast} autoHideDuration={8000} data-testid="wo-toast" onClose={() => setToast('')} message={toast} />
     </Box>
   )
 }

@@ -81,3 +81,27 @@ export function cancelsItsJob({ workOrderId, job, otherLiveWorkOrders = 0 }) {
   if (!['ORDERED', 'SCHEDULED'].includes(job.status)) return false;
   return otherLiveWorkOrders === 0;
 }
+
+/**
+ * Does completing a work order finish the production of its job? (owner, 2026-11-25) Yes when the job is still
+ * in production, no other work order is still cutting for it, and its plan has no step left open: planned steps
+ * are finished at the machine, where the operator and time are recorded, so they are never skipped from here.
+ * Returns { finish: true } or { finish: false, why } with a sentence for the screen ('' when there is nothing to say).
+ */
+export function finishesItsJob({ job, otherOpenWorkOrders = 0, openSteps = 0 } = {}) {
+  if (!job) return { finish: false, why: '' };
+  const name = job.jobNumber ? `Job ${job.jobNumber}` : 'Its job';
+  if (job.status === 'ON_HOLD') return { finish: false, why: `${name} is on hold, so it stays there. Release the hold to move it on.` };
+  if (!['ORDERED', 'SCHEDULED', 'IN_PROCESS'].includes(job.status)) return { finish: false, why: '' };
+  if (otherOpenWorkOrders > 0) return { finish: false, why: `${name} stays in production: ${otherOpenWorkOrders} other work order${otherOpenWorkOrders === 1 ? ' is' : 's are'} still open for it.` };
+  if (openSteps > 0) return { finish: false, why: `${name} stays in production: ${openSteps} planned step${openSteps === 1 ? ' is' : 's are'} not finished. Finish ${openSteps === 1 ? 'it' : 'them'} on the Shop Floor.` };
+  return { finish: true, why: '' };
+}
+
+/** What happened to the job, in words for the screen. */
+export function jobFinishedText(jobNumber, to) {
+  const name = jobNumber ? `Job ${jobNumber}` : 'Its job';
+  if (to === 'WAITING_QC') return `${name} has gone to inspection. It moves on when an inspection is passed.`;
+  if (to === 'READY_TO_SHIP') return `${name} is ready to ship.`;
+  return '';
+}

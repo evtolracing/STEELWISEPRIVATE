@@ -214,12 +214,15 @@ check('a counter session belongs to the person signed in, whatever user id the b
 
 // ── Counter sale and stock (B-025, owner's decision 6) ──
 const csrHome = csrUser.homeLocationId;
-const [disc, gloves] = await Promise.all(['CUT-DISC-9', 'WG-25'].map((sku) => prisma.product.findFirst({ where: { sku } })));
+// Two items sold by the piece that are still for sale: the demo disc and gloves until the working inventory (2026-11-26)
+// took the demo catalog off sale, otherwise the first two active supplies sold each.
+const eachItems = await prisma.product.findMany({ where: { isActive: true, form: 'SUPPLY', priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' }, take: 2 });
+const [disc, gloves] = await Promise.all(['CUT-DISC-9', 'WG-25'].map(async (sku, i) => (await prisma.product.findFirst({ where: { sku, isActive: true } })) || eachItems[i]));
 const like = await prisma.coil.findFirst({ where: { locationId: csrHome } });
 const shelfCoil = await prisma.coil.create({ data: { coilNumber: `QA-SHELF-${run}`, form: like.form, heatId: like.heatId, gradeId: like.gradeId, ownerId: like.ownerId, productId: disc.id, locationId: csrHome, netWeightLb: 250, grossWeightLb: 250, createdById: boss.id } });
 await prisma.inventory.create({ data: { coilId: shelfCoil.id, locationId: csrHome, qtyOnHand: 10, qtyAvailable: 10, unit: 'EA' } });
 // Any other shelf stock of this product at the branch (from an earlier run) is emptied so the counts below are exact.
-await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coilId: { not: shelfCoil.id }, coil: { productId: disc.id } }, data: { qtyOnHand: 0, qtyAvailable: 0 } });
+await prisma.inventory.updateMany({ where: { locationId: csrHome, unit: 'EA', coilId: { not: shelfCoil.id }, coil: { productId: disc.id }, qtyAllocated: 0, qtyInTransit: 0 }, data: { qtyOnHand: 0, qtyAvailable: 0, qtyOnHold: 0 } });
 const shelf = async () => { const i = await prisma.inventory.findUnique({ where: { coilId: shelfCoil.id } }); return [Number(i.qtyOnHand), Number(i.qtyAvailable)].join('/'); };
 const sell = (id, productId, quantity) => A.post('/api/pos/quick-sale/process-payment', { sale: { id, items: [{ productId, quantity }] }, payment: { method: 'CASH', amountTendered: 100000 } }, 'csr');
 const sold = (orderId, reason = 'COUNTER_SALE') => prisma.materialMovement.findMany({ where: { orderId, reasonCode: reason } });

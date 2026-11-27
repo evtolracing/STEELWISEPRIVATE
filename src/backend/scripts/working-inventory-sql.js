@@ -7,7 +7,7 @@
  *   then: npm run db:sql-editor -- <migration>       # for each part
  *
  * Every part is safe to run twice: a row already on file is left alone. Stock goes only to a branch that is on
- * file and switched on, and is refused if the books are already started (it would not be on them). The extra
+ * file and switched on, and none is loaded, with a notice, once the books are started (it would not be on them; a refusal would stop a migration run). The extra
  * files the owner runs by hand (check before, verify after, remove) are written by --extras <dir>.
  */
 import fs from 'node:fs';
@@ -53,7 +53,7 @@ const CREATOR = `(SELECT id FROM "User" ORDER BY "createdAt", id LIMIT 1)`;
 const BOOKS_GUARD = `DO $guard$
 BEGIN
   IF EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true') THEN
-    RAISE EXCEPTION 'The books are already started, so stock loaded here would not be on them. Nothing was changed.';
+    RAISE NOTICE 'The books are already started, so stock loaded here would not be on them. The stock was not loaded.';
   END IF;
 END $guard$;`;
 
@@ -145,7 +145,7 @@ function stockSql(d, code) {
     `${list.length} stocked pieces, ${lb.toLocaleString('en-US')} lb of metal and plastic plus supplies counted by the piece. Each piece gets its stock balance and a`,
     'receipt line in its history dated the day it came in. About 2 in 100 come in on a quality hold, so the hold path can be tested.',
     'Nothing is added when the branch is not on file or switched off, or when a tag number is already in use.',
-    'Refused, with nothing changed, if the books are already started: run this before starting the sandbox books.',
+    'Loads nothing, with a notice, if the books are already started: run this before starting the sandbox books.',
   ])}
 
 ${BOOKS_GUARD}
@@ -153,7 +153,8 @@ ${BOOKS_GUARD}
 WITH v(tag, sku, grade, heat, form, t, w, l, od, idin, weight, qty, unit, bin, cost, received, holdtype, holdreason) AS (VALUES
 ${rows(lines)}
 ),
-branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = ${s(code)} AND "isActive" = true),
+branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = ${s(code)} AND "isActive" = true
+  AND NOT EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true')),
 creator AS ${CREATOR.replace('(SELECT id', '(SELECT id AS uid')},
 src AS (
   SELECT v.*, p.id AS pid, g.id AS gid, h.id AS hid, br.id AS lid, br."ownerId" AS owner, c.uid

@@ -18,22 +18,22 @@ CREATE TABLE IF NOT EXISTS "_prisma_migrations" (
 );
 
 -- 20261126090400_working_inventory_5_stock_pv
-DO $m_7ef5238b$
+DO $m_79c84497$
 BEGIN
   IF EXISTS (SELECT 1 FROM "_prisma_migrations" WHERE "migration_name" = '20261126090400_working_inventory_5_stock_pv' AND "finished_at" IS NOT NULL) THEN
     RAISE NOTICE 'Skipping 20261126090400_working_inventory_5_stock_pv (already applied)';
     RETURN;
   END IF;
-  EXECUTE $body_7ef5238b$-- Working inventory, part 5 of 10: stock on the shelf at Potterville (PV) (owner, 2026-11-26). Needs parts 1 and 2 first.
+  EXECUTE $body_79c84497$-- Working inventory, part 5 of 10: stock on the shelf at Potterville (PV) (owner, 2026-11-26). Needs parts 1 and 2 first.
 -- 750 stocked pieces, 1,233,584 lb of metal and plastic plus supplies counted by the piece. Each piece gets its stock balance and a
 -- receipt line in its history dated the day it came in. About 2 in 100 come in on a quality hold, so the hold path can be tested.
 -- Nothing is added when the branch is not on file or switched off, or when a tag number is already in use.
--- Refused, with nothing changed, if the books are already started: run this before starting the sandbox books.
+-- Loads nothing, with a notice, if the books are already started: run this before starting the sandbox books.
 
 DO $guard$
 BEGIN
   IF EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true') THEN
-    RAISE EXCEPTION 'The books are already started, so stock loaded here would not be on them. Nothing was changed.';
+    RAISE NOTICE 'The books are already started, so stock loaded here would not be on them. The stock was not loaded.';
   END IF;
 END $guard$;
 
@@ -789,7 +789,8 @@ WITH v(tag, sku, grade, heat, form, t, w, l, od, idin, weight, qty, unit, bin, c
 ('PV-26-100749', 'SUP-0097', NULL, NULL, 'SUPPLY', NULL, NULL, NULL, NULL, NULL, 76.8, 64, 'EA', 'S4-10', 8.9573, '2026-10-06 12:00:00.000', NULL, NULL),
 ('PV-26-100750', 'SUP-0098', NULL, NULL, 'SUPPLY', NULL, NULL, NULL, NULL, NULL, 495, 45, 'EA', 'S6-08', 23.3561, '2026-08-30 12:00:00.000', NULL, NULL)
 ),
-branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = 'PV' AND "isActive" = true),
+branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = 'PV' AND "isActive" = true
+  AND NOT EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true')),
 creator AS (SELECT id AS uid FROM "User" ORDER BY "createdAt", id LIMIT 1),
 src AS (
   SELECT v.*, p.id AS pid, g.id AS gid, h.id AS hid, br.id AS lid, br."ownerId" AS owner, c.uid
@@ -838,10 +839,10 @@ SELECT gen_random_uuid()::text, 'DATA', 'WORKING_INVENTORY_LOADED', 'INFO', 'Loc
                           'receipts', (SELECT count(*) FROM receipt), 'holds', (SELECT count(*) FROM hold), 'note', 'Working inventory, 2026-11-26.'),
        now()
 WHERE EXISTS (SELECT 1 FROM coil);
-$body_7ef5238b$;
+$body_79c84497$;
   INSERT INTO "_prisma_migrations" ("id", "checksum", "finished_at", "migration_name", "applied_steps_count")
-  VALUES (gen_random_uuid()::text, 'f1249c77c1b53d7c979e193559a8ac0335cc57234da49aec390a10442a6f7078', now(), '20261126090400_working_inventory_5_stock_pv', 1);
-END $m_7ef5238b$;
+  VALUES (gen_random_uuid()::text, 'f1fb454330ab8f71964eb4edb90806f07df0071d724fcce3ec32908707dcf470', now(), '20261126090400_working_inventory_5_stock_pv', 1);
+END $m_79c84497$;
 
 -- Row Level Security on every table (blocks Supabase's public API keys).
 DO $rls$

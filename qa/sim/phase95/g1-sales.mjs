@@ -2,7 +2,7 @@
 export default async function sales(ctx) {
   const { scenario, G, prisma, A, B, cfo, w, L1, near, err, tag, num, posted, expectEntry, eventOf, entriesOf, movement } = ctx;
   const S = (name, fn) => scenario(G.sales, name, fn);
-  const product = await prisma.product.findFirst({ where: { sku: 'CUT-DISC-9' } });
+  const product = await ctx.counterItem();
 
   await S('An invoice raised at dispatch debits receivables and credits product sales for the same amount', async (ok) => {
     const r = await ctx.shipped(1000, { price: 0.65 });

@@ -188,11 +188,18 @@ export async function startedWorkOrder(coilId, over = {}) {
 }
 export const completeWorkOrder = (id, body, who = 'admin') => A.put(`/api/work-orders/${id}/complete`, body, who);
 
+/**
+ * An item sold by the piece at the counter that is still for sale. The demo cutting disc was used until the working
+ * inventory (2026-11-26) took the demo catalog off sale; any active supply sold each will do.
+ */
+export const counterItem = async () => (await prisma.product.findFirst({ where: { sku: 'CUT-DISC-9', isActive: true } }))
+  || prisma.product.findFirst({ where: { isActive: true, form: 'SUPPLY', priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
+
 /** Shelf stock counted in pieces for the counter, with a cost per piece. */
-export async function shelfStock({ sku = 'CUT-DISC-9', pieces = 20, unitCost = 2.5, locationId } = {}) {
+export async function shelfStock({ sku, pieces = 20, unitCost = 2.5, locationId } = {}) {
   const csr = await prisma.user.findUnique({ where: { email: 'qa-csr@qa.test' } });
   const at = locationId || csr.homeLocationId;
-  const product = await prisma.product.findFirst({ where: { sku } });
+  const product = sku ? await prisma.product.findFirst({ where: { sku } }) : await counterItem();
   const like = await prisma.coil.findFirst({ where: { locationId: at } });
   // Earlier shelf stock of this product at the branch is put on hold (none available to sell) so the sale below
   // takes from this item. The quantity on hand is left as it is: emptying it here would be a stock change with

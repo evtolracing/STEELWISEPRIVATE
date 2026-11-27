@@ -33,12 +33,12 @@ DEMO_BEFORE=$(q "SELECT count(*) FROM \"Coil\" c JOIN \"Inventory\" i ON i.\"coi
 MOVES_BEFORE=$(q "SELECT count(*) FROM \"MaterialMovement\"")
 JX_MACHINES=$(q "SELECT count(*) FROM \"WorkCenter\" w JOIN \"Location\" l ON l.id = w.\"locationId\" WHERE l.code = 'JX'")
 
-# Started books refuse the stock and change nothing.
+# Started books: the stock file still runs to the end (so a migration run is not stopped) but loads nothing, with a notice.
 q "INSERT INTO \"AppSetting\" (key, value, \"updatedAt\") VALUES ('ledger.activation', '{\"active\": true, \"effectiveDate\": \"2026-11-26\"}', now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value" >/dev/null
 for f in $PARTS; do case "$f" in *_1_catalog*|*_2_heats*) $P -f "$DIR/$f" >/dev/null 2>&1 ;; esac; done
-OUT=$($P -f "$DIR/$(echo "$PARTS" | grep stock_jx)" 2>&1 || true)
-case "$OUT" in *"books are already started"*) REFUSED=refused ;; *) REFUSED="$OUT" ;; esac
-check "started books refuse the stock" "$REFUSED" "refused"
+OUT=$($P -f "$DIR/$(echo "$PARTS" | grep stock_jx)" 2>&1 && echo EXIT0 || echo EXIT1)
+case "$OUT" in *"books are already started"*EXIT0*) REFUSED=skipped ;; *) REFUSED="$OUT" ;; esac
+check "started books: the stock file finishes without an error and says it loaded nothing" "$REFUSED" "skipped"
 check "nothing stocked while the books are started" "$(q "SELECT count(*) FROM \"Coil\" WHERE \"coilNumber\" LIKE 'JX-2%'")" "0"
 q "DELETE FROM \"AppSetting\" WHERE key = 'ledger.activation'" >/dev/null
 $P -c "DELETE FROM _prisma_migrations WHERE migration_name IN (${NAMES}'x')" >/dev/null

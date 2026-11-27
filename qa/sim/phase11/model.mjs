@@ -68,7 +68,7 @@ export async function build({ log = () => {} } = {}) {
   const heats = Object.fromEntries((await prisma.heat.findMany({ where: { heatNumber: { startsWith: 'QA-H-' } }, include: { grade: true } })).map((h) => [h.grade.code, h]));
   const levels = (await prisma.priceLevel.findMany({ orderBy: { code: 'asc' } })).map((l) => l.code);
   const each = await prisma.product.findFirst({ where: { isActive: true, priceUnit: 'EACH', basePriceCwt: { gt: 0 } }, orderBy: { sku: 'asc' } });
-  const shelfProduct = await prisma.product.findFirst({ where: { sku: 'CUT-DISC-9' } }) || each;
+  const shelfProduct = await prisma.product.findFirst({ where: { sku: 'CUT-DISC-9', isActive: true } }) || each;
 
   const suppliers = [];
   for (let i = 1; i <= SUPPLIERS; i++) {

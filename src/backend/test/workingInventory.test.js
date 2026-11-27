@@ -139,9 +139,11 @@ test('fractions read the way a shop writes them', () => {
   assert.equal(inch(0.065), '.065');
 });
 
-test('the SQL: stock refuses started books, goes only to a switched-on branch, and the files on disk match the rules', () => {
+test('the SQL: stock skips started books with a notice, goes only to a switched-on branch, and the files on disk match the rules', () => {
   const stock = partSql(d, 'stock:JX');
-  assert.match(stock, /books are already started/);
+  assert.match(stock, /RAISE NOTICE 'The books are already started/);
+  assert.doesNotMatch(stock, /RAISE EXCEPTION/, 'a refusal would stop a migration run on a database whose books are started');
+  assert.match(stock, /"isActive" = true\n  AND NOT EXISTS \(SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation'/);
   assert.match(stock, /"code" = 'JX' AND "isActive" = true/);
   assert.match(stock, /ON CONFLICT \("coilNumber"\) DO NOTHING/);
   const retire = partSql(d, 'retire');

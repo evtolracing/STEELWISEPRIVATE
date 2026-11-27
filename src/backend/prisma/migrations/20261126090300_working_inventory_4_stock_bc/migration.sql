@@ -2,12 +2,12 @@
 -- 743 stocked pieces, 1,098,169 lb of metal and plastic plus supplies counted by the piece. Each piece gets its stock balance and a
 -- receipt line in its history dated the day it came in. About 2 in 100 come in on a quality hold, so the hold path can be tested.
 -- Nothing is added when the branch is not on file or switched off, or when a tag number is already in use.
--- Refused, with nothing changed, if the books are already started: run this before starting the sandbox books.
+-- Loads nothing, with a notice, if the books are already started: run this before starting the sandbox books.
 
 DO $guard$
 BEGIN
   IF EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true') THEN
-    RAISE EXCEPTION 'The books are already started, so stock loaded here would not be on them. Nothing was changed.';
+    RAISE NOTICE 'The books are already started, so stock loaded here would not be on them. The stock was not loaded.';
   END IF;
 END $guard$;
 
@@ -756,7 +756,8 @@ WITH v(tag, sku, grade, heat, form, t, w, l, od, idin, weight, qty, unit, bin, c
 ('BC-26-100742', 'SUP-0096', NULL, NULL, 'SUPPLY', NULL, NULL, NULL, NULL, NULL, 282, 94, 'EA', 'S6-01', 12.2555, '2026-10-15 12:00:00.000', NULL, NULL),
 ('BC-26-100743', 'SUP-0097', NULL, NULL, 'SUPPLY', NULL, NULL, NULL, NULL, NULL, 102, 85, 'EA', 'S6-11', 9.3515, '2026-10-16 12:00:00.000', NULL, NULL)
 ),
-branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = 'BC' AND "isActive" = true),
+branch AS (SELECT id, "ownerId" FROM "Location" WHERE "code" = 'BC' AND "isActive" = true
+  AND NOT EXISTS (SELECT 1 FROM "AppSetting" WHERE key = 'ledger.activation' AND value->>'active' = 'true')),
 creator AS (SELECT id AS uid FROM "User" ORDER BY "createdAt", id LIMIT 1),
 src AS (
   SELECT v.*, p.id AS pid, g.id AS gid, h.id AS hid, br.id AS lid, br."ownerId" AS owner, c.uid

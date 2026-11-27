@@ -10,6 +10,8 @@ import prisma from '../lib/db.js';
 import { createNumbered } from '../lib/numbering.js';
 import { ci } from '../lib/dbText.js';
 import { unitPrice } from './intakeCatalogService.js';
+import { searchWords, productWordMatch } from '../lib/stockSearch.js';
+import { densityFor } from '../lib/materialDensity.js';
 
 const num = (v) => (v == null ? null : Number(v));
 const money = (n) => Math.round(n * 100) / 100;
@@ -20,21 +22,17 @@ export const DIVISIONS = [
   { id: 'SUPPLIES', name: 'Industrial Supplies', description: 'Abrasives, safety, welding & tooling', icon: 'supplies' },
   { id: 'OUTLET', name: 'Steel Outlet', description: 'Discounted remnant & drop pieces', icon: 'outlet' },
 ];
-const FORMS = ['PLATE', 'SHEET', 'BAR', 'ROD', 'TUBE', 'ANGLE', 'CHANNEL', 'BEAM', 'SUPPLY'];
+// The forms a product can have (ProductForm). Angles and flats are BAR; channels and beams are BEAM.
+const FORMS = ['PLATE', 'SHEET', 'COIL', 'BAR', 'ROD', 'TUBE', 'BEAM', 'SUPPLY'];
 
 // Standard stock sizes (inches), filtered to each product's range when the listing has none.
 const STD_THICKNESS = [0.024, 0.036, 0.048, 0.06, 0.075, 0.105, 0.125, 0.135, 0.1875, 0.25, 0.375, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 12];
 const STD_WIDTH = [36, 48, 60, 72, 96, 120];
 const FLAT_LENGTHS = [96, 120, 144, 240];
 const LONG_LENGTHS = [12, 24, 36, 48, 72, 144];
-const LONG_FORMS = new Set(['BAR', 'ROD', 'TUBE', 'ANGLE', 'CHANNEL', 'BEAM', 'COIL']);
+const LONG_FORMS = new Set(['BAR', 'ROD', 'TUBE', 'BEAM']);
 
-// Density in lb per cubic inch, by catalog category.
-const DENSITY = {
-  'Stainless Steel': 0.289, Aluminum: 0.0975, 'Brass & Copper': 0.307, Brass: 0.307,
-  Polyethylene: 0.0343, 'Ultra-High MW': 0.0336, Acetal: 0.0513, Nylon: 0.0412,
-};
-const STEEL_DENSITY = 0.2836;
+
 
 function inRange(values, min, max) {
   const lo = num(min), hi = num(max);
@@ -139,13 +137,7 @@ export async function searchCatalog(params = {}) {
   if (form) where.form = String(form);
   if (grade) where.grade = { code: { contains: String(grade), ...ci } };
   if (family) where.AND.push({ OR: [{ storeListing: { family: String(family) } }, { category: String(family) }] });
-  if (query) {
-    const q = String(query);
-    where.AND.push({ OR: [
-      { name: { contains: q, ...ci } }, { sku: { contains: q, ...ci } },
-      { description: { contains: q, ...ci } }, { grade: { code: { contains: q, ...ci } } },
-    ] });
-  }
+  if (query) where.AND.push(...searchWords(query).map(productWordMatch));
   const rows = orderBy(await prisma.product.findMany({ where, include, take: 1000 }));
   const stock = await stockByProduct(rows.map((r) => r.id), await realLocationId(locationId));
   let products = rows.map((p) => toStoreProduct(p, stock.get(p.id)));
@@ -197,13 +189,20 @@ async function priceLevel(code) {
   return row && row.isActive ? { code: row.code, multiplier: Number(row.multiplier) } : { code: 'RETAIL', multiplier: 1 };
 }
 
-/** Estimated weight in lb for one piece. Long forms treat thickness as diameter. */
+/**
+ * Estimated weight in lb for one piece. A long product with a weight per foot on file is weighed from it (an
+ * angle, beam or tube is not a round bar); without one, thickness is taken as a round bar's diameter.
+ */
 export function pieceWeight(product, dims = {}) {
   const t = parseFloat(dims.thickness) || 0;
   const w = parseFloat(dims.width) || 0;
   const l = parseFloat(dims.length) || 0;
-  const density = DENSITY[product.storeListing?.family] || DENSITY[product.category] || STEEL_DENSITY;
-  if (LONG_FORMS.has(product.form)) return t && l ? (Math.PI / 4) * t * t * l * density : 0;
+  const density = densityFor(product.storeListing?.family || product.category, product.grade?.code);
+  if (LONG_FORMS.has(product.form)) {
+    const perFt = num(product.weightPerFtLb);
+    if (perFt > 0) return l ? (perFt * l) / 12 : 0;
+    return t && l ? (Math.PI / 4) * t * t * l * density : 0;
+  }
   return t && w && l ? t * w * l * density : 0;
 }
 
@@ -229,7 +228,7 @@ export async function priceConfig(payload = {}) {
   const steps = payload.processing || payload.processingSteps || config.processingSteps || [];
   const warnings = [];
 
-  const product = productId ? await prisma.product.findUnique({ where: { id: productId }, include: { storeListing: true } }) : null;
+  const product = productId ? await prisma.product.findUnique({ where: { id: productId }, include: { storeListing: true, grade: true } }) : null;
   if (!product) return { status: 404, error: 'Product not found' };
 
   const { basePrice, priceUnit } = unitPrice(product);

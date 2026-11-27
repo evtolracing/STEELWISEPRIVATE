@@ -15,7 +15,7 @@
  */
 import { Router } from 'express';
 import prisma from '../lib/db.js';
-import { ci } from '../lib/dbText.js';
+import { searchWords, wordMatch } from '../lib/stockSearch.js';
 import { can } from '../lib/roleStore.js';
 import { unitPrice } from '../services/intakeCatalogService.js';
 import { HOLD_TYPES, placeHold, releaseHold } from '../lib/holds.js';
@@ -92,11 +92,7 @@ router.get('/', handle('list stock items', async (req, res) => {
     ...(locationId && { locationId: String(locationId) }),
     ...(heatId && { heatId: String(heatId) }),
     ...(form && { form }),
-    ...(search && { OR: [
-      { coilNumber: { contains: search, ...ci } },
-      { heat: { heatNumber: { contains: search, ...ci } } },
-      { grade: { code: { contains: search, ...ci } } },
-    ] }),
+    ...(search && { AND: searchWords(search).map(wordMatch) }),
   };
   const [coils, total] = await Promise.all([
     prisma.coil.findMany({

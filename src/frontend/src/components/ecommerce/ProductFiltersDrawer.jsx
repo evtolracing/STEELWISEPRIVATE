@@ -8,7 +8,12 @@ import {
 } from '@mui/material'
 import { Close as CloseIcon, FilterList as FilterIcon } from '@mui/icons-material'
 
-const FORMS = ['PLATE', 'SHEET', 'BAR', 'ROD', 'TUBE', 'ANGLE', 'SUPPLY']
+// The forms a product can have. Angles and flats are bars; channels and beams are structural shapes.
+export const FORMS = [
+  { value: 'PLATE', label: 'Plate' }, { value: 'SHEET', label: 'Sheet' }, { value: 'COIL', label: 'Coil' },
+  { value: 'BAR', label: 'Bar, flat & angle' }, { value: 'ROD', label: 'Rod' }, { value: 'TUBE', label: 'Tube & pipe' },
+  { value: 'BEAM', label: 'Beam & channel' }, { value: 'SUPPLY', label: 'Supplies' },
+]
 
 export default function ProductFiltersDrawer({
   open, onClose, filters, onFilterChange,
@@ -49,7 +54,7 @@ export default function ProductFiltersDrawer({
       <Typography variant="overline" color="text.secondary">Form / Shape</Typography>
       <FormGroup sx={{ mb: 2 }}>
         {FORMS.map(f => (
-          <FormControlLabel key={f} control={<Checkbox size="small" checked={(filters.forms || []).includes(f)} onChange={() => toggle('forms', f)} />} label={f} />
+          <FormControlLabel key={f.value} control={<Checkbox size="small" checked={(filters.forms || []).includes(f.value)} onChange={() => toggle('forms', f.value)} />} label={f.label} />
         ))}
       </FormGroup>
       <Divider sx={{ mb: 2 }} />

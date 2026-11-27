@@ -1,0 +1,118 @@
+{
+  "ranAt": "2026-11-27T23:34:17.635Z",
+  "app": "http://localhost:5199",
+  "api": "http://localhost:3001",
+  "passed": 1,
+  "total": 1,
+  "checks": 20,
+  "results": [
+    {
+      "id": 1,
+      "name": "Starting the sandbox books from the screen",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "the sandbox start panel shows before the books are started",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "a request the platform cut off is reported in a sentence",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the page did not break on the cut-off answer",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the books are still not started after the cut-off",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the time zone is filled in already",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the server started the books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the page did not break",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the Finance heading is still on the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the sandbox banner shows",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the status says the books run as sandbox books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the balance sheet balances after the start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Overview\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Trial balance\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Reports\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Journal\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Not posted\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Months\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Accounts\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Start and stop\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the \"Export\" tab opens without breaking the page",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    }
+  ]
+}

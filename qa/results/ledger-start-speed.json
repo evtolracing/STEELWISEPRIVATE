@@ -1,0 +1,61 @@
+{
+  "ranAt": "2026-11-27T23:33:22.407Z",
+  "passed": 1,
+  "total": 1,
+  "checks": 9,
+  "results": [
+    {
+      "id": 1,
+      "name": "The sandbox start fits the hosted time limit",
+      "status": "PASS",
+      "checks": [
+        {
+          "what": "there is at least as much stock as on the live system (4000 pieces)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the start finished in 15 seconds at 20 ms a message (it took 5.5)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the books run as sandbox books",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "every piece of stock has its own opening line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "no opening entry was left as a draft",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "every entry has its own number",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the balance sheet balances",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "the stock on the books is the stock value the start reported",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "what": "a second start is refused",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "crashed": ""
+    }
+  ]
+}

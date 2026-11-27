@@ -71,6 +71,8 @@ echo "== phase 9 UI scenarios"; node qa/sim/phase9-ui.cjs 2>&1 | grep "✗\|Phas
 echo "== every screen opens"; node qa/sim/ui-smoke.cjs 2>&1 | tail -8
 echo "== every screen measured at three sizes"; node qa/sim/ui-audit.cjs --out qa/results/ui-audit.json > "$LOGS/ui-audit.log" 2>&1; node qa/tools/ui-audit-gate.cjs qa/results/ui-audit.json
 # Phase 9.5 runs last of the scenarios: it starts the QA ledger, and everything above is checked with the ledger never started, as it is on the live system until the accountant approves.
+echo "== finance ledger start speed"; node qa/sim/ledger-start-speed.mjs 2>&1 | grep "✗\|start speed"
+echo "== finance ledger sandbox start UI"; node qa/sim/ledger-sandbox-start-ui.cjs 2>&1 | grep "✗\|start UI"
 echo "== phase 9.5 ledger scenarios"; node qa/sim/phase95-ledger.mjs --base http://localhost:3011 2>&1 | grep -v "^\s*at " | tail -12
 echo "== finance ledger sandbox"; node qa/sim/ledger-sandbox.mjs --base http://localhost:3011 2>&1 | grep -v "^\s*at " | tail -4
 echo "== finance ledger sandbox UI"; node qa/sim/ledger-sandbox-ui.cjs 2>&1 | grep "✗\|sandbox UI"

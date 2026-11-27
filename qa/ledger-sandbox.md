@@ -88,3 +88,29 @@ The browser check found one defect before it was committed: the sandbox warning 
 2. Make sure database updates 16 to 18 (the ledger tables) are applied on the hosted database. Without them the Finance screen cannot start any books.
 3. After Vercel deploys, sign in as owner, chief financial officer or super administrator. An administrator login cannot start books.
 4. Finance, "Start and stop", "Start sandbox books", type the phrase. This cannot be undone on that database.
+
+## Finding AB-001, 2026-11-27: the start ran past the hosted time limit (P1, fixed, NOT VERIFIED on the hosted system)
+
+**What happened.** With 4,313 pieces of stock on the hosted database, "Start sandbox books" was cut off twice by the hosting platform at its 30 second limit (runtime log, 23:20:20 and 23:21:36 UTC). The platform answered with `{ "error": { "code", "message" } }`, the Finance screen tried to show that object as text, and the page broke with React error 31.
+
+**Was anything written.** The opening balances are posted inside one database transaction, so a start that is cut off keeps none of them. The chart of accounts and its sandbox approval are saved before that transaction and may be on the hosted database already; the start skips what is there. This was reasoned from the code and the logs. The hosted database itself was not looked at.
+
+**Cause.** The start made one database round trip per account (about 240) and about a dozen per opening entry. On the QA database, which answers in under a millisecond, that took a second. On the hosted server every round trip costs tens of milliseconds.
+
+**Fix.**
+- `loadProposedChart` and the new `writeEntries` use a fixed number of statements however many accounts, branches and pieces there are. Each opening entry is still written as a draft and then posted, and the database's own checks still run on every one.
+- Waiting for the invoice and stock tables is limited to 8 seconds and answers with a sentence, instead of waiting until the platform cuts the request off.
+- The API client turns an error object from the platform into a sentence, for every screen, not only Finance.
+- After a start that did not answer, the Finance screen reads the status again.
+- The phrase is sent in capitals whatever way it was typed.
+
+**Checks that fail without the fix.**
+
+| Check | Before | After |
+| --- | --- | --- |
+| `qa/sim/ledger-start-speed.mjs`: the start through a database made 20 ms slow per message, 6,894 pieces, limit 15 s | 56.1 s, fails | 5.6 s, 9 of 9 pass |
+| `qa/sim/ledger-sandbox-start-ui.cjs`: the platform's cut-off answer on the screen, then a real start from the screen | "Objects are not valid as a React child (found: object with keys {code, message})", fails | 20 of 20 pass |
+
+Also run in this session: backend unit tests 520 of 520; finance ledger sandbox 7 of 7; sandbox browser checks 5 of 5; Phase 9.5 Finance screens 13 of 13; frontend build; lint of the changed files clean.
+
+**Not clean, and not from this change.** Phase 9.5 ledger scenarios: 155 of 158. The three counter sale scenarios fail with "that product is not for sale", the same on the code before this fix. The QA database now holds the working inventory, which retires the demo products those scenarios sell. Whole-repository lint count and the whole gate script: NOT VERIFIED in this session.

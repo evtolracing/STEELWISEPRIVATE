@@ -63,6 +63,20 @@ client.interceptors.response.use(
     error.config?.requestKey?.settle(Boolean(status) && status < 500 && status !== 409, false)
     // Screens show `error.response.data.error`. When there is no answer at all, give them the
     // same shape with a plain sentence, so nothing shows a blank or a raw "Network Error".
+    // The hosting platform answers a request it cut off (a time limit, a crash) with an object where
+    // our own server sends a sentence: { error: { code, message } }. A screen that shows the error as
+    // it came would break on it (finding AB-001), so it is turned into a sentence here, for every screen.
+    const said = error.response?.data?.error
+    if (said && typeof said === 'object') {
+      const cutOff = status === 504 || /504|TIMEOUT/i.test(String(said.code || ''))
+      error.response.data = {
+        ...error.response.data,
+        error: cutOff
+          ? 'The server took too long and cut this off before it answered. It may or may not have been done: look again before you try once more.'
+          : (typeof said.message === 'string' && said.message) || 'That did not go through.',
+        ...(said.code && { code: String(said.code) }),
+      }
+    }
     const lost = connectionMessage(error)
     if (lost) {
       error.userMessage = lost

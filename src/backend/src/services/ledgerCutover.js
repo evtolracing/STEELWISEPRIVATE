@@ -16,7 +16,7 @@
 import { Prisma } from '@prisma/client';
 import prisma from '../lib/db.js';
 import { cents, valueOf, usableCost, dayIn, isoDay, isTimeZone, RULE_VERSION, ZERO, SANDBOX_APPROVER } from '../lib/ledgerRules.js';
-import { LedgerError, ACTIVATION_KEY, activation, activationBlockers, accountsByKey, writeEntry, ownerOf, record, audit, loadProposedChart, approve } from './ledger.js';
+import { LedgerError, ACTIVATION_KEY, activation, activationBlockers, accountsByKey, writeEntries, record, audit, loadProposedChart, approve } from './ledger.js';
 
 const refuse = (status, message, code) => { throw new LedgerError(status, message, code); };
 const CHUNK = 400;
@@ -99,18 +99,17 @@ export async function dryRun(userId) {
   return { dryRunId: log.id, ranAt: log.timestamp, alreadyActive: act.active, blockers, ...forPeople(snap) };
 }
 
-/** Posts one branch's lines in chunks, each chunk balanced against Opening Balance Equity. */
-async function postOpening(tx, { lines, date, locationId, memo, userId, accounts }) {
-  let entries = 0;
+/** One branch's lines as entries of at most CHUNK lines, each balanced against Opening Balance Equity. Writes nothing. */
+function openingEntries({ lines, locationId, legalEntityId, memo, accounts }) {
+  const out = [];
   for (let i = 0; i < lines.length; i += CHUNK) {
     const part = lines.slice(i, i + CHUNK);
     const net = part.reduce((s, l) => (l.side === 'D' ? s.plus(l.amount) : s.minus(l.amount)), ZERO);
     const all = net.isZero() ? part : [...part, { accountId: accounts.get('OPENING_EQUITY').id, side: net.isPositive() ? 'C' : 'D', amount: net.abs(), locationId }];
     if (all.length < 2) continue;
-    await writeEntry(tx, { kind: 'OPENING', date, lines: all, memo, locationId, legalEntityId: await ownerOf(tx, locationId), userId });
-    entries += 1;
+    out.push({ kind: 'OPENING', lines: all, memo, locationId, legalEntityId });
   }
-  return entries;
+  return out;
 }
 
 /**
@@ -135,7 +134,12 @@ export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunI
   return prisma.$transaction(async (tx) => {
     // Business saves wait here until the books are open, so each one is either in the opening
     // balances or posted as an entry, never both and never neither.
-    await tx.$executeRawUnsafe('LOCK TABLE "Invoice", "Payment", "Inventory", "MaterialMovement", "StockTransfer", "StockTransferLine" IN SHARE ROW EXCLUSIVE MODE');
+    // The wait for those tables is short and named: a save left open elsewhere must not hold the start
+    // until the server's own time limit cuts it off with no reason given.
+    await tx.$executeRawUnsafe("SET LOCAL lock_timeout = '8s'");
+    await tx.$executeRawUnsafe('LOCK TABLE "Invoice", "Payment", "Inventory", "MaterialMovement", "StockTransfer", "StockTransferLine" IN SHARE ROW EXCLUSIVE MODE')
+      .catch((e) => { if (/55P03|lock timeout|lock_not_available/i.test(`${e?.code} ${e?.meta?.code} ${e?.message}`)) refuse(409, 'Another save is holding the invoices or the stock just now, so the books were not started and nothing was changed. Wait a minute and try again.', 'BUSY'); throw e; });
+    await tx.$executeRawUnsafe("SET LOCAL lock_timeout = '0'");
     const blockers = await activationBlockers(tx);
     if (blockers.length) refuse(409, `The ledger cannot be activated yet. ${blockers.join(' ')}`, 'NOT_APPROVED');
     const now = await activation(tx);
@@ -151,18 +155,23 @@ export async function activate({ policiesApprovedBy, policiesApprovedOn, dryRunI
 
     const snap = await openingSnapshot(tx);
     const accounts = await accountsByKey(tx, ['RECEIVABLES', 'INVENTORY_RAW', 'INVENTORY_FINISHED', 'OPENING_EQUITY']).catch((e) => refuse(409, e.message, 'NOT_APPROVED'));
-    let entries = 0;
     const branches = [...new Set([...snap.items.map((i) => i.locationId), ...snap.customers.map((c) => c.locationId)])];
+    // Built in memory and written in a fixed number of statements: one statement per entry made the
+    // start run past the hosted server's time limit once there were thousands of pieces (finding AB-001).
+    const owners = new Map((await tx.location.findMany({ where: { id: { in: branches.filter(Boolean) } }, select: { id: true, ownerId: true } })).map((l) => [l.id, l.ownerId || null]));
+    const opening = [];
     for (const locationId of branches) {
+      const legalEntityId = locationId ? owners.get(locationId) ?? null : null;
       const stockLines = snap.items.filter((i) => i.locationId === locationId).map((i) => ({ accountId: accounts.get(i.finished ? 'INVENTORY_FINISHED' : 'INVENTORY_RAW').id, side: 'D', amount: i.value, locationId, coilId: i.coilId, productId: i.productId, division: i.division }));
-      entries += await postOpening(tx, { lines: stockLines, date: today, locationId, memo: 'Opening balance: stock on hand at cost', userId, accounts });
+      opening.push(...openingEntries({ lines: stockLines, locationId, legalEntityId, memo: 'Opening balance: stock on hand at cost', accounts }));
       const owedLines = [];
       for (const c of snap.customers.filter((x) => x.locationId === locationId)) {
         if (!c.owed.isZero()) owedLines.push({ accountId: accounts.get('RECEIVABLES').id, side: c.owed.isPositive() ? 'D' : 'C', amount: c.owed.abs(), locationId, customerId: c.customerId });
         if (!c.owedBack.isZero()) owedLines.push({ accountId: accounts.get('RECEIVABLES').id, side: c.owedBack.isPositive() ? 'C' : 'D', amount: c.owedBack.abs(), locationId, customerId: c.customerId, memo: 'Credit owed back to the customer' });
       }
-      entries += await postOpening(tx, { lines: owedLines, date: today, locationId, memo: 'Opening balance: open invoices and credit owed back', userId, accounts });
+      opening.push(...openingEntries({ lines: owedLines, locationId, legalEntityId, memo: 'Opening balance: open invoices and credit owed back', accounts }));
     }
+    const entries = await writeEntries(tx, opening, { date: today, userId });
     // Stock on a truck between branches: opened at the sending branch above, then moved to In Transit
     // by the same rule as any transfer, so receiving or cancelling it later works like any other.
     let transit = 0;

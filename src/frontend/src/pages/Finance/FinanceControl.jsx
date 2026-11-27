@@ -224,7 +224,12 @@ export function CutoverTab({ can, status, onChange }) {
       )}
       <AskDialog open={sandbox} title="Start sandbox books" confirm="Start sandbox books" text="This cannot be undone. Type START SANDBOX BOOKS to go on."
         fields={[{ name: 'confirm', label: 'Type START SANDBOX BOOKS', required: true }, { name: 'timeZone', label: 'Time zone the books are kept in', required: true, value: form.timeZone }]}
-        onClose={() => setSandbox(false)} onConfirm={(v) => { setSandbox(false); action.run(() => client.post('/ledger/sandbox/start', { confirm: String(v.confirm).trim(), timeZone: v.timeZone, throughWip: form.throughWip }), 'The sandbox books are started.') }} />
+        onClose={() => setSandbox(false)} onConfirm={async (v) => {
+          setSandbox(false)
+          const done = await action.run(() => client.post('/ledger/sandbox/start', { confirm: String(v.confirm).trim().toUpperCase(), timeZone: v.timeZone, throughWip: form.throughWip }), 'The sandbox books are started.')
+          // An answer that never came does not say whether the books started, so the screen asks again.
+          if (!done && onChange) onChange()
+        }} />
       {!status.effectiveDate && !can.activate && <Alert severity="info">Starting the books needs the owner, a super administrator or the CFO.</Alert>}
 
       {status.effectiveDate && can.activate && (

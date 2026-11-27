@@ -42,19 +42,14 @@ export const audit = (db, { eventType, userId, resourceType, resourceId, details
 
 /** Writes the proposed chart and mappings where they are missing. Changes nothing that is already there. */
 export async function loadProposedChart(db = prisma, userId = null) {
-  let accounts = 0; let mappings = 0;
-  for (const a of PROPOSED_ACCOUNTS) {
-    const found = await db.ledgerAccount.findUnique({ where: { code: a.code }, select: { id: true } });
-    if (found) continue;
-    await db.ledgerAccount.create({ data: { code: a.code, name: a.name, type: a.type, normalSide: proposedSideOf(a), isControl: a.control, description: a.description } });
-    accounts += 1;
-  }
-  for (const [key, [accountCode, description]] of Object.entries(PROPOSED_MAPPING)) {
-    const found = await db.ledgerMapping.findUnique({ where: { key }, select: { key: true } });
-    if (found) continue;
-    await db.ledgerMapping.create({ data: { key, accountCode, description } });
-    mappings += 1;
-  }
+  // A fixed number of statements however long the chart is: on the hosted server each one costs a round
+  // trip, and one per account made the sandbox start run past the server's time limit (finding AB-001).
+  const [haveAccounts, haveMappings] = await Promise.all([db.ledgerAccount.findMany({ select: { code: true } }), db.ledgerMapping.findMany({ select: { key: true } })]);
+  const codes = new Set(haveAccounts.map((a) => a.code)); const keys = new Set(haveMappings.map((m) => m.key));
+  const newAccounts = PROPOSED_ACCOUNTS.filter((a) => !codes.has(a.code)).map((a) => ({ code: a.code, name: a.name, type: a.type, normalSide: proposedSideOf(a), isControl: a.control, description: a.description }));
+  const newMappings = Object.entries(PROPOSED_MAPPING).filter(([key]) => !keys.has(key)).map(([key, [accountCode, description]]) => ({ key, accountCode, description }));
+  const accounts = newAccounts.length ? (await db.ledgerAccount.createMany({ data: newAccounts, skipDuplicates: true })).count : 0;
+  const mappings = newMappings.length ? (await db.ledgerMapping.createMany({ data: newMappings, skipDuplicates: true })).count : 0;
   if (accounts || mappings) await audit(db, { eventType: 'LEDGER_CHART_LOADED', userId, resourceType: 'Ledger', resourceId: 'chart', details: { accounts, mappings }, action: 'CREATE' });
   return { accounts, mappings };
 }
@@ -170,6 +165,35 @@ export async function writeEntry(tx, { kind, eventKind = null, sourceType = null
   });
   if (!post) return entry;
   return tx.journalEntry.update({ where: { id: entry.id }, data: { status: 'POSTED', postedById: userId, postedAt: new Date() } });
+}
+
+/**
+ * Writes and posts many entries of one date in a fixed number of statements, for the opening balances.
+ * The same rules as writeEntry: each entry balances, the period is open, each is written as a draft and
+ * then posted, and the database checks every one again at the moment of posting.
+ * entries: [{ kind, lines, memo, locationId, legalEntityId }]. Returns how many were posted.
+ */
+export async function writeEntries(tx, entries, { date, userId = null, service = null } = {}) {
+  if (!entries.length) return 0;
+  for (const e of entries) { const t = totals(e.lines); if (!t.ok) throw new LedgerRuleError(`The entry does not balance: ${t.why}`); }
+  const period = await periodFor(tx, date);
+  if (period.status !== 'OPEN') throw new LedgerRuleError(`The period ${period.year}-${String(period.month).padStart(2, '0')} is closed. The entry was not moved to another period.`, { hold: true });
+  const numbers = await tx.$queryRaw`SELECT nextval('"JournalEntry_number_seq"')::bigint AS n FROM generate_series(1, ${entries.length}::int)`;
+  const rows = entries.map((e, i) => ({
+    id: randomUUID(), entryNumber: `JE-${String(numbers[i].n).padStart(8, '0')}`, entryDate: dayOf(date), periodId: period.id, status: 'DRAFT', kind: e.kind,
+    ruleVersion: e.kind === 'MANUAL' ? null : RULE_VERSION, locationId: e.locationId ?? null, legalEntityId: e.legalEntityId ?? null, memo: e.memo ? String(e.memo).slice(0, 500) : null,
+    createdById: userId, createdByService: userId ? null : service || 'ledger',
+  }));
+  await tx.journalEntry.createMany({ data: rows });
+  const lines = entries.flatMap((e, i) => e.lines.map((l, n) => ({
+    entryId: rows[i].id, lineNumber: n + 1, accountId: l.accountId, debit: l.side === 'D' ? l.amount : 0, credit: l.side === 'C' ? l.amount : 0,
+    locationId: l.locationId ?? e.locationId ?? null, division: l.division || null, customerId: l.customerId || null, supplierId: l.supplierId || null,
+    productId: l.productId || null, coilId: l.coilId || null, jurisdiction: l.jurisdiction || null, memo: l.memo || null,
+  })));
+  for (let i = 0; i < lines.length; i += 2000) await tx.journalLine.createMany({ data: lines.slice(i, i + 2000) });
+  const posted = await tx.journalEntry.updateMany({ where: { id: { in: rows.map((r) => r.id) }, status: 'DRAFT' }, data: { status: 'POSTED', postedById: userId, postedAt: new Date() } });
+  if (posted.count !== rows.length) throw new LedgerRuleError(`${rows.length - posted.count} opening entries could not be posted. Nothing was kept.`);
+  return posted.count;
 }
 
 // ── Facts of each kind of event ──────────────────────────────────────────────────────────────
